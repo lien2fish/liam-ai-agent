@@ -1,0 +1,16 @@
+# 敏感設定檔
+config/
+notion_crm/config.py
+.claude/settings.local.json
+
+# Playwright 瀏覽器快照
+.playwright-mcp/
+
+# 系統檔
+.DS_Store
+__pycache__/
+*.pyc
+*.pyo
+
+# 日誌
+*.log
