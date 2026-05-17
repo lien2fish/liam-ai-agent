@@ -69,6 +69,40 @@
 - 權限模式：**acceptEdits**（檔案編輯自動通過；遇到清單外新工具彈一次確認，允許後自動加入清單）
 - **不可用 `dontAsk`**：此模式會靜默封鎖所有需確認的操作（包含 allow 清單內的 Edit），導致任務中斷卡死
 
+## Instagram 每日自動發文系統
+
+### 核心資訊
+| 項目 | 說明 |
+|------|------|
+| 腳本 | `instagram/generate_post.py` |
+| 排程 | GitHub Actions，每天 UTC 00:00（台灣 08:00）自動執行 |
+| Workflow | `.github/workflows/daily_post.yml` |
+| 底圖 | `instagram/template.png`（2700×3375px → 輸出 1080×1920） |
+| 圖片存放 | `instagram/posts/YYYY-MM-DD.jpg`（每次 workflow 自動 commit） |
+
+### 流程
+1. **Gemini 2.5 Flash** 生成知識 JSON（5～6句，三大類：海鮮/捕魚/漁船）
+2. **HF FLUX.1-schnell** 生成圖文對應水彩插圖
+3. **PIL** 動態排版合成（插圖大小＋字型大小依內容量自動調整）
+4. **GitHub API** 上傳圖片 → raw.githubusercontent.com 公開 URL（repo 必須 public）
+5. **Meta Graph API v19.0** 發限時動態（media_type=STORIES）
+
+### GitHub Secrets（4個，已設定）
+`GEMINI_KEY` / `HF_TOKEN` / `IG_TOKEN` / `IG_ID`
+
+### 重要到期日
+- **IG Token：2026-07-16 到期**，需從 Meta Graph API Explorer 重新取得
+- 更新方式：用 PyNaCl 直接寫入 GitHub Secret（`pip3 install PyNaCl`，見腳本範例）
+- **GitHub PAT：2026-08-15 到期**（[[github-token-expiry]]）
+
+### 注意事項
+- Repo 維持 **public**（config/ 已 gitignore，無憑證外洩風險）
+- 每次 workflow 跑完會 commit 圖片，本地 push 前需 `git pull --rebase`
+- Linux 字型用 `fc-list :lang=zh` 動態查找 Noto CJK TTC（index=3）
+- catbox.moe / transfer.sh 均因 GitHub Actions IP 被封鎖，已廢棄
+
+---
+
 ## 指引牌產圖系統（2026 扶輪年會）
 
 ### 腳本與資料檔
