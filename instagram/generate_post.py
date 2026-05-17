@@ -34,8 +34,6 @@ else:
 
 def generate_knowledge():
     """Gemini 生成今日海鮮知識（2.5-flash → 1.5-flash fallback）"""
-    for model in ['gemini-2.5-flash', 'gemini-1.5-flash']:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
     prompt = """你是台灣海洋達人。生成一則台灣讀者有興趣的知識，JSON格式：
 {
   "seafood_zh": "主題名稱（2-5字）",
@@ -68,6 +66,8 @@ def generate_knowledge():
 
 注意：不要選潮汐、海流、洋流等自然現象類內容。"""
 
+    for model in ['gemini-2.5-flash', 'gemini-1.5-flash']:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
         r = requests.post(url, json={
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {"response_mime_type": "application/json"}
