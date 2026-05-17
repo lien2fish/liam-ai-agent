@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """每日 Instagram 海鮮小知識自動發文腳本"""
 
-import json, os, requests, base64, io, subprocess, tempfile, sys, time, platform
+import json, os, requests, base64, io, time, platform
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
@@ -225,20 +225,33 @@ def compose_image(knowledge, illustration):
 
 
 def upload_image(image):
-    """上傳圖片取得公開 URL（catbox.moe）"""
-    with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as f:
-        image.save(f.name, 'JPEG', quality=95)
-        path = f.name
-    r = subprocess.run(
-        ['curl', '-s', '-F', 'reqtype=fileupload', '-F', f'fileToUpload=@{path}',
-         'https://catbox.moe/user/api.php'],
-        capture_output=True, text=True, timeout=60
-    )
-    os.unlink(path)
-    url = r.stdout.strip()
-    if not url.startswith('http'):
-        raise RuntimeError(f"上傳失敗：{r.stderr or r.stdout}")
-    return url
+    """上傳圖片到 GitHub repo，回傳 raw.githubusercontent.com 公開 URL"""
+    github_token = os.environ.get('GITHUB_TOKEN', '')
+    repo = os.environ.get('GITHUB_REPO', 'lien2fish/liam-ai-agent')
+    today = datetime.now().strftime('%Y-%m-%d')
+    filepath = f'instagram/posts/{today}.jpg'
+
+    buf = io.BytesIO()
+    image.save(buf, 'JPEG', quality=95)
+    content_b64 = base64.b64encode(buf.getvalue()).decode()
+
+    api_url = f'https://api.github.com/repos/{repo}/contents/{filepath}'
+    headers = {
+        'Authorization': f'token {github_token}',
+        'Accept': 'application/vnd.github.v3+json'
+    }
+
+    # 若同名檔已存在，需帶 sha 才能更新
+    existing = requests.get(api_url, headers=headers)
+    body = {'message': f'Add IG post {today}', 'content': content_b64}
+    if existing.status_code == 200:
+        body['sha'] = existing.json()['sha']
+
+    r = requests.put(api_url, headers=headers, json=body)
+    if r.status_code not in (200, 201):
+        raise RuntimeError(f"GitHub 上傳失敗：{r.status_code} {r.text[:300]}")
+
+    return f'https://raw.githubusercontent.com/{repo}/main/{filepath}'
 
 
 def post_to_instagram(image_url, knowledge):
