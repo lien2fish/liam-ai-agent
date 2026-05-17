@@ -28,18 +28,19 @@ if platform.system() == 'Darwin':
     FONT     = '/System/Library/Fonts/PingFang.ttc'
     FONT_IDX = 3
 else:
-    # fonts-noto-cjk 在不同 Ubuntu 版本的路徑不同，依序嘗試
-    # TTC 檔案中 index 3 = Traditional Chinese；OTF 用 index 0
-    _candidates = [
-        ('/usr/share/fonts/opentype/noto/NotoSansCJK-Medium.ttc', 3),
-        ('/usr/share/fonts/opentype/noto/NotoSansCJKtc-Medium.otf', 0),
-        ('/usr/share/fonts/noto-cjk/NotoSansCJK-Medium.ttc', 3),
-        ('/usr/share/fonts/truetype/noto/NotoSansCJK-Medium.ttc', 3),
-    ]
-    FONT, FONT_IDX = next(
-        ((p, i) for p, i in _candidates if os.path.exists(p)),
-        ('/usr/share/fonts/opentype/noto/NotoSansCJK-Medium.ttc', 3)
-    )
+    # 用 fc-list 動態查找 Noto CJK 中文字型（相容各 Ubuntu 版本）
+    import subprocess as _sp
+    _fc = _sp.run(['fc-list', ':lang=zh', '--format=%{file}\n'],
+                  capture_output=True, text=True)
+    _noto = [l.strip() for l in _fc.stdout.splitlines()
+             if 'Noto' in l and 'CJK' in l]
+    print(f"[font] 找到 Noto CJK 字型：{_noto[:5]}", flush=True)
+    if _noto:
+        FONT = _noto[0]
+        FONT_IDX = 3 if FONT.endswith('.ttc') else 0
+    else:
+        FONT     = '/usr/share/fonts/opentype/noto/NotoSansCJK-Medium.ttc'
+        FONT_IDX = 3
 
 
 def generate_knowledge():
