@@ -51,7 +51,7 @@ def generate_knowledge():
   "seafood_en": "English name or term",
   "title_zh": "標題（格式：XX的祕密 或 你不知道的XX，10字內）",
   "title_en": "Title in English (under 35 chars)",
-  "content": "3句話的有趣知識，繁體中文。每句獨立，加換行符\\n分隔。每句不超過28字。",
+  "content": "5到6句有趣知識，繁體中文。每句獨立，加換行符\\n分隔。每句不超過28字。內容要有層次：第一句引起好奇，中間深入說明，最後一句給讀者帶走的亮點。",
   "illustration_prompt": "描述插圖主體的英文句子，用於 AI 繪圖。要能精準對應本則知識內容。格式：Watercolor illustration of [具體主體與場景]，例如：Watercolor illustration of a Taiwanese fisherman sitting on a small wooden boat doing pole-and-line fishing, calm sea, warm morning light"
 }
 從以下三大類隨機選一個角度，每次都要不同：
