@@ -33,8 +33,9 @@ else:
 
 
 def generate_knowledge():
-    """Gemini 2.5 Flash 生成今日海鮮知識"""
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}"
+    """Gemini 生成今日海鮮知識（2.5-flash → 1.5-flash fallback）"""
+    for model in ['gemini-2.5-flash', 'gemini-1.5-flash']:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
     prompt = """你是台灣海洋達人。生成一則台灣讀者有興趣的知識，JSON格式：
 {
   "seafood_zh": "主題名稱（2-5字）",
@@ -67,12 +68,16 @@ def generate_knowledge():
 
 注意：不要選潮汐、海流、洋流等自然現象類內容。"""
 
-    r = requests.post(url, json={
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"response_mime_type": "application/json"}
-    }, timeout=30)
-    text = r.json()['candidates'][0]['content']['parts'][0]['text']
-    return json.loads(text)
+        r = requests.post(url, json={
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {"response_mime_type": "application/json"}
+        }, timeout=30)
+        data = r.json()
+        if 'candidates' in data:
+            text = data['candidates'][0]['content']['parts'][0]['text']
+            return json.loads(text)
+        print(f"[{model}] 失敗：{data}", flush=True)
+    raise RuntimeError("所有 Gemini 模型均失敗")
 
 
 def generate_illustration(illustration_prompt):
