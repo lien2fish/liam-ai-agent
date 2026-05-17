@@ -28,8 +28,18 @@ if platform.system() == 'Darwin':
     FONT     = '/System/Library/Fonts/PingFang.ttc'
     FONT_IDX = 3
 else:
-    FONT     = '/usr/share/fonts/opentype/noto/NotoSansCJKtc-Medium.otf'
-    FONT_IDX = 0
+    # fonts-noto-cjk 在不同 Ubuntu 版本的路徑不同，依序嘗試
+    # TTC 檔案中 index 3 = Traditional Chinese；OTF 用 index 0
+    _candidates = [
+        ('/usr/share/fonts/opentype/noto/NotoSansCJK-Medium.ttc', 3),
+        ('/usr/share/fonts/opentype/noto/NotoSansCJKtc-Medium.otf', 0),
+        ('/usr/share/fonts/noto-cjk/NotoSansCJK-Medium.ttc', 3),
+        ('/usr/share/fonts/truetype/noto/NotoSansCJK-Medium.ttc', 3),
+    ]
+    FONT, FONT_IDX = next(
+        ((p, i) for p, i in _candidates if os.path.exists(p)),
+        ('/usr/share/fonts/opentype/noto/NotoSansCJK-Medium.ttc', 3)
+    )
 
 
 def generate_knowledge():
