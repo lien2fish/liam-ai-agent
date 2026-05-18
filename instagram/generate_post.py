@@ -290,22 +290,14 @@ def post_to_instagram(image_url, knowledge):
 
 
 def post_to_facebook(image_url, knowledge):
-    """發圖文貼文到 Facebook 粉絲專頁"""
+    """發限時動態到 Facebook 粉絲專頁"""
     if not FB_PAGE_TOKEN or not FB_PAGE_ID:
         print("[FB] 未設定 FB_PAGE_TOKEN / FB_PAGE_ID，跳過", flush=True)
         return None
 
-    caption = (
-        f"🐟 今日海鮮知識｜{knowledge['seafood_zh']}\n\n"
-        f"【{knowledge['title_zh']}】\n"
-        f"{knowledge['title_en']}\n\n"
-        + "\n".join(f"• {s}" for s in knowledge.get('sentences_zh', []))
-        + f"\n\n#{knowledge['seafood_zh'].replace(' ','')} #龜吼現流活海產 #鉅鑫管理顧問 #台灣海鮮 #野生海鮮"
-    )
-
     r = requests.post(
-        f"https://graph.facebook.com/v19.0/{FB_PAGE_ID}/photos",
-        data={'url': image_url, 'message': caption, 'access_token': FB_PAGE_TOKEN}
+        f"https://graph.facebook.com/v19.0/{FB_PAGE_ID}/photo_stories",
+        data={'url': image_url, 'access_token': FB_PAGE_TOKEN}
     )
     return r.json()
 
