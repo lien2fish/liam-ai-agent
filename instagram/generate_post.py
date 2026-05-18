@@ -9,16 +9,20 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 設定來源：GitHub Actions 用環境變數，本機用 config 檔
 if os.environ.get('IG_TOKEN'):
-    GEMINI_KEY = os.environ['GEMINI_KEY']
-    HF_TOKEN   = os.environ['HF_TOKEN']
-    IG_TOKEN   = os.environ['IG_TOKEN']
-    IG_ID      = os.environ['IG_ID']
+    GEMINI_KEY    = os.environ['GEMINI_KEY']
+    HF_TOKEN      = os.environ['HF_TOKEN']
+    IG_TOKEN      = os.environ['IG_TOKEN']
+    IG_ID         = os.environ['IG_ID']
+    FB_PAGE_TOKEN = os.environ.get('FB_PAGE_TOKEN', '')
+    FB_PAGE_ID    = os.environ.get('FB_PAGE_ID', '')
 else:
-    CONFIG     = json.load(open(os.path.join(BASE_DIR, '../config/instagram_config.json')))
-    GEMINI_KEY = CONFIG['gemini_api_key']
-    HF_TOKEN   = CONFIG['hf_token']
-    IG_TOKEN   = CONFIG['long_lived_user_token']
-    IG_ID      = CONFIG['ig_account_id']
+    CONFIG        = json.load(open(os.path.join(BASE_DIR, '../config/instagram_config.json')))
+    GEMINI_KEY    = CONFIG['gemini_api_key']
+    HF_TOKEN      = CONFIG['hf_token']
+    IG_TOKEN      = CONFIG['long_lived_user_token']
+    IG_ID         = CONFIG['ig_account_id']
+    FB_PAGE_TOKEN = CONFIG.get('fb_page_token', '')
+    FB_PAGE_ID    = CONFIG.get('fb_page_id', '')
 
 TEMPLATE  = os.path.join(BASE_DIR, 'template.png')
 LOGO_PATH = os.path.join(BASE_DIR, 'logo.png')
@@ -285,6 +289,27 @@ def post_to_instagram(image_url, knowledge):
     return r2.json()
 
 
+def post_to_facebook(image_url, knowledge):
+    """發圖文貼文到 Facebook 粉絲專頁"""
+    if not FB_PAGE_TOKEN or not FB_PAGE_ID:
+        print("[FB] 未設定 FB_PAGE_TOKEN / FB_PAGE_ID，跳過", flush=True)
+        return None
+
+    caption = (
+        f"🐟 今日海鮮知識｜{knowledge['seafood_zh']}\n\n"
+        f"【{knowledge['title_zh']}】\n"
+        f"{knowledge['title_en']}\n\n"
+        + "\n".join(f"• {s}" for s in knowledge.get('sentences_zh', []))
+        + f"\n\n#{knowledge['seafood_zh'].replace(' ','')} #龜吼現流活海產 #鉅鑫管理顧問 #台灣海鮮 #野生海鮮"
+    )
+
+    r = requests.post(
+        f"https://graph.facebook.com/v19.0/{FB_PAGE_ID}/photos",
+        data={'url': image_url, 'message': caption, 'access_token': FB_PAGE_TOKEN}
+    )
+    return r.json()
+
+
 if __name__ == '__main__':
     log = lambda msg: print(f"[{datetime.now():%H:%M:%S}] {msg}", flush=True)
 
@@ -306,4 +331,8 @@ if __name__ == '__main__':
 
     log("發文到 Instagram...")
     result = post_to_instagram(url, knowledge)
-    log(f"完成：{result}")
+    log(f"IG 完成：{result}")
+
+    log("發文到 Facebook...")
+    fb_result = post_to_facebook(url, knowledge)
+    log(f"FB 完成：{fb_result}")
