@@ -69,7 +69,7 @@
 - 權限模式：**acceptEdits**（檔案編輯自動通過；遇到清單外新工具彈一次確認，允許後自動加入清單）
 - **不可用 `dontAsk`**：此模式會靜默封鎖所有需確認的操作（包含 allow 清單內的 Edit），導致任務中斷卡死
 
-## Instagram 每日自動發文系統
+## IG + FB 每日自動發文系統
 
 ### 核心資訊
 | 項目 | 說明 |
@@ -85,14 +85,27 @@
 2. **HF FLUX.1-schnell** 生成圖文對應水彩插圖
 3. **PIL** 動態排版合成（插圖大小＋字型大小依內容量自動調整）
 4. **GitHub API** 上傳圖片 → raw.githubusercontent.com 公開 URL（repo 必須 public）
-5. **Meta Graph API v19.0** 發限時動態（media_type=STORIES）
+5. **Meta Graph API v19.0** 同時發送：
+   - IG 限時動態（`{IG_ID}/media`，media_type=STORIES，帶 `cross_post_ids={FB_PAGE_ID}`）
+   - FB 限時動態透過 `cross_post_ids` 跨發，**不使用** `photo_stories`（該端點持續回傳 unknown error）
 
-### GitHub Secrets（4個，已設定）
-`GEMINI_KEY` / `HF_TOKEN` / `IG_TOKEN` / `IG_ID`
+### GitHub Secrets（6個，已設定）
+`GEMINI_KEY` / `HF_TOKEN` / `IG_TOKEN` / `IG_ID` / `FB_PAGE_TOKEN` / `FB_PAGE_ID`
+
+### Facebook 粉絲專頁資訊
+| 項目 | 說明 |
+|------|------|
+| 名稱 | From Source To TABLE |
+| Page ID | `1081333268402454` |
+| FB_PAGE_TOKEN | 永不過期（長效 Page Token） |
+| Meta App | Liam AI（ID: 1310018353798687），已切換 Live Mode |
+| 管理方式 | Meta Business Suite（Business ID: 2163986274210892） |
+| 隱私政策頁 | https://lien2fish.github.io/liam-ai-agent/privacy.html |
 
 ### 重要到期日
 - **IG Token：2026-07-16 到期**，需從 Meta Graph API Explorer 重新取得
-- 更新方式：用 PyNaCl 直接寫入 GitHub Secret（`pip3 install PyNaCl`，見腳本範例）
+- **FB Page Token：永不過期**（無需更新）
+- 更新 Token 方式：用 PyNaCl 直接寫入 GitHub Secret（`pip3 install PyNaCl`，見腳本範例）
 - **GitHub PAT：2026-08-15 到期**（[[github-token-expiry]]）
 
 ### 注意事項
@@ -100,6 +113,10 @@
 - 每次 workflow 跑完會 commit 圖片，本地 push 前需 `git pull --rebase`
 - Linux 字型用 `fc-list :lang=zh` 動態查找 Noto CJK TTC（index=3）
 - catbox.moe / transfer.sh 均因 GitHub Actions IP 被封鎖，已廢棄
+- GitHub PAT 缺少 `workflow` scope，無法直接 push workflow 檔，需在 GitHub 網頁手動編輯
+- FB Page 透過 Business Suite 管理，`/me/accounts` 不會回傳；需用 `debug_token` 的 `granular_scopes` 找真正 Page ID
+- `photo_stories` API 不可用（任何版本皆回傳 unknown error），FB 限時動態改用 IG `cross_post_ids`
+- prompt 為 f-string 時，JSON 範本的 `{}` 必須寫成 `{{}}`，否則 ValueError
 
 ---
 
