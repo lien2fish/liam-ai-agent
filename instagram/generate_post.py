@@ -122,7 +122,7 @@ def generate_knowledge(exclude_seafood=None):
 - 漁具設備：集魚燈/聲納/魚探機/漁網材質等
 - 出海作業：一次出海多久、如何保鮮、船上生活
 
-注意：不要選潮汐、海流、洋流等自然現象類內容。{exclude_note}"""
+注意：若選擇潮汐、海流、洋流等自然現象類內容，必須結合漁民實際作業或捕魚技術來說明（例如「漁民如何利用此現象判斷魚群位置」、「此現象對出海時機的影響」等），不可單純介紹自然現象本身。{exclude_note}"""
 
     for model in ['gemini-2.5-flash', 'gemini-1.5-flash']:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
