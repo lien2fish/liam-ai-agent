@@ -302,10 +302,14 @@ def upload_image(image):
 
 
 def post_to_instagram(image_url, knowledge):
-    """發限時動態到 Instagram"""
+    """發限時動態到 Instagram，同時 cross_post 到已連結的 FB 粉絲專頁"""
+    post_data = {'image_url': image_url, 'media_type': 'STORIES', 'access_token': IG_TOKEN}
+    if FB_PAGE_ID:
+        post_data['cross_post_ids'] = FB_PAGE_ID
+
     r1 = requests.post(
         f"https://graph.facebook.com/v19.0/{IG_ID}/media",
-        data={'image_url': image_url, 'media_type': 'STORIES', 'access_token': IG_TOKEN}
+        data=post_data
     )
     data1 = r1.json()
     if 'id' not in data1:
@@ -333,16 +337,12 @@ def post_to_instagram(image_url, knowledge):
 
 
 def post_to_facebook(image_url, knowledge):
-    """發限時動態到 Facebook 粉絲專頁"""
-    if not FB_PAGE_TOKEN or not FB_PAGE_ID:
-        print("[FB] 未設定 FB_PAGE_TOKEN / FB_PAGE_ID，跳過", flush=True)
+    """FB 限時動態已透過 post_to_instagram 的 cross_post_ids 跨發，此函式保留備用"""
+    if not FB_PAGE_ID:
+        print("[FB] 未設定 FB_PAGE_ID，跳過", flush=True)
         return None
-
-    r = requests.post(
-        f"https://graph.facebook.com/v19.0/{FB_PAGE_ID}/photo_stories",
-        data={'url': image_url, 'access_token': FB_PAGE_TOKEN}
-    )
-    return r.json()
+    print(f"[FB] 限時動態已透過 IG cross_post_ids 跨發到 Page {FB_PAGE_ID}", flush=True)
+    return {'cross_posted': True, 'page_id': FB_PAGE_ID}
 
 
 if __name__ == '__main__':
