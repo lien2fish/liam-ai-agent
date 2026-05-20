@@ -5,6 +5,9 @@ import json, os, requests, base64, io, time, platform
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
+HISTORY_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'recent_seafood.json')
+HISTORY_KEEP = 7  # 保留最近 7 天紀錄
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 設定來源：GitHub Actions 用環境變數，本機用 config 檔
@@ -47,9 +50,49 @@ else:
         FONT_IDX = 3
 
 
-def generate_knowledge():
+def load_recent_seafood():
+    """讀取最近發過的魚種清單"""
+    if os.path.exists(HISTORY_FILE):
+        try:
+            return json.load(open(HISTORY_FILE)).get('recent', [])
+        except Exception:
+            return []
+    return []
+
+
+def save_recent_seafood(recent_list, new_seafood):
+    """將新魚種加入歷史並存回 repo（GitHub Actions 用 API，本機直接寫檔）"""
+    updated = ([new_seafood] + recent_list)[:HISTORY_KEEP]
+    content_str = json.dumps({'recent': updated}, ensure_ascii=False, indent=2)
+
+    if not os.environ.get('GITHUB_TOKEN'):
+        with open(HISTORY_FILE, 'w', encoding='utf-8') as f:
+            f.write(content_str)
+        return
+
+    github_token = os.environ['GITHUB_TOKEN']
+    repo = os.environ.get('GITHUB_REPO', 'lien2fish/liam-ai-agent')
+    filepath = 'instagram/recent_seafood.json'
+    api_url = f'https://api.github.com/repos/{repo}/contents/{filepath}'
+    headers = {'Authorization': f'token {github_token}', 'Accept': 'application/vnd.github.v3+json'}
+
+    body = {
+        'message': f'Update seafood history: {new_seafood}',
+        'content': base64.b64encode(content_str.encode()).decode()
+    }
+    existing = requests.get(api_url, headers=headers)
+    if existing.status_code == 200:
+        body['sha'] = existing.json()['sha']
+    requests.put(api_url, headers=headers, json=body)
+
+
+def generate_knowledge(exclude_seafood=None):
     """Gemini 生成今日海鮮知識（2.5-flash → 1.5-flash fallback）"""
-    prompt = """你是台灣海洋達人。生成一則台灣讀者有興趣的知識，JSON格式：
+    exclude_note = ''
+    if exclude_seafood:
+        exclude_note = f'\n\n⚠️ 以下魚種近期已發過，本次禁止使用：{", ".join(exclude_seafood)}'
+
+    prompt = f"""你是台灣海洋達人。生成一則台灣讀者有興趣的知識，JSON格式：
 {
   "seafood_zh": "主題名稱（2-5字）",
   "seafood_en": "English name or term",
@@ -79,7 +122,7 @@ def generate_knowledge():
 - 漁具設備：集魚燈/聲納/魚探機/漁網材質等
 - 出海作業：一次出海多久、如何保鮮、船上生活
 
-注意：不要選潮汐、海流、洋流等自然現象類內容。"""
+注意：不要選潮汐、海流、洋流等自然現象類內容。{exclude_note}"""
 
     for model in ['gemini-2.5-flash', 'gemini-1.5-flash']:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
@@ -305,8 +348,12 @@ def post_to_facebook(image_url, knowledge):
 if __name__ == '__main__':
     log = lambda msg: print(f"[{datetime.now():%H:%M:%S}] {msg}", flush=True)
 
+    recent_seafood = load_recent_seafood()
+    if recent_seafood:
+        log(f"最近已發魚種：{', '.join(recent_seafood)}")
+
     log("生成今日海鮮知識...")
-    knowledge = generate_knowledge()
+    knowledge = generate_knowledge(exclude_seafood=recent_seafood)
     log(f"主題：{knowledge['seafood_zh']} ─ {knowledge['title_zh']}")
 
     log("生成水彩插圖...")
@@ -328,3 +375,7 @@ if __name__ == '__main__':
     log("發文到 Facebook...")
     fb_result = post_to_facebook(url, knowledge)
     log(f"FB 完成：{fb_result}")
+
+    log("更新魚種歷史紀錄...")
+    save_recent_seafood(recent_seafood, knowledge['seafood_zh'])
+    log(f"已記錄：{knowledge['seafood_zh']}")
