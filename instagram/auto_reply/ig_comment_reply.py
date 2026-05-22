@@ -98,12 +98,16 @@ def gemini_reply(text):
 
 留言內容：{text}"""
 
-    payload = json.dumps({
-        'contents': [{'parts': [{'text': prompt}]}],
-        'generationConfig': {'maxOutputTokens': 120, 'temperature': 0.75}
-    }).encode()
-
     for model in GEMINI_MODELS:
+        # 思考型模型（3.x / 2.5）關閉思考模式，避免 token 被內部推理佔光
+        is_thinking_model = any(x in model for x in ['3.5', '3.1', '3-', '2.5'])
+        config_extra = {'thinkingConfig': {'thinkingBudget': 0}} if is_thinking_model else {}
+
+        payload = json.dumps({
+            'contents': [{'parts': [{'text': prompt}]}],
+            'generationConfig': {'maxOutputTokens': 256, 'temperature': 0.75, **config_extra}
+        }).encode()
+
         api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
         req = urllib.request.Request(
             api_url, data=payload,
@@ -112,13 +116,18 @@ def gemini_reply(text):
         try:
             with urllib.request.urlopen(req, timeout=20) as r:
                 data = json.loads(r.read())
-            return data['candidates'][0]['content']['parts'][0]['text'].strip()
+            candidate = data['candidates'][0]
+            reply = candidate['content']['parts'][0]['text'].strip()
+            if candidate.get('finishReason') == 'MAX_TOKENS' or len(reply) < 8:
+                log(f"  {model} 回覆不完整，切換下一個模型")
+                continue
+            return reply
         except urllib.request.HTTPError as e:
-            if e.code == 429:
-                log(f"  {model} 超量，切換下一個模型")
+            if e.code in (429, 503):
+                log(f"  {model} 失敗（{e.code}），切換下一個模型")
                 continue
             raise
-    raise Exception("所有 Gemini 模型均超量")
+    raise Exception("所有 Gemini 模型均無法使用")
 
 # ── 主流程 ────────────────────────────────────────────────────────
 
