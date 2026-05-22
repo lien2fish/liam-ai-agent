@@ -1,0 +1,29 @@
+name: YouTube 留言自動回覆
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'   # 每 10 分鐘（配額友善）
+  workflow_dispatch:           # 允許手動觸發
+
+jobs:
+  reply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 還原留言狀態快取
+        uses: actions/cache@v4
+        with:
+          path: youtube/auto_reply/reply_state.json
+          key: yt-reply-state-${{ github.run_id }}
+          restore-keys: |
+            yt-reply-state-
+
+      - name: 執行自動回覆
+        env:
+          YT_CLIENT_ID:     ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          YT_CHANNEL_ID:    ${{ secrets.YT_CHANNEL_ID }}
+          GEMINI_KEY:       ${{ secrets.GEMINI_KEY }}
+        run: python3 youtube/auto_reply/yt_comment_reply.py
