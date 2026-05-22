@@ -1,0 +1,10 @@
+name            = "ig-auto-reply"
+main            = "worker.js"
+compatibility_date = "2024-09-23"
+
+# 部署後 URL：https://ig-auto-reply.{your-subdomain}.workers.dev/webhook
+# Secrets 請用 wrangler secret put 設定（不要寫在這裡）：
+#   wrangler secret put VERIFY_TOKEN
+#   wrangler secret put IG_TOKEN
+#   wrangler secret put IG_ID
+#   wrangler secret put GEMINI_KEY

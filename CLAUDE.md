@@ -92,6 +92,34 @@
 ### GitHub Secrets（6個，已設定）
 `GEMINI_KEY` / `HF_TOKEN` / `IG_TOKEN` / `IG_ID` / `FB_PAGE_TOKEN` / `FB_PAGE_ID`
 
+---
+
+## IG 留言自動回覆系統
+
+### 核心資訊
+| 項目 | 說明 |
+|------|------|
+| 腳本 | `instagram/auto_reply/ig_comment_reply.py` |
+| 排程 | GitHub Actions，每 5 分鐘（`*/5 * * * *`） |
+| Workflow | `.github/workflows/ig_comment_reply.yml` |
+| 狀態快取 | GitHub Actions Cache（`ig-reply-state-*`） |
+| AI 回覆 | Gemini 2.0 Flash，繁體中文，品牌調性 |
+
+### 流程
+1. 取最近 20 篇貼文的留言（since 上次執行時間）
+2. 過濾：排除自己、已回覆、空白留言
+3. Gemini 生成回覆（失敗時用備用固定回覆）
+4. `POST /{comment_id}/replies` 發布回覆
+
+### 所需權限
+- `instagram_manage_comments`（2026-05-22 已加入 App）
+- IG Token 需含此權限，更新時記得重新從 Graph API Explorer 取得
+
+### 注意事項
+- Meta Webhook 機制限制多（新版 Use Cases 架構無法用 `subscribed_apps`），改用輪詢
+- Cloudflare Worker（`ig-auto-reply.lien2fish.workers.dev`）已部署但未使用，可保留或刪除
+- IG Token 到期（2026-07-16）後需同時更新 `config/instagram_config.json` 和 GitHub Secret `IG_TOKEN`
+
 ### Facebook 粉絲專頁資訊
 | 項目 | 說明 |
 |------|------|
@@ -103,17 +131,19 @@
 | 隱私政策頁 | https://lien2fish.github.io/liam-ai-agent/privacy.html |
 
 ### 重要到期日
-- **IG Token：2026-07-16 到期**，需從 Meta Graph API Explorer 重新取得
+- **IG Token：2026-07-16 到期**，需從 Meta Graph API Explorer 重新取得（需含 `instagram_manage_comments` 權限）
 - **FB Page Token：永不過期**（無需更新）
-- 更新 Token 方式：用 PyNaCl 直接寫入 GitHub Secret（`pip3 install PyNaCl`，見腳本範例）
-- **GitHub PAT：2026-08-15 到期**（[[github-token-expiry]]）
+- 更新 Token 方式：用 `nacl.public.SealedBox` 直接寫入 GitHub Secret（系統 PyNaCl 1.6.2 已支援）
+- **GitHub PAT（舊）：2026-08-15 到期** — 已廢棄，改用新 PAT
+- **GitHub PAT（新）：永不過期**，含 `repo` + `workflow` scope，已設定於 git remote URL
 
 ### 注意事項
 - Repo 維持 **public**（config/ 已 gitignore，無憑證外洩風險）
 - 每次 workflow 跑完會 commit 圖片，本地 push 前需 `git pull --rebase`
 - Linux 字型用 `fc-list :lang=zh` 動態查找 Noto CJK TTC（index=3）
 - catbox.moe / transfer.sh 均因 GitHub Actions IP 被封鎖，已廢棄
-- GitHub PAT 缺少 `workflow` scope，無法直接 push workflow 檔，需在 GitHub 網頁手動編輯
+- GitHub PAT 現在有 `workflow` scope，可直接 push workflow 檔
+- Instagram Webhook（Meta）訂閱機制限制多，改用輪詢（Polling）方式取代
 - FB Page 透過 Business Suite 管理，`/me/accounts` 不會回傳；需用 `debug_token` 的 `granular_scopes` 找真正 Page ID
 - `photo_stories` API 不可用（任何版本皆回傳 unknown error），FB 限時動態改用 IG `cross_post_ids`
 - prompt 為 f-string 時，JSON 範本的 `{}` 必須寫成 `{{}}`，否則 ValueError
@@ -176,6 +206,54 @@ cd /Users/lien/Downloads/南港展覽館 && python3 generate_from_numbers.py
 - 多館別：整體內容垂直置中於 `HEADER_BTM` ～ (`VENUE_Y` 有場地 / `H` 無場地)
 - 多活動：D/E 活動區塊置中於 `HEADER_BTM` ～ `fm_top`（Gate 區塊上方）；Gate 從 `fm_top` 往下；場地 = `max(y_after_gate + 80 + label_sz, VENUE_Y)`
 - 標準型：D/E/F 整體置中於 `CONTENT_TOP` ～ `CONTENT_BTM`
+
+## Gmail 自動化腳本系統
+
+### Crontab 排程（每天 08:00 台灣時間）
+| 腳本 | 排程 | Log |
+|------|------|-----|
+| `gmail_monthly_cleanup.py` | `5 8 * * *` | `財務/gmail_cleanup_log.txt` |
+| `gmail_news_digest.py` | `0 8 * * *` | `今日新聞摘要.md`（覆寫） |
+| `notion_crm/monthly_report.py` | `0 8 1 * *` | `/tmp/notion_monthly_report.log` |
+| `instagram/generate_post.py` | `0 8 * * *`（本機備用） | `/tmp/ig_post.log` |
+| `cache_cleanup.sh` | `0 6 * * *` | `/tmp/liam_cache_cleanup.log` |
+
+### Gmail OAuth Token
+| 項目 | 路徑 |
+|------|------|
+| Token 檔 | `~/.config/gmail-cleanup-token.json` |
+| 憑證檔 | `~/.config/gmail-cleanup-credentials.json` |
+| 授權腳本 | `gmail_auth_setup.py` |
+
+**Token 失效症狀**：`invalid_grant: Token has been expired or revoked.`
+
+**重新授權步驟（已驗證可行）：**
+1. 生成 OAuth URL：
+   ```bash
+   python3 -c "
+   import json,urllib.parse
+   c=json.load(open('/Users/lien/.config/gmail-cleanup-credentials.json'))
+   cl=c.get('installed',c)
+   print('https://accounts.google.com/o/oauth2/v2/auth?'+urllib.parse.urlencode({'client_id':cl['client_id'],'redirect_uri':'http://localhost:8888','response_type':'code','scope':'https://www.googleapis.com/auth/gmail.modify','access_type':'offline','prompt':'consent'}))
+   "
+   ```
+2. 在 Chrome 開啟 URL → 登入 `lien2fish@gmail.com` → 點「進階」→「前往（不安全）」→「允許」
+3. 瀏覽器跳到 `http://localhost:8888/?code=4/0A...`，複製完整網址
+4. 執行換取 token：
+   ```bash
+   python3 -c "
+   import json,urllib.parse,urllib.request
+   CODE='貼上授權碼'
+   c=json.load(open('/Users/lien/.config/gmail-cleanup-credentials.json'))
+   cl=c.get('installed',c)
+   r=json.loads(urllib.request.urlopen(urllib.request.Request('https://oauth2.googleapis.com/token',data=urllib.parse.urlencode({'code':CODE,'client_id':cl['client_id'],'client_secret':cl['client_secret'],'redirect_uri':'http://localhost:8888','grant_type':'authorization_code'}).encode(),headers={'Content-Type':'application/x-www-form-urlencoded'},method='POST')).read())
+   json.dump({'token':r['access_token'],'refresh_token':r['refresh_token'],'token_uri':'https://oauth2.googleapis.com/token','client_id':cl['client_id'],'client_secret':cl['client_secret'],'scopes':['https://www.googleapis.com/auth/gmail.modify']},open('/Users/lien/.config/gmail-cleanup-token.json','w'),indent=2)
+   print('✅ Token 儲存完成')
+   "
+   ```
+- **注意**：`gmail_auth_setup.py` 的 Playwright 自動化流程因 Google 封鎖自動化瀏覽器而無法使用，改用上述手動方式
+
+---
 
 ## 開發原則
 - 所有檔案操作預設在此資料夾進行
