@@ -1,0 +1,27 @@
+name: IG 留言自動回覆
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # 每 5 分鐘
+  workflow_dispatch:         # 允許手動觸發
+
+jobs:
+  reply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 還原留言狀態快取
+        uses: actions/cache@v4
+        with:
+          path: instagram/auto_reply/reply_state.json
+          key: ig-reply-state-${{ github.run_id }}
+          restore-keys: |
+            ig-reply-state-
+
+      - name: 執行自動回覆
+        env:
+          IG_TOKEN:   ${{ secrets.IG_TOKEN }}
+          IG_ID:      ${{ secrets.IG_ID }}
+          GEMINI_KEY: ${{ secrets.GEMINI_KEY }}
+        run: python3 instagram/auto_reply/ig_comment_reply.py
