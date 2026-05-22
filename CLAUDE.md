@@ -103,22 +103,29 @@
 | 排程 | GitHub Actions，每 5 分鐘（`*/5 * * * *`） |
 | Workflow | `.github/workflows/ig_comment_reply.yml` |
 | 狀態快取 | GitHub Actions Cache（`ig-reply-state-*`） |
-| AI 回覆 | Gemini 2.0 Flash，繁體中文，品牌調性 |
+| AI 回覆 | Gemini 3.5-flash（主）→ 2.5-flash → 2.0-flash（降級），繁體中文，15～25 字 |
+
+### Gemini 模型設定（重要）
+- **主力：`gemini-3.5-flash`**（思考型模型，需設 `thinkingBudget: 0` 否則輸出截斷）
+- 降級順序：3.5-flash → 2.5-flash → 2.0-flash（遇 429/503 自動切換）
+- `maxOutputTokens: 256`、`temperature: 0.75`
+- 思考型模型判斷：model 名稱含 `3.5` / `3.1` / `3-` / `2.5` → 套用 `thinkingBudget: 0`
 
 ### 流程
 1. 取最近 20 篇貼文的留言（since 上次執行時間）
 2. 過濾：排除自己、已回覆、空白留言
-3. Gemini 生成回覆（失敗時用備用固定回覆）
+3. Gemini 生成 15～25 字回覆（失敗/截斷時切換模型，最終備用固定回覆）
 4. `POST /{comment_id}/replies` 發布回覆
 
 ### 所需權限
-- `instagram_manage_comments`（2026-05-22 已加入 App）
-- IG Token 需含此權限，更新時記得重新從 Graph API Explorer 取得
+- `instagram_manage_comments`（2026-05-22 已加入 Liam AI App）
+- IG Token 需含此權限，更新時記得重新從 Graph API Explorer 取得（需勾選 `instagram_manage_comments`）
 
 ### 注意事項
 - Meta Webhook 機制限制多（新版 Use Cases 架構無法用 `subscribed_apps`），改用輪詢
 - Cloudflare Worker（`ig-auto-reply.lien2fish.workers.dev`）已部署但未使用，可保留或刪除
 - IG Token 到期（2026-07-16）後需同時更新 `config/instagram_config.json` 和 GitHub Secret `IG_TOKEN`
+- `gemini-3.5-flash` 不設 `thinkingBudget: 0` 會導致回覆只輸出幾個字（MAX_TOKENS 截斷）
 
 ### Facebook 粉絲專頁資訊
 | 項目 | 說明 |
