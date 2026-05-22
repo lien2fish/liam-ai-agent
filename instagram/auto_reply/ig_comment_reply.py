@@ -19,9 +19,12 @@ CONFIG_FILE = WORKSPACE / 'config/instagram_config.json'
 STATE_FILE  = WORKSPACE / 'instagram/auto_reply/reply_state.json'
 LOG_FILE    = Path('/tmp/ig_comment_reply.log')
 
-GRAPH_API  = 'https://graph.facebook.com/v19.0'
-GEMINI_API = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent'
-FALLBACK   = '感謝您的留言！有任何海鮮採購需求，歡迎私訊詢問 🐟'
+GRAPH_API     = 'https://graph.facebook.com/v19.0'
+GEMINI_MODELS = [
+    'gemini-2.0-flash',    # 主要：1,500次/天免費
+    'gemini-2.5-flash',    # 備用：500次/天免費（2.0 超量時自動切換）
+]
+FALLBACK = '感謝您的留言！有任何海鮮採購需求，歡迎私訊詢問 🐟'
 MAX_IDS    = 2000
 
 # ── 載入設定（env var 優先，本機用 config 檔）────────────────────
@@ -98,15 +101,23 @@ def gemini_reply(text):
         'contents': [{'parts': [{'text': prompt}]}],
         'generationConfig': {'maxOutputTokens': 120, 'temperature': 0.75}
     }).encode()
-    req = urllib.request.Request(
-        f"{GEMINI_API}?key={GEMINI_KEY}",
-        data=payload,
-        headers={'Content-Type': 'application/json'},
-        method='POST'
-    )
-    with urllib.request.urlopen(req, timeout=20) as r:
-        data = json.loads(r.read())
-    return data['candidates'][0]['content']['parts'][0]['text'].strip()
+
+    for model in GEMINI_MODELS:
+        api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
+        req = urllib.request.Request(
+            api_url, data=payload,
+            headers={'Content-Type': 'application/json'}, method='POST'
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=20) as r:
+                data = json.loads(r.read())
+            return data['candidates'][0]['content']['parts'][0]['text'].strip()
+        except urllib.request.HTTPError as e:
+            if e.code == 429:
+                log(f"  {model} 超量，切換下一個模型")
+                continue
+            raise
+    raise Exception("所有 Gemini 模型均超量")
 
 # ── 主流程 ────────────────────────────────────────────────────────
 
