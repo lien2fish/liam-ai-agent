@@ -21,8 +21,9 @@ LOG_FILE    = Path('/tmp/ig_comment_reply.log')
 
 GRAPH_API     = 'https://graph.facebook.com/v19.0'
 GEMINI_MODELS = [
-    'gemini-2.0-flash',    # 主要：1,500次/天免費
-    'gemini-2.5-flash',    # 備用：500次/天免費（2.0 超量時自動切換）
+    'gemini-3.5-flash',    # 主要：最新模型，回覆品質最佳
+    'gemini-2.5-flash',    # 備用一
+    'gemini-2.0-flash',    # 備用二
 ]
 FALLBACK = '感謝您的留言！有任何海鮮採購需求，歡迎私訊詢問 🐟'
 MAX_IDS    = 2000
