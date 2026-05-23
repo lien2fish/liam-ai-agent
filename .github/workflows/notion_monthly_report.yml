@@ -1,0 +1,24 @@
+name: Notion 月報（每月 1 日）
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'    # UTC 00:00 = 台灣 08:00，每月 1 日
+  workflow_dispatch:        # 允許手動觸發
+
+jobs:
+  monthly-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 安裝依賴
+        run: pip install requests
+
+      - name: 執行月報
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: |
+          cd notion_crm
+          python3 monthly_report.py
