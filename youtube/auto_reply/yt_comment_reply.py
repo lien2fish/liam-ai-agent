@@ -17,14 +17,11 @@ WORKSPACE  = Path(os.environ.get('GITHUB_WORKSPACE', '/Users/lien/Downloads/Liam
 STATE_FILE = WORKSPACE / 'youtube/auto_reply/reply_state.json'
 LOG_FILE   = Path('/tmp/yt_comment_reply.log')
 
-YT_API        = 'https://www.googleapis.com/youtube/v3'
-OAUTH_URL     = 'https://oauth2.googleapis.com/token'
-GEMINI_MODELS = [
-    'gemini-3.5-flash',
-    'gemini-2.5-flash',
-    'gemini-2.0-flash',
-]
-FALLBACK = '感謝您的留言！有任何海鮮採購需求，歡迎私訊詢問 🐟'
+YT_API       = 'https://www.googleapis.com/youtube/v3'
+OAUTH_URL    = 'https://oauth2.googleapis.com/token'
+CLAUDE_API   = 'https://api.anthropic.com/v1/messages'
+CLAUDE_MODEL = 'claude-haiku-4-5-20251001'
+FALLBACK     = '感謝您的留言！有任何海鮮採購需求，歡迎私訊詢問 🐟'
 MAX_IDS  = 2000
 
 # ── 載入設定（env var）────────────────────────────────────────────
@@ -32,7 +29,7 @@ CLIENT_ID     = os.environ['YT_CLIENT_ID']
 CLIENT_SECRET = os.environ['YT_CLIENT_SECRET']
 REFRESH_TOKEN = os.environ['YT_REFRESH_TOKEN']
 CHANNEL_ID    = os.environ['YT_CHANNEL_ID']
-GEMINI_KEY    = os.environ['GEMINI_KEY']
+ANTHROPIC_KEY = os.environ['ANTHROPIC_API_KEY']
 
 # ── 工具函式 ──────────────────────────────────────────────────────
 
@@ -85,7 +82,7 @@ def save_state(state):
     STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
     STATE_FILE.write_text(json.dumps(state, ensure_ascii=False, indent=2))
 
-def gemini_reply(text):
+def claude_reply(text):
     prompt = (
         "你是「龜吼現流活海產 / From Source To TABLE」品牌的客服助理。\n"
         "品牌特色：野生現流海鮮，龜吼漁港直送，品質第一，服務高端客群，台灣在地漁業。\n"
@@ -98,39 +95,23 @@ def gemini_reply(text):
         "- 只輸出回覆內容本身，不要加引號或任何前綴說明\n\n"
         f"留言內容：{text}"
     )
-
-    for model in GEMINI_MODELS:
-        is_thinking  = any(x in model for x in ['3.5', '3.1', '3-', '2.5'])
-        config_extra = {'thinkingConfig': {'thinkingBudget': 0}} if is_thinking else {}
-
-        payload = json.dumps({
-            'contents': [{'parts': [{'text': prompt}]}],
-            'generationConfig': {'maxOutputTokens': 256, 'temperature': 0.75, **config_extra}
-        }).encode()
-
-        api_url = (
-            f"https://generativelanguage.googleapis.com/v1beta/models/"
-            f"{model}:generateContent?key={GEMINI_KEY}"
-        )
-        req = urllib.request.Request(
-            api_url, data=payload,
-            headers={'Content-Type': 'application/json'}, method='POST'
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=20) as r:
-                data = json.loads(r.read())
-            candidate = data['candidates'][0]
-            reply     = candidate['content']['parts'][0]['text'].strip()
-            if candidate.get('finishReason') == 'MAX_TOKENS' or len(reply) < 8:
-                log(f"  {model} 回覆不完整，切換下一個模型")
-                continue
-            return reply
-        except urllib.request.HTTPError as e:
-            if e.code in (429, 503):
-                log(f"  {model} 失敗（{e.code}），切換下一個模型")
-                continue
-            raise
-    raise Exception("所有 Gemini 模型均無法使用")
+    payload = json.dumps({
+        'model':      CLAUDE_MODEL,
+        'max_tokens': 256,
+        'messages':   [{'role': 'user', 'content': prompt}]
+    }).encode()
+    req = urllib.request.Request(
+        CLAUDE_API, data=payload,
+        headers={
+            'x-api-key':         ANTHROPIC_KEY,
+            'anthropic-version': '2023-06-01',
+            'content-type':      'application/json'
+        },
+        method='POST'
+    )
+    with urllib.request.urlopen(req, timeout=20) as r:
+        data = json.loads(r.read())
+    return data['content'][0]['text'].strip()
 
 # ── 主流程 ────────────────────────────────────────────────────────
 
@@ -179,9 +160,9 @@ def main():
             continue
 
         try:
-            reply = gemini_reply(text)
+            reply = claude_reply(text)
         except Exception as e:
-            log(f"  Gemini 失敗：{e}，使用備用回覆")
+            log(f"  Claude 失敗：{e}，使用備用回覆")
             reply = FALLBACK
 
         try:
