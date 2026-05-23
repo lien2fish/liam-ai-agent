@@ -19,30 +19,27 @@ CONFIG_FILE = WORKSPACE / 'config/instagram_config.json'
 STATE_FILE  = WORKSPACE / 'instagram/auto_reply/reply_state.json'
 LOG_FILE    = Path('/tmp/ig_comment_reply.log')
 
-GRAPH_API     = 'https://graph.facebook.com/v19.0'
-GEMINI_MODELS = [
-    'gemini-3.5-flash',    # 主要：最新模型，回覆品質最佳
-    'gemini-2.5-flash',    # 備用一
-    'gemini-2.0-flash',    # 備用二
-]
-FALLBACK = '感謝您的留言！有任何海鮮採購需求，歡迎私訊詢問 🐟'
+GRAPH_API    = 'https://graph.facebook.com/v19.0'
+CLAUDE_API   = 'https://api.anthropic.com/v1/messages'
+CLAUDE_MODEL = 'claude-haiku-4-5-20251001'
+FALLBACK     = '感謝您的留言！有任何海鮮採購需求，歡迎私訊詢問 🐟'
 MAX_IDS    = 2000
 
 # ── 載入設定（env var 優先，本機用 config 檔）────────────────────
 def load_config():
-    ig_token   = os.environ.get('IG_TOKEN')
-    ig_id      = os.environ.get('IG_ID')
-    gemini_key = os.environ.get('GEMINI_KEY')
+    ig_token      = os.environ.get('IG_TOKEN')
+    ig_id         = os.environ.get('IG_ID')
+    anthropic_key = os.environ.get('ANTHROPIC_API_KEY')
 
-    if not all([ig_token, ig_id, gemini_key]):
+    if not all([ig_token, ig_id, anthropic_key]):
         cfg = json.loads(CONFIG_FILE.read_text())
-        ig_token   = ig_token   or cfg['long_lived_user_token']
-        ig_id      = ig_id      or cfg['ig_account_id']
-        gemini_key = gemini_key or cfg['gemini_api_key']
+        ig_token      = ig_token      or cfg['long_lived_user_token']
+        ig_id         = ig_id         or cfg['ig_account_id']
+        anthropic_key = anthropic_key or cfg.get('anthropic_api_key')
 
-    return ig_token, ig_id, gemini_key
+    return ig_token, ig_id, anthropic_key
 
-IG_TOKEN, IG_ID, GEMINI_KEY = load_config()
+IG_TOKEN, IG_ID, ANTHROPIC_KEY = load_config()
 
 # ── 工具函式 ──────────────────────────────────────────────────────
 
@@ -84,50 +81,36 @@ def api_post(path, data=None):
     with urllib.request.urlopen(req, timeout=15) as r:
         return json.loads(r.read())
 
-def gemini_reply(text):
-    prompt = f"""你是「龜吼現流活海產 / From Source To TABLE」品牌的客服助理。
-品牌特色：野生現流海鮮，龜吼漁港直送，品質第一，服務高端客群，台灣在地漁業。
-情境：用戶在我們的 Instagram 貼文或 Reels 下方留言。
-
-請根據以下留言，用繁體中文回覆一句簡短、溫暖的回應：
-- 字數 15～25 字之間
-- 自然親切，符合高端海鮮品牌調性
-- 加入 1 個相關 emoji
-- 若留言與購買/詢價/採購相關，鼓勵私訊
-- 只輸出回覆內容本身，不要加引號或任何前綴說明
-
-留言內容：{text}"""
-
-    for model in GEMINI_MODELS:
-        # 思考型模型（3.x / 2.5）關閉思考模式，避免 token 被內部推理佔光
-        is_thinking_model = any(x in model for x in ['3.5', '3.1', '3-', '2.5'])
-        config_extra = {'thinkingConfig': {'thinkingBudget': 0}} if is_thinking_model else {}
-
-        payload = json.dumps({
-            'contents': [{'parts': [{'text': prompt}]}],
-            'generationConfig': {'maxOutputTokens': 256, 'temperature': 0.75, **config_extra}
-        }).encode()
-
-        api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
-        req = urllib.request.Request(
-            api_url, data=payload,
-            headers={'Content-Type': 'application/json'}, method='POST'
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=20) as r:
-                data = json.loads(r.read())
-            candidate = data['candidates'][0]
-            reply = candidate['content']['parts'][0]['text'].strip()
-            if candidate.get('finishReason') == 'MAX_TOKENS' or len(reply) < 8:
-                log(f"  {model} 回覆不完整，切換下一個模型")
-                continue
-            return reply
-        except urllib.request.HTTPError as e:
-            if e.code in (429, 503):
-                log(f"  {model} 失敗（{e.code}），切換下一個模型")
-                continue
-            raise
-    raise Exception("所有 Gemini 模型均無法使用")
+def claude_reply(text):
+    prompt = (
+        "你是「龜吼現流活海產 / From Source To TABLE」品牌的客服助理。\n"
+        "品牌特色：野生現流海鮮，龜吼漁港直送，品質第一，服務高端客群，台灣在地漁業。\n"
+        "情境：用戶在我們的 Instagram 貼文或 Reels 下方留言。\n\n"
+        "請根據以下留言，用繁體中文回覆一句簡短、溫暖的回應：\n"
+        "- 字數 15～25 字之間\n"
+        "- 自然親切，符合高端海鮮品牌調性\n"
+        "- 加入 1 個相關 emoji\n"
+        "- 若留言與購買/詢價/採購相關，鼓勵私訊\n"
+        "- 只輸出回覆內容本身，不要加引號或任何前綴說明\n\n"
+        f"留言內容：{text}"
+    )
+    payload = json.dumps({
+        'model':      CLAUDE_MODEL,
+        'max_tokens': 256,
+        'messages':   [{'role': 'user', 'content': prompt}]
+    }).encode()
+    req = urllib.request.Request(
+        CLAUDE_API, data=payload,
+        headers={
+            'x-api-key':         ANTHROPIC_KEY,
+            'anthropic-version': '2023-06-01',
+            'content-type':      'application/json'
+        },
+        method='POST'
+    )
+    with urllib.request.urlopen(req, timeout=20) as r:
+        data = json.loads(r.read())
+    return data['content'][0]['text'].strip()
 
 # ── 主流程 ────────────────────────────────────────────────────────
 
@@ -170,9 +153,9 @@ def main():
             text = c['text'].strip()
 
             try:
-                reply = gemini_reply(text)
+                reply = claude_reply(text)
             except Exception as e:
-                log(f"  Gemini 失敗：{e}，使用備用回覆")
+                log(f"  Claude 失敗：{e}，使用備用回覆")
                 reply = FALLBACK
 
             try:

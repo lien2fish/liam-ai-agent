@@ -21,7 +21,7 @@ jobs:
 
       - name: 執行自動回覆
         env:
-          IG_TOKEN:   ${{ secrets.IG_TOKEN }}
-          IG_ID:      ${{ secrets.IG_ID }}
-          GEMINI_KEY: ${{ secrets.GEMINI_KEY }}
+          IG_TOKEN:         ${{ secrets.IG_TOKEN }}
+          IG_ID:            ${{ secrets.IG_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python3 instagram/auto_reply/ig_comment_reply.py
