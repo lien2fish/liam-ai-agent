@@ -21,9 +21,9 @@ jobs:
 
       - name: 執行自動回覆
         env:
-          YT_CLIENT_ID:      ${{ secrets.YT_CLIENT_ID }}
-          YT_CLIENT_SECRET:  ${{ secrets.YT_CLIENT_SECRET }}
-          YT_REFRESH_TOKEN:  ${{ secrets.YT_REFRESH_TOKEN }}
-          YT_CHANNEL_ID:     ${{ secrets.YT_CHANNEL_ID }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          YT_CLIENT_ID:     ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          YT_CHANNEL_ID:    ${{ secrets.YT_CHANNEL_ID }}
+          GEMINI_KEY:       ${{ secrets.GEMINI_KEY }}
         run: python3 youtube/auto_reply/yt_comment_reply.py
