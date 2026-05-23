@@ -207,6 +207,36 @@ open -a Safari "https://accounts.google.com/o/oauth2/v2/auth?client_id=879735593
 | YouTube | 留言自動回覆 | 每 10 分鐘 | ✅ 運行中 |
 | TikTok | — | — | 手動，不自動化 |
 
+## GitHub Actions 自動化總覽（2026-05-24 更新）
+
+所有雲端自動化任務均透過 GitHub Actions 執行，不依賴本機開機。
+
+| Workflow 檔案 | 任務 | 排程 |
+|--------------|------|------|
+| `daily_post.yml` | IG+FB 每日發文 | 每天 08:00 |
+| `ig_comment_reply.yml` | IG 留言自動回覆 | 每 5 分鐘 |
+| `yt_comment_reply.yml` | YouTube 留言自動回覆 | 每 10 分鐘 |
+| `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:00，自動 commit 報告 |
+| `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:00 |
+
+### GitHub Secrets 總覽
+| Secret | 用途 |
+|--------|------|
+| `GEMINI_KEY` | Gemini AI（IG發文、留言回覆）|
+| `HF_TOKEN` | Hugging Face FLUX 圖片生成 |
+| `IG_TOKEN` | Instagram Graph API（到期 2026-07-16）|
+| `IG_ID` | Instagram 帳號 ID |
+| `FB_PAGE_TOKEN` | Facebook Page Token（永不過期）|
+| `FB_PAGE_ID` | Facebook Page ID |
+| `YT_CLIENT_ID` | YouTube OAuth |
+| `YT_CLIENT_SECRET` | YouTube OAuth |
+| `YT_REFRESH_TOKEN` | YouTube OAuth（永不過期）|
+| `YT_CHANNEL_ID` | YouTube 頻道 ID |
+| `GMAIL_CLIENT_ID` | Gmail OAuth |
+| `GMAIL_CLIENT_SECRET` | Gmail OAuth |
+| `GMAIL_REFRESH_TOKEN` | Gmail OAuth |
+| `NOTION_TOKEN` | Notion API Token |
+
 ---
 
 ## 瀏覽器操作原則
@@ -276,14 +306,23 @@ cd /Users/lien/Downloads/南港展覽館 && python3 generate_from_numbers.py
 
 ## Gmail 自動化腳本系統
 
-### Crontab 排程（每天 08:00 台灣時間）
-| 腳本 | 排程 | Log |
-|------|------|-----|
-| `gmail_monthly_cleanup.py` | `5 8 * * *` | `財務/gmail_cleanup_log.txt` |
-| `gmail_news_digest.py` | `0 8 * * *` | `今日新聞摘要.md`（覆寫） |
-| `notion_crm/monthly_report.py` | `0 8 1 * *` | `/tmp/notion_monthly_report.log` |
-| `instagram/generate_post.py` | `0 8 * * *`（本機備用） | `/tmp/ig_post.log` |
-| `cache_cleanup.sh` | `0 6 * * *` | `/tmp/liam_cache_cleanup.log` |
+### 本機 Crontab（僅剩 1 條）
+| 腳本 | 排程 | 說明 |
+|------|------|------|
+| `cache_cleanup.sh` | `0 6 * * *` | Mac 快取清理，只能本機跑 |
+
+> Gmail 清理、新聞摘要、IG 發文、Notion 月報均已移至 GitHub Actions（見上方總覽）
+
+### Gmail 腳本認證方式（2026-05-24 更新）
+兩支腳本均支援雙模式：
+- **GitHub Actions**：讀環境變數 `GMAIL_CLIENT_ID` / `GMAIL_CLIENT_SECRET` / `GMAIL_REFRESH_TOKEN`
+- **本機執行**：fallback 讀 `~/.config/gmail-cleanup-token.json`（gitignore，不進 repo）
+
+### Gmail 產出（自動 commit 進 repo）
+| 腳本 | 產出位置 |
+|------|---------|
+| `gmail_monthly_cleanup.py` | `財務/gmail_cleanup_log.txt`（追加）|
+| `gmail_news_digest.py` | `今日新聞摘要.md`（每日覆寫）|
 
 ### Gmail OAuth Token
 | 項目 | 路徑 |
@@ -319,6 +358,46 @@ cd /Users/lien/Downloads/南港展覽館 && python3 generate_from_numbers.py
    "
    ```
 - **注意**：`gmail_auth_setup.py` 的 Playwright 自動化流程因 Google 封鎖自動化瀏覽器而無法使用，改用上述手動方式
+
+---
+
+## Claude Code 工具設定（2026-05-24 建立）
+
+### PostToolUse Hook — Python 自動格式化
+每次編輯 `.py` 檔案後，自動執行 `black` 格式化。
+- black 安裝位置：`/Users/lien/Library/Python/3.9/bin/black`（已加入 PATH）
+- 設定於 `~/.claude/settings.json` → `hooks.PostToolUse`
+
+### 自訂 Slash Commands（`~/.claude/commands/`）
+| 指令 | 說明 |
+|------|------|
+| `/morning` | 每日早報（行事曆、Gmail、新聞摘要）|
+| `/commit-push-pr` | 自動 add → AI生成commit訊息 → push → 開PR |
+| `/verify` | 驗證當前腳本或任務是否正常運作 |
+| `/simplify` | 審視並重構程式碼（不改功能，只改結構）|
+
+### Git Worktrees（平行作業）
+Boris Cherny 風格的多工設定，`worktree.sh` 管理：
+
+| 快捷指令 | 目錄 | 說明 |
+|---------|------|------|
+| `cc` / `w1` | `Liam AI agent/`（main）| 主工作區 |
+| `w2` | `Liam AI agent/work/2` | 平行任務 2 |
+| `w3` | `Liam AI agent/work/3` | 平行任務 3 |
+| `w4` | `Liam AI agent/work/4` | 平行任務 4 |
+| `w5` | `Liam AI agent/work/5` | 平行任務 5 |
+
+```bash
+wt init    # 建立 work/2 ~ work/5
+wt list    # 列出所有 worktree
+wt clean   # 清除額外 worktree
+```
+
+### SessionStart Hooks（每次開啟 Claude Code 自動觸發）
+| 腳本 | 說明 |
+|------|------|
+| `cache_cleanup.sh` | Mac 快取清理（背景執行）|
+| `gmail_monthly_cleanup.py` | Gmail 清理（背景執行，GitHub Actions 為主、本機為備）|
 
 ---
 
