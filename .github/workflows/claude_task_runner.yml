@@ -1,0 +1,21 @@
+name: Claude 任務讀取器
+
+# 手動觸發（在 Mac 執行前先確認有哪些待執行任務）
+on:
+  workflow_dispatch:
+
+jobs:
+  list-tasks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 列出所有待執行任務
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "## 📋 待執行的 Claude 任務"
+          echo ""
+          gh issue list \
+            --repo lien2fish/liam-ai-agent \
+            --label "claude-task,pending" \
+            --json number,title,body,labels,createdAt \
+            --jq '.[] | "### Issue #\(.number): \(.title)\n建立時間: \(.createdAt[:10])\n\n\(.body)\n---"'
