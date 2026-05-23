@@ -1,0 +1,32 @@
+name: 個人財務月度自動更新
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'    # UTC 00:00 = 台灣 08:00，每月 1 日
+  workflow_dispatch:        # 允許手動觸發
+
+jobs:
+  finance-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 安裝依賴
+        run: pip install python-dateutil
+
+      - name: 執行財務自動更新
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: python3 finance/finance_updater.py
+
+      - name: Commit 日誌到 repo
+        run: |
+          git config user.name  "Liam AI Agent"
+          git config user.email "lien2fish@gmail.com"
+          git add "財務/finance_update_log.txt"
+          git diff --cached --quiet || git commit -m "chore: 個人財務月度自動更新 $(date '+%Y-%m')"
+          git push
