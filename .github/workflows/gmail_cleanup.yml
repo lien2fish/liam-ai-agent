@@ -1,0 +1,27 @@
+name: Gmail 每月清理
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'    # 每月1日 00:00 UTC = 台灣 08:00
+  workflow_dispatch:         # 允許手動觸發
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 執行 Gmail 清理
+        env:
+          GMAIL_CLIENT_ID:     ${{ secrets.GMAIL_CLIENT_ID }}
+          GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+          GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+        run: python3 gmail_monthly_cleanup.py
+
+      - name: Commit 清理報告
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add reports/
+          git diff --staged --quiet || git commit -m "report: Gmail 清理報告 $(date +'%Y-%m')"
+          git push
