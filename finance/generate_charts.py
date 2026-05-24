@@ -165,8 +165,8 @@ def setup_mpl():
         "Arial Unicode MS",
         "sans-serif",
     ]
-    rcParams["axes.facecolor"] = CARD
-    rcParams["figure.facecolor"] = CARD
+    rcParams["axes.facecolor"] = "none"
+    rcParams["figure.facecolor"] = "none"
     rcParams["text.color"] = TEXT_DK
     rcParams["axes.labelcolor"] = TEXT_MID
     rcParams["xtick.color"] = TEXT_LT
@@ -181,7 +181,7 @@ def setup_mpl():
 
 def save(fig, fname, dpi=150):
     path = os.path.join(CHARTS, fname)
-    fig.savefig(path, dpi=dpi, bbox_inches="tight", facecolor=CARD)
+    fig.savefig(path, dpi=dpi, bbox_inches="tight", facecolor="none", transparent=True)
     plt.close(fig)
     print(f"    ✅ {fname}")
     return path
