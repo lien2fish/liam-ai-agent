@@ -33,6 +33,6 @@ jobs:
         run: |
           git config user.name  "Liam AI Agent"
           git config user.email "lien2fish@gmail.com"
-          git add 財務/gmail_cleanup_log.txt 今日新聞摘要.md
+          git add reports/ 今日新聞摘要.md
           git diff --cached --quiet || git commit -m "chore: 自動更新 Gmail 報告 $(date '+%Y-%m-%d')"
           git push
