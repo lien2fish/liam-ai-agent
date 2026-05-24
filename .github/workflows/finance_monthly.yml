@@ -16,17 +16,22 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 安裝依賴
-        run: pip install python-dateutil
+        run: pip install python-dateutil matplotlib Pillow numpy
 
       - name: 執行財務自動更新
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
         run: python3 finance/finance_updater.py
 
-      - name: Commit 日誌到 repo
+      - name: 生成並嵌入圖表
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: python3 finance/generate_charts.py
+
+      - name: Commit 日誌與圖表到 repo
         run: |
           git config user.name  "Liam AI Agent"
           git config user.email "lien2fish@gmail.com"
-          git add "財務/finance_update_log.txt"
-          git diff --cached --quiet || git commit -m "chore: 個人財務月度自動更新 $(date '+%Y-%m')"
+          git add "財務/finance_update_log.txt" finance/charts/
+          git diff --cached --quiet || git commit -m "chore: 個人財務月度自動更新 + 圖表 $(date '+%Y-%m')"
           git push
