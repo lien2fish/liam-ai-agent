@@ -14,3 +14,10 @@ __pycache__/
 
 # 日誌
 *.log
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
