@@ -346,7 +346,7 @@ def git_commit_push():
 
 # ── Embed images into Notion dashboard ────────────────────────────────────────
 def embed_charts_in_notion(page_id, token):
-    """Append image blocks to the root template page."""
+    """Update existing image blocks in-place; append only on first run."""
     fnames = ["chart_networth.png", "chart_assets.png", "chart_cashflow.png"]
     titles = [
         "📈 淨值趨勢  ·  Net Worth Trend",
@@ -354,28 +354,44 @@ def embed_charts_in_notion(page_id, token):
         "💹 月收支對比  ·  Monthly Cash Flow",
     ]
 
-    blocks = []
-    for fname, title in zip(fnames, titles):
-        url = github_raw_url(fname)
-        blocks.append(
-            {
-                "type": "heading_3",
-                "heading_3": {
-                    "rich_text": [{"type": "text", "text": {"content": title}}],
-                    "color": "default",
-                },
-            }
-        )
-        blocks.append(
-            {
-                "type": "image",
-                "image": {"type": "external", "external": {"url": url}},
-            }
-        )
-        blocks.append({"type": "divider", "divider": {}})
+    # 取得目前頁面所有 image blocks
+    children = api("GET", f"/blocks/{page_id}/children?page_size=100", None, token)
+    existing_imgs = [b for b in children.get("results", []) if b["type"] == "image"]
 
-    api("PATCH", f"/blocks/{page_id}/children", {"children": blocks}, token)
-    print(f"  ✅ 已嵌入 {len(fnames)} 張圖表到 Notion")
+    if len(existing_imgs) >= len(fnames):
+        # 更新現有 image blocks（不新增）
+        for img_block, fname in zip(existing_imgs[: len(fnames)], fnames):
+            new_url = github_raw_url(fname)
+            api(
+                "PATCH",
+                f"/blocks/{img_block['id']}",
+                {"image": {"external": {"url": new_url}}},
+                token,
+            )
+        print(f"  ✅ 已更新 {len(fnames)} 張圖表（in-place）")
+    else:
+        # 首次建立：append 完整區塊
+        blocks = []
+        for fname, title in zip(fnames, titles):
+            url = github_raw_url(fname)
+            blocks.append(
+                {
+                    "type": "heading_3",
+                    "heading_3": {
+                        "rich_text": [{"type": "text", "text": {"content": title}}],
+                        "color": "default",
+                    },
+                }
+            )
+            blocks.append(
+                {
+                    "type": "image",
+                    "image": {"type": "external", "external": {"url": url}},
+                }
+            )
+            blocks.append({"type": "divider", "divider": {}})
+        api("PATCH", f"/blocks/{page_id}/children", {"children": blocks}, token)
+        print(f"  ✅ 已首次嵌入 {len(fnames)} 張圖表到 Notion")
 
 
 # ── Main ───────────────────────────────────────────────────────────────────────
