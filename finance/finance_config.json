@@ -1,0 +1,58 @@
+{
+  "notion": {
+    "assets_db_id":      "36af4149-a6aa-81c7-932b-dce2f4fa35a2",
+    "liabilities_db_id": "36af4149-a6aa-81dc-bd04-ff52cef71f61",
+    "snapshot_db_id":    "36af4149-a6aa-81eb-8ff9-f3886b060e7b",
+    "charts_page_id":    "36af4149-a6aa-811c-a0b2-c82374d93db3"
+  },
+
+  "gold_savings": {
+    "enabled": true,
+    "asset_name": "華南銀行黃金存摺",
+    "initial_value": 0,
+    "initial_date": "2024-09-01",
+    "monthly_contribution": 0
+  },
+
+  "personal_loan": {
+    "enabled": true,
+    "liability_name": "玉山銀行信貸",
+    "principal": 0,
+    "start_date": "2024-07-29",
+    "annual_rate": 0,
+    "monthly_payment": 0
+  },
+
+  "static_assets": [
+    {"name": "鉅鑫管理顧問股本", "value": 0},
+    {"name": "匠鑫私廚股本",     "value": 0},
+    {"name": "保誠人壽保單",     "value": 0}
+  ],
+
+  "income": {
+    "monthly_base": 0,
+    "insurance_commission_annual": 0,
+    "company_interest_annual": 0,
+    "child_subsidy_monthly": 0
+  },
+
+  "fixed_expenses": {
+    "玉山信貸還款":   0,
+    "生活日常花費":   0,
+    "汽車加油費":     0,
+    "幼兒園":         0,
+    "黃金存摺投資":   0,
+    "個人保費":       0,
+    "保誠教育金":     0,
+    "子女保費":       0,
+    "AI學習應用":     0,
+    "汽車保養":       0,
+    "孝親費":         0,
+    "扶輪社社費":     0
+  },
+
+  "snapshot_notes": {
+    "variable_income":  "佣金 / Commission（年度攤分）",
+    "variable_expense": "日常生活費 / Daily expenses"
+  }
+}
