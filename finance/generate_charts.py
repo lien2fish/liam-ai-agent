@@ -384,18 +384,21 @@ def main():
     cfg = load_config()
 
     print("=" * 55)
-    print(f"Personal Finance OS v2.0 — 圖表生成  {date.today()}")
+    print(f"Personal Finance OS v2.1 — 圖表生成  {date.today()}")
 
     # Load DB IDs
     if cfg:
         snap_db = cfg["notion"]["snapshot_db_id"]
         assets_db = cfg["notion"]["assets_db_id"]
-        page_id = None  # Will embed to whichever page
+        page_id = cfg["notion"].get("charts_page_id")  # Charts & Analytics sub-page
     else:
-        # Fallback: use the commercial template DB IDs
-        snap_db = "369f4149-a6aa-8185-8ee6-f9a74de89c98"
-        assets_db = "369f4149-a6aa-816d-a81d-fda844c6488e"
-        page_id = "369f4149-a6aa-817a-9a1e-f536b11f4d97"  # root template page
+        # Fallback: v2.1 商業模板 IDs
+        snap_db = "36af4149-a6aa-81eb-8ff9-f3886b060e7b"
+        assets_db = "36af4149-a6aa-81c7-932b-dce2f4fa35a2"
+        page_id = "36af4149-a6aa-811c-a0b2-c82374d93db3"  # Charts & Analytics sub-page
+
+    # Allow env override for Charts page
+    page_id = os.environ.get("NOTION_CHARTS_PAGE_ID", page_id)
 
     os.makedirs(CHARTS, exist_ok=True)
 
