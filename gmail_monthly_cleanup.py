@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
 Gmail 每日自動清理腳本
-執行時機：每天 08:05
+執行時機：每天 08:05（GitHub Actions 排程）
 功能：
   1. 刪除純廣告信件（多個指定寄件者）
   2. 刪除 30 天前的銀行登入通知信
+  3. 將報告寫入 reports/gmail_cleanup_YYYY-MM.md
 """
 import json
 import os
@@ -13,19 +14,34 @@ import urllib.parse
 import urllib.error
 import time
 from datetime import datetime, timedelta
+from pathlib import Path
 
-LOG_PATH = os.path.join(os.path.dirname(__file__), "財務", "gmail_cleanup_log.txt")
+WORKSPACE   = Path(os.environ.get('GITHUB_WORKSPACE', '/Users/lien/Downloads/Liam AI agent'))
+REPORTS_DIR = WORKSPACE / 'reports'
+REPORTS_DIR.mkdir(exist_ok=True)
+
+now         = datetime.now()
+REPORT_FILE = REPORTS_DIR / f"gmail_cleanup_{now.strftime('%Y-%m')}.md"
+LOG_FILE    = Path('/tmp/gmail_cleanup.log')
+
+_report_lines = []
+
 
 def log(msg):
-    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ts   = now.strftime("%Y-%m-%d %H:%M:%S")
     line = f"[{ts}] {msg}"
     print(line)
-    with open(LOG_PATH, "a", encoding="utf-8") as f:
-        f.write(line + "\n")
+    _report_lines.append(msg)
+    try:
+        with open(LOG_FILE, 'a', encoding='utf-8') as f:
+            f.write(line + '\n')
+    except Exception:
+        pass
+
 
 def get_access_token():
     # 優先用環境變數（GitHub Actions），fallback 到本地 token 檔
-    client_id = os.environ.get("GMAIL_CLIENT_ID")
+    client_id     = os.environ.get("GMAIL_CLIENT_ID")
     client_secret = os.environ.get("GMAIL_CLIENT_SECRET")
     refresh_token = os.environ.get("GMAIL_REFRESH_TOKEN")
 
@@ -33,67 +49,64 @@ def get_access_token():
         token_path = os.path.expanduser("~/.config/gmail-cleanup-token.json")
         with open(token_path) as f:
             data = json.load(f)
-        client_id = data["client_id"]
+        client_id     = data["client_id"]
         client_secret = data["client_secret"]
         refresh_token = data["refresh_token"]
 
     payload = urllib.parse.urlencode({
-        "client_id":     client_id,
-        "client_secret": client_secret,
-        "refresh_token": refresh_token,
-        "grant_type":    "refresh_token",
+        'client_id':     client_id,
+        'client_secret': client_secret,
+        'refresh_token': refresh_token,
+        'grant_type':    'refresh_token',
     }).encode()
     req = urllib.request.Request(
-        "https://oauth2.googleapis.com/token",
+        'https://oauth2.googleapis.com/token',
         data=payload,
         headers={"Content-Type": "application/x-www-form-urlencoded"},
-        method="POST"
+        method='POST'
     )
-    with urllib.request.urlopen(req) as r:
-        resp = json.loads(r.read())
+    with urllib.request.urlopen(req, timeout=15) as r:
+        return json.loads(r.read())['access_token']
 
-    return resp["access_token"]
 
 def get_all_message_ids(token, query):
-    ids = []
+    ids        = []
     page_token = None
     while True:
-        params = {"q": query, "maxResults": 500}
+        params = {'q': query, 'maxResults': 500}
         if page_token:
-            params["pageToken"] = page_token
-        url = "https://gmail.googleapis.com/gmail/v1/users/me/messages?" + urllib.parse.urlencode(params)
-        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+            params['pageToken'] = page_token
+        url = 'https://gmail.googleapis.com/gmail/v1/users/me/messages?' + urllib.parse.urlencode(params)
+        req = urllib.request.Request(url, headers={'Authorization': f'Bearer {token}'})
         with urllib.request.urlopen(req) as r:
             result = json.loads(r.read())
-        ids.extend(m["id"] for m in result.get("messages", []))
-        page_token = result.get("nextPageToken")
+        ids.extend(m['id'] for m in result.get('messages', []))
+        page_token = result.get('nextPageToken')
         if not page_token:
             break
     return ids
 
+
 def batch_trash(token, ids):
-    if not ids:
-        return 0
     total = 0
-    for i in range(0, len(ids), 1000):
-        batch = ids[i:i+1000]
-        url = "https://gmail.googleapis.com/gmail/v1/users/me/messages/batchModify"
-        payload = json.dumps({
-            "ids": batch,
-            "addLabelIds": ["TRASH"],
-            "removeLabelIds": ["INBOX"]
-        }).encode("utf-8")
-        req = urllib.request.Request(url, data=payload, headers={
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json"
-        }, method="POST")
-        with urllib.request.urlopen(req) as r:
+    for mid in ids:
+        url = f'https://gmail.googleapis.com/gmail/v1/users/me/messages/{mid}/trash'
+        req = urllib.request.Request(
+            url,
+            data=b'',
+            headers={'Authorization': f'Bearer {token}'},
+            method='POST'
+        )
+        try:
+            urllib.request.urlopen(req)
+            total += 1
+        except Exception:
             pass
-        total += len(batch)
         time.sleep(0.3)
     return total
 
-# ── 廣告寄件者清單 ──────────────────────────────────────────
+
+# ── 廣告寄件者清單 ────────────────────────────────────────────
 AD_SENDERS = [
     # 購物 / 時尚
     ("GU TAIWAN",        "from:ec-system@mm.gu-global.com"),
@@ -156,45 +169,77 @@ LOGIN_SENDERS = [
     ("蝦皮安全通知",       "from:info@mail.shopee.tw subject:安全性提醒"),
 ]
 
+
+def save_report(total, ad_results, login_results):
+    lines = [
+        f"# 📧 Gmail 清理報告｜{now.strftime('%Y年%m月')}",
+        "",
+        f"> 執行時間：{now.strftime('%Y-%m-%d %H:%M')}（台灣時間）",
+        f"> **本次共清理：{total} 封**",
+        "",
+        "## 廣告信件",
+        "",
+        "| 寄件者 | 清理數量 |",
+        "|--------|---------|",
+    ]
+    for name, n, err in ad_results:
+        lines.append(f"| {name} | {'❌ ' + err if err else str(n) + ' 封'} |")
+
+    lines += [
+        "",
+        "## 銀行登入通知（30 天前）",
+        "",
+        "| 寄件者 | 清理數量 |",
+        "|--------|---------|",
+    ]
+    for name, n, err in login_results:
+        lines.append(f"| {name} | {'❌ ' + err if err else str(n) + ' 封'} |")
+
+    REPORT_FILE.write_text('\n'.join(lines), encoding='utf-8')
+    print(f"報告已寫入：{REPORT_FILE}")
+
+
 def main():
     log("=" * 50)
     log("Gmail 每日清理開始")
 
-    token = get_access_token()
-    cutoff = (datetime.now() - timedelta(days=30)).strftime("%Y/%m/%d")
-    total = 0
+    token  = get_access_token()
+    cutoff = (now - timedelta(days=30)).strftime('%Y/%m/%d')
+    total  = 0
 
     # 1. 廣告信
+    ad_results = []
     log("── 清理廣告信件 ──")
     for name, query in AD_SENDERS:
         try:
             ids = get_all_message_ids(token, query)
-            if ids:
-                n = batch_trash(token, ids)
-                log(f"  {name}：刪除 {n} 封")
-                total += n
-            else:
-                log(f"  {name}：無信件")
+            n   = batch_trash(token, ids) if ids else 0
+            log(f"  {name}：{'刪除 ' + str(n) + ' 封' if n else '無信件'}")
+            total += n
+            ad_results.append((name, n, None))
         except Exception as e:
             log(f"  {name}：錯誤 {e}")
+            ad_results.append((name, 0, str(e)))
 
     # 2. 登入通知（30天前）
+    login_results = []
     log(f"── 清理 {cutoff} 前的登入通知 ──")
     for name, base_query in LOGIN_SENDERS:
         try:
-            query = f"{base_query} before:{cutoff}"
-            ids = get_all_message_ids(token, query)
-            if ids:
-                n = batch_trash(token, ids)
-                log(f"  {name}：刪除 {n} 封")
-                total += n
-            else:
-                log(f"  {name}：無舊記錄")
+            ids = get_all_message_ids(token, f"{base_query} before:{cutoff}")
+            n   = batch_trash(token, ids) if ids else 0
+            log(f"  {name}：{'刪除 ' + str(n) + ' 封' if n else '無舊記錄'}")
+            total += n
+            login_results.append((name, n, None))
         except Exception as e:
             log(f"  {name}：錯誤 {e}")
+            login_results.append((name, 0, str(e)))
 
     log(f"每日清理完成，本次共刪除 {total} 封")
     log("=" * 50)
 
-if __name__ == "__main__":
+    save_report(total, ad_results, login_results)
+
+
+if __name__ == '__main__':
     main()
