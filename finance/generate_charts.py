@@ -241,12 +241,20 @@ def fetch_assets(assets_db_id, token):
 
 # ── Matplotlib setup ────────────────────────────────────────────────────────────
 def setup_mpl():
-    rcParams["font.family"] = [
-        "PingFang HK",
-        "Heiti TC",
-        "Arial Unicode MS",
-        "sans-serif",
-    ]
+    import sys
+
+    if sys.platform == "darwin":
+        fonts = ["PingFang HK", "Heiti TC", "Arial Unicode MS", "sans-serif"]
+    else:
+        # Linux (GitHub Actions)：安裝 fonts-noto-cjk 後可用
+        fonts = [
+            "Noto Sans CJK TC",
+            "Noto Sans TC",
+            "WenQuanYi Micro Hei",
+            "DejaVu Sans",
+            "sans-serif",
+        ]
+    rcParams["font.family"] = fonts
     rcParams["axes.facecolor"] = "none"
     rcParams["figure.facecolor"] = "none"
     rcParams["text.color"] = TEXT_DK
