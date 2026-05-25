@@ -92,6 +92,88 @@ def load_config():
         return json.load(f)
 
 
+# ── 股票即時股價 ───────────────────────────────────────────────────────────────
+def fetch_stock_price(code: str):
+    """從 Yahoo Finance 抓台股現價，先試 .TW 再試 .TWO。"""
+    for suffix in [".TW", ".TWO"]:
+        try:
+            url = (
+                f"https://query1.finance.yahoo.com/v8/finance/chart/"
+                f"{code}{suffix}?interval=1d&range=1d"
+            )
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=10) as r:
+                data = json.loads(r.read())
+            return data["chart"]["result"][0]["meta"]["regularMarketPrice"]
+        except Exception:
+            continue
+    return None
+
+
+def update_stock_prices(assets_db, cfg, token):
+    """
+    讀 finance_config.json 的 stocks 清單，
+    抓即時股價後更新 Notion Assets DB，回傳 {code: current_price}。
+    """
+    stocks = cfg.get("stocks", [])
+    if not stocks:
+        return {}
+
+    today = date.today().isoformat()
+    results = {}
+
+    # 取出 Assets DB 所有 rows，找對應股票頁面
+    rows = api("POST", f"/databases/{assets_db}/query", {"page_size": 50}, token)
+    page_map = {}  # asset_name → page_id
+    for row in rows.get("results", []):
+        props = row.get("properties", {})
+        for k, v in props.items():
+            if v.get("type") == "title" and v.get("title"):
+                name = v["title"][0]["plain_text"]
+                page_map[name] = row["id"]
+                break
+
+    for stock in stocks:
+        code = stock["code"]
+        name = stock["name"]
+        lots = stock["lots"]
+        avg_cost = stock["avg_cost"]
+
+        price = fetch_stock_price(code)
+        if price is None:
+            print(f"  ⚠️  {code} 股價取得失敗，略過")
+            continue
+
+        shares = lots * 1000
+        current_val = round(price * shares)
+        cost_val = round(avg_cost * shares)
+        roi = round((price - avg_cost) / avg_cost * 100, 2)
+
+        # 更新 Notion
+        page_id = page_map.get(name)
+        if page_id:
+            api(
+                "PATCH",
+                f"/pages/{page_id}",
+                {
+                    "properties": {
+                        "當前金額 / Current Value": {"number": current_val},
+                        "上次更新 / Last Updated": {"date": {"start": today}},
+                    }
+                },
+                token,
+            )
+            print(
+                f"  📈 {name}：{price} × {shares}股 = NT${current_val:,}（{roi:+.2f}%）"
+            )
+        else:
+            print(f"  ⚠️  {name} 在 Notion 找不到對應頁面，略過更新")
+
+        results[code] = price
+
+    return results
+
+
 # ── Fetch real Notion data ─────────────────────────────────────────────────────
 def fetch_snapshots(snap_db_id, token):
     """Fetch monthly snapshots sorted by month label."""
@@ -417,6 +499,11 @@ def main():
     page_id = os.environ.get("NOTION_CHARTS_PAGE_ID", page_id)
 
     os.makedirs(CHARTS, exist_ok=True)
+
+    # 更新股票即時股價
+    if cfg and cfg.get("stocks"):
+        print("\n[0/3] 更新股票即時股價...")
+        update_stock_prices(assets_db, cfg, token)
 
     # Fetch data
     print("\n[1/3] 讀取 Notion 資料...")

@@ -23,6 +23,11 @@
     "monthly_payment": 8452
   },
 
+  "stocks": [
+    {"code": "009816", "name": "009816 凱基優選ETF", "lots": 3, "avg_cost": 14.01},
+    {"code": "2610",   "name": "2610 華航",           "lots": 1, "avg_cost": 18.8}
+  ],
+
   "static_assets": [
     {"name": "鉅鑫管理顧問股本",   "value": 6600000},
     {"name": "匠鑫私廚股本",       "value": 2000000},
