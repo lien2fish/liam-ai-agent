@@ -476,6 +476,149 @@ def embed_charts_in_notion(page_id, token):
         print(f"  ✅ 已首次嵌入 {len(fnames)} 張圖表到 Notion")
 
 
+# ── Homepage Sync ──────────────────────────────────────────────────────────────
+def update_homepage(token, cfg=None):
+    """從 Notion Assets/Liabilities DB 讀取最新數據，刷新首頁所有靜態文字區塊。"""
+    ASSETS_DB = "36af4149-a6aa-81c7-932b-dce2f4fa35a2"
+    LIAB_DB = "36af4149-a6aa-81dc-bd04-ff52cef71f61"
+
+    BLK = {
+        "month_heading": "36af4149-a6aa-81ff-89e8-c8f7c1d590bc",
+        # col1 — 資產列表（僅更新金額段落）
+        "juixin_val": "36af4149-a6aa-8149-b5ae-daffb6656b0f",
+        "jiangxin_val": "36af4149-a6aa-8183-84b4-e6b431eda9bc",
+        "gold_val": "36af4149-a6aa-818d-92e7-e70b6cf83750",
+        "prulife_val": "36af4149-a6aa-810a-8df3-ccdfbf6d80e2",
+        # col2 — 總資產概覽
+        "total_callout": "36af4149-a6aa-812d-963b-e380b690dced",
+        "allocation": "36af4149-a6aa-8141-9dae-cf6a8119dbb2",
+        # col3 — 負債
+        "liab_callout": "36af4149-a6aa-8156-92ea-e17d681d5a8b",
+        # 月財務指標
+        "income_callout": "36af4149-a6aa-8106-b21a-f3e3c1ba920b",
+        "expense_callout": "36af4149-a6aa-81d4-bc34-f8880851dc12",
+        "surplus_callout": "36af4149-a6aa-81ac-8415-cb02411b6158",
+        "savrate_callout": "36af4149-a6aa-81ee-ae44-e63d4a7dd516",
+    }
+
+    def rt(content):
+        return [{"type": "text", "text": {"content": content}}]
+
+    def patch(block_id, btype, text):
+        api("PATCH", f"/blocks/{block_id}", {btype: {"rich_text": rt(text)}}, token)
+
+    # 1. 讀取 Assets DB
+    rows = api("POST", f"/databases/{ASSETS_DB}/query", {"page_size": 50}, token)
+    assets = {}
+    for row in rows.get("results", []):
+        props = row["properties"]
+        name = ""
+        for k, v in props.items():
+            if v.get("type") == "title" and v.get("title"):
+                name = v["title"][0]["plain_text"]
+                break
+        val = (props.get("當前金額 / Current Value") or {}).get("number") or 0
+        cat_sel = (props.get("類別 / Category") or {}).get("select")
+        cat = cat_sel["name"] if cat_sel else "其他"
+        if name:
+            assets[name] = {"value": val, "cat": cat}
+
+    total_assets = sum(a["value"] for a in assets.values())
+
+    # 2. 讀取 Liabilities DB
+    liab_rows = api("POST", f"/databases/{LIAB_DB}/query", {"page_size": 10}, token)
+    liab_name = "玉山銀行信貸"
+    liab_balance = 0
+    liab_original = 1
+    liab_due = "2026/07/29"
+    for row in liab_rows.get("results", []):
+        props = row["properties"]
+        for k, v in props.items():
+            if v.get("type") == "title" and v.get("title"):
+                liab_name = v["title"][0]["plain_text"]
+        liab_balance = (props.get("餘額 / Balance") or {}).get("number") or 0
+        liab_original = (props.get("原始金額 / Original Amount") or {}).get(
+            "number"
+        ) or 1
+        due_prop = (props.get("到期日 / Due Date") or {}).get("date")
+        if due_prop:
+            liab_due = due_prop.get("start", liab_due).replace("-", "/")
+        break
+
+    net_worth = total_assets - liab_balance
+    liab_progress = (liab_original - liab_balance) / liab_original * 100
+
+    # 3. 分類比例（取前4大，用 · 串接）
+    cat_totals = {}
+    for a in assets.values():
+        cat_totals[a["cat"]] = cat_totals.get(a["cat"], 0) + a["value"]
+    sorted_cats = sorted(cat_totals.items(), key=lambda x: -x[1])
+    alloc_parts = [f"{c} {v / total_assets * 100:.1f}%" for c, v in sorted_cats[:4]]
+    alloc_text = "  ·  ".join(alloc_parts)
+
+    # 4. 月財務指標
+    if cfg:
+        inc = cfg.get("income", {})
+        exp = cfg.get("fixed_expenses", {})
+        monthly_income = round(
+            inc.get("monthly_base", 0)
+            + inc.get("insurance_commission_annual", 0) / 12
+            + inc.get("company_interest_annual", 0) / 12
+            + inc.get("child_subsidy_monthly", 0)
+        )
+        monthly_expense = round(sum(exp.values()))
+    else:
+        monthly_income = 72767
+        monthly_expense = 75203
+    monthly_surplus = monthly_income - monthly_expense
+    savings_rate = monthly_surplus / monthly_income * 100 if monthly_income else 0
+
+    # 5. 更新所有 blocks
+    today = date.today()
+    month_str = f"{today.year}-{today.month:02d}"
+
+    patch(BLK["month_heading"], "heading_2", f"📅 本月財務指標  ·  {month_str}")
+
+    col1_map = {
+        "juixin_val": ("鉅鑫管理顧問股本", "股權"),
+        "jiangxin_val": ("匠鑫私廚股本", "股權"),
+        "gold_val": ("華南銀行黃金存摺", "存款"),
+        "prulife_val": ("保誠人壽保單", "保險"),
+    }
+    for key, (aname, default_cat) in col1_map.items():
+        info = assets.get(aname, {})
+        val = info.get("value", 0)
+        cat = info.get("cat") or default_cat
+        patch(BLK[key], "paragraph", f"NT${val:,.0f}  ·  {cat}")
+
+    patch(
+        BLK["total_callout"],
+        "callout",
+        f"NT${total_assets:,.0f}\n淨值  NT${net_worth:,.0f}",
+    )
+    patch(BLK["allocation"], "paragraph", alloc_text)
+
+    liab_text = (
+        f"{liab_name}\n"
+        f"餘額  NT${liab_balance:,.0f}\n"
+        f"還款進度  {liab_progress:.1f}%\n"
+        f"到期  {liab_due}"
+    )
+    patch(BLK["liab_callout"], "callout", liab_text)
+
+    surplus_fmt = (
+        f"-NT${abs(monthly_surplus):,.0f}"
+        if monthly_surplus < 0
+        else f"NT${monthly_surplus:,.0f}"
+    )
+    patch(BLK["income_callout"], "callout", f"月收入\nNT${monthly_income:,.0f}")
+    patch(BLK["expense_callout"], "callout", f"月支出\nNT${monthly_expense:,.0f}")
+    patch(BLK["surplus_callout"], "callout", f"月結餘\n{surplus_fmt}")
+    patch(BLK["savrate_callout"], "callout", f"儲蓄率\n{savings_rate:.1f}%")
+
+    print(f"  ✅ 首頁更新完成  總資產 NT${total_assets:,.0f}  淨值 NT${net_worth:,.0f}")
+
+
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main():
     token = _load_token()
@@ -548,6 +691,10 @@ def main():
     if page_id:
         print("\n[+] 嵌入圖表到 Notion dashboard...")
         embed_charts_in_notion(page_id, token)
+
+    # 同步首頁靜態數字
+    print("\n[+] 更新 Notion 首頁...")
+    update_homepage(token, cfg)
 
     print("\n圖表公開 URL：")
     for f in ["chart_networth.png", "chart_assets.png", "chart_cashflow.png"]:
