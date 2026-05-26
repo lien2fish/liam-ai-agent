@@ -151,20 +151,21 @@ def find_page(db_id: str, title_prop: str, title: str, headers: dict):
     return results[0] if results else None
 
 
-def update_asset(db_id, asset_name, amount, today, headers):
+def update_asset(db_id, asset_name, amount, today, headers, cost_basis=None):
     page = find_page(db_id, "項目名稱 / Asset Name", asset_name, headers)
     if not page:
         log(f"  ⚠️  找不到資產 / Asset not found: {asset_name}")
         return
+    props = {
+        "當前金額 / Current Value": {"number": amount},
+        "上次更新 / Last Updated": {"date": {"start": today.isoformat()}},
+    }
+    if cost_basis is not None:
+        props["成本 / Cost Basis"] = {"number": cost_basis}
     _request(
         "PATCH",
         f"/pages/{page['id']}",
-        {
-            "properties": {
-                "當前金額 / Current Value": {"number": amount},
-                "上次更新 / Last Updated": {"date": {"start": today.isoformat()}},
-            }
-        },
+        {"properties": props},
         headers,
     )
     log(f"  ✅ 資產更新 / Asset updated: {asset_name} → NT${amount:,}")

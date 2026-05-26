@@ -9,6 +9,8 @@
   "gold_savings": {
     "enabled": true,
     "asset_name": "華南銀行黃金存摺",
+    "grams": 55,
+    "avg_cost_per_gram": 1315,
     "initial_value": 72325,
     "initial_date": "2024-09-01",
     "monthly_contribution": 3500
