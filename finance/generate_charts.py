@@ -603,8 +603,11 @@ def update_homepage(token, cfg=None):
             "annotations": {"bold": bold, "color": color},
         }
 
-    def patch(block_id, btype, text):
-        api("PATCH", f"/blocks/{block_id}", {btype: {"rich_text": rt(text)}}, token)
+    def patch(block_id, btype, text, color=None):
+        body = {btype: {"rich_text": rt(text)}}
+        if color:
+            body[btype]["color"] = color
+        api("PATCH", f"/blocks/{block_id}", body, token)
 
     def patch_rich(block_id, btype, segments):
         api("PATCH", f"/blocks/{block_id}", {btype: {"rich_text": segments}}, token)
@@ -734,6 +737,7 @@ def update_homepage(token, cfg=None):
         BLK["total_callout"],
         "callout",
         f"總資產  NT${total_assets:,.0f}\n淨值  NT${net_worth:,.0f}",
+        color="orange_background",
     )
     patch_rich(BLK["allocation"], "paragraph", alloc_segs)
 
@@ -742,6 +746,7 @@ def update_homepage(token, cfg=None):
         BLK["liab_callout"],
         "callout",
         f"{liab_name}\n餘額  NT${liab_balance:,.0f}\n進度  {liab_progress:.1f}%  還清  {liab_due}",
+        color="red_background",
     )
 
     # Column 1 — 股票
@@ -749,6 +754,7 @@ def update_homepage(token, cfg=None):
         BLK["stock_callout"],
         "callout",
         f"股票組合  NT${stock_val:,.0f}\n損益  {stock_sign}NT${abs(stock_pnl):,.0f}  ({stock_sign}{stock_roi:.1f}%)\n{stock_names}",
+        color="blue_background",
     )
 
     # Column 1 — 黃金
@@ -757,6 +763,7 @@ def update_homepage(token, cfg=None):
         BLK["gold_callout"],
         "callout",
         f"{gold_name}  NT${gold_val:,.0f}\n損益  {gold_sign}NT${abs(gold_pnl):,.0f}  ({gold_sign}{gold_roi:.1f}%)",
+        color="yellow_background",
     )
 
     # 月財務指標
@@ -766,10 +773,29 @@ def update_homepage(token, cfg=None):
         if monthly_surplus < 0
         else f"NT${monthly_surplus:,.0f}"
     )
-    patch(BLK["income_callout"], "callout", f"月收入\nNT${monthly_income:,.0f}")
-    patch(BLK["expense_callout"], "callout", f"月支出\nNT${monthly_expense:,.0f}")
-    patch(BLK["surplus_callout"], "callout", f"月結餘\n{surplus_fmt}")
-    patch(BLK["savrate_callout"], "callout", f"儲蓄率\n{savings_rate:.1f}%")
+    patch(
+        BLK["income_callout"],
+        "callout",
+        f"月收入\nNT${monthly_income:,.0f}",
+        color="green_background",
+    )
+    patch(
+        BLK["expense_callout"],
+        "callout",
+        f"月支出\nNT${monthly_expense:,.0f}",
+        color="red_background",
+    )
+    surplus_color = "red_background" if monthly_surplus < 0 else "green_background"
+    patch(
+        BLK["surplus_callout"], "callout", f"月結餘\n{surplus_fmt}", color=surplus_color
+    )
+    savrate_color = "red_background" if savings_rate < 0 else "green_background"
+    patch(
+        BLK["savrate_callout"],
+        "callout",
+        f"儲蓄率\n{savings_rate:.1f}%",
+        color=savrate_color,
+    )
 
     print(f"  ✅ 首頁更新完成  總資產 NT${total_assets:,.0f}  淨值 NT${net_worth:,.0f}")
 
