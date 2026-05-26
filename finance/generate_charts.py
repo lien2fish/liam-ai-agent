@@ -582,7 +582,6 @@ def update_homepage(token, cfg=None):
         "total_callout": "36af4149-a6aa-812d-963b-e380b690dced",
         "stock_callout": "36cf4149-a6aa-8181-b25f-d357d18d50c9",
         "gold_callout": "36cf4149-a6aa-81e2-8c74-d4dc8a3f806e",
-        "networth_chart": "36cf4149-a6aa-816f-98e9-da0e79981d6b",
         # Column 2 — 負債 + 資產配置
         "liab_callout": "36cf4149-a6aa-813d-ab7a-ea427e39845a",
         "allocation": "36af4149-a6aa-8141-9dae-cf6a8119dbb2",
@@ -767,15 +766,6 @@ def update_homepage(token, cfg=None):
         "callout",
         f"儲蓄率\n{savings_rate:.1f}%",
         color=savrate_color,
-    )
-
-    # 首頁淨值趨勢圖
-    networth_url = github_raw_url("chart_networth.png")
-    api(
-        "PATCH",
-        f"/blocks/{BLK['networth_chart']}",
-        {"image": {"external": {"url": networth_url}}},
-        token,
     )
 
     print(f"  ✅ 首頁更新完成  總資產 NT${total_assets:,.0f}  淨值 NT${net_worth:,.0f}")
