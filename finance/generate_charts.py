@@ -656,18 +656,37 @@ def update_homepage(token, cfg=None):
     for a in assets.values():
         cat_totals[a["cat"]] = cat_totals.get(a["cat"], 0) + a["value"]
     sorted_cats = sorted(cat_totals.items(), key=lambda x: -x[1])
-    BAR_W = 16
+    CAT_BG = {
+        "股權": "orange_background",
+        "股票": "red_background",
+        "保險": "blue_background",
+        "存款": "yellow_background",
+        "現金": "green_background",
+        "黃金": "yellow_background",
+        "其他": "gray_background",
+    }
+    FALLBACK_BG = [
+        "orange_background",
+        "blue_background",
+        "yellow_background",
+        "green_background",
+        "purple_background",
+        "pink_background",
+        "red_background",
+        "gray_background",
+    ]
+    BAR_W = 20
     alloc_segs = []
     for i, (c, v) in enumerate(sorted_cats):
         pct = v / total_assets * 100
-        filled = max(0, min(BAR_W, round(pct / 100 * BAR_W)))
-        cat_label = c.split(" ")[0]  # 取中文部分
+        filled = max(1 if pct > 0 else 0, min(BAR_W, round(pct / 100 * BAR_W)))
+        cat_label = c.split(" ")[0]
+        bg = CAT_BG.get(cat_label, FALLBACK_BG[i % len(FALLBACK_BG)])
         if i > 0:
             alloc_segs.append(seg("\n"))
-        alloc_segs.append(seg(f"{cat_label:<3}  ", bold=True, color="default"))
-        if filled > 0:
-            alloc_segs.append(seg("█" * filled, color="orange"))
-        alloc_segs.append(seg(f"  {pct:.1f}%", color="brown"))
+        alloc_segs.append(seg(f"  {cat_label}  ", bold=True, color=bg))
+        alloc_segs.append(seg("█" * filled, color=bg))
+        alloc_segs.append(seg(f"  {pct:.1f}%  ", color=bg))
 
     # 4. 投資績效計算
     stocks = {k: v for k, v in assets.items() if v["cat"] == "股票"}
