@@ -9,6 +9,8 @@
   "gold_savings": {
     "enabled": true,
     "asset_name": "華南銀行黃金存摺",
+    "grams": 0,
+    "avg_cost_per_gram": 0,
     "initial_value": 0,
     "initial_date": "2024-09-01",
     "monthly_contribution": 0
