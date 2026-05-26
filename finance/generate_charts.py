@@ -561,21 +561,28 @@ def embed_charts_in_notion(page_id, token):
 
 # ── Homepage Sync ──────────────────────────────────────────────────────────────
 def update_homepage(token, cfg=None):
-    """從 Notion Assets/Liabilities DB 讀取最新數據，刷新首頁所有靜態文字區塊。"""
+    """
+    從 Notion Assets/Liabilities DB 讀取最新數據，刷新首頁。
+    Column 2（資產帳戶）改為動態 Table 架構：
+      - 每次執行時刪除舊表格、重建包含所有資產 + ROI% + 損益的新表格
+      - 資料來源：Assets DB（含公式欄位 報酬率/ROI%、損益/Gain-Loss）
+    """
     ASSETS_DB = "36af4149-a6aa-81c7-932b-dce2f4fa35a2"
     LIAB_DB = "36af4149-a6aa-81dc-bd04-ff52cef71f61"
 
+    # Column 2 結構常數（資產帳戶欄）
+    COLUMN2_ID = "36af4149-a6aa-81b6-ba65-e1738d721881"
+    COL2_HEADING_ID = "36af4149-a6aa-812c-9ff3-c0175df124f6"  # 💼 資產帳戶
+    COL2_DIVIDER_ID = "36af4149-a6aa-8161-a4e9-fb31d9066599"
+    COL2_LINK_ID = "36af4149-a6aa-8103-868c-ca7da9ded3de"
+    COL2_KEEP = {COL2_HEADING_ID, COL2_DIVIDER_ID, COL2_LINK_ID}
+
     BLK = {
         "month_heading": "36af4149-a6aa-81ff-89e8-c8f7c1d590bc",
-        # col1 — 資產列表（僅更新金額段落）
-        "juixin_val": "36af4149-a6aa-8149-b5ae-daffb6656b0f",
-        "jiangxin_val": "36af4149-a6aa-8183-84b4-e6b431eda9bc",
-        "gold_val": "36af4149-a6aa-818d-92e7-e70b6cf83750",
-        "prulife_val": "36af4149-a6aa-810a-8df3-ccdfbf6d80e2",
-        # col2 — 總資產概覽
+        # col3 — 總資產概覽
         "total_callout": "36af4149-a6aa-812d-963b-e380b690dced",
         "allocation": "36af4149-a6aa-8141-9dae-cf6a8119dbb2",
-        # col3 — 負債
+        # col4 — 負債
         "liab_callout": "36af4149-a6aa-8156-92ea-e17d681d5a8b",
         # 月財務指標
         "income_callout": "36af4149-a6aa-8106-b21a-f3e3c1ba920b",
@@ -590,7 +597,7 @@ def update_homepage(token, cfg=None):
     def patch(block_id, btype, text):
         api("PATCH", f"/blocks/{block_id}", {btype: {"rich_text": rt(text)}}, token)
 
-    # 1. 讀取 Assets DB
+    # 1. 讀取 Assets DB（含公式欄位 ROI% 和 損益）
     rows = api("POST", f"/databases/{ASSETS_DB}/query", {"page_size": 50}, token)
     assets = {}
     for row in rows.get("results", []):
@@ -603,8 +610,20 @@ def update_homepage(token, cfg=None):
         val = (props.get("當前金額 / Current Value") or {}).get("number") or 0
         cat_sel = (props.get("類別 / Category") or {}).get("select")
         cat = cat_sel["name"] if cat_sel else "其他"
+        roi_prop = props.get("報酬率 / ROI %", {})
+        roi = (
+            roi_prop.get("formula", {}).get("number")
+            if roi_prop.get("type") == "formula"
+            else None
+        )
+        gain_prop = props.get("損益 / Gain-Loss", {})
+        gain = (
+            gain_prop.get("formula", {}).get("number")
+            if gain_prop.get("type") == "formula"
+            else None
+        )
         if name:
-            assets[name] = {"value": val, "cat": cat}
+            assets[name] = {"value": val, "cat": cat, "roi": roi, "gain": gain}
 
     total_assets = sum(a["value"] for a in assets.values())
 
@@ -631,7 +650,7 @@ def update_homepage(token, cfg=None):
     net_worth = total_assets - liab_balance
     liab_progress = (liab_original - liab_balance) / liab_original * 100
 
-    # 3. 分類比例（取前4大，用 · 串接）
+    # 3. 分類比例
     cat_totals = {}
     for a in assets.values():
         cat_totals[a["cat"]] = cat_totals.get(a["cat"], 0) + a["value"]
@@ -656,24 +675,66 @@ def update_homepage(token, cfg=None):
     monthly_surplus = monthly_income - monthly_expense
     savings_rate = monthly_surplus / monthly_income * 100 if monthly_income else 0
 
-    # 5. 更新所有 blocks
+    # 5. 重建 Column 2 資產表格
+    # 刪除所有動態區塊（保留 heading、divider、link）
+    col2_blocks = api(
+        "GET", f"/blocks/{COLUMN2_ID}/children?page_size=100", None, token
+    )
+    for b in col2_blocks.get("results", []):
+        if b["id"] not in COL2_KEEP:
+            try:
+                api("DELETE", f"/blocks/{b['id']}", None, token)
+            except Exception:
+                pass
+
+    # 建立資產明細表格（依市值由大到小排序）
+    def make_row(cells):
+        return {
+            "type": "table_row",
+            "table_row": {
+                "cells": [
+                    [{"type": "text", "text": {"content": str(c)}}] for c in cells
+                ]
+            },
+        }
+
+    sorted_assets = sorted(assets.items(), key=lambda x: -(x[1].get("value") or 0))
+    table_rows = [make_row(["項目", "當前金額", "報酬率", "損益", "類別"])]
+    for aname, info in sorted_assets:
+        val = info.get("value", 0)
+        roi = info.get("roi")
+        gain = info.get("gain")
+        roi_str = f"{roi:+.1f}%" if roi is not None else "—"
+        gain_str = f"NT${gain:+,.0f}" if gain is not None else "—"
+        table_rows.append(
+            make_row([aname, f"NT${val:,.0f}", roi_str, gain_str, info.get("cat", "")])
+        )
+
+    api(
+        "PATCH",
+        f"/blocks/{COLUMN2_ID}/children",
+        {
+            "after": COL2_HEADING_ID,
+            "children": [
+                {
+                    "type": "table",
+                    "table": {
+                        "table_width": 5,
+                        "has_column_header": True,
+                        "has_row_header": False,
+                        "children": table_rows,  # Notion API 要求 children 在 table 物件內
+                    },
+                }
+            ],
+        },
+        token,
+    )
+
+    # 6. 更新摘要區塊
     today = date.today()
     month_str = f"{today.year}-{today.month:02d}"
 
     patch(BLK["month_heading"], "heading_2", f"📅 本月財務指標  ·  {month_str}")
-
-    col1_map = {
-        "juixin_val": ("鉅鑫管理顧問股本", "股權"),
-        "jiangxin_val": ("匠鑫私廚股本", "股權"),
-        "gold_val": ("華南銀行黃金存摺", "存款"),
-        "prulife_val": ("保誠人壽保單", "保險"),
-    }
-    for key, (aname, default_cat) in col1_map.items():
-        info = assets.get(aname, {})
-        val = info.get("value", 0)
-        cat = info.get("cat") or default_cat
-        patch(BLK[key], "paragraph", f"NT${val:,.0f}  ·  {cat}")
-
     patch(
         BLK["total_callout"],
         "callout",
