@@ -578,13 +578,14 @@ def update_homepage(token, cfg=None):
     LIAB_DB = "36af4149-a6aa-81dc-bd04-ff52cef71f61"
 
     BLK = {
-        # Column 2 — 資產概覽
+        # Column 1 — 資產概覽 + 投資
         "total_callout": "36af4149-a6aa-812d-963b-e380b690dced",
-        "allocation": "36af4149-a6aa-8141-9dae-cf6a8119dbb2",
-        # Column 1 — 負債 + 投資
-        "liab_callout": "36cf4149-a6aa-813d-ab7a-ea427e39845a",
         "stock_callout": "36cf4149-a6aa-8181-b25f-d357d18d50c9",
         "gold_callout": "36cf4149-a6aa-81e2-8c74-d4dc8a3f806e",
+        "networth_chart": "36cf4149-a6aa-816f-98e9-da0e79981d6b",
+        # Column 2 — 負債 + 資產配置
+        "liab_callout": "36cf4149-a6aa-813d-ab7a-ea427e39845a",
+        "allocation": "36af4149-a6aa-8141-9dae-cf6a8119dbb2",
         # 月財務指標
         "month_heading": "36af4149-a6aa-81ff-89e8-c8f7c1d590bc",
         "income_callout": "36af4149-a6aa-8106-b21a-f3e3c1ba920b",
@@ -766,6 +767,15 @@ def update_homepage(token, cfg=None):
         "callout",
         f"儲蓄率\n{savings_rate:.1f}%",
         color=savrate_color,
+    )
+
+    # 首頁淨值趨勢圖
+    networth_url = github_raw_url("chart_networth.png")
+    api(
+        "PATCH",
+        f"/blocks/{BLK['networth_chart']}",
+        {"image": {"external": {"url": networth_url}}},
+        token,
     )
 
     print(f"  ✅ 首頁更新完成  總資產 NT${total_assets:,.0f}  淨值 NT${net_worth:,.0f}")
