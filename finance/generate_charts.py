@@ -346,6 +346,7 @@ def setup_mpl():
 
 def save(fig, fname, dpi=150):
     path = os.path.join(CHARTS, fname)
+    fig.patch.set_facecolor("none")
     fig.savefig(path, dpi=dpi, bbox_inches="tight", facecolor="none", transparent=True)
     plt.close(fig)
     print(f"    ✅ {fname}")
@@ -413,11 +414,13 @@ def chart_assets(asset_rows):
     total = sum(values)
 
     fig, ax = plt.subplots(figsize=(7, 4.5))
+    fig.patch.set_facecolor("none")
+    ax.set_facecolor("none")
     wedges, _ = ax.pie(
         values,
         colors=colors,
         startangle=130,
-        wedgeprops={"linewidth": 2, "edgecolor": "white", "width": 0.56},
+        wedgeprops={"linewidth": 1.5, "edgecolor": "none", "width": 0.56},
     )
     ax.text(
         0,
@@ -431,14 +434,16 @@ def chart_assets(asset_rows):
     )
     pcts = [f"{v/total*100:.0f}%" for v in values]
     legend_items = [f"{l}  {p}" for l, p in zip(labels, pcts)]
-    ax.legend(
+    leg = ax.legend(
         wedges,
         legend_items,
         loc="center left",
         bbox_to_anchor=(1, 0, 0.45, 1),
         fontsize=9,
-        framealpha=0.95,
+        frameon=False,
     )
+    for text in leg.get_texts():
+        text.set_color(TEXT_DK)
     ax.set_title("資產分佈  ·  Asset Breakdown", fontsize=12, color=GOLD_DK, pad=10)
     fig.tight_layout(pad=0.8)
     return save(fig, "chart_assets.png")
@@ -570,11 +575,9 @@ def update_homepage(token, cfg=None):
 
     BLK = {
         "month_heading": "36af4149-a6aa-81ff-89e8-c8f7c1d590bc",
-        # col3 — 總資產概覽
+        # 總資產概覽
         "total_callout": "36af4149-a6aa-812d-963b-e380b690dced",
         "allocation": "36af4149-a6aa-8141-9dae-cf6a8119dbb2",
-        # col4 — 負債
-        "liab_callout": "36af4149-a6aa-8156-92ea-e17d681d5a8b",
         # 月財務指標
         "income_callout": "36af4149-a6aa-8106-b21a-f3e3c1ba920b",
         "expense_callout": "36af4149-a6aa-81d4-bc34-f8880851dc12",
@@ -608,26 +611,13 @@ def update_homepage(token, cfg=None):
 
     # 2. 讀取 Liabilities DB
     liab_rows = api("POST", f"/databases/{LIAB_DB}/query", {"page_size": 10}, token)
-    liab_name = "玉山銀行信貸"
     liab_balance = 0
-    liab_original = 1
-    liab_due = "2026/07/29"
     for row in liab_rows.get("results", []):
         props = row["properties"]
-        for k, v in props.items():
-            if v.get("type") == "title" and v.get("title"):
-                liab_name = v["title"][0]["plain_text"]
         liab_balance = (props.get("餘額 / Balance") or {}).get("number") or 0
-        liab_original = (props.get("原始金額 / Original Amount") or {}).get(
-            "number"
-        ) or 1
-        due_prop = (props.get("到期日 / Due Date") or {}).get("date")
-        if due_prop:
-            liab_due = due_prop.get("start", liab_due).replace("-", "/")
         break
 
     net_worth = total_assets - liab_balance
-    liab_progress = (liab_original - liab_balance) / liab_original * 100
 
     # 3. 分類比例
     cat_totals = {}
@@ -665,14 +655,6 @@ def update_homepage(token, cfg=None):
         f"NT${total_assets:,.0f}\n淨值  NT${net_worth:,.0f}",
     )
     patch(BLK["allocation"], "paragraph", alloc_text)
-
-    liab_text = (
-        f"{liab_name}\n"
-        f"餘額  NT${liab_balance:,.0f}\n"
-        f"還款進度  {liab_progress:.1f}%\n"
-        f"到期  {liab_due}"
-    )
-    patch(BLK["liab_callout"], "callout", liab_text)
 
     surplus_fmt = (
         f"-NT${abs(monthly_surplus):,.0f}"
