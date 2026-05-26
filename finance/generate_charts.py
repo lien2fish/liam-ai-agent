@@ -490,7 +490,9 @@ BRANCH = "main"
 
 
 def github_raw_url(fname):
-    return f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/{BRANCH}/finance/charts/{fname}"
+    # 加日期 cache-bust，讓 Notion 每次執行都重新抓圖片
+    today_str = date.today().strftime("%Y%m%d")
+    return f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/{BRANCH}/finance/charts/{fname}?v={today_str}"
 
 
 def git_commit_push():
@@ -568,17 +570,23 @@ def embed_charts_in_notion(page_id, token):
 def update_homepage(token, cfg=None):
     """
     從 Notion Assets/Liabilities DB 讀取最新數據，刷新首頁摘要區塊。
-    Column 2（資產帳戶）由 Notion Linked View 負責即時顯示，腳本不再管理該欄。
+    Column 1：負債 + 投資績效（腳本管理）
+    Column 2：資產概覽（腳本管理）
+    月財務指標：4 個 callout（腳本管理）
     """
     ASSETS_DB = "36af4149-a6aa-81c7-932b-dce2f4fa35a2"
     LIAB_DB = "36af4149-a6aa-81dc-bd04-ff52cef71f61"
 
     BLK = {
-        "month_heading": "36af4149-a6aa-81ff-89e8-c8f7c1d590bc",
-        # 總資產概覽
+        # Column 2 — 資產概覽
         "total_callout": "36af4149-a6aa-812d-963b-e380b690dced",
         "allocation": "36af4149-a6aa-8141-9dae-cf6a8119dbb2",
+        # Column 1 — 負債 + 投資
+        "liab_callout": "36cf4149-a6aa-813d-ab7a-ea427e39845a",
+        "stock_callout": "36cf4149-a6aa-8181-b25f-d357d18d50c9",
+        "gold_callout": "36cf4149-a6aa-81e2-8c74-d4dc8a3f806e",
         # 月財務指標
+        "month_heading": "36af4149-a6aa-81ff-89e8-c8f7c1d590bc",
         "income_callout": "36af4149-a6aa-8106-b21a-f3e3c1ba920b",
         "expense_callout": "36af4149-a6aa-81d4-bc34-f8880851dc12",
         "surplus_callout": "36af4149-a6aa-81ac-8415-cb02411b6158",
@@ -591,7 +599,7 @@ def update_homepage(token, cfg=None):
     def patch(block_id, btype, text):
         api("PATCH", f"/blocks/{block_id}", {btype: {"rich_text": rt(text)}}, token)
 
-    # 1. 讀取 Assets DB（計算總資產與分類比例）
+    # 1. 讀取 Assets DB
     rows = api("POST", f"/databases/{ASSETS_DB}/query", {"page_size": 50}, token)
     assets = {}
     for row in rows.get("results", []):
@@ -602,32 +610,66 @@ def update_homepage(token, cfg=None):
                 name = v["title"][0]["plain_text"]
                 break
         val = (props.get("當前金額 / Current Value") or {}).get("number") or 0
+        cost = (props.get("成本 / Cost Basis") or {}).get("number") or val
         cat_sel = (props.get("類別 / Category") or {}).get("select")
         cat = cat_sel["name"] if cat_sel else "其他"
         if name:
-            assets[name] = {"value": val, "cat": cat}
+            assets[name] = {"value": val, "cost": cost, "cat": cat}
 
     total_assets = sum(a["value"] for a in assets.values())
 
     # 2. 讀取 Liabilities DB
     liab_rows = api("POST", f"/databases/{LIAB_DB}/query", {"page_size": 10}, token)
     liab_balance = 0
+    liab_name = "玉山銀行信貸"
+    liab_original = 600000
+    liab_due = "2026/07/29"
     for row in liab_rows.get("results", []):
         props = row["properties"]
+        for k, v in props.items():
+            if v.get("type") == "title" and v.get("title"):
+                liab_name = v["title"][0]["plain_text"]
         liab_balance = (props.get("餘額 / Balance") or {}).get("number") or 0
+        liab_original = (props.get("原始金額 / Original Amount") or {}).get(
+            "number"
+        ) or 600000
+        due_prop = (props.get("到期日 / Due Date") or {}).get("date")
+        if due_prop:
+            liab_due = due_prop.get("start", liab_due).replace("-", "/")
         break
 
     net_worth = total_assets - liab_balance
+    liab_progress = (liab_original - liab_balance) / liab_original * 100
 
     # 3. 分類比例
     cat_totals = {}
     for a in assets.values():
         cat_totals[a["cat"]] = cat_totals.get(a["cat"], 0) + a["value"]
     sorted_cats = sorted(cat_totals.items(), key=lambda x: -x[1])
-    alloc_parts = [f"{c} {v / total_assets * 100:.1f}%" for c, v in sorted_cats[:4]]
+    alloc_parts = [f"{c} {v / total_assets * 100:.1f}%" for c, v in sorted_cats[:5]]
     alloc_text = "  ·  ".join(alloc_parts)
 
-    # 4. 月財務指標
+    # 4. 投資績效計算
+    stocks = {k: v for k, v in assets.items() if v["cat"] == "股票"}
+    gold = {k: v for k, v in assets.items() if "黃金" in k}
+
+    stock_val = sum(s["value"] for s in stocks.values())
+    stock_cost = sum(s["cost"] for s in stocks.values())
+    stock_pnl = stock_val - stock_cost
+    stock_roi = stock_pnl / stock_cost * 100 if stock_cost else 0
+    stock_sign = "+" if stock_pnl >= 0 else ""
+    stock_names = "\n".join(
+        f"{k}  NT${v['value']:,.0f}  ({(v['value']-v['cost'])/v['cost']*100:+.1f}%)"
+        for k, v in stocks.items()
+    )
+
+    gold_val, gold_cost, gold_name = 0, 0, "黃金存摺"
+    for k, v in gold.items():
+        gold_val, gold_cost, gold_name = v["value"], v["cost"], k
+    gold_pnl = gold_val - gold_cost
+    gold_roi = gold_pnl / gold_cost * 100 if gold_cost else 0
+
+    # 5. 月財務指標
     if cfg:
         inc = cfg.get("income", {})
         exp = cfg.get("fixed_expenses", {})
@@ -644,18 +686,42 @@ def update_homepage(token, cfg=None):
     monthly_surplus = monthly_income - monthly_expense
     savings_rate = monthly_surplus / monthly_income * 100 if monthly_income else 0
 
-    # 5. 更新摘要區塊（Column 2 Linked View 由 Notion 原生處理，腳本不介入）
+    # 6. 更新所有區塊
     today = date.today()
     month_str = f"{today.year}-{today.month:02d}"
 
-    patch(BLK["month_heading"], "heading_2", f"📅 本月財務指標  ·  {month_str}")
+    # Column 2 — 資產概覽
     patch(
         BLK["total_callout"],
         "callout",
-        f"NT${total_assets:,.0f}\n淨值  NT${net_worth:,.0f}",
+        f"總資產  NT${total_assets:,.0f}\n淨值  NT${net_worth:,.0f}",
     )
     patch(BLK["allocation"], "paragraph", alloc_text)
 
+    # Column 1 — 負債
+    patch(
+        BLK["liab_callout"],
+        "callout",
+        f"{liab_name}\n餘額  NT${liab_balance:,.0f}\n進度  {liab_progress:.1f}%  還清  {liab_due}",
+    )
+
+    # Column 1 — 股票
+    patch(
+        BLK["stock_callout"],
+        "callout",
+        f"股票組合  NT${stock_val:,.0f}\n損益  {stock_sign}NT${abs(stock_pnl):,.0f}  ({stock_sign}{stock_roi:.1f}%)\n{stock_names}",
+    )
+
+    # Column 1 — 黃金
+    gold_sign = "+" if gold_pnl >= 0 else ""
+    patch(
+        BLK["gold_callout"],
+        "callout",
+        f"{gold_name}  NT${gold_val:,.0f}\n損益  {gold_sign}NT${abs(gold_pnl):,.0f}  ({gold_sign}{gold_roi:.1f}%)",
+    )
+
+    # 月財務指標
+    patch(BLK["month_heading"], "heading_2", f"📅 本月財務指標  ·  {month_str}")
     surplus_fmt = (
         f"-NT${abs(monthly_surplus):,.0f}"
         if monthly_surplus < 0
