@@ -596,8 +596,18 @@ def update_homepage(token, cfg=None):
     def rt(content):
         return [{"type": "text", "text": {"content": content}}]
 
+    def seg(content, bold=False, color="default"):
+        return {
+            "type": "text",
+            "text": {"content": content},
+            "annotations": {"bold": bold, "color": color},
+        }
+
     def patch(block_id, btype, text):
         api("PATCH", f"/blocks/{block_id}", {btype: {"rich_text": rt(text)}}, token)
+
+    def patch_rich(block_id, btype, segments):
+        api("PATCH", f"/blocks/{block_id}", {btype: {"rich_text": segments}}, token)
 
     # 1. 讀取 Assets DB
     rows = api("POST", f"/databases/{ASSETS_DB}/query", {"page_size": 50}, token)
@@ -646,14 +656,20 @@ def update_homepage(token, cfg=None):
     for a in assets.values():
         cat_totals[a["cat"]] = cat_totals.get(a["cat"], 0) + a["value"]
     sorted_cats = sorted(cat_totals.items(), key=lambda x: -x[1])
-    BAR_W = 14
-    alloc_lines = []
-    for c, v in sorted_cats:
+    BAR_W = 16
+    alloc_segs = []
+    for i, (c, v) in enumerate(sorted_cats):
         pct = v / total_assets * 100
         filled = max(0, min(BAR_W, round(pct / 100 * BAR_W)))
-        bar = "█" * filled + "░" * (BAR_W - filled)
-        alloc_lines.append(f"{c}  {bar}  {pct:.1f}%")
-    alloc_text = "\n".join(alloc_lines)
+        cat_label = c.split(" ")[0]  # 取中文部分
+        if i > 0:
+            alloc_segs.append(seg("\n"))
+        alloc_segs.append(seg(f"{cat_label:<3}  ", bold=True, color="default"))
+        if filled > 0:
+            alloc_segs.append(seg("█" * filled, color="orange"))
+        if filled < BAR_W:
+            alloc_segs.append(seg("░" * (BAR_W - filled), color="gray"))
+        alloc_segs.append(seg(f"  {pct:.1f}%", color="brown"))
 
     # 4. 投資績效計算
     stocks = {k: v for k, v in assets.items() if v["cat"] == "股票"}
@@ -702,7 +718,7 @@ def update_homepage(token, cfg=None):
         "callout",
         f"總資產  NT${total_assets:,.0f}\n淨值  NT${net_worth:,.0f}",
     )
-    patch(BLK["allocation"], "paragraph", alloc_text)
+    patch_rich(BLK["allocation"], "paragraph", alloc_segs)
 
     # Column 1 — 負債
     patch(
