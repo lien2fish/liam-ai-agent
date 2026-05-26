@@ -582,9 +582,8 @@ def update_homepage(token, cfg=None):
         "total_callout": "36af4149-a6aa-812d-963b-e380b690dced",
         "stock_callout": "36cf4149-a6aa-8181-b25f-d357d18d50c9",
         "gold_callout": "36cf4149-a6aa-81e2-8c74-d4dc8a3f806e",
-        # Column 2 — 負債 + 資產配置
+        # Column 2 — 負債 + 資產配置看板（Linked View，Notion 原生即時更新）
         "liab_callout": "36cf4149-a6aa-813d-ab7a-ea427e39845a",
-        "allocation": "36af4149-a6aa-8141-9dae-cf6a8119dbb2",
         # 月財務指標
         "month_heading": "36af4149-a6aa-81ff-89e8-c8f7c1d590bc",
         "income_callout": "36af4149-a6aa-8106-b21a-f3e3c1ba920b",
@@ -659,8 +658,6 @@ def update_homepage(token, cfg=None):
     for a in assets.values():
         cat_totals[a["cat"]] = cat_totals.get(a["cat"], 0) + a["value"]
     sorted_cats = sorted(cat_totals.items(), key=lambda x: -x[1])
-    alloc_parts = [f"{c} {v / total_assets * 100:.1f}%" for c, v in sorted_cats]
-    alloc_text = "  ·  ".join(alloc_parts)
 
     # 4. 投資績效計算
     stocks = {k: v for k, v in assets.items() if v["cat"] == "股票"}
@@ -710,7 +707,6 @@ def update_homepage(token, cfg=None):
         f"總資產  NT${total_assets:,.0f}\n淨值  NT${net_worth:,.0f}",
         color="orange_background",
     )
-    patch(BLK["allocation"], "paragraph", alloc_text)
 
     # Column 1 — 負債
     patch(
