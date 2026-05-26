@@ -110,9 +110,9 @@ LOGIN_SENDERS = [
     ("台北富邦登入通知", "from:mbank@dfm.taipeifubon.com.tw"),
 ]
 
-def save_report(total, ad_results, login_results):
+def save_report(total, ad_results, login_results, read_count, read_err):
     lines = [
-        f"# 📧 Gmail 清理報告｜{now.strftime('%Y年%m月')}",
+        f"# 📧 Gmail 清理報告｜{now.strftime('%Y年%m月%d日')}",
         "",
         f"> 執行時間：{now.strftime('%Y-%m-%d %H:%M')}（台灣時間）",
         f"> **本次共清理：{total} 封**",
@@ -134,6 +134,15 @@ def save_report(total, ad_results, login_results):
     ]
     for name, n, err in login_results:
         lines.append(f"| {name} | {'❌ ' + err if err else str(n) + ' 封'} |")
+
+    lines += [
+        "",
+        "## 已讀舊信（30 天前）",
+        "",
+        f"| 項目 | 結果 |",
+        f"|------|------|",
+        f"| 已讀 + 超過 30 天 + 非星號/重要 | {'❌ ' + read_err if read_err else str(read_count) + ' 封'} |",
+    ]
 
     REPORT_FILE.write_text('\n'.join(lines), encoding='utf-8')
     print(f"報告已寫入：{REPORT_FILE}")
@@ -174,10 +183,23 @@ def main():
             print(f"  {name}：錯誤 {e}")
             login_results.append((name, 0, str(e)))
 
+    # 3. 已讀舊信（30天前，非星號、非重要）
+    read_count, read_err = 0, None
+    print(f"── 清理 {cutoff} 前的已讀信件 ──")
+    try:
+        query = f"is:read before:{cutoff} -is:starred -is:important in:inbox"
+        ids   = get_all_message_ids(token, query)
+        read_count = batch_trash(token, ids) if ids else 0
+        print(f"  已讀舊信：{'刪除 ' + str(read_count) + ' 封' if read_count else '無符合信件'}")
+        total += read_count
+    except Exception as e:
+        print(f"  已讀舊信：錯誤 {e}")
+        read_err = str(e)
+
     print(f"清理完成，本次共刪除 {total} 封")
     print("=" * 50)
 
-    save_report(total, ad_results, login_results)
+    save_report(total, ad_results, login_results, read_count, read_err)
 
 if __name__ == '__main__':
     main()
