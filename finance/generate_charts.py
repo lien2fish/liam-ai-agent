@@ -646,8 +646,14 @@ def update_homepage(token, cfg=None):
     for a in assets.values():
         cat_totals[a["cat"]] = cat_totals.get(a["cat"], 0) + a["value"]
     sorted_cats = sorted(cat_totals.items(), key=lambda x: -x[1])
-    alloc_parts = [f"{c} {v / total_assets * 100:.1f}%" for c, v in sorted_cats[:5]]
-    alloc_text = "  ·  ".join(alloc_parts)
+    BAR_W = 14
+    alloc_lines = []
+    for c, v in sorted_cats:
+        pct = v / total_assets * 100
+        filled = max(0, min(BAR_W, round(pct / 100 * BAR_W)))
+        bar = "█" * filled + "░" * (BAR_W - filled)
+        alloc_lines.append(f"{c}  {bar}  {pct:.1f}%")
+    alloc_text = "\n".join(alloc_lines)
 
     # 4. 投資績效計算
     stocks = {k: v for k, v in assets.items() if v["cat"] == "股票"}
