@@ -110,28 +110,50 @@ def fetch_stock_price(code: str):
     return None
 
 
+def fetch_gold_price_twd():
+    """黃金現價（TWD/克）= GC=F（USD/troy oz）× USD/TWD ÷ 31.1035"""
+
+    def _yf(symbol: str):
+        try:
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=1d"
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=10) as r:
+                data = json.loads(r.read())
+            return data["chart"]["result"][0]["meta"]["regularMarketPrice"]
+        except Exception:
+            return None
+
+    gold_usd_oz = _yf("GC%3DF")  # GC=F
+    usd_twd = _yf("USDTWD%3DX")  # USDTWD=X
+    if gold_usd_oz and usd_twd:
+        return round(gold_usd_oz * usd_twd / 31.1035, 1)
+    return None
+
+
+def _build_page_map(assets_db, token):
+    """回傳 {asset_name: page_id} 對照表。"""
+    rows = api("POST", f"/databases/{assets_db}/query", {"page_size": 50}, token)
+    page_map = {}
+    for row in rows.get("results", []):
+        for v in row.get("properties", {}).values():
+            if v.get("type") == "title" and v.get("title"):
+                page_map[v["title"][0]["plain_text"]] = row["id"]
+                break
+    return page_map
+
+
 def update_stock_prices(assets_db, cfg, token):
     """
     讀 finance_config.json 的 stocks 清單，
-    抓即時股價後更新 Notion Assets DB，回傳 {code: current_price}。
+    抓即時股價後更新 Notion Assets DB（含成本 / Cost Basis → 報酬率自動計算）。
     """
     stocks = cfg.get("stocks", [])
     if not stocks:
         return {}
 
     today = date.today().isoformat()
+    page_map = _build_page_map(assets_db, token)
     results = {}
-
-    # 取出 Assets DB 所有 rows，找對應股票頁面
-    rows = api("POST", f"/databases/{assets_db}/query", {"page_size": 50}, token)
-    page_map = {}  # asset_name → page_id
-    for row in rows.get("results", []):
-        props = row.get("properties", {})
-        for k, v in props.items():
-            if v.get("type") == "title" and v.get("title"):
-                name = v["title"][0]["plain_text"]
-                page_map[name] = row["id"]
-                break
 
     for stock in stocks:
         code = stock["code"]
@@ -149,7 +171,6 @@ def update_stock_prices(assets_db, cfg, token):
         cost_val = round(avg_cost * shares)
         roi = round((price - avg_cost) / avg_cost * 100, 2)
 
-        # 更新 Notion
         page_id = page_map.get(name)
         if page_id:
             api(
@@ -158,7 +179,9 @@ def update_stock_prices(assets_db, cfg, token):
                 {
                     "properties": {
                         "當前金額 / Current Value": {"number": current_val},
+                        "成本 / Cost Basis": {"number": cost_val},
                         "上次更新 / Last Updated": {"date": {"start": today}},
+                        "自動更新 / Auto Updated": {"checkbox": True},
                     }
                 },
                 token,
@@ -172,6 +195,58 @@ def update_stock_prices(assets_db, cfg, token):
         results[code] = price
 
     return results
+
+
+def update_gold_roi(assets_db, cfg, token):
+    """
+    抓即時黃金價格（TWD/克），計算黃金存摺 ROI 並寫回 Notion。
+    需在 finance_config.json 的 gold_savings 設定 grams / avg_cost_per_gram。
+    """
+    gold_cfg = cfg.get("gold_savings", {})
+    if not gold_cfg.get("enabled"):
+        return
+
+    grams = gold_cfg.get("grams")
+    avg_cost = gold_cfg.get("avg_cost_per_gram")
+    asset_name = gold_cfg.get("asset_name", "華南銀行黃金存摺")
+
+    if not grams or not avg_cost:
+        print("  ⚠️  黃金存摺：請在 finance_config.json 設定 grams 和 avg_cost_per_gram")
+        return
+
+    gold_twd = fetch_gold_price_twd()
+    if not gold_twd:
+        print("  ⚠️  黃金現價取得失敗，略過 ROI 更新")
+        return
+
+    current_val = round(gold_twd * grams)
+    cost_val = round(avg_cost * grams)
+    roi = round((gold_twd - avg_cost) / avg_cost * 100, 2)
+
+    page_map = _build_page_map(assets_db, token)
+    page_id = page_map.get(asset_name)
+    if page_id:
+        api(
+            "PATCH",
+            f"/pages/{page_id}",
+            {
+                "properties": {
+                    "當前金額 / Current Value": {"number": current_val},
+                    "成本 / Cost Basis": {"number": cost_val},
+                    "上次更新 / Last Updated": {
+                        "date": {"start": date.today().isoformat()}
+                    },
+                    "自動更新 / Auto Updated": {"checkbox": True},
+                }
+            },
+            token,
+        )
+        print(
+            f"  🥇 {asset_name}：TWD {gold_twd:,.0f}/g × {grams}g"
+            f" = NT${current_val:,}（{roi:+.2f}%）"
+        )
+    else:
+        print(f"  ⚠️  {asset_name} 在 Notion 找不到對應頁面，略過更新")
 
 
 # ── Fetch real Notion data ─────────────────────────────────────────────────────
@@ -655,6 +730,11 @@ def main():
     if cfg and cfg.get("stocks"):
         print("\n[0/3] 更新股票即時股價...")
         update_stock_prices(assets_db, cfg, token)
+
+    # 更新黃金存摺 ROI
+    if cfg and cfg.get("gold_savings", {}).get("enabled"):
+        print("\n[0b] 更新黃金存摺 ROI...")
+        update_gold_roi(assets_db, cfg, token)
 
     # Fetch data
     print("\n[1/3] 讀取 Notion 資料...")
