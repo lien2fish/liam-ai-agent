@@ -562,20 +562,11 @@ def embed_charts_in_notion(page_id, token):
 # ── Homepage Sync ──────────────────────────────────────────────────────────────
 def update_homepage(token, cfg=None):
     """
-    從 Notion Assets/Liabilities DB 讀取最新數據，刷新首頁。
-    Column 2（資產帳戶）改為動態 Table 架構：
-      - 每次執行時刪除舊表格、重建包含所有資產 + ROI% + 損益的新表格
-      - 資料來源：Assets DB（含公式欄位 報酬率/ROI%、損益/Gain-Loss）
+    從 Notion Assets/Liabilities DB 讀取最新數據，刷新首頁摘要區塊。
+    Column 2（資產帳戶）由 Notion Linked View 負責即時顯示，腳本不再管理該欄。
     """
     ASSETS_DB = "36af4149-a6aa-81c7-932b-dce2f4fa35a2"
     LIAB_DB = "36af4149-a6aa-81dc-bd04-ff52cef71f61"
-
-    # Column 2 結構常數（資產帳戶欄）
-    COLUMN2_ID = "36af4149-a6aa-81b6-ba65-e1738d721881"
-    COL2_HEADING_ID = "36af4149-a6aa-812c-9ff3-c0175df124f6"  # 💼 資產帳戶
-    COL2_DIVIDER_ID = "36af4149-a6aa-8161-a4e9-fb31d9066599"
-    COL2_LINK_ID = "36af4149-a6aa-8103-868c-ca7da9ded3de"
-    COL2_KEEP = {COL2_HEADING_ID, COL2_DIVIDER_ID, COL2_LINK_ID}
 
     BLK = {
         "month_heading": "36af4149-a6aa-81ff-89e8-c8f7c1d590bc",
@@ -597,7 +588,7 @@ def update_homepage(token, cfg=None):
     def patch(block_id, btype, text):
         api("PATCH", f"/blocks/{block_id}", {btype: {"rich_text": rt(text)}}, token)
 
-    # 1. 讀取 Assets DB（含公式欄位 ROI% 和 損益）
+    # 1. 讀取 Assets DB（計算總資產與分類比例）
     rows = api("POST", f"/databases/{ASSETS_DB}/query", {"page_size": 50}, token)
     assets = {}
     for row in rows.get("results", []):
@@ -610,20 +601,8 @@ def update_homepage(token, cfg=None):
         val = (props.get("當前金額 / Current Value") or {}).get("number") or 0
         cat_sel = (props.get("類別 / Category") or {}).get("select")
         cat = cat_sel["name"] if cat_sel else "其他"
-        roi_prop = props.get("報酬率 / ROI %", {})
-        roi = (
-            roi_prop.get("formula", {}).get("number")
-            if roi_prop.get("type") == "formula"
-            else None
-        )
-        gain_prop = props.get("損益 / Gain-Loss", {})
-        gain = (
-            gain_prop.get("formula", {}).get("number")
-            if gain_prop.get("type") == "formula"
-            else None
-        )
         if name:
-            assets[name] = {"value": val, "cat": cat, "roi": roi, "gain": gain}
+            assets[name] = {"value": val, "cat": cat}
 
     total_assets = sum(a["value"] for a in assets.values())
 
@@ -675,62 +654,7 @@ def update_homepage(token, cfg=None):
     monthly_surplus = monthly_income - monthly_expense
     savings_rate = monthly_surplus / monthly_income * 100 if monthly_income else 0
 
-    # 5. 重建 Column 2 資產表格
-    # 刪除所有動態區塊（保留 heading、divider、link）
-    col2_blocks = api(
-        "GET", f"/blocks/{COLUMN2_ID}/children?page_size=100", None, token
-    )
-    for b in col2_blocks.get("results", []):
-        if b["id"] not in COL2_KEEP:
-            try:
-                api("DELETE", f"/blocks/{b['id']}", None, token)
-            except Exception:
-                pass
-
-    # 建立資產明細表格（依市值由大到小排序）
-    def make_row(cells):
-        return {
-            "type": "table_row",
-            "table_row": {
-                "cells": [
-                    [{"type": "text", "text": {"content": str(c)}}] for c in cells
-                ]
-            },
-        }
-
-    sorted_assets = sorted(assets.items(), key=lambda x: -(x[1].get("value") or 0))
-    table_rows = [make_row(["項目", "當前金額", "報酬率", "損益", "類別"])]
-    for aname, info in sorted_assets:
-        val = info.get("value", 0)
-        roi = info.get("roi")
-        gain = info.get("gain")
-        roi_str = f"{roi:+.1f}%" if roi is not None else "—"
-        gain_str = f"NT${gain:+,.0f}" if gain is not None else "—"
-        table_rows.append(
-            make_row([aname, f"NT${val:,.0f}", roi_str, gain_str, info.get("cat", "")])
-        )
-
-    api(
-        "PATCH",
-        f"/blocks/{COLUMN2_ID}/children",
-        {
-            "after": COL2_HEADING_ID,
-            "children": [
-                {
-                    "type": "table",
-                    "table": {
-                        "table_width": 5,
-                        "has_column_header": True,
-                        "has_row_header": False,
-                        "children": table_rows,  # Notion API 要求 children 在 table 物件內
-                    },
-                }
-            ],
-        },
-        token,
-    )
-
-    # 6. 更新摘要區塊
+    # 5. 更新摘要區塊（Column 2 Linked View 由 Notion 原生處理，腳本不介入）
     today = date.today()
     month_str = f"{today.year}-{today.month:02d}"
 
