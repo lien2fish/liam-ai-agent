@@ -667,8 +667,6 @@ def update_homepage(token, cfg=None):
         alloc_segs.append(seg(f"{cat_label:<3}  ", bold=True, color="default"))
         if filled > 0:
             alloc_segs.append(seg("█" * filled, color="orange"))
-        if filled < BAR_W:
-            alloc_segs.append(seg("░" * (BAR_W - filled), color="gray"))
         alloc_segs.append(seg(f"  {pct:.1f}%", color="brown"))
 
     # 4. 投資績效計算
