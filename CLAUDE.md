@@ -207,7 +207,7 @@ open -a Safari "https://accounts.google.com/o/oauth2/v2/auth?client_id=879735593
 | YouTube | 留言自動回覆 | 每 10 分鐘 | ✅ 運行中 |
 | TikTok | — | — | 手動，不自動化 |
 
-## GitHub Actions 自動化總覽（2026-05-24 更新）
+## GitHub Actions 自動化總覽（2026-06-01 更新）
 
 所有雲端自動化任務均透過 GitHub Actions 執行，不依賴本機開機。
 
@@ -218,6 +218,7 @@ open -a Safari "https://accounts.google.com/o/oauth2/v2/auth?client_id=879735593
 | `yt_comment_reply.yml` | YouTube 留言自動回覆 | 每 10 分鐘 |
 | `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:00，自動 commit 報告 |
 | `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:00 |
+| `stock_prediction.yml` | 台股市場分析預測 | 每週一至五 08:30，自動 commit 報告 |
 
 ### GitHub Secrets 總覽
 | Secret | 用途 |
@@ -454,6 +455,49 @@ wt clean   # 清除額外 worktree
 ```bash
 python3 /Users/lien/Downloads/gen_a1_list.py
 ```
+
+---
+
+## 台股市場分析預測系統（2026-06-01 建立）
+
+### 核心資訊
+| 項目 | 說明 |
+|------|------|
+| 腳本 | `stock/stock_prediction.py` |
+| 排程 | GitHub Actions，每週一至週五 UTC 00:30（台灣 08:30，開盤前）|
+| Workflow | `.github/workflows/stock_prediction.yml` |
+| 報告輸出 | `reports/stock/YYYY-MM-DD.md`（每日自動 commit）|
+| AI 分析 | Gemini 2.5-flash（主）→ 2.0-flash（降級），繁體中文，250-350 字 |
+
+### 數據來源（全免費，無額外 API Key）
+| 數據 | 識別符 | 說明 |
+|------|--------|------|
+| 台灣加權指數 | `^TWII` | Yahoo Finance 直接 HTTP |
+| 台積電 | `2330.TW` | Yahoo Finance |
+| S&P500 / NASDAQ | `^GSPC` / `^IXIC` | Yahoo Finance |
+| VIX 恐慌指數 | `^VIX` | Yahoo Finance |
+| USD/TWD 匯率 | `TWD=X` | Yahoo Finance |
+| WTI 原油 / 黃金 | `CL=F` / `GC=F` | Yahoo Finance |
+| 台灣出口年增率 | 財政部關務署 API | 選填，失敗不中斷 |
+| 持倉個股 | 從 `finance/finance_config.json` 讀取 | 009816、2610 |
+
+### 技術指標
+- **MA5 / MA20 / MA60**：多空趨勢、均線排列
+- **RSI(14)**：超買（>70）/ 超賣（<30）
+- **MACD(12,26,9)**：動能轉折、柱體正負
+- **KD(9,3,3)**：K>D 多頭 / K<D 空頭
+- **量比**：今日成交量 vs 5 日均量
+
+### 報告內容
+1. 走勢預測（上漲↑ / 下跌↓ / 盤整→）
+2. 技術面指標表（加權指數 8 項指標）
+3. 總體經濟環境表（美股、VIX、匯率、油金、出口）
+4. 持倉損益參考（009816 凱基優選ETF、2610 華航）
+5. Gemini AI 綜合判斷（250-350 字）
+6. 風險提示聲明
+
+### 使用 Secret
+僅需 `GEMINI_KEY`（已存在，無需新增）
 
 ---
 

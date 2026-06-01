@@ -1,0 +1,37 @@
+name: 台股市場分析預測
+
+on:
+  schedule:
+    - cron: '30 0 * * 1-5'   # UTC 00:30 = 台灣時間 08:30（開盤前，週一至週五）
+  workflow_dispatch:           # 支援手動觸發
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 執行台股分析
+        env:
+          GEMINI_KEY:   ${{ secrets.GEMINI_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO:  ${{ github.repository }}
+        run: python3 stock/stock_prediction.py
+
+      - name: Commit 報告到 repo
+        run: |
+          git config user.name  "Liam AI Agent"
+          git config user.email "lien2fish@gmail.com"
+          git add reports/stock/
+          git diff --cached --quiet || git commit -m "chore: 台股分析報告 $(date -u '+%Y-%m-%d')"
+          git push
