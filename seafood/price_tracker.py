@@ -9,6 +9,7 @@
 
 import json
 import os
+import time
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -68,6 +69,38 @@ def notion_request(method: str, path: str, body: dict = None):
         return json.loads(r.read())
 
 
+def gemini_call(payload: dict, retries: int = 3) -> dict:
+    """呼叫 Gemini API，遇到 429 自動退避重試。"""
+    data = json.dumps(payload).encode()
+    for attempt in range(retries):
+        req = urllib.request.Request(
+            f"{GEMINI_URL}?key={GEMINI_KEY}",
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt < retries - 1:
+                wait = 10 * (attempt + 1)
+                log(f"  Gemini 429，等 {wait} 秒後重試...")
+                time.sleep(wait)
+            else:
+                raise
+    return {}
+
+
+def extract_json_list(text: str) -> list[dict]:
+    text = text.replace("```json", "").replace("```", "").strip()
+    start = text.find("[")
+    end = text.rfind("]") + 1
+    if start == -1 or end == 0:
+        return []
+    return json.loads(text[start:end])
+
+
 # ── Layer 1：Gemini + Google Search grounding ────────────────────
 
 
@@ -93,39 +126,24 @@ def fetch_with_gemini_search(seasonal: list[str]) -> list[dict]:
         f"只回傳 JSON 陣列，不加任何說明文字。"
     )
 
-    payload = json.dumps(
+    data = gemini_call(
         {
             "contents": [{"parts": [{"text": prompt}]}],
             "tools": [{"google_search": {}}],
             "generationConfig": {"maxOutputTokens": 2048, "temperature": 0},
         }
-    ).encode()
-
-    req = urllib.request.Request(
-        f"{GEMINI_URL}?key={GEMINI_KEY}",
-        data=payload,
-        headers={"Content-Type": "application/json"},
-        method="POST",
     )
-    with urllib.request.urlopen(req, timeout=30) as r:
-        data = json.loads(r.read())
-
-    # Gemini 可能在多個 parts 中回傳（search grounding 的引用在另一個 part）
-    full_text = ""
-    for part in data["candidates"][0]["content"].get("parts", []):
-        full_text += part.get("text", "")
-    full_text = full_text.replace("```json", "").replace("```", "").strip()
-    start = full_text.find("[")
-    end = full_text.rfind("]") + 1
-    if start == -1 or end == 0:
-        log(f"  Gemini Search 回傳無 JSON 陣列，原始回覆前200字：{full_text[:200]}")
-        return []
-    result = json.loads(full_text[start:end])
+    full_text = "".join(
+        p.get("text", "") for p in data["candidates"][0]["content"].get("parts", [])
+    )
+    result = extract_json_list(full_text)
+    if not result:
+        log(f"  Gemini Search 無 JSON 陣列，回覆前200字：{full_text[:200]}")
     return result
 
 
 def gemini_reference_prices(seasonal: list[str]) -> list[dict]:
-    """當 Search 拿不到資料時，用 Gemini 知識庫產生當月北部市場參考行情。"""
+    """當所有即時來源失敗時，用 Gemini 知識庫產生當月北部市場參考行情。"""
     if not GEMINI_KEY:
         return []
 
@@ -135,37 +153,21 @@ def gemini_reference_prices(seasonal: list[str]) -> list[dict]:
         f"你是台灣北部漁市場（基隆崁仔頂、萬里漁港）的行情專家。"
         f"請根據你的知識，提供 {month} 月份台灣北部漁市場的批發參考行情。"
         f"當季重點品項：{seasonal_str}。"
-        f"請同時列出其他常見北部市場漁獲品項。"
+        f"請同時列出其他常見北部市場漁獲品項（至少15種）。"
         f"整理成 JSON 陣列，每筆包含：\n"
-        f"  name: 品名\n"
-        f"  high: 上價（元/kg）\n"
-        f"  mid: 中價（元/kg）\n"
-        f"  low: 下價（元/kg）\n"
-        f"  volume: 0\n"
+        f"  name: 品名\n  high: 上價（元/kg）\n  mid: 中價（元/kg）\n"
+        f"  low: 下價（元/kg）\n  volume: 0\n"
         f'  market: "參考行情（非即時）"\n'
         f"只回傳 JSON 陣列，不加說明。"
     )
-    payload = json.dumps(
+    data = gemini_call(
         {
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {"maxOutputTokens": 1024, "temperature": 0.2},
         }
-    ).encode()
-    req = urllib.request.Request(
-        f"{GEMINI_URL}?key={GEMINI_KEY}",
-        data=payload,
-        headers={"Content-Type": "application/json"},
-        method="POST",
     )
-    with urllib.request.urlopen(req, timeout=30) as r:
-        data = json.loads(r.read())
-    text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
-    text = text.replace("```json", "").replace("```", "").strip()
-    start = text.find("[")
-    end = text.rfind("]") + 1
-    if start == -1 or end == 0:
-        return []
-    return json.loads(text[start:end])
+    text = data["candidates"][0]["content"]["parts"][0]["text"]
+    return extract_json_list(text)
 
 
 # ── Layer 2：農業部 MOA 開放資料 API（備援）────────────────────
