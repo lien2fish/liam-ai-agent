@@ -40,9 +40,10 @@ BANK = [
 
 # ── 修改這裡 ──────────────────────────────────────────────────────
 ORDER = {
-    "出貨單號": "2026052001",
-    "出貨日期": "2026 / 05 / 20",
+    "出貨單號": "2026060201",
+    "出貨日期": "2026 / 06 / 02",
     "客戶姓名": "範例客戶",
+    "地址": "台北市範例路1號",
     "付款方式": "VIP 優惠價",
     "items": [
         {
@@ -50,13 +51,13 @@ ORDER = {
             "品名": "Annonce de Belair-Monange '20",
             "數量": 6,
             "單位": "瓶",
-            "星坊定價": 4930,
+            "定價": 4930,
             "實售合計": 18000,
         }
     ],
     "備註": (
         "1. 本次訂購 Annonce de Belair-Monange '20 共 1 箱（6 瓶），VIP 特惠價 NT$18,000。\n"
-        "2. 星坊酒業目錄參考定價 NT$4,930 / 瓶（合計 NT$29,580），本次折扣 39.1%。\n"
+        "2. 酒業目錄參考定價 NT$4,930 / 瓶（合計 NT$29,580），本次折扣 39.1%。\n"
         "3. 如有疑問請聯繫鑫酒藏客服，謝謝惠顧。"
     ),
 }
@@ -96,9 +97,10 @@ def build():
     customer = ORDER["客戶姓名"].split()[0]
     product = ORDER["items"][0]["品名"].split()[0]
     date_str = ORDER["出貨日期"].replace(" ", "").replace("/", "")
-    out_dir = f"/Users/lien/Desktop/鉅鑫管理顧問/鑫酒藏/{date_str[:4]}年出貨單"
-    os.makedirs(out_dir, exist_ok=True)
-    output = f"{out_dir}/出貨單_{customer}_{product}_{date_str}.pdf"
+    archive = f"/Users/lien/Desktop/鉅鑫管理顧問/鑫酒藏/{date_str[:4]}年出貨單"
+    os.makedirs(archive, exist_ok=True)
+    filename = f"出貨單_{customer}_{product}_{date_str}.pdf"
+    output = f"/Users/lien/Desktop/{filename}"
 
     W = A4[0] - 36 * mm
     doc = SimpleDocTemplate(
@@ -135,14 +137,22 @@ def build():
                     tx("付款方式", 10, False, AMBER),
                     tx(ORDER["付款方式"], 10),
                 ],
+                [
+                    tx("地　　址", 10, False, AMBER),
+                    tx(ORDER.get("地址", ""), 10),
+                    "",
+                    "",
+                ],
             ],
             colWidths=cw,
             style=TableStyle(
                 [
                     ("BACKGROUND", (0, 0), (0, -1), MID),
-                    ("BACKGROUND", (2, 0), (2, -1), MID),
+                    ("BACKGROUND", (2, 0), (2, 1), MID),
                     ("BACKGROUND", (1, 0), (1, -1), LIGHT),
-                    ("BACKGROUND", (3, 0), (3, -1), LIGHT),
+                    ("BACKGROUND", (3, 0), (3, 1), LIGHT),
+                    ("BACKGROUND", (1, 2), (3, 2), LIGHT),
+                    ("SPAN", (1, 2), (3, 2)),
                     ("BOX", (0, 0), (-1, -1), 0.8, AMBER),
                     ("INNERGRID", (0, 0), (-1, -1), 0.5, AMBER),
                     ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
@@ -173,20 +183,15 @@ def build():
     )
 
     # ── 商品表格 ──────────────────────────────────────────────────
-    col_w = [W * 0.14, W * 0.30, W * 0.08, W * 0.19, W * 0.12, W * 0.17]
-    headers = ["品項編碼", "商品名稱", "數量", "星坊定價", "折扣", "實售小計"]
+    col_w = [W * 0.20, W * 0.55, W * 0.25]
+    headers = ["品項編碼", "商品名稱", "數量"]
     rows = [[tx(h, 9, True, DARK, TA_CENTER) for h in headers]]
     for it in ORDER["items"]:
-        ref = it["星坊定價"] * it["數量"]
-        disc = round((1 - it["實售合計"] / ref) * 100, 1) if ref else 0
         rows.append(
             [
                 tx(it["編碼"], 8, align=TA_CENTER),
                 tx(it["品名"], 9),
                 tx(f"{it['數量']} {it['單位']}", 9, align=TA_CENTER),
-                tx(f"NT${it['星坊定價']:,}/瓶<br/>合計 NT${ref:,}", 8, align=TA_CENTER),
-                tx(f"- {disc}%", 9, color=RED, align=TA_CENTER),
-                tx(f"NT$ {it['實售合計']:,}", 10, True, align=TA_CENTER),
             ]
         )
     s.append(
@@ -208,30 +213,6 @@ def build():
         )
     )
 
-    # ── 合計 ──────────────────────────────────────────────────────
-    total = sum(it["實售合計"] for it in ORDER["items"])
-    s.append(
-        Table(
-            [
-                [
-                    tx("合  計", 12, True, DARK, TA_CENTER),
-                    tx(f"NT$  {total:,}", 13, True, DARK, TA_CENTER),
-                ],
-            ],
-            colWidths=[W * 0.84, W * 0.16],
-            style=TableStyle(
-                [
-                    ("BACKGROUND", (0, 0), (0, 0), MID),
-                    ("BACKGROUND", (1, 0), (1, 0), LIGHT),
-                    ("BOX", (0, 0), (-1, -1), 0.8, AMBER),
-                    ("INNERGRID", (0, 0), (-1, -1), 0.5, AMBER),
-                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                    ("TOPPADDING", (0, 0), (-1, -1), 7),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
-                ]
-            ),
-        )
-    )
     s.append(Spacer(1, 8))
 
     # ── 備註 ──────────────────────────────────────────────────────
@@ -305,7 +286,11 @@ def build():
     s.append(tx("鑫酒藏 · 鉅鑫只提供最高品質", 9, color=DARK, align=TA_CENTER))
 
     doc.build(s)
-    print(f"✅ {output}")
+    import shutil
+
+    shutil.copy(output, f"{archive}/{filename}")
+    print(f"✅ 桌面：{output}")
+    print(f"   備份：{archive}/{filename}")
     return output
 
 
