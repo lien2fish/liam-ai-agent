@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-鑫酒藏出貨單 PDF 產生器
-修改 ORDER 後執行：python3 notion_crm/gen_wine_pdf.py
+鑫海產出貨單 PDF 產生器
+修改 ORDER 後執行：python3 notion_crm/gen_seafood_pdf.py
 """
 import os
 from reportlab.lib.pagesizes import A4
@@ -23,11 +23,11 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT
 
 pdfmetrics.registerFont(TTFont("F", "/Library/Fonts/Arial Unicode.ttf"))
 
-# ── 顏色（從原版 PDF 直接抽取）────────────────────────────────────
-AMBER = colors.HexColor("#B7874A")  # 品牌金：標題、標籤文字
-DARK = colors.HexColor("#2D1B0E")  # 深咖啡：副標、邊框
-MID = colors.HexColor("#EFE6D3")  # 羊皮紙：標籤背景
-LIGHT = colors.HexColor("#F9F8F2")  # 近白：資料欄背景
+# ── 顏色（海洋深藍系）────────────────────────────────────────────
+TEAL = colors.HexColor("#1B5E7B")  # 品牌藍：標題、標籤文字
+DARK = colors.HexColor("#0D2B38")  # 深藍：副標、邊框
+MID = colors.HexColor("#D6EAF4")  # 淺藍：標籤背景
+LIGHT = colors.HexColor("#F4FAFD")  # 近白：資料欄背景
 BLACK = colors.HexColor("#000000")  # 數值文字
 RED = colors.HexColor("#A02010")  # 折扣
 
@@ -44,21 +44,21 @@ ORDER = {
     "出貨日期": "2026 / 06 / 02",
     "客戶姓名": "詹傑涵 Hank",
     "地址": "台北市內湖路一段387巷8號7樓",
-    "付款方式": "VIP 優惠價",
+    "付款方式": "現金",
     "items": [
         {
-            "編碼": "AJS-401J201A",
-            "品名": "Annonce de Belair-Monange '20",
-            "數量": 6,
-            "單位": "瓶",
-            "定價": 4930,
-            "實售合計": 18000,
+            "品名": "黑鮪魚金三角",
+            "規格": "8兩",
+            "數量": 1,
+            "單位": "份",
+            "單價": 2000,
+            "實售合計": 2000,
         }
     ],
     "備註": (
-        "1. 本次訂購 Annonce de Belair-Monange '20 共 1 箱（6 瓶），VIP 特惠價 NT$18,000。\n"
-        "2. 酒業目錄參考定價 NT$4,930 / 瓶（合計 NT$29,580），本次折扣 39.1%。\n"
-        "3. 如有疑問請聯繫鑫酒藏客服，謝謝惠顧。"
+        "野生黑鮪魚，龜吼漁港現流直送，品質保證。\n"
+        "【保鮮須知】收到後請立即冷藏（0～4°C）或冷凍（-18°C以下）。"
+        "生食建議當日食用；解凍請置冷藏室緩慢退冰，切勿常溫或熱水解凍。"
     ),
 }
 
@@ -77,27 +77,14 @@ def st(size=10, bold=False, color=BLACK, align=TA_LEFT):
 
 
 def tx(text, size=10, bold=False, color=BLACK, align=TA_LEFT):
-    return Paragraph(text.replace("\n", "<br/>"), st(size, bold, color, align))
-
-
-def row_style(bg_label, bg_value):
-    return [
-        ("BACKGROUND", (0, 0), (0, -1), bg_label),
-        ("BACKGROUND", (1, 0), (1, -1), bg_value),
-        ("BOX", (0, 0), (-1, -1), 0.8, AMBER),
-        ("INNERGRID", (0, 0), (-1, -1), 0.5, AMBER),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("TOPPADDING", (0, 0), (-1, -1), 5),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
-        ("LEFTPADDING", (0, 0), (-1, -1), 7),
-    ]
+    return Paragraph(str(text).replace("\n", "<br/>"), st(size, bold, color, align))
 
 
 def build():
     customer = ORDER["客戶姓名"].split()[0]
-    product = ORDER["items"][0]["品名"].split()[0]
+    product = ORDER["items"][0]["品名"]
     date_str = ORDER["出貨日期"].replace(" ", "").replace("/", "")
-    archive = f"/Users/lien/Desktop/鉅鑫管理顧問/鑫酒藏/{date_str[:4]}年出貨單"
+    archive = f"/Users/lien/Desktop/鉅鑫管理顧問/鑫海產/{date_str[:4]}年出貨單"
     os.makedirs(archive, exist_ok=True)
     filename = f"出貨單_{customer}_{product}_{date_str}.pdf"
     output = f"/Users/lien/Desktop/{filename}"
@@ -113,10 +100,12 @@ def build():
     )
     s = []
 
-    # ── 標題：鑫酒藏（置中，品牌金）────────────────────────────
-    s.append(tx("鑫  酒  藏", 24, True, AMBER, TA_CENTER))
+    # ── 標題：鑫海產（置中，品牌藍）────────────────────────────
+    s.append(tx("鑫  海  產", 24, True, TEAL, TA_CENTER))
+    s.append(Spacer(1, 4))
+    s.append(tx("龜吼現流活海產", 11, False, DARK, TA_CENTER))
     s.append(Spacer(1, 6))
-    s.append(HRFlowable(width=W, thickness=1, color=AMBER, spaceAfter=6))
+    s.append(HRFlowable(width=W, thickness=1, color=TEAL, spaceAfter=6))
     s.append(tx("出  貨  單", 17, False, DARK, TA_CENTER))
     s.append(Spacer(1, 10))
 
@@ -126,19 +115,19 @@ def build():
         Table(
             [
                 [
-                    tx("出貨單號", 10, False, AMBER),
+                    tx("出貨單號", 10, False, TEAL),
                     tx(ORDER["出貨單號"], 10),
-                    tx("出貨日期", 10, False, AMBER),
+                    tx("出貨日期", 10, False, TEAL),
                     tx(ORDER["出貨日期"], 10),
                 ],
                 [
-                    tx("客戶姓名", 10, False, AMBER),
+                    tx("客戶姓名", 10, False, TEAL),
                     tx(ORDER["客戶姓名"], 11, True),
-                    tx("付款方式", 10, False, AMBER),
+                    tx("付款方式", 10, False, TEAL),
                     tx(ORDER["付款方式"], 10),
                 ],
                 [
-                    tx("地　　址", 10, False, AMBER),
+                    tx("地　　址", 10, False, TEAL),
                     tx(ORDER.get("地址", ""), 10),
                     "",
                     "",
@@ -153,8 +142,8 @@ def build():
                     ("BACKGROUND", (3, 0), (3, 1), LIGHT),
                     ("BACKGROUND", (1, 2), (3, 2), LIGHT),
                     ("SPAN", (1, 2), (3, 2)),
-                    ("BOX", (0, 0), (-1, -1), 0.8, AMBER),
-                    ("INNERGRID", (0, 0), (-1, -1), 0.5, AMBER),
+                    ("BOX", (0, 0), (-1, -1), 0.8, TEAL),
+                    ("INNERGRID", (0, 0), (-1, -1), 0.5, TEAL),
                     ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
                     ("TOPPADDING", (0, 0), (-1, -1), 5),
                     ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
@@ -168,12 +157,12 @@ def build():
     # ── 商品明細 section header ────────────────────────────────
     s.append(
         Table(
-            [[tx("▍ 商品明細", 10, False, AMBER)]],
+            [[tx("▍ 商品明細", 10, False, TEAL)]],
             colWidths=[W],
             style=TableStyle(
                 [
                     ("BACKGROUND", (0, 0), (-1, -1), MID),
-                    ("BOX", (0, 0), (-1, -1), 0.8, AMBER),
+                    ("BOX", (0, 0), (-1, -1), 0.8, TEAL),
                     ("TOPPADDING", (0, 0), (-1, -1), 4),
                     ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
                     ("LEFTPADDING", (0, 0), (-1, -1), 8),
@@ -183,14 +172,14 @@ def build():
     )
 
     # ── 商品表格 ──────────────────────────────────────────────────
-    col_w = [W * 0.20, W * 0.55, W * 0.25]
-    headers = ["品項編碼", "商品名稱", "數量"]
+    col_w = [W * 0.50, W * 0.25, W * 0.25]
+    headers = ["商品名稱", "規格", "數量"]
     rows = [[tx(h, 9, True, DARK, TA_CENTER) for h in headers]]
     for it in ORDER["items"]:
         rows.append(
             [
-                tx(it["編碼"], 8, align=TA_CENTER),
-                tx(it["品名"], 9),
+                tx(it["品名"], 10),
+                tx(it["規格"], 9, align=TA_CENTER),
                 tx(f"{it['數量']} {it['單位']}", 9, align=TA_CENTER),
             ]
         )
@@ -202,12 +191,12 @@ def build():
                 [
                     ("BACKGROUND", (0, 0), (-1, 0), MID),
                     ("BACKGROUND", (0, 1), (-1, -1), LIGHT),
-                    ("BOX", (0, 0), (-1, -1), 0.8, AMBER),
-                    ("INNERGRID", (0, 0), (-1, -1), 0.5, AMBER),
+                    ("BOX", (0, 0), (-1, -1), 0.8, TEAL),
+                    ("INNERGRID", (0, 0), (-1, -1), 0.5, TEAL),
                     ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
                     ("TOPPADDING", (0, 0), (-1, -1), 5),
                     ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
-                    ("LEFTPADDING", (1, 1), (1, -1), 7),
+                    ("LEFTPADDING", (1, 0), (1, -1), 7),
                 ]
             ),
         )
@@ -220,15 +209,15 @@ def build():
         s.append(
             Table(
                 [
-                    [tx("備  註", 10, False, AMBER, TA_CENTER), tx(ORDER["備註"], 9)],
+                    [tx("備  註", 10, False, TEAL, TA_CENTER), tx(ORDER["備註"], 9)],
                 ],
                 colWidths=[W * 0.12, W * 0.88],
                 style=TableStyle(
                     [
                         ("BACKGROUND", (0, 0), (0, 0), MID),
                         ("BACKGROUND", (1, 0), (1, 0), LIGHT),
-                        ("BOX", (0, 0), (-1, -1), 0.8, AMBER),
-                        ("INNERGRID", (0, 0), (-1, -1), 0.5, AMBER),
+                        ("BOX", (0, 0), (-1, -1), 0.8, TEAL),
+                        ("INNERGRID", (0, 0), (-1, -1), 0.5, TEAL),
                         ("VALIGN", (0, 0), (-1, -1), "TOP"),
                         ("TOPPADDING", (0, 0), (-1, -1), 6),
                         ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
@@ -242,12 +231,12 @@ def build():
     # ── 匯款資訊 ──────────────────────────────────────────────────
     s.append(
         Table(
-            [[tx("▍ 匯款資訊", 10, False, AMBER)]],
+            [[tx("▍ 匯款資訊", 10, False, TEAL)]],
             colWidths=[W],
             style=TableStyle(
                 [
                     ("BACKGROUND", (0, 0), (-1, -1), MID),
-                    ("BOX", (0, 0), (-1, -1), 0.8, AMBER),
+                    ("BOX", (0, 0), (-1, -1), 0.8, TEAL),
                     ("TOPPADDING", (0, 0), (-1, -1), 4),
                     ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
                     ("LEFTPADDING", (0, 0), (-1, -1), 8),
@@ -260,7 +249,7 @@ def build():
             Table(
                 [
                     [
-                        tx(label, 9, True, AMBER, TA_CENTER),
+                        tx(label, 9, True, TEAL, TA_CENTER),
                         tx(value, 10 if label == "帳號" else 9),
                     ],
                 ],
@@ -269,8 +258,8 @@ def build():
                     [
                         ("BACKGROUND", (0, 0), (0, 0), MID),
                         ("BACKGROUND", (1, 0), (1, 0), LIGHT),
-                        ("BOX", (0, 0), (-1, -1), 0.5, AMBER),
-                        ("INNERGRID", (0, 0), (-1, -1), 0.5, AMBER),
+                        ("BOX", (0, 0), (-1, -1), 0.5, TEAL),
+                        ("INNERGRID", (0, 0), (-1, -1), 0.5, TEAL),
                         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
                         ("TOPPADDING", (0, 0), (-1, -1), 5),
                         ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
@@ -282,8 +271,8 @@ def build():
 
     # ── Footer ────────────────────────────────────────────────────
     s.append(Spacer(1, 8))
-    s.append(HRFlowable(width=W, thickness=1, color=AMBER, spaceAfter=4))
-    s.append(tx("鑫酒藏 · 鉅鑫只提供最高品質", 9, color=DARK, align=TA_CENTER))
+    s.append(HRFlowable(width=W, thickness=1, color=TEAL, spaceAfter=4))
+    s.append(tx("鑫海產 · 鉅鑫只提供最高品質", 9, color=DARK, align=TA_CENTER))
 
     doc.build(s)
     import shutil
