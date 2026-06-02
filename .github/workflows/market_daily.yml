@@ -2,7 +2,7 @@ name: 每日股市分析報告
 
 on:
   schedule:
-    - cron: '0 1 * * *'   # 台灣 09:00（UTC+8）
+    - cron: '0 4 * * *'   # 台灣 12:00（UTC+8），避開 09:00 IG/YT 留言回覆高峰
   workflow_dispatch:
 
 jobs:
