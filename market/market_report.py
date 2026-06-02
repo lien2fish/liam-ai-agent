@@ -87,7 +87,7 @@ def gemini_call(payload, retries=3):
                 return json.loads(r.read())
         except urllib.error.HTTPError as e:
             if e.code == 429 and attempt < retries - 1:
-                wait = 30 * (attempt + 1)
+                wait = 60 * (attempt + 1)  # 60s, 120s, 180s
                 log(f"  Gemini 429，等 {wait}s 後重試...")
                 time.sleep(wait)
             else:
