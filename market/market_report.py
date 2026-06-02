@@ -29,7 +29,7 @@ REPORTS_DIR = WORKSPACE / "reports"
 NOTION_VER = "2022-06-28"
 NOTION_API = "https://api.notion.com/v1"
 YF_CHART = "https://query1.finance.yahoo.com/v8/finance/chart"
-GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
 GEMINI_KEY = os.environ.get("GEMINI_KEY", "")
 
