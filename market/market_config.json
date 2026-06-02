@@ -1,0 +1,46 @@
+{
+  "notion_page_id": "373f4149-a6aa-81e9-8fd4-c97eb9a9fbeb",
+  "notion_parent_page_id": "358f4149-a6aa-8088-9e6d-f5361d05cd12",
+  "watch_stocks": [
+    {
+      "code": "2330.TW",
+      "name": "台積電",
+      "holding": false
+    },
+    {
+      "code": "0050.TW",
+      "name": "元大台灣50 ETF",
+      "holding": false
+    },
+    {
+      "code": "006208.TW",
+      "name": "富邦台灣50 ETF",
+      "holding": false
+    },
+    {
+      "code": "009816.TW",
+      "name": "凱基優選ETF",
+      "holding": true
+    },
+    {
+      "code": "2610.TW",
+      "name": "華航",
+      "holding": true
+    },
+    {
+      "code": "2303.TW",
+      "name": "聯電",
+      "holding": false
+    },
+    {
+      "code": "2454.TW",
+      "name": "聯發科",
+      "holding": false
+    },
+    {
+      "code": "2317.TW",
+      "name": "鴻海",
+      "holding": false
+    }
+  ]
+}
