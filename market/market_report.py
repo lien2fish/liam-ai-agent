@@ -237,7 +237,11 @@ def analyze_with_gemini(md):
             {
                 "contents": [{"parts": [{"text": prompt}]}],
                 "tools": [{"google_search": {}}],
-                "generationConfig": {"maxOutputTokens": 2048, "temperature": 0.3},
+                "generationConfig": {
+                    "maxOutputTokens": 2048,
+                    "temperature": 0.3,
+                    "thinkingConfig": {"thinkingBudget": 0},
+                },
             }
         )
         text = "".join(
@@ -274,7 +278,11 @@ def fallback_analysis(md):
         data = gemini_call(
             {
                 "contents": [{"parts": [{"text": prompt}]}],
-                "generationConfig": {"maxOutputTokens": 1024, "temperature": 0.3},
+                "generationConfig": {
+                    "maxOutputTokens": 1024,
+                    "temperature": 0.3,
+                    "thinkingConfig": {"thinkingBudget": 0},
+                },
             }
         )
         text = data["candidates"][0]["content"]["parts"][0]["text"]
