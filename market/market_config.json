@@ -41,6 +41,31 @@
       "code": "2317.TW",
       "name": "鴻海",
       "holding": false
+    },
+    {
+      "code": "2382.TW",
+      "name": "廣達",
+      "holding": false
+    },
+    {
+      "code": "3711.TW",
+      "name": "日月光投控",
+      "holding": false
+    },
+    {
+      "code": "3037.TW",
+      "name": "欣興",
+      "holding": false
+    },
+    {
+      "code": "3231.TW",
+      "name": "緯創",
+      "holding": false
+    },
+    {
+      "code": "2618.TW",
+      "name": "長榮航",
+      "holding": false
     }
   ]
 }
