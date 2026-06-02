@@ -207,7 +207,7 @@ open -a Safari "https://accounts.google.com/o/oauth2/v2/auth?client_id=879735593
 | YouTube | 留言自動回覆 | 每 10 分鐘 | ✅ 運行中 |
 | TikTok | — | — | 手動，不自動化 |
 
-## GitHub Actions 自動化總覽（2026-05-24 更新）
+## GitHub Actions 自動化總覽（2026-06-02 更新）
 
 所有雲端自動化任務均透過 GitHub Actions 執行，不依賴本機開機。
 
@@ -218,11 +218,13 @@ open -a Safari "https://accounts.google.com/o/oauth2/v2/auth?client_id=879735593
 | `yt_comment_reply.yml` | YouTube 留言自動回覆 | 每 10 分鐘 |
 | `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:00，自動 commit 報告 |
 | `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:00 |
+| `market_daily.yml` | 每日股市全面分析報告 | 每天 **12:00**（台灣），自動 commit 報告 |
+| `seafood_prices.yml` | 漁獲市場行情追蹤 | 每天 09:30 |
 
 ### GitHub Secrets 總覽
 | Secret | 用途 |
 |--------|------|
-| `GEMINI_KEY` | Gemini AI（IG發文、留言回覆）|
+| `GEMINI_KEY` | Gemini AI 付費 Key（claude-workspace-495009，**2.5-flash** 模型）|
 | `HF_TOKEN` | Hugging Face FLUX 圖片生成 |
 | `IG_TOKEN` | Instagram Graph API（到期 2026-07-16）|
 | `IG_ID` | Instagram 帳號 ID |
@@ -303,6 +305,55 @@ cd /Users/lien/Downloads/南港展覽館 && python3 generate_from_numbers.py
 - 多館別：整體內容垂直置中於 `HEADER_BTM` ～ (`VENUE_Y` 有場地 / `H` 無場地)
 - 多活動：D/E 活動區塊置中於 `HEADER_BTM` ～ `fm_top`（Gate 區塊上方）；Gate 從 `fm_top` 往下；場地 = `max(y_after_gate + 80 + label_sz, VENUE_Y)`
 - 標準型：D/E/F 整體置中於 `CONTENT_TOP` ～ `CONTENT_BTM`
+
+## 每日股市全面分析報告系統（2026-06-02 建立）
+
+### 核心資訊
+| 項目 | 說明 |
+|------|------|
+| 腳本 | `market/market_report.py` |
+| 設定 | `market/market_config.json`（觀察股清單、Notion Page ID）|
+| 歷史 | `market/market_history.json`（90天，自動維護）|
+| 排程 | GitHub Actions，每天 12:00 台灣時間（UTC 04:00）|
+| Workflow | `.github/workflows/market_daily.yml` |
+| Notion | 固定頁面「每日市場日報」（每日覆寫，手機可查）|
+| Markdown | `reports/市場日報_YYYY-MM-DD.md`（每日 commit）|
+
+### 資料來源（三層）
+| 層 | 來源 | 說明 |
+|----|------|------|
+| L1 | Yahoo Finance | 全球指數、宏觀指標、台灣觀察股（`urllib`，無需 key）|
+| L2 | Gemini 2.5-flash + Google Search | 今日新聞、外資動向、AI 預測 |
+| L3 | Gemini 知識庫 | L2 失敗時備援 |
+
+### 報告內容
+1. 市場情緒（多頭/空頭/震盪）+ 樂觀指數 1-10
+2. 全球 6 大指數（台灣、美三大、日、港）
+3. 宏觀指標（VIX、USD/TWD、布蘭特油、黃金）
+4. 台灣觀察清單（8 支，含持有標記 ★）
+5. 今日市場新聞 + 外資動向（Gemini Search 即時搜尋）
+6. AI 一週展望 + 加權預估區間 + 主要風險
+
+### 觀察股清單（可在 market_config.json 增刪）
+| 代號 | 名稱 | 持有 |
+|------|------|------|
+| 2330.TW | 台積電 | — |
+| 0050.TW | 元大台灣50 ETF | — |
+| 006208.TW | 富邦台灣50 ETF | — |
+| 009816.TW | 凱基優選ETF | ★ |
+| 2610.TW | 華航 | ★ |
+| 2303.TW | 聯電 | — |
+| 2454.TW | 聯發科 | — |
+| 2317.TW | 鴻海 | — |
+
+### Gemini 設定（重要）
+- **模型**：`gemini-2.5-flash`（付費 Key，`claude-workspace-495009` 專案）
+- **必須設定** `thinkingConfig: {thinkingBudget: 0}`，否則思考型輸出截斷導致 JSON 解析失敗
+- `gemini-2.0-flash` 在此付費專案有配額異常（free_tier limit: 0 但 paid tier 未生效），已改用 2.5-flash
+- Notion 父頁面：`358f4149-a6aa-8088-9e6d-f5361d05cd12`（CRM 主頁）
+- Finance OS 頁面（36af4149）已封存，不可當 parent
+
+---
 
 ## Gmail 自動化腳本系統
 
