@@ -124,7 +124,7 @@ def generate_knowledge(exclude_seafood=None):
 
 注意：若選擇潮汐、海流、洋流等自然現象類內容，必須結合漁民實際作業或捕魚技術來說明（例如「漁民如何利用此現象判斷魚群位置」、「此現象對出海時機的影響」等），不可單純介紹自然現象本身。{exclude_note}"""
 
-    for model in ['gemini-2.5-flash', 'gemini-1.5-flash']:
+    for model in ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash-lite']:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
         r = requests.post(url, json={
             "contents": [{"parts": [{"text": prompt}]}],
