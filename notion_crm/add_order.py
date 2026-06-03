@@ -15,7 +15,7 @@ from datetime import date
 from pathlib import Path
 from numbers_parser import Document
 import notion_api as api
-from config import DB, BRAND_PREFIXES
+from config import DB, BRAND_PREFIXES, CUSTOMER_DB, CUSTOMER_NAME_FIELD
 
 # 本機 Numbers 檔路徑
 NUMBERS_FILES = {
@@ -152,9 +152,11 @@ def get_next_order_id(brand):
 
 
 def find_customer(brand, name_or_id):
-    rows = api.query_db(DB[brand])
+    db_key = CUSTOMER_DB.get(brand, f"{brand}_customers")
+    name_field = CUSTOMER_NAME_FIELD.get(brand, "姓名")
+    rows = api.query_db(DB[db_key])
     for r in rows:
-        title_prop = r["properties"]["姓名"]["title"]
+        title_prop = r["properties"][name_field]["title"]
         customer_name = title_prop[0]["plain_text"] if title_prop else ""
         id_prop = r["properties"].get("客戶編號", {}).get("rich_text", [])
         customer_id = id_prop[0]["plain_text"] if id_prop else ""
