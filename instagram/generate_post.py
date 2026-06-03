@@ -93,8 +93,28 @@ def save_recent_seafood(recent_list, new_seafood):
     requests.put(api_url, headers=headers, json=body)
 
 
+SEASONAL_FISH = {
+    1: ["鱈魚", "花蟹", "三點蟹", "牡蠣", "蛤蜊", "九孔", "螳螂蝦"],
+    2: ["烏魚", "烏魚子", "花枝", "小卷", "旭蟹", "蚵仔"],
+    3: ["鯖魚", "鱸魚", "白帶魚", "透抽", "竹筴魚", "赤鯮"],
+    4: ["白帶魚", "午仔魚", "透抽", "小卷", "虱目魚", "海膽"],
+    5: ["黑鮪魚", "飛魚", "鬼頭刀", "煙仔魚", "旗魚", "龍蝦"],
+    6: ["飛魚", "鬼頭刀", "煙仔魚", "正鰹", "鮪魚", "海鱺"],
+    7: ["旗魚", "鮪魚", "鬼頭刀", "劍旗魚", "草蝦", "白蝦"],
+    8: ["旗魚", "劍旗魚", "土魠魚", "馬鮫魚", "九節蝦", "花枝"],
+    9: ["秋刀魚", "正鰹", "煙仔魚", "白帶魚", "透抽", "花蟹"],
+    10: ["土魠魚", "白帶魚", "旗魚", "午仔魚", "三點蟹", "牡蠣"],
+    11: ["烏魚", "白帶魚", "赤鯮", "石斑魚", "花蟹", "蛤蜊"],
+    12: ["烏魚", "烏魚子", "花蟹", "龍蝦", "蝦類", "鱈魚"],
+}
+
+
 def generate_knowledge(exclude_seafood=None):
     """Gemini 生成今日海鮮知識（2.5-flash → 2.0-flash fallback）"""
+    month = datetime.now().month
+    in_season = SEASONAL_FISH.get(month, [])
+    season_note = f"\n\n🗓️ 本月（{month}月）當季台灣魚種：{'、'.join(in_season)}。若選擇【海鮮知識】類別，請優先從當季魚種中選題；若近期當季魚種都已發過，才考慮非當季題材。"
+
     exclude_note = ""
     if exclude_seafood:
         exclude_note = f'\n\n⚠️ 以下「主題/角度」組合近期已發過，本次嚴禁使用（主題相同但角度不同則可以）：{", ".join(exclude_seafood)}'
@@ -130,7 +150,7 @@ def generate_knowledge(exclude_seafood=None):
 設備：集魚燈、聲納魚探機、GPS定位、冰艙保鮮技術、漁網材質與選擇、無線電通訊
 生活：出海時間週期、船上生活分工、惡劣天氣應對、討海人的飲食習慣、漁村文化與信仰
 
-注意：若涉及潮汐、海流、洋流等自然現象，必須結合漁民作業或捕魚技術來說明，不可單純介紹自然現象本身。{exclude_note}"""
+注意：若涉及潮汐、海流、洋流等自然現象，必須結合漁民作業或捕魚技術來說明，不可單純介紹自然現象本身。{season_note}{exclude_note}"""
 
     for model in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite"]:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
