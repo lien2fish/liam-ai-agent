@@ -231,7 +231,14 @@ def analyze_with_gemini(md):
         f'"foreign_flow":"外資今日買超或賣超XX億元（查不到填N/A）",'
         f'"week_outlook":"一週大盤展望，2到3句繁體中文",'
         f'"risks":["主要風險1","風險2","風險3"],'
-        f'"taiex_range":"本週台灣加權預估區間（如：22000-23500）"}}'
+        f'"taiex_range":"本週台灣加權預估區間（如：22000-23500）",'
+        f'"us_taiwan_impact":{{'
+        f'"summary":"美股昨日表現對台股今日的整體影響，2句繁體中文",'
+        f'"nasdaq_effect":"NASDAQ/費半漲跌對台灣半導體（台積電/聯發科/聯電）的直接傳導，1-2句",'
+        f'"sp500_effect":"S&P500走勢對外資進出台股的影響，1-2句",'
+        f'"sector_impact":["受美股影響最大的台股族群1（例：AI伺服器族群大跌）","族群2"],'
+        f'"hedge_suggestion":"面對美股壓力，台股操作建議，1句"'
+        f"}}}}"
     )
 
     try:
@@ -274,7 +281,14 @@ def fallback_analysis(md):
         f'"foreign_flow":"N/A",'
         f'"week_outlook":"一週展望說明（2-3句）",'
         f'"risks":["風險1","風險2","風險3"],'
-        f'"taiex_range":"預估區間"}}'
+        f'"taiex_range":"預估區間",'
+        f'"us_taiwan_impact":{{'
+        f'"summary":"美股對台股整體影響，2句",'
+        f'"nasdaq_effect":"NASDAQ/費半對台灣半導體的傳導",'
+        f'"sp500_effect":"S&P500對外資進出的影響",'
+        f'"sector_impact":["受影響族群1","族群2"],'
+        f'"hedge_suggestion":"台股操作建議，1句"'
+        f"}}}}"
     )
     try:
         data = gemini_call(
@@ -457,6 +471,26 @@ def build_notion_blocks(md, prediction):
             blocks.append(_bullet(f"💹 外資動向：{ff}"))
         blocks.append(_divider())
 
+    ust = prediction.get("us_taiwan_impact", {})
+    if ust:
+        blocks.append(_h2("🇺🇸 美股對台股影響分析"))
+        if ust.get("summary"):
+            blocks.append(_callout("📡", ust["summary"], "orange_background"))
+        if ust.get("nasdaq_effect"):
+            blocks.append(_para(f"🔵 NASDAQ／費半傳導：{ust['nasdaq_effect']}"))
+        if ust.get("sp500_effect"):
+            blocks.append(_para(f"🟢 S&P500外資效應：{ust['sp500_effect']}"))
+        if ust.get("sector_impact"):
+            blocks.append(
+                _toggle(
+                    "📊 受影響台股族群",
+                    [_bullet(s) for s in ust["sector_impact"]],
+                )
+            )
+        if ust.get("hedge_suggestion"):
+            blocks.append(_callout("💡", ust["hedge_suggestion"], "yellow_background"))
+        blocks.append(_divider())
+
     blocks.append(_h2("🤖 AI 市場預估"))
     if prediction.get("taiex_range"):
         blocks.append(
@@ -579,6 +613,22 @@ def save_markdown_report(md, prediction, date_str):
         ff = prediction.get("foreign_flow", "")
         if ff and ff != "N/A":
             lines.append(f"- 💹 外資動向：{ff}")
+
+    ust = prediction.get("us_taiwan_impact", {})
+    if ust:
+        lines += ["", "## 🇺🇸 美股對台股影響分析"]
+        if ust.get("summary"):
+            lines.append(f"> {ust['summary']}")
+        if ust.get("nasdaq_effect"):
+            lines.append(f"\n**🔵 NASDAQ／費半傳導：** {ust['nasdaq_effect']}")
+        if ust.get("sp500_effect"):
+            lines.append(f"\n**🟢 S&P500外資效應：** {ust['sp500_effect']}")
+        if ust.get("sector_impact"):
+            lines.append("\n**📊 受影響台股族群：**")
+            for s in ust["sector_impact"]:
+                lines.append(f"- {s}")
+        if ust.get("hedge_suggestion"):
+            lines.append(f"\n💡 **操作建議：** {ust['hedge_suggestion']}")
 
     if prediction.get("week_outlook"):
         lines += ["", "## 🔭 一週展望", prediction["week_outlook"]]
