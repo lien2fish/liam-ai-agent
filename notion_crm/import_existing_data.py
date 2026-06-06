@@ -228,9 +228,22 @@ def import_seafood_customers():
     print(f"  找到 {len(rows)} 筆", flush=True)
     db_id = DB["seafood_customers"]
     for row in rows:
-        while len(row) < 9:
+        while len(row) < 12:
             row.append("")
-        cust_id, name, phone, contact, email, pref, vip, total, note = (
+        (
+            cust_id,
+            name,
+            phone,
+            contact,
+            email,
+            pref,
+            vip,
+            total,
+            note,
+            company,
+            tax_id,
+            address,
+        ) = (
             row[0],
             row[1],
             row[2],
@@ -240,6 +253,9 @@ def import_seafood_customers():
             row[6],
             row[7],
             row[8],
+            row[9],
+            row[10],
+            row[11],
         )
         if not name.strip():
             continue
@@ -252,6 +268,9 @@ def import_seafood_customers():
             "偏好品項": rt(pref),
             "會員等級": sel(vip if vip in ("VIP", "一般") else "一般"),
             "累計消費": num(total),
+            "公司名稱": rt(company),
+            "統編": rt(tax_id),
+            "地址": rt(address),
             "備註": rt(note),
         }
         post("/pages", {"parent": {"database_id": db_id}, "properties": props})
