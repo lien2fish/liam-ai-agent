@@ -118,8 +118,10 @@ def fetch_yf(symbol):
         meta = data["chart"]["result"][0]["meta"]
         price = meta.get("regularMarketPrice")
         prev = meta.get("chartPreviousClose") or meta.get("regularMarketPreviousClose")
-        change = round(price - prev, 4) if price and prev else None
-        change_pct = round(change / prev * 100, 2) if change and prev else None
+        change = round(price - prev, 4) if price is not None and prev else None
+        change_pct = (
+            round(change / prev * 100, 2) if change is not None and prev else None
+        )
         return {
             "price": price,
             "change": change,
@@ -393,7 +395,7 @@ def _fmt(d):
         return price, "—", "—"
     sign = "▲" if d["change"] > 0 else ("▼" if d["change"] < 0 else "→")
     change = f"{sign} {abs(d['change']):,.{dec}f}"
-    pct = f"{d['change_pct']:+.2f}%"
+    pct = f"{d['change_pct']:+.2f}%" if d["change_pct"] is not None else "—"
     return price, change, pct
 
 

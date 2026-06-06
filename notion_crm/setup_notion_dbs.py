@@ -80,6 +80,9 @@ SEAFOOD_CUSTOMER_PROPS = {
         }
     },
     "累計消費": {"number": {"format": "number"}},
+    "公司名稱": {"rich_text": {}},
+    "統編": {"rich_text": {}},
+    "地址": {"rich_text": {}},
     "備註": {"rich_text": {}},
 }
 
