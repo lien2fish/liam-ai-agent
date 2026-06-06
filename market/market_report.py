@@ -212,15 +212,19 @@ def _market_summary_str(md):
     return "\n".join(lines)
 
 
-def analyze_with_gemini(md):
+def analyze_with_gemini(md, cfg=None):
     if not GEMINI_KEY:
         return {}
     today = datetime.now().strftime("%Y年%m月%d日")
     market_str = _market_summary_str(md)
 
+    holdings = [s for s in (cfg or {}).get("watch_stocks", []) if s.get("holding")]
+    holdings_str = "、".join(f"{s['name']}（{s['code']}）" for s in holdings) or "無"
+
     prompt = (
         f"今天是 {today}。以下是 Yahoo Finance 最新市場數據（可能為前一交易日收盤）：\n"
         f"{market_str}\n\n"
+        f"使用者目前持有：{holdings_str}\n\n"
         f"請完成：\n"
         f"1. 搜尋今日台灣股市重要新聞（外資買超/賣超金額、法說會、重大政策、美股影響）\n"
         f"2. 根據市場數據與今日新聞，輸出 JSON 分析報告\n\n"
@@ -238,7 +242,21 @@ def analyze_with_gemini(md):
         f'"sp500_effect":"S&P500走勢對外資進出台股的影響，1-2句",'
         f'"sector_impact":["受美股影響最大的台股族群1（例：AI伺服器族群大跌）","族群2"],'
         f'"hedge_suggestion":"面對美股壓力，台股操作建議，1句"'
-        f"}}}}"
+        f"}},"
+        f'"holdings_advice":[{{'
+        f'"code":"持有股代號",'
+        f'"name":"持有股名稱",'
+        f'"action":"持有/加碼/減碼/停損賣出",'
+        f'"target":"目標價或出場參考價（如：20.5）",'
+        f'"reason":"1-2句具體理由，含技術面或基本面依據"'
+        f"}}],"
+        f'"buy_candidates":[{{'
+        f'"code":"台灣股票代號.TW",'
+        f'"name":"股票名稱",'
+        f'"reason":"買進理由，含題材與催化劑，1-2句",'
+        f'"entry":"建議進場價位區間（如：150-160）",'
+        f'"stop":"停損參考價（如：140）"'
+        f"}}]}}"
     )
 
     try:
@@ -247,7 +265,7 @@ def analyze_with_gemini(md):
                 "contents": [{"parts": [{"text": prompt}]}],
                 "tools": [{"google_search": {}}],
                 "generationConfig": {
-                    "maxOutputTokens": 2048,
+                    "maxOutputTokens": 3500,
                     "temperature": 0.3,
                     "thinkingConfig": {"thinkingBudget": 0},
                 },
@@ -269,12 +287,14 @@ def analyze_with_gemini(md):
         return {}
 
 
-def fallback_analysis(md):
+def fallback_analysis(md, cfg=None):
     if not GEMINI_KEY:
         return {}
     market_str = _market_summary_str(md)
+    holdings = [s for s in (cfg or {}).get("watch_stocks", []) if s.get("holding")]
+    holdings_str = "、".join(f"{s['name']}（{s['code']}）" for s in holdings) or "無"
     prompt = (
-        f"根據以下市場數據，提供台灣股市分析。只回傳 JSON，不含其他文字：\n"
+        f"根據以下市場數據，提供台灣股市分析。使用者目前持有：{holdings_str}。只回傳 JSON，不含其他文字：\n"
         f"{market_str}\n\n"
         f'{{"sentiment":"多頭/空頭/震盪","sentiment_score":1到10,'
         f'"key_news":["觀察點1","觀察點2","觀察點3"],'
@@ -288,14 +308,16 @@ def fallback_analysis(md):
         f'"sp500_effect":"S&P500對外資進出的影響",'
         f'"sector_impact":["受影響族群1","族群2"],'
         f'"hedge_suggestion":"台股操作建議，1句"'
-        f"}}}}"
+        f"}},"
+        f'"holdings_advice":[{{"code":"持有股代號","name":"名稱","action":"持有/加碼/減碼/停損賣出","target":"參考價","reason":"理由"}}],'
+        f'"buy_candidates":[{{"code":"代號.TW","name":"名稱","reason":"理由","entry":"進場區間","stop":"停損價"}}]}}'
     )
     try:
         data = gemini_call(
             {
                 "contents": [{"parts": [{"text": prompt}]}],
                 "generationConfig": {
-                    "maxOutputTokens": 1024,
+                    "maxOutputTokens": 2048,
                     "temperature": 0.3,
                     "thinkingConfig": {"thinkingBudget": 0},
                 },
@@ -491,6 +513,44 @@ def build_notion_blocks(md, prediction):
             blocks.append(_callout("💡", ust["hedge_suggestion"], "yellow_background"))
         blocks.append(_divider())
 
+    action_color = {
+        "加碼": "green_background",
+        "持有": "blue_background",
+        "減碼": "yellow_background",
+        "停損賣出": "red_background",
+    }
+    holdings_advice = prediction.get("holdings_advice", [])
+    if holdings_advice:
+        blocks.append(_h2("💼 持有股票建議"))
+        for h in holdings_advice:
+            action = h.get("action", "持有")
+            color = action_color.get(action, "gray_background")
+            blocks.append(
+                _callout(
+                    "📌",
+                    f"{h.get('name','')}（{h.get('code','')}）｜{action}　目標價：{h.get('target','-')}",
+                    color,
+                )
+            )
+            if h.get("reason"):
+                blocks.append(_para(h["reason"], "gray"))
+        blocks.append(_divider())
+
+    buy_candidates = prediction.get("buy_candidates", [])
+    if buy_candidates:
+        blocks.append(_h2("🎯 潛力買進候選"))
+        for b in buy_candidates:
+            blocks.append(
+                _callout(
+                    "💡",
+                    f"{b.get('name','')}（{b.get('code','')}）｜進場：{b.get('entry','-')}　停損：{b.get('stop','-')}",
+                    "green_background",
+                )
+            )
+            if b.get("reason"):
+                blocks.append(_para(b["reason"], "gray"))
+        blocks.append(_divider())
+
     blocks.append(_h2("🤖 AI 市場預估"))
     if prediction.get("taiex_range"):
         blocks.append(
@@ -630,6 +690,34 @@ def save_markdown_report(md, prediction, date_str):
         if ust.get("hedge_suggestion"):
             lines.append(f"\n💡 **操作建議：** {ust['hedge_suggestion']}")
 
+    holdings_advice = prediction.get("holdings_advice", [])
+    if holdings_advice:
+        lines += ["", "## 💼 持有股票建議"]
+        action_icon = {"加碼": "🟢", "持有": "🔵", "減碼": "🟡", "停損賣出": "🔴"}
+        for h in holdings_advice:
+            icon = action_icon.get(h.get("action", "持有"), "⚪")
+            lines.append(
+                f"| {icon} {h.get('name','')} | {h.get('code','')} "
+                f"| **{h.get('action','')}** | 目標價 {h.get('target','-')} |"
+            )
+            if h.get("reason"):
+                lines.append(f"> {h['reason']}")
+            lines.append("")
+
+    buy_candidates = prediction.get("buy_candidates", [])
+    if buy_candidates:
+        lines += ["", "## 🎯 潛力買進候選"]
+        lines += [
+            "| 股票 | 代號 | 進場區間 | 停損 | 理由 |",
+            "|------|------|---------|------|------|",
+        ]
+        for b in buy_candidates:
+            lines.append(
+                f"| {b.get('name','')} | {b.get('code','')} "
+                f"| {b.get('entry','-')} | {b.get('stop','-')} "
+                f"| {b.get('reason','')} |"
+            )
+
     if prediction.get("week_outlook"):
         lines += ["", "## 🔭 一週展望", prediction["week_outlook"]]
 
@@ -674,10 +762,10 @@ def main():
     md = fetch_all_market_data(cfg)
 
     log("Gemini Search 分析中...")
-    prediction = analyze_with_gemini(md)
+    prediction = analyze_with_gemini(md, cfg)
     if not prediction:
         log("  降級至 Gemini 知識庫分析...")
-        prediction = fallback_analysis(md)
+        prediction = fallback_analysis(md, cfg)
 
     history = load_history()
     save_history(history, md)
