@@ -34,4 +34,5 @@ jobs:
           git add market/market_config.json market/market_history.json
           git add "reports/市場日報_$(date +%Y-%m-%d).md" 2>/dev/null || true
           git diff --staged --quiet || git commit -m "chore: 市場日報 $(date +%Y-%m-%d)"
+          git pull --rebase
           git push
