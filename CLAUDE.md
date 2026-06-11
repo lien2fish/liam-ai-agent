@@ -508,6 +508,130 @@ python3 /Users/lien/Downloads/gen_a1_list.py
 
 ---
 
+## HOC 服務點簽收表系統（2026-06-05 更新）
+
+### 核心資訊
+| 項目 | 說明 |
+|------|------|
+| 腳本 | `/Users/lien/Desktop/HOC團隊/sync_and_pdf.py` |
+| 來源 Numbers | `/Users/lien/Desktop/HOC團隊/服務點物品清單彙整.numbers` |
+| PDF 輸出 | `/Users/lien/Desktop/HOC團隊/服務點簽收表/` |
+| 合併 PDF | `/Users/lien/Desktop/HOC團隊/服務點簽收表/服務點物品簽收表_全站點.pdf` |
+
+### 執行方式
+```bash
+cd "/Users/lien/Desktop/HOC團隊" && python3 sync_and_pdf.py
+```
+
+### 簽收表欄位格式（2026-06-05 定稿）
+- 表格：物品名稱 / 數量 / 備註 / **點組長確認**（□）
+- 底部簽名欄：**點組長簽名：＿＿＿＿＿＿＿＿**（單一簽名欄）
+- **已移除**：到位確認欄、交班確認欄、到位/交班簽名欄
+
+### 站點數量
+共 31 個站點，每站一頁，合併為一份 PDF
+
+---
+
+## 鑫酒藏 CRM 欄位規格（2026-06-05 更新）
+
+### 客戶名單欄位（9欄）
+`#` / `客戶姓名／公司` / `聯絡電話` / `地址` / `Email` / `VIP等級` / `備註` / `公司` / `統編`
+
+### 檔案位置
+| 檔案 | 路徑 |
+|------|------|
+| Numbers | `/Users/lien/Desktop/鉅鑫管理顧問/鑫酒藏/鑫酒藏販售清單.numbers` |
+| Excel | `/Users/lien/Desktop/鉅鑫管理顧問/鑫酒藏/鑫酒藏販售清單.xlsx` |
+
+### Notion DB ID
+- 鑫酒藏客戶名單：`374f4149-a6aa-816f-ab2c-fcaad143f5b4`
+- Notion 屬性：客戶姓名(title) / 聯絡電話 / Email / 地址 / VIP等級(select) / 備註 / 公司 / 統編
+
+### 排版設計規範
+- 標題列：深藍 `#1F4E79`、白色粗體 14pt
+- Header 列：深藍底、白色粗體 10pt、全欄置中
+- 資料列：淺藍 `#DEEAF1` / 白色交替
+- 置中欄：#、電話、Email、VIP等級、統編
+
+---
+
+## Finn's Why — 兒童動畫頻道（2026-06-05 建立）
+
+### 頻道定位
+| 項目 | 說明 |
+|------|------|
+| 頻道名稱 | Finn's Why |
+| 平台 | YouTube（主）+ YouTube Shorts |
+| 風格 | 3D Pixar 等級，反 Cocomelon（慢節奏、不過度刺激）|
+| 語言 | 英文（全球受眾）|
+| 目標年齡 | 3–8 歲 |
+| 製作工具 | Kling AI Pro（895/月，**15秒/shot**）|
+| 發布頻率 | 每週一集（目標）|
+
+### 角色設定
+| 角色 | 說明 |
+|------|------|
+| Finn | 6歲小狐狸，橘毛白胸，琥珀眼，**永遠穿藍色T恤** |
+| Luna | 媽媽，淺橘毛，**永遠穿軟綠圍裙** |
+| Rex | 爸爸，橘毛，**永遠穿白色T恤** |
+| Mimi | 4歲妹妹，黃色小花洋裝 |
+| Oliver | 客座貓頭鷹爺爺，灰羽，金圓眼鏡，棕色背心 |
+
+**角色一致性**：prompt 開頭加 `IMPORTANT: FINN is ALWAYS wearing light blue t-shirt`
+**多角色警告**：同框超過 3 隻橘色狐狸容易複製角色，收尾 shot 只放 Finn + 客座角色即可
+
+### 集數進度
+| 集數 | 標題 | 狀態 |
+|------|------|------|
+| EP01 | Why Is the Sky Blue? 🦊☁️ | ⚠️ 3幕完成（44秒），待補完 |
+| EP02 | Why Do Fireflies Glow? 🦊✨ | ✅ 影片完成（72秒，含旁白腳本），待配音+BGM |
+| EP03 | Why Can Owls See in the Dark? 🦊🦉 | ✅ 影片完成（5 shots × 15秒），待後製 |
+
+### 剪輯檔位置
+| 集數 | 路徑 |
+|------|------|
+| EP02 | `/Users/lien/Desktop/Finn's Why-Sparks.mp4` |
+| EP03 | Downloads 資料夾，檔名 `kling_20260610_VIDEO_IMPORTANT__*.mp4`（5個檔）|
+
+### EP03 Shot 清單（2026-06-10 完成）
+| Shot | 檔名關鍵字 | 內容 |
+|------|-----------|------|
+| 1 | `5666` | 黃昏開場 + Oliver 現身 |
+| 2 | `6117` | Finn 發問 + 全像瞳孔圖 |
+| 3 | `3D_Pixar_s_23` | 眼球內部視覺化 |
+| 4 | `299` | Oliver 轉頭 + Finn 模仿笑點 |
+| 5 | `515` | Finn + Oliver 看星空 + 銀河收尾 |
+
+### 製作流程
+1. 用 Kling AI Pro 逐 Shot 生成（每 shot **15 秒**）
+2. Subject Reference 上傳角色參考圖鎖定外觀（每次開啟 Kling 需重新選取）
+3. CapCut / iMovie 串接 + 轉場，剪至約 65-70 秒
+4. 旁白腳本依實際剪輯畫面撰寫
+5. 加入 AI 配音（ElevenLabs）+ 背景音樂（Suno/Udio）
+6. 上傳 YouTube，附頻道描述 + 影片描述 + hashtags
+
+### YouTube 頻道描述
+```
+Every night, a little fox named Finn looks at the world 
+and asks one big question: WHY?
+
+🦊 Finn's Why is a cozy, Pixar-style animated series 
+for curious kids ages 3–8. Each episode follows Finn 
+and his family as they explore one of nature's most 
+fascinating questions — together.
+
+No rush. No noise. Just wonder.
+
+✨ New episodes every week
+🌿 Science made simple, stories made warm
+💛 Perfect for bedtime, family time, or anytime
+
+Subscribe and never miss a new Why. 🔔
+```
+
+---
+
 ## 開發原則
 - 所有檔案操作預設在此資料夾進行
 - 不寫不必要的註解，程式碼命名清楚就是最好的說明
