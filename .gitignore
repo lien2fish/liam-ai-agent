@@ -15,6 +15,10 @@ __pycache__/
 # 日誌
 *.log
 
+# git worktrees / 暫存截圖
+work/
+screenshots/
+
 # wrangler files
 .wrangler
 .dev.vars*
