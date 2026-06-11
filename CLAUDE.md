@@ -157,13 +157,39 @@
 
 ---
 
+## YouTube Shorts 留言每日通知系統（2026-06-11 建立）
+
+### 核心資訊
+| 項目 | 說明 |
+|------|------|
+| 腳本 | `youtube/comment_monitor.py` |
+| 排程 | GitHub Actions，每天 08:30（台灣）|
+| Workflow | `.github/workflows/yt_comment_monitor.yml` |
+| 狀態快取 | GitHub Actions Cache（`yt-monitor-state-*`，`youtube/monitor_state.json`） |
+| 頻道 | 連老闆-產地到餐桌（`UCKScBZqHjasWfizXWna1Huw`） |
+
+### 機制（不用 OAuth，無到期問題）
+- 用 **API Key**（`YT_API_KEY`，限制為 YouTube Data API v3）讀取公開留言，不需 OAuth refresh token
+- 取頻道 uploads playlist 最近 25 部影片，篩選出 `duration <= 60s` 視為 Shorts
+- 對每部 Shorts 取 `commentThreads`，與快取的已讀留言 ID 比對找出新留言
+- 有新留言 → 寫入 `reports/youtube_comments_YYYY-MM-DD.md` + Email 通知；無新留言則只寫報告不寄信
+
+### Email 通知
+- 用 **Gmail App 密碼**（`GMAIL_APP_PASSWORD`）+ smtplib 寄送，與 OAuth 系統無關，不會過期
+- 寄件/收件皆為 `lien2fish@gmail.com`
+
+### GitHub Secrets（3個）
+`YT_API_KEY` / `YT_CHANNEL_ID` / `GMAIL_APP_PASSWORD`
+
+---
+
 ## 社群平台自動化總覽
 
 | 平台 | 類型 | 排程 | 狀態 |
 |------|------|------|------|
 | IG + FB | 每日發文 | 每天 08:00 | ✅ 運行中 |
 | IG | 留言自動回覆 | 每 5 分鐘 | ✅ 運行中 |
-| YouTube | 留言自動回覆 | — | ❌ 已停用（2026-06-11，OAuth 7天到期問題） |
+| YouTube | Shorts 留言通知（不回覆） | 每天 08:30 | ✅ 運行中 |
 | TikTok | — | — | 手動，不自動化 |
 
 ## GitHub Actions 自動化總覽（2026-06-02 更新）
@@ -178,6 +204,7 @@
 | `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:00 |
 | `market_daily.yml` | 每日股市全面分析報告 | 每天 **12:00**（台灣），自動 commit 報告 |
 | `seafood_prices.yml` | 漁獲市場行情追蹤 | 每天 09:30 |
+| `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:30 |
 
 ### GitHub Secrets 總覽
 | Secret | 用途 |
@@ -192,6 +219,9 @@
 | `GMAIL_CLIENT_SECRET` | Gmail OAuth |
 | `GMAIL_REFRESH_TOKEN` | Gmail OAuth |
 | `NOTION_TOKEN` | Notion API Token |
+| `YT_API_KEY` | YouTube Data API v3 金鑰（無到期問題）|
+| `YT_CHANNEL_ID` | YouTube 頻道 ID |
+| `GMAIL_APP_PASSWORD` | Gmail App 密碼，供 YouTube 留言通知寄信用 |
 
 ---
 
