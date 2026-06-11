@@ -157,54 +157,13 @@
 
 ---
 
-## YouTube 留言自動回覆系統
-
-### 核心資訊
-| 項目 | 說明 |
-|------|------|
-| 腳本 | `youtube/auto_reply/yt_comment_reply.py` |
-| 排程 | GitHub Actions，每 10 分鐘（`*/10 * * * *`） |
-| Workflow | `.github/workflows/yt_comment_reply.yml` |
-| 狀態快取 | GitHub Actions Cache（`yt-reply-state-*`） |
-| AI 回覆 | Gemini 3.5-flash（主）→ 2.5-flash → 2.0-flash（降級），繁體中文，15～25 字 |
-| 頻道 | 連老闆-產地到餐桌（`UCKScBZqHjasWfizXWna1Huw`） |
-
-### GitHub Secrets（4個，已設定）
-`YT_CLIENT_ID` / `YT_CLIENT_SECRET` / `YT_REFRESH_TOKEN` / `YT_CHANNEL_ID`
-- OAuth 使用 `claude-workspace-495009` 既有專案（同 Google Workspace MCP）
-- Refresh Token **永不過期**（無需定期更新）
-- API 配額：每日 10,000 單位，回覆留言 50 單位/則，約可回覆 ~190 則/天
-
-### 流程
-1. 取頻道最近 50 筆留言（`allThreadsRelatedToChannelId`，`order=time`）
-2. 過濾：only since 上次執行時間、排除自己、排除空白
-3. Gemini 生成 15～25 字回覆（失敗時切換模型，最終備用固定回覆）
-4. `POST /youtube/v3/comments?part=snippet` 發布回覆
-
-### OAuth 重新授權步驟（Refresh Token 若失效）
-```bash
-# Step 1：啟動捕捉 server
-python3 /tmp/oauth_capture2.py &
-# Step 2：開啟授權頁（Safari）
-open -a Safari "https://accounts.google.com/o/oauth2/v2/auth?client_id=879735593233-0r9qp9q9v5gea8j36dtcbrj6fmi660vh.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A8888&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube.force-ssl&access_type=offline&prompt=consent"
-# Step 3：授權後用 code 換 token，再用 PyNaCl 寫入 GitHub Secret
-```
-- **注意**：`lien2fish@gmail.com` 需在 [cloud.google.com/auth/audience](https://console.cloud.google.com/auth/audience?project=claude-workspace-495009) 測試使用者清單中
-
-### 注意事項
-- Gemini 設定與 IG 系統相同：thinking model 需 `thinkingBudget: 0`
-- 若 Access Blocked（403）：確認 Google Cloud Console 測試使用者清單已加入 `lien2fish@gmail.com`
-- YouTube Data API v3 需在 `claude-workspace-495009` 專案啟用
-
----
-
 ## 社群平台自動化總覽
 
 | 平台 | 類型 | 排程 | 狀態 |
 |------|------|------|------|
 | IG + FB | 每日發文 | 每天 08:00 | ✅ 運行中 |
 | IG | 留言自動回覆 | 每 5 分鐘 | ✅ 運行中 |
-| YouTube | 留言自動回覆 | 每 10 分鐘 | ✅ 運行中 |
+| YouTube | 留言自動回覆 | — | ❌ 已停用（2026-06-11，OAuth 7天到期問題） |
 | TikTok | — | — | 手動，不自動化 |
 
 ## GitHub Actions 自動化總覽（2026-06-02 更新）
@@ -215,7 +174,6 @@ open -a Safari "https://accounts.google.com/o/oauth2/v2/auth?client_id=879735593
 |--------------|------|------|
 | `daily_post.yml` | IG+FB 每日發文 | 每天 08:00 |
 | `ig_comment_reply.yml` | IG 留言自動回覆 | 每 5 分鐘 |
-| `yt_comment_reply.yml` | YouTube 留言自動回覆 | 每 10 分鐘 |
 | `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:00，自動 commit 報告 |
 | `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:00 |
 | `market_daily.yml` | 每日股市全面分析報告 | 每天 **12:00**（台灣），自動 commit 報告 |
@@ -230,10 +188,6 @@ open -a Safari "https://accounts.google.com/o/oauth2/v2/auth?client_id=879735593
 | `IG_ID` | Instagram 帳號 ID |
 | `FB_PAGE_TOKEN` | Facebook Page Token（永不過期）|
 | `FB_PAGE_ID` | Facebook Page ID |
-| `YT_CLIENT_ID` | YouTube OAuth |
-| `YT_CLIENT_SECRET` | YouTube OAuth |
-| `YT_REFRESH_TOKEN` | YouTube OAuth（永不過期）|
-| `YT_CHANNEL_ID` | YouTube 頻道 ID |
 | `GMAIL_CLIENT_ID` | Gmail OAuth |
 | `GMAIL_CLIENT_SECRET` | Gmail OAuth |
 | `GMAIL_REFRESH_TOKEN` | Gmail OAuth |
