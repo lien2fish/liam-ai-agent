@@ -1,0 +1,37 @@
+name: YouTube Shorts 留言通知
+
+on:
+  schedule:
+    - cron: '30 0 * * *'   # 台灣 08:30
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 還原留言狀態快取
+        uses: actions/cache@v4
+        with:
+          path: youtube/monitor_state.json
+          key: yt-monitor-state-${{ github.run_id }}
+          restore-keys: |
+            yt-monitor-state-
+
+      - name: 執行留言監控
+        env:
+          YT_API_KEY: ${{ secrets.YT_API_KEY }}
+          YT_CHANNEL_ID: ${{ secrets.YT_CHANNEL_ID }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python3 youtube/comment_monitor.py
+
+      - name: Commit 報告
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add reports/youtube_comments_*.md
+          git diff --staged --quiet || git commit -m "chore: YouTube 留言通知 $(date +%Y-%m-%d)"
+          git push
