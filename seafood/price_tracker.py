@@ -185,7 +185,7 @@ def fetch_from_moa() -> list[dict]:
     params = urllib.parse.urlencode({"$top": "1000", "$format": "JSON"})
     url = f"{MOA_API}?{params}"
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=20) as r:
+    with urllib.request.urlopen(req, timeout=45) as r:
         raw = json.loads(r.read())
 
     today = datetime.now().strftime("%Y.%m.%d")
@@ -481,32 +481,45 @@ def update_notion_page(page_id: str, blocks: list[dict]):
 # ── 主流程 ────────────────────────────────────────────────────────
 
 
+def has_price_data(items: list[dict]) -> list[dict]:
+    """過濾出至少有一個價格欄位 > 0 的項目（排除「無法確認」的0元資料）。"""
+    return [i for i in items if i.get("high") or i.get("mid") or i.get("low")]
+
+
 def main():
     seasonal = get_seasonal_fish()
     log(f"當季魚種：{', '.join(seasonal)}")
 
-    # Layer 1: Gemini + Google Search grounding
+    # Layer 1: 農業部 MOA 開放資料 API（官方即時行情，優先使用）
     items = []
     try:
-        items = fetch_with_gemini_search(seasonal)
-        log(f"Gemini Search 取得 {len(items)} 筆行情")
+        items = fetch_from_moa()
+        log(f"MOA API 取得 {len(items)} 筆北部市場資料")
     except Exception as e:
-        log(f"Gemini Search 失敗：{e}")
+        log(f"MOA API 失敗：{e}")
 
-    # Layer 2: MOA API
-    if not items:
+    # Layer 2: Gemini + Google Search grounding（MOA 無資料時補充）
+    if not has_price_data(items):
         try:
-            items = fetch_from_moa()
-            log(f"MOA API 取得 {len(items)} 筆北部市場資料")
+            gemini_items = fetch_with_gemini_search(seasonal)
+            valid = has_price_data(gemini_items)
+            log(
+                f"Gemini Search 取得 {len(gemini_items)} 筆行情，{len(valid)} 筆有效價格"
+            )
+            if valid:
+                items = valid
         except Exception as e:
-            log(f"MOA API 失敗：{e}")
+            log(f"Gemini Search 失敗：{e}")
 
-    # Layer 3: Gemini 知識庫參考行情（當所有即時來源失敗時）
-    if not items:
+    # Layer 3: Gemini 知識庫參考行情（當所有即時來源都無有效價格時）
+    if not has_price_data(items):
         try:
             log("改用 Gemini 知識庫產生當月參考行情...")
-            items = gemini_reference_prices(seasonal)
-            log(f"Gemini 參考行情：{len(items)} 筆")
+            ref_items = gemini_reference_prices(seasonal)
+            valid = has_price_data(ref_items)
+            log(f"Gemini 參考行情：{len(ref_items)} 筆，{len(valid)} 筆有效價格")
+            if valid:
+                items = valid
         except Exception as e:
             log(f"Gemini 參考行情失敗：{e}")
 
