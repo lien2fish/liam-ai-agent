@@ -31,11 +31,17 @@ jobs:
           GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
         run: python3 gmail_monthly_cleanup.py
 
+      - name: 產生 PDF 報告
+        run: |
+          pip install reportlab
+          rm -f day/gmail日報_*.pdf
+          python3 scripts/md_to_pdf.py "day/gmail日報_$(date +%Y-%m-%d).pdf" 今日新聞摘要.md reports/gmail_cleanup_$(date +%Y-%m).md
+
       - name: Commit 報告到 repo
         run: |
           git config user.name  "Liam AI Agent"
           git config user.email "lien2fish@gmail.com"
-          git add reports/ 今日新聞摘要.md
+          git add reports/ 今日新聞摘要.md day/
           git diff --cached --quiet || git commit -m "chore: 自動更新 Gmail 報告 $(date '+%Y-%m-%d')"
           git pull --rebase
           git push
