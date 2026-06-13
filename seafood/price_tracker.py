@@ -29,7 +29,7 @@ GEMINI_KEY = os.environ.get("GEMINI_KEY", "")
 NOTION_VER = "2022-06-28"
 NOTION_API = "https://api.notion.com/v1"
 MOA_API = "https://data.moa.gov.tw/Service/OpenData/FromM/FishMarketData.aspx"
-GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
 NORTH_MARKETS = ["基隆", "台北", "臺北", "萬里", "富基", "龜吼", "石門"]
 
@@ -130,7 +130,11 @@ def fetch_with_gemini_search(seasonal: list[str]) -> list[dict]:
         {
             "contents": [{"parts": [{"text": prompt}]}],
             "tools": [{"google_search": {}}],
-            "generationConfig": {"maxOutputTokens": 2048, "temperature": 0},
+            "generationConfig": {
+                "maxOutputTokens": 2048,
+                "temperature": 0,
+                "thinkingConfig": {"thinkingBudget": 0},
+            },
         }
     )
     full_text = "".join(
@@ -163,7 +167,11 @@ def gemini_reference_prices(seasonal: list[str]) -> list[dict]:
     data = gemini_call(
         {
             "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {"maxOutputTokens": 1024, "temperature": 0.2},
+            "generationConfig": {
+                "maxOutputTokens": 1024,
+                "temperature": 0.2,
+                "thinkingConfig": {"thinkingBudget": 0},
+            },
         }
     )
     text = data["candidates"][0]["content"]["parts"][0]["text"]
