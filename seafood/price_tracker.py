@@ -28,7 +28,7 @@ NOTION_TOKEN = os.environ.get("NOTION_TOKEN", "")
 GEMINI_KEY = os.environ.get("GEMINI_KEY", "")
 NOTION_VER = "2022-06-28"
 NOTION_API = "https://api.notion.com/v1"
-MOA_API = "https://data.moa.gov.tw/Service/OpenData/FromM/FishMarketData.aspx"
+MOA_API = "https://data.moa.gov.tw/Service/OpenData/FromM/AquaticTransData.aspx"
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
 NORTH_MARKETS = ["基隆", "台北", "臺北", "萬里", "富基", "龜吼", "石門"]
@@ -181,6 +181,11 @@ def gemini_reference_prices(seasonal: list[str]) -> list[dict]:
 # ── Layer 2：農業部 MOA 開放資料 API（備援）────────────────────
 
 
+def roc_date(dt: datetime) -> str:
+    """轉換為農業部 API 使用的民國年日期格式（如 1150612）。"""
+    return f"{dt.year - 1911}{dt.month:02d}{dt.day:02d}"
+
+
 def fetch_from_moa() -> list[dict]:
     params = urllib.parse.urlencode({"$top": "1000", "$format": "JSON"})
     url = f"{MOA_API}?{params}"
@@ -188,8 +193,8 @@ def fetch_from_moa() -> list[dict]:
     with urllib.request.urlopen(req, timeout=45) as r:
         raw = json.loads(r.read())
 
-    today = datetime.now().strftime("%Y.%m.%d")
-    yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y.%m.%d")
+    today = roc_date(datetime.now())
+    yesterday = roc_date(datetime.now() - timedelta(days=1))
     results = []
     for item in raw:
         market = item.get("市場名稱", "")
@@ -200,7 +205,7 @@ def fetch_from_moa() -> list[dict]:
         try:
             results.append(
                 {
-                    "name": item["品種名稱"],
+                    "name": item["魚貨名稱"],
                     "high": float(item.get("上價") or 0),
                     "mid": float(item.get("中價") or 0),
                     "low": float(item.get("下價") or 0),
