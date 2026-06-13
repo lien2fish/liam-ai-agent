@@ -420,6 +420,51 @@ def build_notion_blocks(
     return blocks
 
 
+def write_markdown_report(items: list[dict], seasonal: list[str]):
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M")
+    lines = [
+        f"# 🐟 漁獲市場行情追蹤報告 {today_str}",
+        "",
+        f"> 更新時間：{now_str}｜資料來源：Gemini Google Search / 農業部漁市場行情",
+        "",
+        f"**當季魚種：{ '、'.join(seasonal) }**",
+        "",
+    ]
+
+    if items:
+        seasonal_items = [i for i in items if any(s in i["name"] for s in seasonal)]
+        other_items = [i for i in items if not any(s in i["name"] for s in seasonal)]
+
+        def table(rows):
+            out = [
+                "| 品名 | 上價 | 中價 | 下價 | 市場 |",
+                "|------|------|------|------|------|",
+            ]
+            for i in rows:
+                out.append(
+                    f"| {i['name']} | {i['high']} | {i['mid']} | {i['low']} | {i['market']} |"
+                )
+            return out
+
+        if seasonal_items:
+            lines.append("## 🌊 今日當季行情（北部市場）")
+            lines.append("")
+            lines += table(seasonal_items)
+            lines.append("")
+        if other_items:
+            lines.append("## 📦 其他到貨品項")
+            lines.append("")
+            lines += table(other_items[:20])
+            lines.append("")
+    else:
+        lines.append("**今日暫無行情資料**，可能為休市日或資料來源暫時不可用。")
+        lines.append("")
+
+    report_path = WORKSPACE / f"reports/seafood_prices_{today_str}.md"
+    report_path.write_text("\n".join(lines), encoding="utf-8")
+
+
 def update_notion_page(page_id: str, blocks: list[dict]):
     existing = notion_request("GET", f"blocks/{page_id}/children?page_size=100")
     for block in existing.get("results", []):
@@ -467,6 +512,7 @@ def main():
 
     history = load_history()
     history = save_history(history, items)
+    write_markdown_report(items, seasonal)
 
     cfg = load_config()
     page_id = cfg.get("notion_page_id", "")
