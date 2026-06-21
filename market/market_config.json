@@ -67,5 +67,12 @@
       "name": "長榮航",
       "holding": false
     }
+  ],
+  "us_watch_stocks": [
+    {
+      "code": "SPCX",
+      "name": "SpaceX",
+      "holding": true
+    }
   ]
 }
