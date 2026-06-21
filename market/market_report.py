@@ -156,8 +156,9 @@ def fetch_all_market_data(cfg):
         ("GC=F", "黃金(USD/oz)", 0),
     ]
     watch = cfg.get("watch_stocks", [])
+    us_watch = cfg.get("us_watch_stocks", [])
 
-    result = {"indices": [], "macro": [], "stocks": []}
+    result = {"indices": [], "macro": [], "stocks": [], "us_stocks": []}
 
     log("抓取全球指數...")
     for code, name, dec in indices_def:
@@ -187,6 +188,20 @@ def fetch_all_market_data(cfg):
         result["stocks"].append(d)
         time.sleep(0.3)
 
+    log("抓取美股觀察清單...")
+    for s in us_watch:
+        d = fetch_yf(s["code"])
+        d.update(
+            {
+                "code": s["code"],
+                "name": s["name"],
+                "holding": s.get("holding", False),
+                "dec": 2,
+            }
+        )
+        result["us_stocks"].append(d)
+        time.sleep(0.3)
+
     valid = sum(1 for g in result.values() for d in g if d["price"])
     log(f"  共 {valid} 筆有效數據")
     return result
@@ -209,7 +224,22 @@ def _market_summary_str(md):
         p = f"{d['price']:.2f}" if d["price"] else "N/A"
         c = f"{d['change_pct']:+.2f}%" if d["change_pct"] is not None else "N/A"
         lines.append(f"  {d['name']} ({d['code']}): {p} ({c})")
+    if md.get("us_stocks"):
+        lines.append("【美股觀察股】")
+        for d in md["us_stocks"]:
+            p = f"{d['price']:.2f}" if d["price"] else "N/A"
+            c = f"{d['change_pct']:+.2f}%" if d["change_pct"] is not None else "N/A"
+            lines.append(f"  {d['name']} ({d['code']}): {p} USD ({c})")
     return "\n".join(lines)
+
+
+def _get_holdings(cfg):
+    cfg = cfg or {}
+    return [
+        s
+        for s in cfg.get("watch_stocks", []) + cfg.get("us_watch_stocks", [])
+        if s.get("holding")
+    ]
 
 
 def analyze_with_gemini(md, cfg=None):
@@ -218,7 +248,7 @@ def analyze_with_gemini(md, cfg=None):
     today = datetime.now().strftime("%Y年%m月%d日")
     market_str = _market_summary_str(md)
 
-    holdings = [s for s in (cfg or {}).get("watch_stocks", []) if s.get("holding")]
+    holdings = _get_holdings(cfg)
     holdings_str = "、".join(f"{s['name']}（{s['code']}）" for s in holdings) or "無"
 
     prompt = (
@@ -291,10 +321,10 @@ def fallback_analysis(md, cfg=None):
     if not GEMINI_KEY:
         return {}
     market_str = _market_summary_str(md)
-    holdings = [s for s in (cfg or {}).get("watch_stocks", []) if s.get("holding")]
+    holdings = _get_holdings(cfg)
     holdings_str = "、".join(f"{s['name']}（{s['code']}）" for s in holdings) or "無"
     prompt = (
-        f"根據以下市場數據，提供台灣股市分析。使用者目前持有：{holdings_str}。只回傳 JSON，不含其他文字：\n"
+        f"根據以下市場數據，提供台灣股市與美股分析。使用者目前持有：{holdings_str}。只回傳 JSON，不含其他文字：\n"
         f"{market_str}\n\n"
         f'{{"sentiment":"多頭/空頭/震盪","sentiment_score":1到10,'
         f'"key_news":["觀察點1","觀察點2","觀察點3"],'
@@ -484,6 +514,21 @@ def build_notion_blocks(md, prediction):
         _divider(),
     ]
 
+    if md.get("us_stocks"):
+        blocks.append(_h2("🇺🇸 美股觀察清單"))
+        blocks.append(
+            _make_table(
+                ["股票名稱", "代號", "現價(USD)", "漲跌", "漲跌幅", "持有"],
+                [
+                    [d["name"], d["code"]]
+                    + list(_fmt(d))
+                    + ["★" if d.get("holding") else ""]
+                    for d in md["us_stocks"]
+                ],
+            )
+        )
+        blocks.append(_divider())
+
     if prediction.get("key_news"):
         blocks.append(_h2("📰 今日市場新聞"))
         for news in prediction["key_news"]:
@@ -666,6 +711,18 @@ def save_markdown_report(md, prediction, date_str):
         tag = "★" if d.get("holding") else ""
         lines.append(f"| {tag}{d['name']} | {d['code']} | {p} | {ch} | {pct} |")
 
+    if md.get("us_stocks"):
+        lines += [
+            "",
+            "## 🇺🇸 美股觀察清單",
+            "| 股票 | 代號 | 現價(USD) | 漲跌 | 漲跌幅 |",
+            "|------|------|------|------|--------|",
+        ]
+        for d in md["us_stocks"]:
+            p, ch, pct = _fmt(d)
+            tag = "★" if d.get("holding") else ""
+            lines.append(f"| {tag}{d['name']} | {d['code']} | {p} | {ch} | {pct} |")
+
     if prediction.get("key_news"):
         lines += ["", "## 📰 今日市場新聞"]
         for n in prediction["key_news"]:
@@ -743,6 +800,7 @@ def load_config():
         "notion_page_id": None,
         "notion_parent_page_id": "36af4149-a6aa-8192-9065-f9e5f97ebabf",
         "watch_stocks": [],
+        "us_watch_stocks": [],
     }
 
 
