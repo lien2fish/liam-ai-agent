@@ -3,6 +3,9 @@ config/
 notion_crm/config.py
 .claude/settings.local.json
 
+# 產險原始資料（含身分證號等個資，僅本機保留）
+insurance/policy_data.py
+
 # Playwright 瀏覽器快照
 .playwright-mcp/
 
