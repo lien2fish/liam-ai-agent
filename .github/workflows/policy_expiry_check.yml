@@ -1,0 +1,27 @@
+name: 產險保單到期提醒
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # 台灣 08:00
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 檢查即將到期保單
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python3 insurance/policy_expiry_check.py
+
+      - name: Commit 報告
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add reports/產險到期提醒_*.md
+          git diff --staged --quiet || git commit -m "chore: 產險到期提醒 $(date +%Y-%m-%d)"
+          git push
