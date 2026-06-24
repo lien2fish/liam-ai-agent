@@ -166,11 +166,12 @@ def find_customer(brand, name_or_id):
 
 
 def update_customer_total(brand, page_id, amount):
+    field = "累計消費" if brand == "seafood" else "累計消費金額"
     page = api.get(f"/pages/{page_id}")
-    current = page["properties"].get("累計消費金額", {}).get("number") or 0
+    current = page["properties"].get(field, {}).get("number") or 0
     api.patch(
         f"/pages/{page_id}",
-        {"properties": {"累計消費金額": {"number": current + amount}}},
+        {"properties": {field: {"number": current + amount}}},
     )
     return current + amount
 
