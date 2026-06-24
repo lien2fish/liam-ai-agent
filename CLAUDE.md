@@ -666,6 +666,44 @@ Subscribe and never miss a new Why. 🔔
 
 ---
 
+## 弓箭傳說風格小遊戲（個人興趣專案，2026-06-25 建立）
+
+### 核心資訊
+| 項目 | 說明 |
+|------|------|
+| 專案位置 | `/Users/lien/Downloads/archer-roguelite/`（獨立於本repo，跟事業自動化系統分開） |
+| 技術 | Phaser **3.90**（刻意pin在3.x，4.x API未知不貿然用）+ Vite，純前端瀏覽器遊戲 |
+| 啟動 | `cd /Users/lien/Downloads/archer-roguelite && npm run dev`，開Safari到 `http://localhost:5173/` |
+| 玩法 | 俯視角自動射箭roguelite（像弓箭傳說Archero）：WASD移動閃避，自動朝最近敵人射箭，清房後3選1升級卡，每5房一個Boss房（有遠程彈幕攻擊） |
+| 美術 | MVP階段純幾何圖形佔位（玩家=藍三角、敵人=紅圓、Boss=深紅大圓+金邊），先驗證玩法手感再決定要不要投資正式美術 |
+| 現況 | MVP已完成並通過程式化驗證（房間/Boss資料、傷害判定、死亡流程皆正確），**待使用者實際playtest回饋手感**，再依回饋調整數值平衡 |
+
+### 重要技術細節
+- `src/main.js` 把 `window.game` 暴露出來方便用瀏覽器Console debug
+- 測試這類canvas/Phaser遊戲時，Playwright只能做螢幕截圖分析（依瀏覽器規則不能模擬點擊），若要驗證遊戲內部邏輯（清房/升級/死亡流程），改用 `browser_evaluate` 直接呼叫scene上的方法（如 `scene.selectUpgrade(0)`）做診斷，而不是模擬使用者點擊
+- **地雷**：透過Playwright `browser_evaluate` 呼叫 Phaser 的 `scene.scene.restart()` 會讓headless頁面當掉（crash到`about:blank`，`window.game`整個消失）。要測試重來流程時改用重新 `browser_navigate` 到同個網址即可，不要呼叫 `restart()`
+
+---
+
+## 網站架構調整可行性評估（2026-06-25 評估）
+
+### savefood.org.tw（惜食台灣行動協會）
+| 項目 | 說明 |
+|------|------|
+| 平台 | **Wix**（封閉系統，generator確認），無法用程式碼/git直接調整 |
+| 結論 | 若要讓我用程式碼處理，只能脫離Wix另建新站（內容/LOGO可沿用現有Wix站爬下來的資料），再把網域DNS指向新主機（建議GitHub Pages） |
+| 現況 | **暫停中**，使用者去確認 savefood.org.tw 的DNS管理權限，確認後才會開始動工；不需要額外提供文案/圖片，可直接用現有Wix內容當底 |
+| 已發現的現有問題 | 大量未清理的「副本-」重複頁面、FAQ頁還是Wix預設範本內容、捐款芳名錄按年份分散成多頁(108~114) |
+
+### gs-group.com.tw（鉅鑫管理顧問官網）
+| 項目 | 說明 |
+|------|------|
+| 平台 | **WordPress + Elementor**（自架開放系統，非Wix），有真實檔案+MySQL資料庫 |
+| 結論 | 若拿到 **wp-admin後台帳密 + 主機FTP/SFTP/SSH權限**，可以直接用程式碼/git處理主題程式碼、客製功能、SEO、效能優化；純版面排列（Elementor拖拉部分）仍需後台操作或我指導 |
+| 子頁面 | `/have-a-seat`匠鑫私廚、`/tea`鑫茶坊、`/wine`鑫酒藏、`/seafood`鑫海產、`/education`鉅鑫教育、`/operation`鉅鑫營運處 |
+
+---
+
 ## 開發原則
 - 所有檔案操作預設在此資料夾進行
 - 不寫不必要的註解，程式碼命名清楚就是最好的說明
