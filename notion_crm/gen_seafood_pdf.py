@@ -80,7 +80,7 @@ def tx(text, size=10, bold=False, color=BLACK, align=TA_LEFT):
     return Paragraph(str(text).replace("\n", "<br/>"), st(size, bold, color, align))
 
 
-def build():
+def build(show_bank=True, show_items=False, field_size=14):
     customer = ORDER["客戶姓名"].split()[0]
     product = ORDER["items"][0]["品名"]
     date_str = ORDER["出貨日期"].replace(" ", "").replace("/", "")
@@ -115,20 +115,20 @@ def build():
         Table(
             [
                 [
-                    tx("出貨單號", 10, False, TEAL),
-                    tx(ORDER["出貨單號"], 10),
-                    tx("出貨日期", 10, False, TEAL),
-                    tx(ORDER["出貨日期"], 10),
+                    tx("出貨單號", field_size, False, TEAL),
+                    tx(ORDER["出貨單號"], field_size),
+                    tx("出貨日期", field_size, False, TEAL),
+                    tx(ORDER["出貨日期"], field_size),
                 ],
                 [
-                    tx("客戶姓名", 10, False, TEAL),
-                    tx(ORDER["客戶姓名"], 11, True),
-                    tx("付款方式", 10, False, TEAL),
-                    tx(ORDER["付款方式"], 10),
+                    tx("客戶姓名", field_size, False, TEAL),
+                    tx(ORDER["客戶姓名"], 16, True),
+                    tx("付款方式", field_size, False, TEAL),
+                    tx(ORDER["付款方式"], field_size),
                 ],
                 [
-                    tx("地　　址", 10, False, TEAL),
-                    tx(ORDER.get("地址", ""), 10),
+                    tx("地　　址", field_size, False, TEAL),
+                    tx(ORDER.get("地址", ""), field_size),
                     "",
                     "",
                 ],
@@ -155,61 +155,65 @@ def build():
     s.append(Spacer(1, 8))
 
     # ── 商品明細 section header ────────────────────────────────
-    s.append(
-        Table(
-            [[tx("▍ 商品明細", 10, False, TEAL)]],
-            colWidths=[W],
-            style=TableStyle(
-                [
-                    ("BACKGROUND", (0, 0), (-1, -1), MID),
-                    ("BOX", (0, 0), (-1, -1), 0.8, TEAL),
-                    ("TOPPADDING", (0, 0), (-1, -1), 4),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-                    ("LEFTPADDING", (0, 0), (-1, -1), 8),
-                ]
-            ),
+    if show_items:
+        s.append(
+            Table(
+                [[tx("▍ 商品明細", 10, False, TEAL)]],
+                colWidths=[W],
+                style=TableStyle(
+                    [
+                        ("BACKGROUND", (0, 0), (-1, -1), MID),
+                        ("BOX", (0, 0), (-1, -1), 0.8, TEAL),
+                        ("TOPPADDING", (0, 0), (-1, -1), 4),
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                        ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                    ]
+                ),
+            )
         )
-    )
 
-    # ── 商品表格 ──────────────────────────────────────────────────
-    col_w = [W * 0.50, W * 0.25, W * 0.25]
-    headers = ["商品名稱", "規格", "數量"]
-    rows = [[tx(h, 9, True, DARK, TA_CENTER) for h in headers]]
-    for it in ORDER["items"]:
-        rows.append(
-            [
-                tx(it["品名"], 10),
-                tx(it["規格"], 9, align=TA_CENTER),
-                tx(f"{it['數量']} {it['單位']}", 9, align=TA_CENTER),
-            ]
-        )
-    s.append(
-        Table(
-            rows,
-            colWidths=col_w,
-            style=TableStyle(
+        # ── 商品表格 ──────────────────────────────────────────────────
+        col_w = [W * 0.50, W * 0.25, W * 0.25]
+        headers = ["商品名稱", "規格", "數量"]
+        rows = [[tx(h, 9, True, DARK, TA_CENTER) for h in headers]]
+        for it in ORDER["items"]:
+            rows.append(
                 [
-                    ("BACKGROUND", (0, 0), (-1, 0), MID),
-                    ("BACKGROUND", (0, 1), (-1, -1), LIGHT),
-                    ("BOX", (0, 0), (-1, -1), 0.8, TEAL),
-                    ("INNERGRID", (0, 0), (-1, -1), 0.5, TEAL),
-                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                    ("TOPPADDING", (0, 0), (-1, -1), 5),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
-                    ("LEFTPADDING", (1, 0), (1, -1), 7),
+                    tx(it["品名"], 10),
+                    tx(it["規格"], 9, align=TA_CENTER),
+                    tx(f"{it['數量']} {it['單位']}", 9, align=TA_CENTER),
                 ]
-            ),
+            )
+        s.append(
+            Table(
+                rows,
+                colWidths=col_w,
+                style=TableStyle(
+                    [
+                        ("BACKGROUND", (0, 0), (-1, 0), MID),
+                        ("BACKGROUND", (0, 1), (-1, -1), LIGHT),
+                        ("BOX", (0, 0), (-1, -1), 0.8, TEAL),
+                        ("INNERGRID", (0, 0), (-1, -1), 0.5, TEAL),
+                        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                        ("TOPPADDING", (0, 0), (-1, -1), 5),
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                        ("LEFTPADDING", (1, 0), (1, -1), 7),
+                    ]
+                ),
+            )
         )
-    )
 
-    s.append(Spacer(1, 8))
+        s.append(Spacer(1, 8))
 
     # ── 備註 ──────────────────────────────────────────────────────
     if ORDER.get("備註"):
         s.append(
             Table(
                 [
-                    [tx("備  註", 10, False, TEAL, TA_CENTER), tx(ORDER["備註"], 9)],
+                    [
+                        tx("備  註", field_size, False, TEAL, TA_CENTER),
+                        tx(ORDER["備註"], field_size - 1),
+                    ],
                 ],
                 colWidths=[W * 0.12, W * 0.88],
                 style=TableStyle(
@@ -229,45 +233,46 @@ def build():
         s.append(Spacer(1, 8))
 
     # ── 匯款資訊 ──────────────────────────────────────────────────
-    s.append(
-        Table(
-            [[tx("▍ 匯款資訊", 10, False, TEAL)]],
-            colWidths=[W],
-            style=TableStyle(
-                [
-                    ("BACKGROUND", (0, 0), (-1, -1), MID),
-                    ("BOX", (0, 0), (-1, -1), 0.8, TEAL),
-                    ("TOPPADDING", (0, 0), (-1, -1), 4),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-                    ("LEFTPADDING", (0, 0), (-1, -1), 8),
-                ]
-            ),
-        )
-    )
-    for label, value in BANK:
+    if show_bank:
         s.append(
             Table(
-                [
-                    [
-                        tx(label, 9, True, TEAL, TA_CENTER),
-                        tx(value, 10 if label == "帳號" else 9),
-                    ],
-                ],
-                colWidths=[W * 0.15, W * 0.85],
+                [[tx("▍ 匯款資訊", 10, False, TEAL)]],
+                colWidths=[W],
                 style=TableStyle(
                     [
-                        ("BACKGROUND", (0, 0), (0, 0), MID),
-                        ("BACKGROUND", (1, 0), (1, 0), LIGHT),
-                        ("BOX", (0, 0), (-1, -1), 0.5, TEAL),
-                        ("INNERGRID", (0, 0), (-1, -1), 0.5, TEAL),
-                        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                        ("TOPPADDING", (0, 0), (-1, -1), 5),
-                        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
-                        ("LEFTPADDING", (1, 0), (1, 0), 8),
+                        ("BACKGROUND", (0, 0), (-1, -1), MID),
+                        ("BOX", (0, 0), (-1, -1), 0.8, TEAL),
+                        ("TOPPADDING", (0, 0), (-1, -1), 4),
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                        ("LEFTPADDING", (0, 0), (-1, -1), 8),
                     ]
                 ),
             )
         )
+        for label, value in BANK:
+            s.append(
+                Table(
+                    [
+                        [
+                            tx(label, 9, True, TEAL, TA_CENTER),
+                            tx(value, 10 if label == "帳號" else 9),
+                        ],
+                    ],
+                    colWidths=[W * 0.15, W * 0.85],
+                    style=TableStyle(
+                        [
+                            ("BACKGROUND", (0, 0), (0, 0), MID),
+                            ("BACKGROUND", (1, 0), (1, 0), LIGHT),
+                            ("BOX", (0, 0), (-1, -1), 0.5, TEAL),
+                            ("INNERGRID", (0, 0), (-1, -1), 0.5, TEAL),
+                            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                            ("TOPPADDING", (0, 0), (-1, -1), 5),
+                            ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                            ("LEFTPADDING", (1, 0), (1, 0), 8),
+                        ]
+                    ),
+                )
+            )
 
     # ── Footer ────────────────────────────────────────────────────
     s.append(Spacer(1, 8))
