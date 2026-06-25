@@ -1,0 +1,31 @@
+{
+  "notion": {
+    "assets_db_id": "38af4149-a6aa-81f6-bb8b-e938ad9825e4",
+    "liabilities_db_id": "38af4149-a6aa-8101-9faf-f4c57a8fe3f7",
+    "snapshot_db_id": "38af4149-a6aa-81b3-95f0-c768ed32cf81",
+    "subs_db_id": "38af4149-a6aa-81bb-aabb-d6b3a9a788e2"
+  },
+
+  "income": {
+    "monthly_base": 38000,
+    "insurance_commission_annual": 200000,
+    "company_interest_annual": 157200,
+    "child_subsidy_monthly": 5000
+  },
+
+  "fixed_expenses": {
+    "玉山信貸還款": 8452,
+    "生活日常花費": 28333,
+    "汽車加油費": 6000,
+    "幼兒園": 5000,
+    "黃金存摺投資": 3500,
+    "個人保費": 2413,
+    "保誠教育金": 2667,
+    "子女保費": 2071,
+    "汽車保養": 1667,
+    "孝親費": 5000,
+    "扶輪社社費": 3500
+  },
+
+  "balance_sheet_page_id": "38af4149-a6aa-8178-9d8f-fd8a47091a73"
+}
