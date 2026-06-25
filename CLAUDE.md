@@ -199,12 +199,14 @@
 | Workflow 檔案 | 任務 | 排程 |
 |--------------|------|------|
 | `daily_post.yml` | IG+FB 每日發文 | 每天 08:00 |
-| `ig_comment_reply.yml` | IG 留言自動回覆 | 每 5 分鐘 |
+| `ig_comment_reply.yml` | IG 留言自動回覆 | 每 5 分鐘（**實測常delay 1.5~4小時，GitHub高頻排程平台限制，非設定錯誤**） |
 | `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:00，自動 commit 報告 |
 | `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:00 |
 | `market_daily.yml` | 每日股市全面分析報告 | 每天 **12:00**（台灣），自動 commit 報告 |
 | `seafood_prices.yml` | 漁獲市場行情追蹤 | 每天 09:30 |
 | `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:30 |
+| `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:00，自動 commit 報告 |
+| `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 
 ### GitHub Secrets 總覽
 | Secret | 用途 |
@@ -663,6 +665,43 @@ Subscribe and never miss a new Why. 🔔
 | 檔案 | `/Users/lien/Desktop/鉅鑫管理顧問/報價單範本.xlsx` |
 | 用法 | 每次開新報價單先複製這份檔案，填入客戶資訊（B4客戶/B5聯絡人/G5報價日期/G6報價單號/G7統編）與品項（C9:I24區），合計/營業稅/總計欄位已設公式自動計算 |
 | 來源 | 沿用「三冠彩印事業有限公司」報價單版面格式（合併單元格/樣式），替換為鉅鑫管理顧問公司頭 |
+
+---
+
+## 產險保單到期提醒系統（2026-06-22 建立）
+
+### 核心資訊
+| 項目 | 說明 |
+|------|------|
+| 資料來源 | `insurance/active_policies.json`（105筆磊山保經有效保單，已去重複） |
+| 腳本 | `insurance/policy_expiry_check.py`（讀取保單→算下次續保日→14天內到期則寄信+寫報告）/ `insurance/process_policies.py`（資料處理）/ `insurance/policy_data.py`（原始資料，含身分證號等個資，**gitignore僅本機保留**） |
+| 排程 | GitHub Actions `policy_expiry_check.yml`，每天08:00台灣時間 |
+| 通知 | `GMAIL_APP_PASSWORD` smtplib寄信（與OAuth系統無關不會過期） |
+| 報告 | `reports/產險到期提醒_YYYY-MM-DD.md`，自動commit進repo |
+| 提醒窗口 | `REMINDER_WINDOW_DAYS = 14`（續保日落在未來14天內才提醒） |
+
+---
+
+## 名片數位化系統（2026-06-25 建立）
+
+### 核心資訊
+| 項目 | 說明 |
+|------|------|
+| 名片照片來源 | `/Users/lien/Desktop/鉅鑫管理顧問/名片資料`（手機拍照後AirDrop/iCloud同步） |
+| Notion：扶輪社名片名單 | `38af4149-a6aa-8136-a515-e9d8a468a3bb`（姓名/扶輪社名稱/扶輪職位/公司商號/職稱/聯絡電話/Email/地址/備註/取得日期） |
+| Notion：公司行號名片名單 | `38af4149-a6aa-81b8-87e9-c94d4dd8d809`（姓名/公司商號/職稱/聯絡電話/Email/地址/統編/備註/取得日期） |
+| 與既有名單關係 | 完全獨立於鑫海產/鑫酒藏/磊山保經客戶名單，都建在CRM主頁面（`358f4149-a6aa-8088-9e6d-f5361d05cd12`）下 |
+
+### 處理流程
+1. HEIC用 `sips -s format jpeg` 轉jpg（Read工具不支援HEIC直讀）
+2. 逐張用Read工具讀圖辨識文字（姓名/公司/職稱/電話/Email/地址）
+3. 分類依據：卡片有Rotary標誌/扶輪社名稱 → 扶輪社名單；純公司行號名片 → 公司行號名單
+4. **同一人有兩張卡**（扶輪社卡+一般公司卡）時合併成一筆，優先放扶輪社名單並把公司資訊填進公司/商號欄，不重複建檔
+5. 寫入用Python urllib直接呼叫Notion API（`POST /v1/pages`，`Notion-Version: 2022-06-28`）
+
+### 重要技術細節
+- **建立新Notion資料庫不可用notion-mcp的`API-create-a-data-source`**：新版API（2025-09-03+）已不支援這endpoint建資料庫，會回400要求改用「Create Database API」。改用Python直接呼叫舊版endpoint `POST https://api.notion.com/v1/databases`（帶 `Notion-Version: 2022-06-28`），parent用`{"type":"page_id","page_id":...}`即可成功
+- Token讀取：`~/.config/notion_token`
 
 ---
 
