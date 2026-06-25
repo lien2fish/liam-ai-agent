@@ -762,6 +762,34 @@ Subscribe and never miss a new Why. 🔔
 
 ---
 
+## 個人資產負債表更新系統（2026-06-26 更新）
+
+### 核心資訊
+| 項目 | 說明 |
+|------|------|
+| 腳本 | `finance/update_balance_sheet.py`（讀取Notion 3個DB→重建「💼 個人資產負債表」頁面）|
+| 設定 | `finance/finance_config.json`（收入、固定支出、Notion DB/頁面ID；已進版控）|
+| 執行 | `python3 finance/update_balance_sheet.py`（每次重建整頁，安全可重複跑）|
+| Notion頁面 | 個人資產負債表 `38af4149-a6aa-8178-9d8f-fd8a47091a73` |
+
+### Notion 資料庫（在 Personal Finance OS 主頁 `38af4149-a6aa-81d3-9480-cfb0944c8824` 下）
+| DB | ID | 維護方式 |
+|----|----|---------|
+| 資產 Assets | `38af4149-a6aa-81f6-bb8b-e938ad9825e4` | 使用者直接在Notion維護，腳本只讀 |
+| 負債 Liabilities | `38af4149-a6aa-8101-9faf-f4c57a8fe3f7` | 同上 |
+| 訂閱費用管理 Subs | `38af4149-a6aa-81bb-aabb-d6b3a9a788e2` | 同上（狀態=啟用才計入月支出）|
+
+### 更新流程（資產/負債有變動時）
+1. **資產數字變動**用 Python REST（`Notion-Version: 2022-06-28`）直接 PATCH/POST/archive 對應 page；新版MCP的query-data-source吃data_source_id會404，改用舊版 `POST /v1/databases/{db}/query` 端點
+2. Assets DB 欄位：`項目名稱 / Asset Name`(title)、`類別 / Category`(select：股權/保險/存款/股票/其他)、`當前金額 / Current Value`(number)、`成本 / Cost Basis`(number)
+3. **收入/固定支出變動**改 `finance_config.json`（`income` / `fixed_expenses` 區塊）
+4. 改完一律 `python3 finance/update_balance_sheet.py` 重建頁面，再把finance變動 commit+push（push前先 stash 未暫存的自動報告→pull --rebase→push→stash pop）
+5. 投資概況區塊只統計類別屬 `股票/黃金/ETF/Stock/Gold` 的資產；存款類（含黃金存摺、實體金條）不列入投資損益
+
+> 完整財務數字（資產明細/收支/指標）見 memory `finance_personal.md`，不在此重複。
+
+---
+
 ## 開發原則
 - 所有檔案操作預設在此資料夾進行
 - 不寫不必要的註解，程式碼命名清楚就是最好的說明
