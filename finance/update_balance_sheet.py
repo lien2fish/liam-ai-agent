@@ -2,7 +2,8 @@
 """
 個人資產負債表 — Notion 更新腳本
 執行：python3 finance/update_balance_sheet.py
-每次執行重建「💼 個人資產負債表」頁面，並重建訂閱費用管理 DB（資料從 finance_config.json 讀取）
+每次執行重建「💼 個人資產負債表」頁面內容。Assets/Liabilities/訂閱費用管理三個資料庫
+由使用者直接在 Notion 介面維護，本腳本只讀取不覆寫。
 """
 import json
 import os
@@ -46,7 +47,8 @@ with open(CFG_PATH) as f:
 NOTION_CFG = CFG["notion"]
 ASSETS_DB = NOTION_CFG["assets_db_id"]
 LIAB_DB = NOTION_CFG["liabilities_db_id"]
-FINANCE_OS_ID = "36af4149-a6aa-8192-9065-f9e5f97ebabf"
+SUBS_DB = NOTION_CFG["subs_db_id"]
+FINANCE_OS_ID = "38af4149-a6aa-81d3-9480-cfb0944c8824"
 
 _inc = CFG["income"]
 MONTHLY_INCOME = (
@@ -55,10 +57,8 @@ MONTHLY_INCOME = (
     + _inc["insurance_commission_annual"] // 12
     + _inc["company_interest_annual"] // 12
 )
-MONTHLY_EXPENSES = sum(CFG["fixed_expenses"].values())
 
 BALANCE_SHEET_TITLE = "💼 個人資產負債表"
-SUBS_DB_TITLE = "📱 訂閱費用管理"
 
 
 # ── API helpers ───────────────────────────────────────────────────────────────
@@ -138,6 +138,22 @@ def parse_liability(page):
         "original": _num(p, "原始金額 / Original Amount"),
         "monthly_payment": _num(p, "月還款 / Monthly Payment"),
         "annual_rate": _num(p, "年利率 / Annual Rate"),
+    }
+
+
+def parse_subscription(page):
+    p = page["properties"]
+    formula = p.get("換算月費", {}).get("formula", {})
+    return {
+        "name": _title(p, "服務名稱"),
+        "amount": _num(p, "金額 (NTD)"),
+        "cycle": _sel(p, "計費週期"),
+        "monthly_equiv": formula.get("number") or 0,
+        "category": _sel(p, "類別"),
+        "status": _sel(p, "狀態"),
+        "note": "".join(
+            t["plain_text"] for t in p.get("說明", {}).get("rich_text", [])
+        ),
     }
 
 
@@ -239,82 +255,6 @@ def append_toggle_children(toggle_id, children):
     npatch(f"/blocks/{toggle_id}/children", {"children": children})
 
 
-# ── Subscription DB ───────────────────────────────────────────────────────────
-def create_subs_db(parent_page_id):
-    r = npost(
-        "/databases",
-        {
-            "parent": {"type": "page_id", "page_id": parent_page_id},
-            "icon": {"type": "emoji", "emoji": "📱"},
-            "title": [{"type": "text", "text": {"content": SUBS_DB_TITLE}}],
-            "properties": {
-                "服務名稱": {"title": {}},
-                "月費 (NTD)": {"number": {"format": "number"}},
-                "計費週期": {
-                    "select": {
-                        "options": [
-                            {"name": "月付", "color": "blue"},
-                            {"name": "年付", "color": "green"},
-                            {"name": "季付", "color": "yellow"},
-                        ]
-                    }
-                },
-                "類別": {
-                    "select": {
-                        "options": [
-                            {"name": "AI工具", "color": "purple"},
-                            {"name": "娛樂", "color": "red"},
-                            {"name": "生產力", "color": "blue"},
-                            {"name": "媒體", "color": "orange"},
-                            {"name": "通訊", "color": "gray"},
-                            {"name": "其他", "color": "default"},
-                        ]
-                    }
-                },
-                "下次扣款": {"date": {}},
-                "狀態": {
-                    "select": {
-                        "options": [
-                            {"name": "啟用", "color": "green"},
-                            {"name": "暫停", "color": "yellow"},
-                            {"name": "取消", "color": "red"},
-                        ]
-                    }
-                },
-                "說明": {"rich_text": {}},
-            },
-        },
-    )
-    return r["id"]
-
-
-def populate_subs_db(db_id, subscriptions):
-    for s in subscriptions:
-        npost(
-            "/pages",
-            {
-                "parent": {"database_id": db_id},
-                "properties": {
-                    "服務名稱": {
-                        "title": [{"type": "text", "text": {"content": s["name"]}}]
-                    },
-                    "月費 (NTD)": {
-                        "number": s.get("amount_ntd", s.get("monthly_ntd", 0))
-                    },
-                    "計費週期": {"select": {"name": s.get("cycle", "月付")}},
-                    "類別": {"select": {"name": s.get("category", "其他")}},
-                    "狀態": {"select": {"name": s.get("status", "啟用")}},
-                    "說明": {
-                        "rich_text": [
-                            {"type": "text", "text": {"content": s.get("note", "")}}
-                        ]
-                    },
-                },
-            },
-        )
-        time.sleep(0.1)
-
-
 # ── Save page ID back to config ───────────────────────────────────────────────
 def save_page_id(page_id):
     with open(CFG_PATH) as f:
@@ -338,21 +278,16 @@ def main():
     )
     liabilities = [parse_liability(p) for p in query_db(LIAB_DB)]
 
+    subs = [parse_subscription(p) for p in query_db(SUBS_DB)]
+    active_subs = [s for s in subs if s["status"] == "啟用"]
+    subs_total = sum(s["monthly_equiv"] for s in active_subs)
+
     total_assets = sum(a["value"] for a in assets)
     total_liab = sum(l["balance"] for l in liabilities)
     net_worth = total_assets - total_liab
     debt_ratio = total_liab / total_assets * 100 if total_assets else 0
-    cashflow = MONTHLY_INCOME - MONTHLY_EXPENSES
-
-    def monthly_equiv(s):
-        amt = s.get("amount_ntd", s.get("monthly_ntd", 0))
-        return amt / 12 if s.get("cycle") == "年付" else amt
-
-    subs_total = sum(
-        monthly_equiv(s)
-        for s in CFG.get("subscriptions", [])
-        if s.get("status") == "啟用"
-    )
+    monthly_expenses = sum(CFG["fixed_expenses"].values()) + subs_total
+    cashflow = MONTHLY_INCOME - monthly_expenses
 
     by_cat = defaultdict(list)
     for a in assets:
@@ -456,8 +391,13 @@ def main():
         ),
         bullet(f"公司利息（月攤分）　NT${_inc['company_interest_annual']//12:,.0f}"),
         para(""),
-        para(f"月支出（固定）　NT${MONTHLY_EXPENSES:,.0f}", bold=True),
+        para(
+            f"月支出（固定）　NT${sum(CFG['fixed_expenses'].values()):,.0f}", bold=True
+        ),
         *[bullet(f"{k}　NT${v:,.0f}") for k, v in CFG["fixed_expenses"].items()],
+        bullet(f"訂閱費用（啟用中 {len(active_subs)} 項）　NT${subs_total:,.0f}"),
+        para(""),
+        para(f"月支出（合計）　NT${monthly_expenses:,.0f}", bold=True),
         para(""),
         callout(
             "📊" if cashflow >= 0 else "⚠️",
@@ -467,8 +407,6 @@ def main():
     ]
 
     # ── Build subscription summary children ───────────────────────────────────
-    subs = CFG.get("subscriptions", [])
-    active_subs = [s for s in subs if s.get("status") == "啟用"]
     subs_children = (
         [
             para(
@@ -477,14 +415,16 @@ def main():
             ),
             *[
                 bullet(
-                    f"{s['name']}　NT${s.get('amount_ntd', s.get('monthly_ntd', 0)):,.0f}／{'年' if s.get('cycle') == '年付' else '月'}"
-                    f"　≈ NT${monthly_equiv(s):,.0f}/月　（{s.get('category', '')}）"
-                    + (f"　{s['note']}" if s.get("note") else "")
+                    f"{s['name']}　NT${s['amount']:,.0f}／{'年' if s['cycle'] == '年付' else '月'}"
+                    f"　≈ NT${s['monthly_equiv']:,.0f}/月　（{s['category']}）"
+                    + (f"　{s['note']}" if s["note"] else "")
                 )
                 for s in active_subs
             ],
             para(""),
-            para("→ 完整訂閱清單見下方「📱 訂閱費用管理」資料庫"),
+            para(
+                "→ 完整訂閱清單見 Personal Finance OS 主頁下的「📱 訂閱費用管理」資料庫"
+            ),
         ]
         if active_subs
         else [para("— 目前無訂閱記錄，見下方資料庫新增 —")]
@@ -523,13 +463,6 @@ def main():
 
     print("✏️  寫入頁面內容...")
     append_blocks(page_id, blocks)
-
-    # ── Subscription DB ───────────────────────────────────────────────────────
-    print("📱 建立訂閱費用資料庫...")
-    subs_db_id = create_subs_db(page_id)
-    if subs:
-        populate_subs_db(subs_db_id, subs)
-        print(f"   已寫入 {len(subs)} 筆訂閱")
 
     url = f"https://www.notion.so/{page_id.replace('-', '')}"
     print(f"\n✅ 完成！")
