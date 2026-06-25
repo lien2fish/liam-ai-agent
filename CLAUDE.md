@@ -743,6 +743,25 @@ Subscribe and never miss a new Why. 🔔
 
 ---
 
+## Mac 效能優化紀錄（2026-06-25 完成）
+
+### 硬體限制
+2015款 MacBook Air，Intel Core i5-5250U 雙核 1.6GHz、**8GB RAM**，macOS 12.7.6。日常已會用到swap，單一Claude Code process約吃1.3GB RSS。**不建議同時開多個worktree的Claude Code session**（w2~w5平行作業功能存在，但容易吃滿記憶體變超慢）。
+
+### 已完成優化項目
+| 項目 | 內容 |
+|------|------|
+| `cache_cleanup.sh` 修正 | 原本會清掉`~/Library/Caches/ms-playwright`（這其實是Playwright瀏覽器二進位檔安裝位置，不是快取），且此腳本每天06:00 cron + 每次開Claude Code的SessionStart hook都會跑，等於常態誤刪導致Playwright MCP要重新下載300-500MB。已移除該段邏輯 |
+| 登入項目清理 | 移除 BuhoCleanerMenu、NeatDownloadManager、EaseUS Data Recovery Wizard Tray、Typeless（原本Typeless有兩個重複項目，已用`delete every login item whose name is "Typeless"`一次清除），目前登入項目數＝0 |
+| LaunchAgents 清理 | trash 掉 `com.mackeeper.MacKeeper-*.plist`（3個）。`org.virtualbox.startup.plist`（556K root擁有殘留檔）需sudo才能清，安全設定封鎖sudo，**已知殘留不處理**，影響極小 |
+| Dock 啟動動畫關閉 | `defaults write com.apple.dock launchanim -bool false` + `killall Dock` |
+| Reduce Motion / Reduce Transparency | 系統設定 > 輔助使用 > 顯示器，手動開啟（這兩個TCC保護的domain無法從Bash寫入，唯一需使用者手動操作的項目，已完成） |
+
+**Why**：硬體偏弱＋背景軟體（MacKeeper等）＋誤殺Playwright二進位檔，持續拖累原本就吃緊的8GB RAM。
+**之後若使用者抱怨變慢**：先查是否又裝了新背景開機軟體，或Playwright快取又被誤清；避免建議同時開多個worktree session。
+
+---
+
 ## 開發原則
 - 所有檔案操作預設在此資料夾進行
 - 不寫不必要的註解，程式碼命名清楚就是最好的說明
