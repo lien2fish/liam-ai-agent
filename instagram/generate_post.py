@@ -161,7 +161,7 @@ def build_knowledge_prompt(exclude_seafood=None):
 
 
 def knowledge_via_claude(prompt):
-    """Claude 生成今日知識＋畫圖提示詞（用 assistant prefill 強制 JSON 輸出）"""
+    """Claude 生成今日知識＋畫圖提示詞，從回應中擷取 JSON 物件"""
     r = requests.post(
         "https://api.anthropic.com/v1/messages",
         headers={
@@ -172,17 +172,18 @@ def knowledge_via_claude(prompt):
         json={
             "model": CLAUDE_MODEL,
             "max_tokens": 1024,
-            "messages": [
-                {"role": "user", "content": prompt},
-                {"role": "assistant", "content": "{"},
-            ],
+            "messages": [{"role": "user", "content": prompt}],
         },
         timeout=60,
     )
     data = r.json()
     if "content" not in data:
         raise RuntimeError(f"Claude 回傳異常：{data}")
-    return json.loads("{" + data["content"][0]["text"])
+    text = data["content"][0]["text"]
+    start, end = text.find("{"), text.rfind("}")
+    if start == -1 or end == -1:
+        raise RuntimeError(f"Claude 回應未含 JSON：{text[:200]}")
+    return json.loads(text[start : end + 1])
 
 
 def knowledge_via_gemini(prompt):
