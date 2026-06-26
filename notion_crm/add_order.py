@@ -58,6 +58,14 @@ TITLE_FIELD = {
     "tea": "訂單編號",
 }
 
+# 全品牌統一總表（crm_unified）— 每筆訂單同步到此，維持回購提醒資料正確
+_UNIFIED_CFG = json.load(
+    open(Path(__file__).parent.parent / "crm_unified" / "config.json")
+)
+UNIFIED_CUSTOMER_DB = _UNIFIED_CFG["customer_db"]
+UNIFIED_SALES_DB = _UNIFIED_CFG["sales_db"]
+BRAND_ZH = {"seafood": "鑫海產", "wine": "鑫酒藏", "tea": "鑫茶坊"}
+
 
 def rt(text):
     return {"rich_text": [{"type": "text", "text": {"content": str(text)}}]}
@@ -266,6 +274,76 @@ def create_tea_record(order_id, order_date, customer_name, items, amount, cost, 
     )
 
 
+def sync_to_unified(
+    brand, order_id, order_date, customer_name, item_desc, qty, amount, cost, gross, pay
+):
+    """同步到全品牌統一總表：新增銷售紀錄 + 更新客戶最後購買日/累計消費（找不到則新增）"""
+    bz = BRAND_ZH[brand]
+    # 1. 銷售紀錄總表
+    props = {
+        "訂單編號": {"title": [{"type": "text", "text": {"content": order_id}}]},
+        "品牌": {"select": {"name": bz}},
+        "出貨日期": {"date": {"start": order_date}},
+        "客戶名稱": rt(customer_name),
+        "品項": rt(item_desc),
+    }
+    if qty:
+        props["數量"] = {"number": qty}
+    if amount:
+        props["金額"] = {"number": amount}
+    if cost:
+        props["成本"] = {"number": cost}
+    if gross:
+        props["毛利"] = {"number": gross}
+    if pay:
+        props["付款方式"] = {"select": {"name": pay}}
+    api.post(
+        "/pages", {"parent": {"database_id": UNIFIED_SALES_DB}, "properties": props}
+    )
+    print(f"  ✅ 統一銷售紀錄總表已新增 {order_id}")
+
+    # 2. 客戶總表：同名同品牌則更新，否則新增
+    found = None
+    for r in api.query_db(UNIFIED_CUSTOMER_DB):
+        p = r["properties"]
+        title = p.get("客戶姓名", {}).get("title", [])
+        nm = title[0]["plain_text"] if title else ""
+        bsel = p.get("品牌", {}).get("select") or {}
+        if nm == customer_name and bsel.get("name") == bz:
+            found = r
+            break
+    if found:
+        cur = found["properties"].get("累計消費", {}).get("number") or 0
+        api.patch(
+            f"/pages/{found['id']}",
+            {
+                "properties": {
+                    "最後購買日": {"date": {"start": order_date}},
+                    "累計消費": {"number": cur + amount},
+                }
+            },
+        )
+        print(
+            f"  ✅ 統一總表客戶更新：{customer_name} 最後購買日={order_date} 累計NT${cur+amount:,.0f}"
+        )
+    else:
+        api.post(
+            "/pages",
+            {
+                "parent": {"database_id": UNIFIED_CUSTOMER_DB},
+                "properties": {
+                    "客戶姓名": {
+                        "title": [{"type": "text", "text": {"content": customer_name}}]
+                    },
+                    "品牌": {"select": {"name": bz}},
+                    "累計消費": {"number": amount},
+                    "最後購買日": {"date": {"start": order_date}},
+                },
+            },
+        )
+        print(f"  ✅ 統一總表新增客戶：{customer_name}（{bz}）")
+
+
 def ask_payment(options):
     print("付款方式：")
     for i, o in enumerate(options, 1):
@@ -443,6 +521,25 @@ def main():
     if customer_page_id:
         new_total = update_customer_total(brand, customer_page_id, amount)
         print(f"  ✅ Notion 客戶累計消費更新：NT$ {new_total:,}")
+
+    # ── 3. 同步全品牌統一總表（維持回購提醒資料正確）────────────
+    print("🗂️  同步統一總表...")
+    item_desc = items if brand in ("seafood", "tea") else product_name
+    qty_val = qty if brand == "wine" else None
+    cost_val = cost if (brand in ("seafood", "tea") and cost_input) else None
+    gross_val = gross if brand in ("seafood", "tea") else None
+    sync_to_unified(
+        brand,
+        order_id,
+        order_date,
+        customer_name,
+        item_desc,
+        qty_val,
+        amount,
+        cost_val,
+        gross_val,
+        pay,
+    )
 
     print(f"\n✅ {order_id} 完成 — 本機已儲存，Notion 已備份")
 
