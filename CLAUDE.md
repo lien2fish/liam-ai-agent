@@ -236,63 +236,6 @@
 
 ---
 
-## 指引牌產圖系統（2026 扶輪年會）
-
-### 腳本與資料檔
-| 項目 | 路徑 |
-|------|------|
-| 主要腳本 | `/Users/lien/Downloads/南港展覽館/generate_from_numbers.py` |
-| Numbers 資料檔 | `/Users/lien/Desktop/HOC團隊/舉牌規格/指引牌資料.numbers` |
-| 輸出：立牌 | `/Users/lien/Desktop/HOC團隊/舉牌規格/指引牌/放置立牌/` |
-| 輸出：手舉牌 | `/Users/lien/Desktop/HOC團隊/舉牌規格/指引牌/手舉牌/` |
-
-**執行方式：**
-```bash
-cd /Users/lien/Downloads/南港展覽館 && python3 generate_from_numbers.py
-```
-腳本會自動跳過已存在的 PNG，只產出新的。
-
-### Numbers 欄位（A~M）
-| 欄 | 名稱 | 說明 |
-|----|------|------|
-| A | 編號 | E1-1, B1-2... |
-| B | 版型 | `標準` / `多活動` / `多館別` |
-| C | 類型 | `手舉牌` / `立牌` |
-| D | 活動區塊 | 依版型（多活動型每行一條，多館別留空） |
-| E | 活動區塊英文 | 標準型才填，其他留空 |
-| F | 出口①標籤 | Gate 5 / Exit 1 / 多館別館別標題 |
-| G | 出口①說明 | 多活動才填 / 多館別子項目（換行分隔） |
-| H | 出口②標籤 | 多活動才填 / 多館別第二館標題 |
-| I | 出口②說明 | 多活動才填 / 多館別第二館子項目 |
-| J | 場地（中） | 中英合行可直接填此欄，K 留空 |
-| K | 場地（英） | 分開填寫時才用 |
-| L | 底部說明（中） | 標準型才填 |
-| M | 底部說明（英） | 標準型才填 |
-
-### 三種版型
-- **標準型**：單一活動 + 單一出口，D/E/F/J/K/L/M
-- **多活動型**：多活動列表（D 換行分隔）+ 最多兩個 Gate（F-I）+ 場地（J-K）
-- **多館別型**：D/E 留空，F/H 館別大標題（紅色），G/I 子項目，J/K 場地
-
-### 字型規格（已確認，2026-05-08）
-| 角色 | 字型檔 | Index |
-|------|--------|-------|
-| zh_font（中文/混合/箭頭） | `/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc` | 2 |
-| en_font（純英文） | `/System/Library/Fonts/HelveticaNeue.ttc` | 1 |
-
-### 排版關鍵常數
-| 常數 | 值 | 說明 |
-|------|-----|------|
-| `W × H` | 3535 × 5000 px | 畫布尺寸 |
-| `HEADER_BTM` | 1310 | "2026 RIC" 文字下緣，置中頂部基準 |
-| `VENUE_Y` | 3750 | 場地文字起始 Y |
-| `CONTENT_TOP` | 1380 | 標準型專用 |
-
-**置中邏輯：**
-- 多館別：整體內容垂直置中於 `HEADER_BTM` ～ (`VENUE_Y` 有場地 / `H` 無場地)
-- 多活動：D/E 活動區塊置中於 `HEADER_BTM` ～ `fm_top`（Gate 區塊上方）；Gate 從 `fm_top` 往下；場地 = `max(y_after_gate + 80 + label_sz, VENUE_Y)`
-- 標準型：D/E/F 整體置中於 `CONTENT_TOP` ～ `CONTENT_BTM`
-
 ## 每日股市全面分析報告系統（2026-06-02 建立）
 
 ### 核心資訊
@@ -493,31 +436,6 @@ wt clean   # 清除額外 worktree
 ```bash
 python3 /Users/lien/Downloads/gen_a1_list.py
 ```
-
----
-
-## HOC 服務點簽收表系統（2026-06-05 更新）
-
-### 核心資訊
-| 項目 | 說明 |
-|------|------|
-| 腳本 | `/Users/lien/Desktop/HOC團隊/sync_and_pdf.py` |
-| 來源 Numbers | `/Users/lien/Desktop/HOC團隊/服務點物品清單彙整.numbers` |
-| PDF 輸出 | `/Users/lien/Desktop/HOC團隊/服務點簽收表/` |
-| 合併 PDF | `/Users/lien/Desktop/HOC團隊/服務點簽收表/服務點物品簽收表_全站點.pdf` |
-
-### 執行方式
-```bash
-cd "/Users/lien/Desktop/HOC團隊" && python3 sync_and_pdf.py
-```
-
-### 簽收表欄位格式（2026-06-05 定稿）
-- 表格：物品名稱 / 數量 / 備註 / **點組長確認**（□）
-- 底部簽名欄：**點組長簽名：＿＿＿＿＿＿＿＿**（單一簽名欄）
-- **已移除**：到位確認欄、交班確認欄、到位/交班簽名欄
-
-### 站點數量
-共 31 個站點，每站一頁，合併為一份 PDF
 
 ---
 
