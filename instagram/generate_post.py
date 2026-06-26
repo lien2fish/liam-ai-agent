@@ -12,9 +12,13 @@ HISTORY_KEEP = 365  # 保留最近 365 天紀錄（一年不重複）
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# 文案＋畫圖提示詞由 Claude 生成（Gemini 保留為 fallback）
+CLAUDE_MODEL = "claude-sonnet-4-6"  # 省錢可改 "claude-haiku-4-5-20251001"
+
 # 設定來源：GitHub Actions 用環境變數，本機用 config 檔
 if os.environ.get("IG_TOKEN"):
-    GEMINI_KEY = os.environ["GEMINI_KEY"]
+    ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+    GEMINI_KEY = os.environ.get("GEMINI_KEY", "")
     HF_TOKEN = os.environ["HF_TOKEN"]
     IG_TOKEN = os.environ["IG_TOKEN"]
     IG_ID = os.environ["IG_ID"]
@@ -22,7 +26,8 @@ if os.environ.get("IG_TOKEN"):
     FB_PAGE_ID = os.environ.get("FB_PAGE_ID", "")
 else:
     CONFIG = json.load(open(os.path.join(BASE_DIR, "../config/instagram_config.json")))
-    GEMINI_KEY = CONFIG["gemini_api_key"]
+    ANTHROPIC_KEY = CONFIG.get("anthropic_api_key", "")
+    GEMINI_KEY = CONFIG.get("gemini_api_key", "")
     HF_TOKEN = CONFIG["hf_token"]
     IG_TOKEN = CONFIG["long_lived_user_token"]
     IG_ID = CONFIG["ig_account_id"]
@@ -109,8 +114,8 @@ SEASONAL_FISH = {
 }
 
 
-def generate_knowledge(exclude_seafood=None):
-    """Gemini 生成今日海鮮知識（2.5-flash → 2.0-flash fallback）"""
+def build_knowledge_prompt(exclude_seafood=None):
+    """組合今日知識生成的 prompt（Claude / Gemini 共用）"""
     month = datetime.now().month
     in_season = SEASONAL_FISH.get(month, [])
     season_note = f"\n\n🗓️ 本月（{month}月）當季台灣魚種：{'、'.join(in_season)}。若選擇【海鮮知識】類別，請優先從當季魚種中選題；若近期當季魚種都已發過，才考慮非當季題材。"
@@ -119,7 +124,7 @@ def generate_knowledge(exclude_seafood=None):
     if exclude_seafood:
         exclude_note = f'\n\n⚠️ 以下「主題/角度」組合近期已發過，本次嚴禁使用（主題相同但角度不同則可以）：{", ".join(exclude_seafood)}'
 
-    prompt = f"""你是台灣海洋達人。生成一則台灣讀者有興趣的知識，JSON格式：
+    return f"""你是台灣海洋達人。生成一則台灣讀者有興趣的知識，JSON格式：
 {{
   "seafood_zh": "主題名稱（2-5字）",
   "seafood_en": "English name or term",
@@ -150,8 +155,38 @@ def generate_knowledge(exclude_seafood=None):
 設備：集魚燈、聲納魚探機、GPS定位、冰艙保鮮技術、漁網材質與選擇、無線電通訊
 生活：出海時間週期、船上生活分工、惡劣天氣應對、討海人的飲食習慣、漁村文化與信仰
 
-注意：若涉及潮汐、海流、洋流等自然現象，必須結合漁民作業或捕魚技術來說明，不可單純介紹自然現象本身。{season_note}{exclude_note}"""
+注意：若涉及潮汐、海流、洋流等自然現象，必須結合漁民作業或捕魚技術來說明，不可單純介紹自然現象本身。{season_note}{exclude_note}
 
+只輸出 JSON 物件本身，不要加任何說明文字、註解或 markdown 程式碼框。"""
+
+
+def knowledge_via_claude(prompt):
+    """Claude 生成今日知識＋畫圖提示詞（用 assistant prefill 強制 JSON 輸出）"""
+    r = requests.post(
+        "https://api.anthropic.com/v1/messages",
+        headers={
+            "x-api-key": ANTHROPIC_KEY,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+        json={
+            "model": CLAUDE_MODEL,
+            "max_tokens": 1024,
+            "messages": [
+                {"role": "user", "content": prompt},
+                {"role": "assistant", "content": "{"},
+            ],
+        },
+        timeout=60,
+    )
+    data = r.json()
+    if "content" not in data:
+        raise RuntimeError(f"Claude 回傳異常：{data}")
+    return json.loads("{" + data["content"][0]["text"])
+
+
+def knowledge_via_gemini(prompt):
+    """Gemini fallback（2.5-flash → 2.0-flash → 2.0-flash-lite）"""
     for model in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite"]:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
         r = requests.post(
@@ -168,6 +203,17 @@ def generate_knowledge(exclude_seafood=None):
             return json.loads(text)
         print(f"[{model}] 失敗：{data}", flush=True)
     raise RuntimeError("所有 Gemini 模型均失敗")
+
+
+def generate_knowledge(exclude_seafood=None):
+    """今日知識生成：Claude 為主，Gemini 為 fallback"""
+    prompt = build_knowledge_prompt(exclude_seafood)
+    if ANTHROPIC_KEY:
+        try:
+            return knowledge_via_claude(prompt)
+        except Exception as e:
+            print(f"[Claude] 失敗，改用 Gemini fallback：{e}", flush=True)
+    return knowledge_via_gemini(prompt)
 
 
 def generate_illustration(illustration_prompt):

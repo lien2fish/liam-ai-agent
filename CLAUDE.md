@@ -81,16 +81,16 @@
 | 圖片存放 | `instagram/posts/YYYY-MM-DD.jpg`（每次 workflow 自動 commit） |
 
 ### 流程
-1. **Gemini 2.5 Flash** 生成知識 JSON（5～6句，三大類：海鮮/捕魚/漁船）
-2. **HF FLUX.1-schnell** 生成圖文對應水彩插圖
+1. **Claude Sonnet 4.6** 生成知識 JSON（5～6句＋畫圖提示詞 `illustration_prompt`，三大類：海鮮/捕魚/漁船）。`generate_knowledge()` 以 Claude 為主、Gemini 為 fallback（Claude API 當機時自動降級，當天不開天窗）。模型常數 `CLAUDE_MODEL` 在腳本頂端，省錢可改 Haiku 4.5。用 assistant prefill `"{"` 強制 JSON 輸出
+2. **HF FLUX.1-schnell** 生成圖文對應水彩插圖（吃 Claude 寫的 `illustration_prompt`）
 3. **PIL** 動態排版合成（插圖大小＋字型大小依內容量自動調整）
 4. **GitHub API** 上傳圖片 → raw.githubusercontent.com 公開 URL（repo 必須 public）
 5. **Meta Graph API v19.0** 同時發送：
    - IG 限時動態（`{IG_ID}/media`，media_type=STORIES，帶 `cross_post_ids={FB_PAGE_ID}`）
    - FB 限時動態透過 `cross_post_ids` 跨發，**不使用** `photo_stories`（該端點持續回傳 unknown error）
 
-### GitHub Secrets（6個，已設定）
-`GEMINI_KEY` / `HF_TOKEN` / `IG_TOKEN` / `IG_ID` / `FB_PAGE_TOKEN` / `FB_PAGE_ID`
+### GitHub Secrets（7個）
+`ANTHROPIC_API_KEY`（文案＋畫圖prompt，**需新增**）/ `GEMINI_KEY`（fallback）/ `HF_TOKEN` / `IG_TOKEN` / `IG_ID` / `FB_PAGE_TOKEN` / `FB_PAGE_ID`
 
 ---
 
