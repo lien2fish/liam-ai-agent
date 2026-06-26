@@ -211,6 +211,7 @@
 ### GitHub Secrets 總覽
 | Secret | 用途 |
 |--------|------|
+| `ANTHROPIC_API_KEY` | Claude API Key（IG 發文文案＋畫圖 prompt 生成，Sonnet 4.6）。2026-06-26 新增，Console 已儲值（預付制、非訂閱）。模型常數 `CLAUDE_MODEL` 在 `instagram/generate_post.py` 頂端 |
 | `GEMINI_KEY` | Gemini AI Key（claude-workspace-495009，**2.5-flash** 模型）。**注意：實為免費額度，未開通Cloud Billing**（2026-06-23實測證實，`2.5-flash`限20次/天、`2.5-pro`免費額度0），所有共用此Key的自動化共用同一日額度池，理論上會互搶額度 |
 | `HF_TOKEN` | Hugging Face FLUX 圖片生成 |
 | `IG_TOKEN` | Instagram Graph API（到期 2026-07-16）|
@@ -747,6 +748,18 @@ Subscribe and never miss a new Why. 🔔
 
 ### 硬體限制
 2015款 MacBook Air，Intel Core i5-5250U 雙核 1.6GHz、**8GB RAM**，macOS 12.7.6。日常已會用到swap，單一Claude Code process約吃1.3GB RSS。**不建議同時開多個worktree的Claude Code session**（w2~w5平行作業功能存在，但容易吃滿記憶體變超慢）。
+
+### 換機決策（2026-06-26 定案）
+已評估比較「本機 / 13" Air M5 / 14" Pro M5」，**結論選 13" MacBook Air M5**：
+| 項目 | 內容 |
+|------|------|
+| 配置 | M5（10核CPU／10核GPU）／**24GB RAM**／**512GB SSD** |
+| 官網價 | **NT$49,900**（apple.com/tw 實價，2026-06 M5 Air 已上市） |
+| 付款 | 0% 分12期＝月付 NT$4,158；或攤3年每天約NT$46 |
+| 不選Pro原因 | Whisper轉錄/大圖輸出是**偶發非常態**，Pro主動散熱優勢用不到，價差約NT$1.5-2萬不值得 |
+| 關鍵規格邏輯 | 痛點是8GB RAM不足→**24GB為必選**；24GB只能配10核GPU版（綁定），等於白賺25%繪圖效能給偶發剪片用 |
+
+> 尚未購買，待使用者決定下單。新機到手後需協助搬移環境：Claude Code、Python、MCP、git 設定。
 
 ### 已完成優化項目
 | 項目 | 內容 |
