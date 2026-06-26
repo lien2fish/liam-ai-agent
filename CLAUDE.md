@@ -81,7 +81,7 @@
 | 圖片存放 | `instagram/posts/YYYY-MM-DD.jpg`（每次 workflow 自動 commit） |
 
 ### 流程
-1. **Claude Sonnet 4.6** 生成知識 JSON（5～6句＋畫圖提示詞 `illustration_prompt`，三大類：海鮮/捕魚/漁船）。`generate_knowledge()` 以 Claude 為主、Gemini 為 fallback（Claude API 當機時自動降級，當天不開天窗）。模型常數 `CLAUDE_MODEL` 在腳本頂端，省錢可改 Haiku 4.5。用 assistant prefill `"{"` 強制 JSON 輸出
+1. **Claude Sonnet 4.6** 生成知識 JSON（5～6句＋畫圖提示詞 `illustration_prompt`，三大類：海鮮/捕魚/漁船）。`generate_knowledge()` 以 Claude 為主、Gemini 為 fallback（Claude API 當機時自動降級，當天不開天窗）。模型常數 `CLAUDE_MODEL` 在腳本頂端，省錢可改 Haiku 4.5。**注意：Sonnet 4.6 不支援 assistant message prefill**（會回 invalid_request_error），改用單一 user message＋從回應擷取 `{...}` JSON 子字串
 2. **HF FLUX.1-schnell** 生成圖文對應水彩插圖（吃 Claude 寫的 `illustration_prompt`）
 3. **PIL** 動態排版合成（插圖大小＋字型大小依內容量自動調整）
 4. **GitHub API** 上傳圖片 → raw.githubusercontent.com 公開 URL（repo 必須 public）
