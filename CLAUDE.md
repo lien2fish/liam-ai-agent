@@ -742,7 +742,10 @@ Subscribe and never miss a new Why. 🔔
 ### 資料來源（整併自既有4個獨立DB，保留不刪）
 - 🍷鑫酒藏 客戶`374f4149-a6aa-816f-ab2c-fcaad143f5b4`／銷售`374f4149-a6aa-81ec-8aef-de88095d8b6b`
 - 🐟鑫海產 客戶`374f4149-a6aa-8135-b9e4-dbb0cc2c2e0d`／銷售`374f4149-a6aa-8102-baf5-ffa959227731`
-- 🍵鑫茶坊：尚無 Notion DB／無資料，已列為品牌選項，日後新增資料時手動補進總表即可
+- 🍵鑫茶坊：尚無獨立 Notion DB／無歷史資料，已列為品牌選項；經 `add_order.py` 新增的茶坊訂單會自動進統一總表
+
+### 新訂單自動同步（2026-06-26 接通）
+`notion_crm/add_order.py` 每筆新訂單現在同步 **4 個目標**：① 本機 Numbers ② 舊品牌 Notion 銷售DB ③ 舊品牌 Notion 客戶DB累計消費 ④ **統一總表**（銷售紀錄新增＋客戶「最後購買日」更新/新增）。第④步確保回購提醒讀到的「最後購買日」永遠是最新，不會誤判。
 
 ### 回購邏輯
 - 門檻天數 `REPURCHASE_DAYS`（預設60，workflow env 可調）
