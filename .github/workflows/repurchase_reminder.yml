@@ -1,0 +1,37 @@
+name: 回購提醒
+
+on:
+  schedule:
+    - cron: '0 1 * * *'    # UTC 01:00 = 台灣時間 09:00
+  workflow_dispatch:
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run repurchase reminder
+        env:
+          NOTION_TOKEN:        ${{ secrets.NOTION_TOKEN }}
+          GMAIL_APP_PASSWORD:  ${{ secrets.GMAIL_APP_PASSWORD }}
+          REPURCHASE_DAYS:     '60'
+        run: python crm_unified/repurchase_reminder.py
+
+      - name: Commit report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add reports/回購提醒_*.md
+          git diff --staged --quiet || git commit -m "自動更新回購提醒報告 $(date +%F)"
+          git push
