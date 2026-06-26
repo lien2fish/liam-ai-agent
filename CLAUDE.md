@@ -206,6 +206,7 @@
 | `seafood_prices.yml` | 漁獲市場行情追蹤 | 每天 09:30 |
 | `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:30 |
 | `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:00，自動 commit 報告 |
+| `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:00，超60天未回購則 Email，自動 commit 報告 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 
 ### GitHub Secrets 總覽
@@ -720,6 +721,34 @@ Subscribe and never miss a new Why. 🔔
 > 完整財務數字（資產明細/收支/指標）見 memory `finance_personal.md`，不在此重複。
 
 ---
+
+## 全品牌統一 CRM ＋回購提醒系統（2026-06-26 建立）
+
+### 核心資訊
+| 項目 | 說明 |
+|------|------|
+| 整併腳本 | `crm_unified/build_unified_crm.py`（讀酒藏/海產4個舊DB→建2個跨品牌總表→匯入，可重複跑會沿用既有總表） |
+| 回購腳本 | `crm_unified/repurchase_reminder.py`（掃描客戶總表→超門檻未回購→Email） |
+| 設定 | `crm_unified/config.json`（兩個總表DB ID，**已進版控**，workflow 需讀） |
+| 排程 | `.github/workflows/repurchase_reminder.yml`，每天09:00台灣，超60天未回購則寄信＋commit報告 |
+| 報告 | `reports/回購提醒_YYYY-MM-DD.md` |
+
+### 兩個跨品牌 Notion 資料庫（建在 CRM 主頁 `358f4149-a6aa-8088-9e6d-f5361d05cd12` 下）
+| DB | ID | 欄位 |
+|----|----|------|
+| 🗂️ 全品牌客戶總表 | `38bf4149-a6aa-816e-9850-f3dfbbb925ec` | 客戶姓名/品牌(select:鑫酒藏/鑫海產/鑫茶坊)/聯絡電話/Email/地址/會員等級/偏好品項/累計消費/最後購買日/公司/統編/備註 |
+| 🧾 全品牌銷售紀錄 | `38bf4149-a6aa-81db-9b89-c47410857a2c` | 訂單編號/品牌/出貨日期/客戶名稱/品項/數量/金額/成本/毛利/付款方式/備註 |
+
+### 資料來源（整併自既有4個獨立DB，保留不刪）
+- 🍷鑫酒藏 客戶`374f4149-a6aa-816f-ab2c-fcaad143f5b4`／銷售`374f4149-a6aa-81ec-8aef-de88095d8b6b`
+- 🐟鑫海產 客戶`374f4149-a6aa-8135-b9e4-dbb0cc2c2e0d`／銷售`374f4149-a6aa-8102-baf5-ffa959227731`
+- 🍵鑫茶坊：尚無 Notion DB／無資料，已列為品牌選項，日後新增資料時手動補進總表即可
+
+### 回購邏輯
+- 門檻天數 `REPURCHASE_DAYS`（預設60，workflow env 可調）
+- 「最後購買日」由銷售紀錄每客戶取最新出貨日算出
+- 待回購＝曾購買且距今>門檻；從未消費（無最後購買日）另列參考區不算逾期
+- 認證沿用 `NOTION_TOKEN`＋`GMAIL_APP_PASSWORD`（與保單提醒同套，無到期問題）
 
 ## 開發原則
 - 所有檔案操作預設在此資料夾進行
