@@ -20,12 +20,12 @@
     {
       "code": "009816.TW",
       "name": "凱基優選ETF",
-      "holding": true
+      "holding": false
     },
     {
       "code": "2610.TW",
       "name": "華航",
-      "holding": true
+      "holding": false
     },
     {
       "code": "2303.TW",
@@ -72,7 +72,7 @@
     {
       "code": "SPCX",
       "name": "SpaceX",
-      "holding": true
+      "holding": false
     }
   ]
 }
