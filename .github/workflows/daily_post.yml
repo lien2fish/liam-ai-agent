@@ -32,6 +32,7 @@ jobs:
 
       - name: Run daily post
         env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GEMINI_KEY:   ${{ secrets.GEMINI_KEY }}
           HF_TOKEN:     ${{ secrets.HF_TOKEN }}
           IG_TOKEN:     ${{ secrets.IG_TOKEN }}
