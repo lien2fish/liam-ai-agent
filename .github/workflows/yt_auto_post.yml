@@ -1,0 +1,43 @@
+name: YouTube 每日自動 Shorts
+
+on:
+  schedule:
+    - cron: '0 2 * * *'    # UTC 02:00 = 台灣時間 10:00（與 IG 08:00 錯開）
+  workflow_dispatch:
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install ffmpeg and Chinese fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-noto-cjk
+          fc-cache -f
+
+      - name: Install Python dependencies
+        run: pip install edge-tts requests
+
+      - name: Generate and upload Short
+        env:
+          ANTHROPIC_API_KEY:       ${{ secrets.ANTHROPIC_API_KEY }}
+          HF_TOKEN:                ${{ secrets.HF_TOKEN }}
+          YT_OAUTH_CLIENT_ID:      ${{ secrets.YT_OAUTH_CLIENT_ID }}
+          YT_OAUTH_CLIENT_SECRET:  ${{ secrets.YT_OAUTH_CLIENT_SECRET }}
+          YT_OAUTH_REFRESH_TOKEN:  ${{ secrets.YT_OAUTH_REFRESH_TOKEN }}
+          YT_PRIVACY:              'private'   # 驗證無誤後改成 public
+          GITHUB_TOKEN:            ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO:             ${{ github.repository }}
+        run: python youtube_auto/make_and_upload.py
