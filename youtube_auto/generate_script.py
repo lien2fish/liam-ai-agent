@@ -73,21 +73,21 @@ def build_prompt(recent):
             "\n\nAvoid these recently-used topics (pick something different): "
             + ", ".join(recent[:60])
         )
-    return f"""You are a viral YouTube Shorts scriptwriter specialising in HISTORY and UNSOLVED MYSTERIES for a global English-speaking audience.
+    return f"""You are a gentle YouTube Shorts writer creating SOOTHING, HEALING animated content for a global audience who watch to relax, feel comforted, and calm their minds before sleep or after a hard day.
 
-Generate ONE 30-45 second Short. Output ONLY a JSON object, no markdown, no commentary:
+Generate ONE 30-45 second cozy healing Short. Output ONLY a JSON object, no markdown, no commentary:
 {{
-  "topic": "short unique kebab-case slug for de-duplication, e.g. voynich-manuscript",
-  "title": "clickable English title, under 70 characters, curiosity-driven, no clickbait lies",
-  "sentences": [{{"en": "one spoken English sentence", "zh": "對應的繁體中文翻譯（口語、精煉）"}}],
-  "scenes": ["4 to 6 cinematic image-generation prompts in English, one per visual beat, each vividly describing a scene that matches that part of the narration. Atmospheric, historical, photoreal or painterly."],
-  "description": "2-3 sentence YouTube description followed by 4-6 relevant hashtags",
+  "topic": "short unique kebab-case slug for de-duplication, e.g. rainy-window-tea",
+  "title": "warm, gentle, inviting English title under 70 characters (cozy/calming vibe, not clickbait)",
+  "sentences": [{{"en": "one soft spoken English sentence", "zh": "對應的繁體中文（溫柔、口語、療癒）"}}],
+  "scenes": ["4 to 6 soft animated illustration prompts in English, one per beat. Cozy, dreamy, gentle storybook scenes (a sleepy cat by a rainy window, a tiny cottage under stars, warm tea steam, a fox curled in autumn leaves). Soft pastel, kawaii, Studio-Ghibli-like."],
+  "description": "2-3 gentle sentence YouTube description followed by 4-6 calming hashtags",
   "tags": ["8-12 lowercase search tags, no # symbol"]
 }}
 
-The "sentences" array is the spoken narration split sentence by sentence (6-9 sentences, ~95-130 English words total). First sentence = strong hook; middle = intriguing facts; last = cliffhanger/open question. Each item pairs the English sentence ("en", used for voiceover) with its Traditional Chinese translation ("zh", used for on-screen subtitles). NO stage directions or emojis.
+The "sentences" array is the spoken narration split sentence by sentence (6-9 short sentences, ~70-110 English words total — slow and unhurried). Tone is warm, tender, reassuring, like a soft bedtime voice. It can be a tiny comforting micro-story, a gentle reflection, or soothing affirmations of self-kindness, rest, and hope. Each item pairs the English sentence ("en", for voiceover) with its Traditional Chinese translation ("zh", for on-screen subtitles). NO stage directions, NO emojis.
 
-Pick genuinely fascinating, lesser-known history or unsolved-mystery topics (lost civilisations, unexplained artefacts, vanished people, ancient enigmas, cold cases, strange historical events). Be factual; where something is unproven, frame it honestly as a mystery.{avoid}"""
+Pick cozy, healing, heart-warming themes (rest, self-compassion, slowing down, small joys, comfort, gentle hope, nature's calm). Keep it sincere and softly poetic.{avoid}"""
 
 
 def generate(recent=None):
