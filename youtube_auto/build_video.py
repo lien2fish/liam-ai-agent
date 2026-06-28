@@ -11,7 +11,8 @@ REPO = os.path.dirname(BASE)
 
 W, H = 1080, 1920
 FPS = 30
-VOICE = os.environ.get("YT_VOICE", "en-US-GuyNeural")
+VOICE = os.environ.get("YT_VOICE", "en-US-AriaNeural")  # 柔和女聲（療癒系）
+RATE = os.environ.get("YT_RATE", "-8%")  # 放慢語速，更舒緩
 # 中文字幕字型：macOS 用黑體-繁，Linux(GitHub Actions) 用 Noto CJK
 CJK_FONT = "Heiti TC" if platform.system() == "Darwin" else "Noto Sans CJK TC"
 HF_URL = (
@@ -31,8 +32,9 @@ HF_TOKEN = _hf_token()
 
 def gen_image(prompt, out_path):
     full = (
-        f"{prompt}, cinematic, dramatic atmospheric lighting, highly detailed, "
-        "photoreal, moody color grade, vertical composition, no text, no watermark"
+        f"{prompt}, soft pastel storybook illustration, cozy and dreamy, "
+        "Studio Ghibli inspired, gentle warm lighting, kawaii, calming soft colors, "
+        "hand-drawn animation style, vertical composition, no text, no watermark"
     )
     req = urllib.request.Request(
         HF_URL,
@@ -50,7 +52,7 @@ def gen_image(prompt, out_path):
 async def _synth_one(text, mp3_path):
     import edge_tts
 
-    comm = edge_tts.Communicate(text, VOICE)
+    comm = edge_tts.Communicate(text, VOICE, rate=RATE)
     with open(mp3_path, "wb") as f:
         async for chunk in comm.stream():
             if chunk["type"] == "audio":
@@ -137,7 +139,7 @@ def kenburns_clip(img, dur, out):
     frames = max(1, int(dur * FPS))
     vf = (
         f"scale=2160:3840:force_original_aspect_ratio=increase,crop=2160:3840,"
-        f"zoompan=z='min(zoom+0.0007,1.18)':d={frames}:"
+        f"zoompan=z='min(zoom+0.0004,1.10)':d={frames}:"
         f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s={W}x{H}:fps={FPS},"
         f"format=yuv420p"
     )

@@ -207,7 +207,7 @@
 | `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:30 |
 | `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:00，自動 commit 報告 |
 | `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:00，超60天未回購則 Email，自動 commit 報告 |
-| `yt_auto_post.yml` | YouTube 自動 Shorts（英文歷史謎團，無人臉） | 每天 10:00，AI生影片自動上傳 |
+| `yt_auto_post.yml` | YouTube 自動 Shorts（療癒系動畫，無人臉） | 每天 10:00，AI生影片自動上傳 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 
 ### GitHub Secrets 總覽
@@ -757,7 +757,8 @@ Subscribe and never miss a new Why. 🔔
 ## YouTube 自動 Shorts 頻道系統（2026-06-28 建立）
 
 ### 定位
-全新**無人臉 AI 頻道**，主題 **History & Unsolved Mysteries**（英文/全球，RPM 最高），純流量變現。架構複用 IG 發文系統。
+全新**無人臉 AI 頻道**，主題 **療癒系（Healing/Cozy）**（2026-06-28 從歷史謎團改方向）：柔和粉彩動畫風、溫柔英文女聲（Aria，語速-8%）、繁中字幕、慢運鏡、療癒短語/微故事。架構複用 IG 發文系統。
+- 風格參數在 `build_video.py`：`VOICE`(en-US-AriaNeural)、`RATE`(-8%)、`gen_image` 畫風(soft pastel storybook/Ghibli)、Ken Burns 放慢(0.0004→1.10)。要換回戲劇/其他風只改這幾處＋`generate_script` 的 prompt
 
 ### 模組 `youtube_auto/`
 | 檔案 | 職責 |
