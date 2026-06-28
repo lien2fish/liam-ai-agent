@@ -30,7 +30,7 @@ def main():
         build_video.build_video(script, out, workdir=tmp)
 
         log(f"上傳 YouTube（{PRIVACY}）...")
-        desc = script.get("description", "") + "\n\n#shorts"
+        desc = script.get("description", "")
         vid = upload.upload(
             out, script["title"], desc, script.get("tags", []), privacy=PRIVACY
         )
