@@ -762,6 +762,7 @@ Subscribe and never miss a new Why. 🔔
 - **固定吉祥物結尾**：`MASCOT_SCENE`＝Mochi(奶油色小貓+額頭月牙印)，每支影片結尾自動 append 一張面向觀眾「說話」的吉祥物圖（靜態圖+輕推鏡，非真對嘴；真lip-sync需Kling等工具無法全自動）
 - **空靈聲線**：最終合成對旁白加 `aecho` 殘響+highpass
 - **BGM**：`youtube_auto/bgm.mp3`（ffmpeg 生成的療癒環境墊音，可換無版權音樂，或用 `YT_BGM` 指定），最終以 `amix` 低音量(0.16)混入；輸出音訊 44.1kHz 立體聲
+- **長度＝1～3 分鐘一般影片**（2026-06-28 從 Shorts 改長）：`generate_script` prompt 要 14-18 句、8-12 場景、200-280字；`max_tokens` 升到 3000；`make_and_upload` 已移除強制 `#shorts`。要改長度就調 prompt 的句數/場景數。圖片數越多 FLUX 生成越久（本機 Intel Mac 約 4 分鐘/支，雲端 runner 較快、在 20 分鐘上限內）
 
 ### 模組 `youtube_auto/`
 | 檔案 | 職責 |

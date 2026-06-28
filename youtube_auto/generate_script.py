@@ -80,12 +80,12 @@ Generate ONE 30-45 second cozy healing Short. Output ONLY a JSON object, no mark
   "topic": "short unique kebab-case slug for de-duplication, e.g. rainy-window-tea",
   "title": "warm, gentle, inviting English title under 70 characters (cozy/calming vibe, not clickbait)",
   "sentences": [{{"en": "one soft spoken English sentence", "zh": "對應的繁體中文（溫柔、口語、療癒）"}}],
-  "scenes": ["4 to 6 soft animated illustration prompts in English, one per beat. Cozy, dreamy, gentle storybook scenes (a sleepy cat by a rainy window, a tiny cottage under stars, warm tea steam, a fox curled in autumn leaves). Soft pastel, kawaii, Studio-Ghibli-like."],
+  "scenes": ["8 to 12 soft animated illustration prompts in English, one per beat. Cozy, dreamy, gentle storybook scenes (a sleepy cat by a rainy window, a tiny cottage under stars, warm tea steam, a fox curled in autumn leaves). Soft pastel, kawaii, Studio-Ghibli-like."],
   "description": "2-3 gentle sentence YouTube description followed by 4-6 calming hashtags",
   "tags": ["8-12 lowercase search tags, no # symbol"]
 }}
 
-The "sentences" array is the spoken narration split sentence by sentence (6-9 short sentences, ~70-110 English words total — slow and unhurried). Tone is warm, tender, reassuring, like a soft bedtime voice. It can be a tiny comforting micro-story, a gentle reflection, or soothing affirmations of self-kindness, rest, and hope. Each item pairs the English sentence ("en", for voiceover) with its Traditional Chinese translation ("zh", for on-screen subtitles). NO stage directions, NO emojis.
+The "sentences" array is the spoken narration split sentence by sentence (14-18 short sentences, ~200-280 English words total — this makes a calm 1.5-2.5 minute piece, slow and unhurried). Tone is warm, tender, reassuring, like a soft bedtime voice. It can be a gentle comforting story, a soothing reflection that gradually unfolds, or a flowing series of affirmations of self-kindness, rest, and hope — let it breathe and develop, not rushed. Each item pairs the English sentence ("en", for voiceover) with its Traditional Chinese translation ("zh", for on-screen subtitles). NO stage directions, NO emojis.
 
 Pick cozy, healing, heart-warming themes (rest, self-compassion, slowing down, small joys, comfort, gentle hope, nature's calm). Keep it sincere and softly poetic.{avoid}"""
 
@@ -98,7 +98,7 @@ def generate(recent=None):
         data=json.dumps(
             {
                 "model": CLAUDE_MODEL,
-                "max_tokens": 1500,
+                "max_tokens": 3000,
                 "messages": [{"role": "user", "content": prompt}],
             }
         ).encode(),
