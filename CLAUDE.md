@@ -207,6 +207,7 @@
 | `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:30 |
 | `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:00，自動 commit 報告 |
 | `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:00，超60天未回購則 Email，自動 commit 報告 |
+| `yt_auto_post.yml` | YouTube 自動 Shorts（英文歷史謎團，無人臉） | 每天 10:00，AI生影片自動上傳 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 
 ### GitHub Secrets 總覽
@@ -752,6 +753,39 @@ Subscribe and never miss a new Why. 🔔
 - 「最後購買日」由銷售紀錄每客戶取最新出貨日算出
 - 待回購＝曾購買且距今>門檻；從未消費（無最後購買日）另列參考區不算逾期
 - 認證沿用 `NOTION_TOKEN`＋`GMAIL_APP_PASSWORD`（與保單提醒同套，無到期問題）
+
+## YouTube 自動 Shorts 頻道系統（2026-06-28 建立）
+
+### 定位
+全新**無人臉 AI 頻道**，主題 **History & Unsolved Mysteries**（英文/全球，RPM 最高），純流量變現。架構複用 IG 發文系統。
+
+### 模組 `youtube_auto/`
+| 檔案 | 職責 |
+|------|------|
+| `generate_script.py` | Claude Sonnet 4.6 生英文腳本 JSON（title/narration/scenes/description/tags/topic），主題去重 `recent_topics.json` |
+| `build_video.py` | FLUX生4-6張電影感插圖 ＋ **edge-tts**英文配音 ＋ ffmpeg Ken Burns ＋ 燒錄字幕 → 1080×1920 MP4 |
+| `upload.py` | YouTube Data API v3 resumable 上傳（OAuth refresh token，純 urllib） |
+| `make_and_upload.py` | 每日進入點：生腳本→產影片→上傳→記錄去重 |
+| `oauth_setup.py` | 一次性取得 refresh token（手動授權流程，同 Gmail） |
+| `SETUP.md` | 一次性人工設定步驟（建頻道/OAuth/Secrets） |
+
+### 排程
+`.github/workflows/yt_auto_post.yml`，每天 10:00 台灣（UTC 02:00）。`YT_PRIVACY` 預設 **private**，驗證無誤後改 public。
+
+### 需新增 GitHub Secrets（共用 ANTHROPIC_API_KEY / HF_TOKEN）
+`YT_OAUTH_CLIENT_ID` / `YT_OAUTH_CLIENT_SECRET` / `YT_OAUTH_REFRESH_TOKEN`（scope: `youtube.upload`）
+
+### 重要技術細節
+- **字幕為繁體中文、旁白為英文**（2026-06-28 使用者指定中文字幕；標題/描述維持英文利全球 SEO）
+- **逐句配音對齊**：`generate_script` 讓 Claude 同時產 `sentences:[{en,zh}]`；`build_video.synth_sentences` 逐句 edge-tts 配音→量測時長→串接，取得每句精確時間，中文字幕(zh)據此對齊（比 edge-tts 的 SentenceBoundary 更穩，edge-tts 7.2.8 預設只回句邊界非字邊界）
+- **CJK 字型**：`CJK_FONT` mac 用 `Heiti TC`、Linux 用 `Noto Sans CJK TC`；workflow 需 `apt install fonts-noto-cjk`
+- CJK 字幕依字數切（每段11字）、拉丁依詞數切（每段5詞）
+- 本機 evermeet 版 ffmpeg **無 ffprobe**：`get_duration` 改用 `ffmpeg -i` 解析 Duration（雲端 apt 版有 ffprobe 不受影響）
+- **OAuth 同意畫面須發布 Production**，否則 refresh token 每 7 天失效（同 Gmail OAuth 雷）
+- 憑證 `config/youtube_client.json`、`config/youtube_oauth.json` 已被 config/ gitignore 保護
+- 本機已驗證：完整產出 24s 帶字幕 MP4（FLUX插圖+配音+Ken Burns 皆正常）
+- **一次性人工步驟**（無法自動化）：建 YouTube 頻道、Google Cloud OAuth、首次授權，見 `youtube_auto/SETUP.md`
+- 變現非保證：YPP 門檻 1,000 訂閱 + 90天1,000萬 Shorts 觀看，且需原創價值避開低品質AI內容政策
 
 ## 開發原則
 - 所有檔案操作預設在此資料夾進行
