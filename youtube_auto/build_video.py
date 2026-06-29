@@ -4,7 +4,7 @@
 流程：FLUX 生場景插圖 → edge-tts 英文旁白(含字級時間軸) → ffmpeg Ken Burns + 燒錄字幕。
 只用 stdlib + requests + edge-tts + 系統 ffmpeg。
 """
-import json, os, io, asyncio, platform, subprocess, tempfile, urllib.request
+import json, os, io, asyncio, platform, random, subprocess, tempfile, time, urllib.parse, urllib.request
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(BASE)
@@ -26,19 +26,8 @@ MASCOT_SCENE = (
 # 背景音樂（療癒墊音）；可用 YT_BGM 指定，預設 youtube_auto/bgm.mp3
 _bgm_default = os.path.join(BASE, "bgm.mp3")
 BGM = os.environ.get("YT_BGM") or (_bgm_default if os.path.exists(_bgm_default) else "")
-HF_URL = (
-    "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell"
-)
-
-
-def _hf_token():
-    if os.environ.get("HF_TOKEN"):
-        return os.environ["HF_TOKEN"]
-    cfg = os.path.join(REPO, "config", "instagram_config.json")
-    return json.load(open(cfg)).get("hf_token", "") if os.path.exists(cfg) else ""
-
-
-HF_TOKEN = _hf_token()
+# 改用 Pollinations.ai 免費生圖（免金鑰，底層 FLUX）；HF FLUX 免費額度已用罄(402)
+POLLI_URL = "https://image.pollinations.ai/prompt/"
 
 
 def gen_image(prompt, out_path):
@@ -47,17 +36,29 @@ def gen_image(prompt, out_path):
         "highly detailed, photoreal, deep moody color grade, sense of mystery and wonder, "
         "vertical composition, no text, no watermark"
     )
-    req = urllib.request.Request(
-        HF_URL,
-        data=json.dumps({"inputs": full}).encode(),
-        headers={
-            "Authorization": f"Bearer {HF_TOKEN}",
-            "Content-Type": "application/json",
-        },
-        method="POST",
+    q = urllib.parse.urlencode(
+        {
+            "width": 1080,
+            "height": 1920,
+            "model": "flux",
+            "nologo": "true",
+            "seed": random.randint(1, 9_999_999),
+        }
     )
-    with urllib.request.urlopen(req, timeout=120) as r:
-        open(out_path, "wb").write(r.read())
+    url = POLLI_URL + urllib.parse.quote(full) + "?" + q
+    last = None
+    for _ in range(4):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=180) as r:
+                data = r.read()
+            if data and len(data) > 5000:
+                open(out_path, "wb").write(data)
+                return
+        except Exception as e:
+            last = e
+        time.sleep(5)
+    raise RuntimeError(f"Pollinations 生圖失敗：{last}")
 
 
 async def _synth_one(text, mp3_path):
