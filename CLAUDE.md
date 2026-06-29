@@ -82,7 +82,7 @@
 
 ### 流程
 1. **Claude Sonnet 4.6** 生成知識 JSON（5～6句＋畫圖提示詞 `illustration_prompt`，三大類：海鮮/捕魚/漁船）。`generate_knowledge()` 以 Claude 為主、Gemini 為 fallback（Claude API 當機時自動降級，當天不開天窗）。模型常數 `CLAUDE_MODEL` 在腳本頂端，省錢可改 Haiku 4.5。**注意：Sonnet 4.6 不支援 assistant message prefill**（會回 invalid_request_error），改用單一 user message＋從回應擷取 `{...}` JSON 子字串
-2. **HF FLUX.1-schnell** 生成圖文對應水彩插圖（吃 Claude 寫的 `illustration_prompt`）
+2. **Pollinations.ai**（免費免金鑰，model=flux）生成圖文對應水彩插圖（吃 Claude 寫的 `illustration_prompt`）。**2026-06-29 從 HF FLUX 改來**：HF Inference 免費額度用罄回 402，撐不起每日用量；Pollinations 免費、白底品質OK（去背門檻>228仍通過）
 3. **PIL** 動態排版合成（插圖大小＋字型大小依內容量自動調整）
 4. **GitHub API** 上傳圖片 → raw.githubusercontent.com 公開 URL（repo 必須 public）
 5. **Meta Graph API v19.0** 同時發送：
@@ -215,7 +215,7 @@
 |--------|------|
 | `ANTHROPIC_API_KEY` | Claude API Key（IG 發文文案＋畫圖 prompt 生成，Sonnet 4.6）。2026-06-26 新增，Console 已儲值（預付制、非訂閱）。模型常數 `CLAUDE_MODEL` 在 `instagram/generate_post.py` 頂端 |
 | `GEMINI_KEY` | Gemini AI Key（claude-workspace-495009，**2.5-flash** 模型）。**注意：實為免費額度，未開通Cloud Billing**（2026-06-23實測證實，`2.5-flash`限20次/天、`2.5-pro`免費額度0），所有共用此Key的自動化共用同一日額度池，理論上會互搶額度 |
-| `HF_TOKEN` | Hugging Face FLUX 圖片生成 |
+| `HF_TOKEN` | （已停用）Hugging Face FLUX；2026-06-29 免費額度用罄回402，IG與YouTube生圖均改用 Pollinations.ai 免費免金鑰 |
 | `IG_TOKEN` | Instagram Graph API（到期 2026-07-16）|
 | `IG_ID` | Instagram 帳號 ID |
 | `FB_PAGE_TOKEN` | Facebook Page Token（永不過期）|
@@ -762,13 +762,13 @@ Subscribe and never miss a new Why. 🔔
 - **固定收尾角色**：`MASCOT_SCENE`＝大角鴞(琥珀眼、滿月星空、面向觀眾如要透露秘密)，每支影片結尾自動 append 一張「對你說話」的角色圖（靜態圖+輕推鏡，非真對嘴；真lip-sync需Kling無法全自動）
 - **聲線**：旁白加 `aecho` 殘響+highpass（宇宙回音/份量感）
 - **BGM**：`youtube_auto/bgm.mp3`（ffmpeg 生成的低沉神秘氛圍 drone，可換無版權音樂或 `YT_BGM` 指定），`amix` 低音量(0.16)混入；輸出 44.1kHz 立體聲。**注意：這版 ffmpeg 的 `tremolo` filter 會 exit 222（Result too large），生成 BGM 別用 tremolo**
-- **長度＝2～3 分鐘一般影片**：`generate_script` prompt 要 18-24 句、10-14 場景、290-380字；`max_tokens`=3000；`make_and_upload` 無 `#shorts`。改長度調 prompt 句數/場景數。圖片越多 FLUX 越久（本機 Intel Mac 約 4-5 分鐘/支，雲端 runner 較快、在 20 分鐘上限內）
+- **長度＝2～3 分鐘一般影片**：`generate_script` prompt 要 18-24 句、10-14 場景、290-380字；`max_tokens`=3000；`make_and_upload` 無 `#shorts`。改長度調 prompt 句數/場景數。**生圖用 Pollinations（免費）較慢**：本機約 10 分鐘/支，workflow `timeout-minutes` 已調 30；圖太多可能逼近上限，必要時減場景數
 
 ### 模組 `youtube_auto/`
 | 檔案 | 職責 |
 |------|------|
 | `generate_script.py` | Claude Sonnet 4.6 生英文腳本 JSON（title/narration/scenes/description/tags/topic），主題去重 `recent_topics.json` |
-| `build_video.py` | FLUX生4-6張電影感插圖 ＋ **edge-tts**英文配音 ＋ ffmpeg Ken Burns ＋ 燒錄字幕 → 1080×1920 MP4 |
+| `build_video.py` | **Pollinations.ai**(免費免金鑰)生10-14張電影感插圖 ＋ **edge-tts**英文配音 ＋ ffmpeg Ken Burns ＋ 燒錄字幕 → 1080×1920 MP4 |
 | `upload.py` | YouTube Data API v3 resumable 上傳（OAuth refresh token，純 urllib） |
 | `make_and_upload.py` | 每日進入點：生腳本→產影片→上傳→記錄去重 |
 | `oauth_setup.py` | 一次性取得 refresh token（手動授權流程，同 Gmail） |
@@ -777,7 +777,7 @@ Subscribe and never miss a new Why. 🔔
 ### 排程
 `.github/workflows/yt_auto_post.yml`，每天 10:00 台灣（UTC 02:00）。`YT_PRIVACY` 預設 **private**，驗證無誤後改 public。
 
-### 需新增 GitHub Secrets（共用 ANTHROPIC_API_KEY / HF_TOKEN）
+### 需新增 GitHub Secrets（共用 ANTHROPIC_API_KEY；生圖用 Pollinations 免金鑰，不需 HF_TOKEN）
 `YT_OAUTH_CLIENT_ID` / `YT_OAUTH_CLIENT_SECRET` / `YT_OAUTH_REFRESH_TOKEN`（scope: `youtube.upload`）
 
 ### 重要技術細節
@@ -788,7 +788,7 @@ Subscribe and never miss a new Why. 🔔
 - 本機 evermeet 版 ffmpeg **無 ffprobe**：`get_duration` 改用 `ffmpeg -i` 解析 Duration（雲端 apt 版有 ffprobe 不受影響）
 - **OAuth 同意畫面須發布 Production**，否則 refresh token 每 7 天失效（同 Gmail OAuth 雷）
 - 憑證 `config/youtube_client.json`、`config/youtube_oauth.json` 已被 config/ gitignore 保護
-- 本機已驗證：完整產出 24s 帶字幕 MP4（FLUX插圖+配音+Ken Burns 皆正常）
+- 本機已驗證：完整產出帶字幕 MP4（Pollinations插圖+配音+Ken Burns 皆正常）
 - **一次性人工步驟**（無法自動化）：建 YouTube 頻道、Google Cloud OAuth、首次授權，見 `youtube_auto/SETUP.md`
 - 變現非保證：YPP 門檻 1,000 訂閱 + 90天1,000萬 Shorts 觀看，且需原創價值避開低品質AI內容政策
 

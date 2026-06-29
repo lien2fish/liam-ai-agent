@@ -218,22 +218,35 @@ def generate_knowledge(exclude_seafood=None):
 
 
 def generate_illustration(illustration_prompt):
-    """Hugging Face FLUX.1-schnell 生成水彩插圖"""
-    url = "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell"
+    """Pollinations.ai 免費生成水彩插圖（HF FLUX 免費額度已用罄402，改免金鑰）"""
+    import urllib.parse, random
+
     prompt = (
         f"{illustration_prompt}, pure white background, "
         "traditional natural history watercolor illustration style, "
         "soft warm color palette, highly detailed, beautiful, no text, no shadow, centered composition"
     )
-    r = requests.post(
-        url,
-        headers={"Authorization": f"Bearer {HF_TOKEN}"},
-        json={"inputs": prompt},
-        timeout=120,
+    q = urllib.parse.urlencode(
+        {
+            "width": 1024,
+            "height": 1024,
+            "model": "flux",
+            "nologo": "true",
+            "seed": random.randint(1, 9_999_999),
+        }
     )
-    if r.status_code != 200:
-        raise RuntimeError(f"HF 插圖生成失敗：{r.status_code} {r.text[:200]}")
-    return Image.open(io.BytesIO(r.content)).convert("RGBA")
+    url = "https://image.pollinations.ai/prompt/" + urllib.parse.quote(prompt) + "?" + q
+    last = None
+    for _ in range(4):
+        try:
+            r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=180)
+            if r.status_code == 200 and len(r.content) > 5000:
+                return Image.open(io.BytesIO(r.content)).convert("RGBA")
+            last = f"status {r.status_code}"
+        except Exception as e:
+            last = e
+        time.sleep(5)
+    raise RuntimeError(f"Pollinations 插圖生成失敗：{last}")
 
 
 def wrap_text(draw, text, font, max_width):
