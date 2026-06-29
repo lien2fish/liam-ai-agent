@@ -10,13 +10,15 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 BASE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(BASE)
 
-W, H = 1080, 1920
+# 比例：長片(2分鐘以上)用 16:9，Shorts 用 9:16。由 YT_ASPECT 控制，預設 16:9
+ASPECT = os.environ.get("YT_ASPECT", "16:9")
+W, H = (1080, 1920) if ASPECT == "9:16" else (1920, 1080)
 FPS = 30
 VOICE = os.environ.get("YT_VOICE", "en-US-GuyNeural")  # 沉穩男聲（神秘/史詩感）
 RATE = os.environ.get("YT_RATE", "-3%")  # 略慢增添份量
 # 中文字幕字型：macOS 用黑體-繁，Linux(GitHub Actions) 用 Noto CJK
 CJK_FONT = "Heiti TC" if platform.system() == "Darwin" else "Noto Sans CJK TC"
-INTRO_DUR = 4.5  # 開場標題卡秒數
+INTRO_DUR = 3.0 if W < H else 4.5  # Shorts(直式)開場卡短一點，長片長一點
 
 
 def _title_font(size):
@@ -61,15 +63,16 @@ POLLI_URL = "https://image.pollinations.ai/prompt/"
 
 
 def gen_image(prompt, out_path):
+    comp = "vertical composition" if W < H else "cinematic widescreen composition"
     full = (
         f"{prompt}, cinematic, epic and awe-inspiring, dramatic atmospheric lighting, "
         "highly detailed, photoreal, deep moody color grade, sense of mystery and wonder, "
-        "vertical composition, no text, no watermark"
+        f"{comp}, no text, no watermark"
     )
     q = urllib.parse.urlencode(
         {
-            "width": 1080,
-            "height": 1920,
+            "width": W,
+            "height": H,
             "model": "flux",
             "nologo": "true",
             "seed": random.randint(1, 9_999_999),
@@ -203,11 +206,16 @@ def build_captions(segs, texts, ass_path):
             txt = _wrap_balanced(ch, cjk, line_max)
             groups.append((start, end, txt if cjk else txt.upper()))
 
+    # 字幕位置/字級依比例調整：直式字大、置於下三分之一；橫式字略小、貼近底部
+    if H > W:  # 9:16
+        fsize, marginv = 60, 500
+    else:  # 16:9
+        fsize, marginv = 54, 70
     header = (
-        "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n\n"
+        f"[Script Info]\nScriptType: v4.00+\nPlayResX: {W}\nPlayResY: {H}\n\n"
         "[V4+ Styles]\n"
         "Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n"
-        f"Style: Cap, {CJK_FONT}, 60, &H00FFFFFF, &H00000000, &H64000000, 1, 1, 5, 2, 2, 70, 70, 500, 1\n\n"
+        f"Style: Cap, {CJK_FONT}, {fsize}, &H00FFFFFF, &H00000000, &H64000000, 1, 1, 5, 2, 2, 90, 90, {marginv}, 1\n\n"
         "[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n"
     )
     lines = []
@@ -221,7 +229,7 @@ def build_captions(segs, texts, ass_path):
 def kenburns_clip(img, dur, out):
     frames = max(1, int(dur * FPS))
     vf = (
-        f"scale=2160:3840:force_original_aspect_ratio=increase,crop=2160:3840,"
+        f"scale={2*W}:{2*H}:force_original_aspect_ratio=increase,crop={2*W}:{2*H},"
         f"zoompan=z='min(zoom+0.0004,1.10)':d={frames}:"
         f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s={W}x{H}:fps={FPS},"
         f"format=yuv420p"
@@ -320,7 +328,7 @@ def make_title_card(bg_path, title, intro_zh, out_png):
 def title_card_clip(png, dur, out):
     frames = max(1, int(dur * FPS))
     vf = (
-        f"scale=2160:3840:force_original_aspect_ratio=increase,crop=2160:3840,"
+        f"scale={2*W}:{2*H}:force_original_aspect_ratio=increase,crop={2*W}:{2*H},"
         f"zoompan=z='min(zoom+0.0004,1.08)':d={frames}:x='iw/2-(iw/zoom/2)':"
         f"y='ih/2-(ih/zoom/2)':s={W}x{H}:fps={FPS},"
         f"fade=t=in:st=0:d=0.6,fade=t=out:st={dur-0.6:.2f}:d=0.6,format=yuv420p"
