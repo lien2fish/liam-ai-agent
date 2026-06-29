@@ -66,7 +66,23 @@ def save_recent(recent, new_topic):
     urllib.request.urlopen(req)
 
 
-def build_prompt(recent):
+def build_prompt(recent, mode="long"):
+    if mode == "short":
+        dur, n_sent, words, n_scene = (
+            "punchy 45-55 second Short",
+            "6-8 sentences",
+            "~75-110 English words",
+            "4 to 6",
+        )
+        struct = "First sentence = an instant gripping hook; build ONE single fascinating mystery fast; last sentence = a haunting open question. Keep it tight and punchy."
+    else:
+        dur, n_sent, words, n_scene = (
+            "2-3 minute video",
+            "18-24 sentences",
+            "~290-380 English words",
+            "10 to 14",
+        )
+        struct = "First sentence = a gripping hook that sparks curiosity; the middle builds the mystery with fascinating facts and unanswered questions; the last sentence leaves the viewer with a haunting open question or sense of wonder."
     avoid = ""
     if recent:
         avoid = (
@@ -75,25 +91,25 @@ def build_prompt(recent):
         )
     return f"""You are a captivating YouTube narrator creating awe-inspiring videos about the GREATEST UNSOLVED MYSTERIES OF THE UNIVERSE and ANCIENT CIVILISATIONS, for a curious global audience who love wonder, the unknown, and "what if" questions.
 
-Generate ONE 2-3 minute video. Output ONLY a JSON object, no markdown, no commentary:
+Generate ONE {dur}. Output ONLY a JSON object, no markdown, no commentary:
 {{
   "topic": "short unique kebab-case slug for de-duplication, e.g. dark-matter or gobekli-tepe",
   "title": "intriguing, curiosity-driven English title under 60 characters (evokes wonder, not clickbait lies) — shown on the opening title card",
   "intro_zh": "一句吸引人的繁體中文開場白，點出這支影片要探討的謎團是什麼（約 18-32 字，勾起好奇，顯示在開場標題卡）",
   "sentences": [{{"en": "one spoken English sentence", "zh": "對應的繁體中文（口語、精煉、保留神秘感）"}}],
-  "scenes": ["10 to 14 cinematic image-generation prompts in English, one per beat. Epic, awe-inspiring, atmospheric scenes (deep space nebulae, black holes, ancient stone ruins, lost pyramids, mysterious artefacts, vast cosmic vistas). Photoreal, dramatic lighting, cinematic."],
+  "scenes": ["{n_scene} cinematic image-generation prompts in English, one per beat. Epic, awe-inspiring, atmospheric scenes (deep space nebulae, black holes, ancient stone ruins, lost pyramids, mysterious artefacts, vast cosmic vistas). Photoreal, dramatic lighting, cinematic."],
   "description": "2-3 sentence YouTube description followed by 4-6 relevant hashtags",
   "tags": ["8-12 lowercase search tags, no # symbol"]
 }}
 
-The "sentences" array is the spoken narration split sentence by sentence (18-24 sentences, ~290-380 English words total — this makes a 2-3 minute video). First sentence = a gripping hook that sparks curiosity; the middle builds the mystery with fascinating facts and unanswered questions; the last sentence leaves the viewer with a haunting open question or sense of wonder. Each item pairs the English sentence ("en", for voiceover) with its Traditional Chinese translation ("zh", for on-screen subtitles). NO stage directions, NO emojis.
+The "sentences" array is the spoken narration split sentence by sentence ({n_sent}, {words} total). {struct} Each item pairs the English sentence ("en", for voiceover) with its Traditional Chinese translation ("zh", for on-screen subtitles). NO stage directions, NO emojis.
 
 Pick genuinely fascinating themes: unsolved cosmic mysteries (dark matter, black holes, the edge of the universe, the Fermi paradox, what came before the Big Bang) and ancient civilisation enigmas (Göbekli Tepe, lost cities, unexplained megaliths, vanished peoples, undeciphered scripts). Be factual; where unproven, frame it honestly as an open mystery that invites wonder.{avoid}"""
 
 
-def generate(recent=None):
+def generate(recent=None, mode="long"):
     recent = recent if recent is not None else load_recent()
-    prompt = build_prompt(recent)
+    prompt = build_prompt(recent, mode)
     req = urllib.request.Request(
         "https://api.anthropic.com/v1/messages",
         data=json.dumps(
