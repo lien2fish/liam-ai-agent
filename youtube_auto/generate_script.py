@@ -73,21 +73,21 @@ def build_prompt(recent):
             "\n\nAvoid these recently-used topics (pick something different): "
             + ", ".join(recent[:60])
         )
-    return f"""You are a gentle YouTube Shorts writer creating SOOTHING, HEALING animated content for a global audience who watch to relax, feel comforted, and calm their minds before sleep or after a hard day.
+    return f"""You are a captivating YouTube narrator creating awe-inspiring videos about the GREATEST UNSOLVED MYSTERIES OF THE UNIVERSE and ANCIENT CIVILISATIONS, for a curious global audience who love wonder, the unknown, and "what if" questions.
 
-Generate ONE 30-45 second cozy healing Short. Output ONLY a JSON object, no markdown, no commentary:
+Generate ONE 2-3 minute video. Output ONLY a JSON object, no markdown, no commentary:
 {{
-  "topic": "short unique kebab-case slug for de-duplication, e.g. rainy-window-tea",
-  "title": "warm, gentle, inviting English title under 70 characters (cozy/calming vibe, not clickbait)",
-  "sentences": [{{"en": "one soft spoken English sentence", "zh": "對應的繁體中文（溫柔、口語、療癒）"}}],
-  "scenes": ["8 to 12 soft animated illustration prompts in English, one per beat. Cozy, dreamy, gentle storybook scenes (a sleepy cat by a rainy window, a tiny cottage under stars, warm tea steam, a fox curled in autumn leaves). Soft pastel, kawaii, Studio-Ghibli-like."],
-  "description": "2-3 gentle sentence YouTube description followed by 4-6 calming hashtags",
+  "topic": "short unique kebab-case slug for de-duplication, e.g. dark-matter or gobekli-tepe",
+  "title": "intriguing, curiosity-driven English title under 70 characters (evokes wonder, not clickbait lies)",
+  "sentences": [{{"en": "one spoken English sentence", "zh": "對應的繁體中文（口語、精煉、保留神秘感）"}}],
+  "scenes": ["10 to 14 cinematic image-generation prompts in English, one per beat. Epic, awe-inspiring, atmospheric scenes (deep space nebulae, black holes, ancient stone ruins, lost pyramids, mysterious artefacts, vast cosmic vistas). Photoreal, dramatic lighting, cinematic."],
+  "description": "2-3 sentence YouTube description followed by 4-6 relevant hashtags",
   "tags": ["8-12 lowercase search tags, no # symbol"]
 }}
 
-The "sentences" array is the spoken narration split sentence by sentence (14-18 short sentences, ~200-280 English words total — this makes a calm 1.5-2.5 minute piece, slow and unhurried). Tone is warm, tender, reassuring, like a soft bedtime voice. It can be a gentle comforting story, a soothing reflection that gradually unfolds, or a flowing series of affirmations of self-kindness, rest, and hope — let it breathe and develop, not rushed. Each item pairs the English sentence ("en", for voiceover) with its Traditional Chinese translation ("zh", for on-screen subtitles). NO stage directions, NO emojis.
+The "sentences" array is the spoken narration split sentence by sentence (18-24 sentences, ~290-380 English words total — this makes a 2-3 minute video). First sentence = a gripping hook that sparks curiosity; the middle builds the mystery with fascinating facts and unanswered questions; the last sentence leaves the viewer with a haunting open question or sense of wonder. Each item pairs the English sentence ("en", for voiceover) with its Traditional Chinese translation ("zh", for on-screen subtitles). NO stage directions, NO emojis.
 
-Pick cozy, healing, heart-warming themes (rest, self-compassion, slowing down, small joys, comfort, gentle hope, nature's calm). Keep it sincere and softly poetic.{avoid}"""
+Pick genuinely fascinating themes: unsolved cosmic mysteries (dark matter, black holes, the edge of the universe, the Fermi paradox, what came before the Big Bang) and ancient civilisation enigmas (Göbekli Tepe, lost cities, unexplained megaliths, vanished peoples, undeciphered scripts). Be factual; where unproven, frame it honestly as an open mystery that invites wonder.{avoid}"""
 
 
 def generate(recent=None):
