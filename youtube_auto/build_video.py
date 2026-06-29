@@ -11,17 +11,17 @@ REPO = os.path.dirname(BASE)
 
 W, H = 1080, 1920
 FPS = 30
-VOICE = os.environ.get("YT_VOICE", "en-US-AriaNeural")  # 柔和女聲（療癒系）
-RATE = os.environ.get("YT_RATE", "-8%")  # 放慢語速，更舒緩
+VOICE = os.environ.get("YT_VOICE", "en-US-GuyNeural")  # 沉穩男聲（神秘/史詩感）
+RATE = os.environ.get("YT_RATE", "-3%")  # 略慢增添份量
 # 中文字幕字型：macOS 用黑體-繁，Linux(GitHub Actions) 用 Noto CJK
 CJK_FONT = "Heiti TC" if platform.system() == "Darwin" else "Noto Sans CJK TC"
 
-# 頻道固定吉祥物——每支影片結尾出現、面向觀眾「對你說話」
+# 頻道固定收尾角色——每支影片結尾出現、面向觀眾「對你說話」
 MASCOT_SCENE = (
-    "Mochi the cozy channel mascot, a small round cream-colored cat with a tiny "
-    "glowing crescent moon mark on its forehead, big gentle sleepy eyes, sitting and "
-    "facing the viewer with a warm caring expression as if softly speaking to you, "
-    "soft pastel storybook style, dreamy cozy bokeh background"
+    "A wise great horned owl with luminous amber eyes, perched on an ancient weathered "
+    "stone beneath a vast star-filled night sky and a faint glowing nebula, looking "
+    "directly toward the viewer as if about to reveal a secret, cinematic, dramatic "
+    "moonlight, atmospheric, photoreal, highly detailed"
 )
 # 背景音樂（療癒墊音）；可用 YT_BGM 指定，預設 youtube_auto/bgm.mp3
 _bgm_default = os.path.join(BASE, "bgm.mp3")
@@ -43,9 +43,9 @@ HF_TOKEN = _hf_token()
 
 def gen_image(prompt, out_path):
     full = (
-        f"{prompt}, soft pastel storybook illustration, cozy and dreamy, "
-        "Studio Ghibli inspired, gentle warm lighting, kawaii, calming soft colors, "
-        "hand-drawn animation style, vertical composition, no text, no watermark"
+        f"{prompt}, cinematic, epic and awe-inspiring, dramatic atmospheric lighting, "
+        "highly detailed, photoreal, deep moody color grade, sense of mystery and wonder, "
+        "vertical composition, no text, no watermark"
     )
     req = urllib.request.Request(
         HF_URL,
