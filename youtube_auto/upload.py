@@ -39,9 +39,23 @@ def access_token():
     return json.load(urllib.request.urlopen(req))["access_token"]
 
 
-def upload(video_path, title, description, tags, privacy="private", category="27"):
-    """回傳 video_id。privacy: private/unlisted/public。category 27=教育, 24=娛樂"""
+def upload(
+    video_path,
+    title,
+    description,
+    tags,
+    privacy="private",
+    category="27",
+    publish_at=None,
+):
+    """回傳 video_id。privacy: private/unlisted/public。
+    publish_at（RFC3339 UTC，如 2026-06-29T10:00:00Z）有給時＝排程發布：
+    先設 private，YouTube 屆時自動轉公開。category 27=教育, 24=娛樂"""
     token = access_token()
+    status = {"privacyStatus": privacy, "selfDeclaredMadeForKids": False}
+    if publish_at:
+        status["privacyStatus"] = "private"
+        status["publishAt"] = publish_at
     meta = {
         "snippet": {
             "title": title[:100],
@@ -51,10 +65,7 @@ def upload(video_path, title, description, tags, privacy="private", category="27
             "defaultLanguage": "en",
             "defaultAudioLanguage": "en",
         },
-        "status": {
-            "privacyStatus": privacy,
-            "selfDeclaredMadeForKids": False,
-        },
+        "status": status,
     }
     size = os.path.getsize(video_path)
 
@@ -84,7 +95,8 @@ def upload(video_path, title, description, tags, privacy="private", category="27
     )
     resp = json.load(urllib.request.urlopen(put))
     vid = resp["id"]
-    print(f"✅ 已上傳：https://youtu.be/{vid}（{privacy}）", flush=True)
+    when = f"排程 {publish_at} 自動公開" if publish_at else privacy
+    print(f"✅ 已上傳：https://youtu.be/{vid}（{when}）", flush=True)
     return vid
 
 
