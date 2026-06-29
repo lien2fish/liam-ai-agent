@@ -784,7 +784,7 @@ Subscribe and never miss a new Why. 🔔
 - **字幕為繁體中文、旁白為英文**（2026-06-28 使用者指定中文字幕；標題/描述維持英文利全球 SEO）
 - **逐句配音對齊**：`generate_script` 讓 Claude 同時產 `sentences:[{en,zh}]`；`build_video.synth_sentences` 逐句 edge-tts 配音→量測時長→串接，取得每句精確時間，中文字幕(zh)據此對齊（比 edge-tts 的 SentenceBoundary 更穩，edge-tts 7.2.8 預設只回句邊界非字邊界）
 - **CJK 字型**：`CJK_FONT` mac 用 `Heiti TC`、Linux 用 `Noto Sans CJK TC`；workflow 需 `apt install fonts-noto-cjk`
-- CJK 字幕依字數切（每段11字）、拉丁依詞數切（每段5詞）
+- 字幕字級 60、CJK 依字數切（每段16字）、拉丁依詞數切（每段8詞）——字小、每次顯示字數多（2026-06-29 調）
 - 本機 evermeet 版 ffmpeg **無 ffprobe**：`get_duration` 改用 `ffmpeg -i` 解析 Duration（雲端 apt 版有 ffprobe 不受影響）
 - **OAuth 同意畫面須發布 Production**，否則 refresh token 每 7 天失效（同 Gmail OAuth 雷）
 - 憑證 `config/youtube_client.json`、`config/youtube_oauth.json` 已被 config/ gitignore 保護
