@@ -2,20 +2,34 @@
 """每日進入點：Claude生腳本 → 組裝影片 → 上傳 YouTube → 記錄主題去重。
 
 環境變數：
-  YT_PRIVACY  上傳隱私（private/unlisted/public，預設 private 保險）
+  YT_PRIVACY        上傳隱私（private/unlisted/public，預設 private）
+  YT_PUBLISH_HOUR   有設＝排程發布：影片先上傳，當天該台灣時間自動轉公開（如 18）
 """
 import os, tempfile, shutil
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 import generate_script
 import build_video
 import upload
 
 PRIVACY = os.environ.get("YT_PRIVACY", "private")
+PUBLISH_HOUR = os.environ.get("YT_PUBLISH_HOUR")  # 台灣時間整點，有設則排程發布
 
 
 def log(m):
     print(f"[{datetime.now():%H:%M:%S}] {m}", flush=True)
+
+
+def scheduled_publish_at():
+    """回傳當天台灣 PUBLISH_HOUR 點的 RFC3339 UTC；若已過則排明天"""
+    if not PUBLISH_HOUR:
+        return None
+    tw = timezone(timedelta(hours=8))
+    now = datetime.now(tw)
+    target = now.replace(hour=int(PUBLISH_HOUR), minute=0, second=0, microsecond=0)
+    if target <= now:
+        target += timedelta(days=1)
+    return target.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def main():
@@ -29,10 +43,16 @@ def main():
         out = os.path.join(tmp, "short.mp4")
         build_video.build_video(script, out, workdir=tmp)
 
-        log(f"上傳 YouTube（{PRIVACY}）...")
+        publish_at = scheduled_publish_at()
+        log(f"上傳 YouTube（{'排程 '+publish_at if publish_at else PRIVACY}）...")
         desc = script.get("description", "")
         vid = upload.upload(
-            out, script["title"], desc, script.get("tags", []), privacy=PRIVACY
+            out,
+            script["title"],
+            desc,
+            script.get("tags", []),
+            privacy=PRIVACY,
+            publish_at=publish_at,
         )
 
         generate_script.save_recent(recent, script["topic"])

@@ -207,7 +207,7 @@
 | `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:30 |
 | `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:00，自動 commit 報告 |
 | `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:00，超60天未回購則 Email，自動 commit 報告 |
-| `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，2-3分鐘） | 每天 10:00，AI生影片自動上傳 |
+| `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，2-3分鐘，頻道=Finn's Why） | 每天 10:00 製作上傳，**排程當天 18:00 自動轉公開** |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 
 ### GitHub Secrets 總覽
@@ -774,8 +774,10 @@ Subscribe and never miss a new Why. 🔔
 | `oauth_setup.py` | 一次性取得 refresh token（手動授權流程，同 Gmail） |
 | `SETUP.md` | 一次性人工設定步驟（建頻道/OAuth/Secrets） |
 
-### 排程
-`.github/workflows/yt_auto_post.yml`，每天 10:00 台灣（UTC 02:00）。`YT_PRIVACY` 預設 **private**，驗證無誤後改 public。
+### 排程與發布
+`.github/workflows/yt_auto_post.yml`，每天 10:00 台灣（UTC 02:00）**製作並上傳**影片，用 YouTube 排程發布（`status.publishAt`）設**當天 18:00 台灣自動轉公開**。
+- 控制：workflow env `YT_PUBLISH_HOUR='18'`（台灣整點，有設＝排程發布、影片先 private 屆時自動公開；不設則用 `YT_PRIVACY`）
+- `make_and_upload.scheduled_publish_at()` 算 publishAt；`upload.upload(publish_at=...)` 帶入。**頻道＝Finn's Why**（2026-06-29 已完成 OAuth＋3個 Secret＋測試上傳確認）
 
 ### 需新增 GitHub Secrets（共用 ANTHROPIC_API_KEY；生圖用 Pollinations 免金鑰，不需 HF_TOKEN）
 `YT_OAUTH_CLIENT_ID` / `YT_OAUTH_CLIENT_SECRET` / `YT_OAUTH_REFRESH_TOKEN`（scope: `youtube.upload`）
