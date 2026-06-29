@@ -122,7 +122,7 @@ def build_captions(segs, texts, ass_path):
             continue
         cjk = _is_cjk(raw)
         units = list(raw) if cjk else raw.split()
-        size, join = (11, "") if cjk else (5, " ")
+        size, join = (16, "") if cjk else (8, " ")
         per = seg["dur"] / max(1, len(units))
         for i in range(0, len(units), size):
             chunk = units[i : i + size]
@@ -135,7 +135,7 @@ def build_captions(segs, texts, ass_path):
         "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n\n"
         "[V4+ Styles]\n"
         "Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n"
-        f"Style: Cap, {CJK_FONT}, 82, &H00FFFFFF, &H00000000, &H64000000, 1, 1, 6, 3, 2, 70, 70, 520, 1\n\n"
+        f"Style: Cap, {CJK_FONT}, 60, &H00FFFFFF, &H00000000, &H64000000, 1, 1, 5, 2, 2, 70, 70, 500, 1\n\n"
         "[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n"
     )
     lines = []
