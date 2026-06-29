@@ -113,22 +113,63 @@ def _is_cjk(s):
     return any("㐀" <= c <= "鿿" for c in s)
 
 
+CJK_PUNCT = "，。！？、；：…—）」』"
+
+
+def _chunk_units(units, cap_max, cjk):
+    """把整句切成 ≤cap_max 的片段；CJK 盡量在標點後斷句"""
+    chunks, cur = [], []
+    for u in units:
+        cur.append(u)
+        at_punct = cjk and u in CJK_PUNCT
+        if len(cur) >= cap_max or (at_punct and len(cur) >= cap_max * 0.55):
+            chunks.append(cur)
+            cur = []
+    if cur:
+        if chunks and len(cur) <= (3 if cjk else 2):
+            chunks[-1] += cur  # 末段太短併回前段
+        else:
+            chunks.append(cur)
+    return chunks
+
+
+def _wrap_balanced(units, cjk, line_max):
+    """把片段斷成 ≤2 行（\\N），盡量在中段標點處、兩行平衡"""
+    join = "" if cjk else " "
+    n = len(units)
+    if n <= line_max:
+        return join.join(units).strip()
+    mid = n / 2
+    best = round(mid)
+    if cjk:
+        cand = [
+            i + 1
+            for i, c in enumerate(units[:-1])
+            if c in CJK_PUNCT and 0.3 * n <= i + 1 <= 0.7 * n
+        ]
+        if cand:
+            best = min(cand, key=lambda i: abs(i - mid))
+    return join.join(units[:best]).strip() + "\\N" + join.join(units[best:]).strip()
+
+
 def build_captions(segs, texts, ass_path):
-    """每個句子時間段配上對應字幕（CJK 依字數、拉丁依詞數切短句，時間等分）"""
+    """每句依標點自然斷句，每段為完整語意單位，過長才平衡跳兩行"""
     groups = []  # (start, end, text)
     for seg, raw in zip(segs, texts):
         raw = (raw or "").strip().replace("\n", " ")
         if not raw:
             continue
         cjk = _is_cjk(raw)
+        line_max = 14 if cjk else 7
+        cap_max = line_max * 2
         units = list(raw) if cjk else raw.split()
-        size, join = (16, "") if cjk else (8, " ")
         per = seg["dur"] / max(1, len(units))
-        for i in range(0, len(units), size):
-            chunk = units[i : i + size]
-            start = seg["start"] + i * per
-            end = seg["start"] + (i + len(chunk)) * per
-            txt = join.join(chunk)
+        idx = 0
+        for ch in _chunk_units(units, cap_max, cjk):
+            start = seg["start"] + idx * per
+            end = seg["start"] + (idx + len(ch)) * per
+            idx += len(ch)
+            txt = _wrap_balanced(ch, cjk, line_max)
             groups.append((start, end, txt if cjk else txt.upper()))
 
     header = (
