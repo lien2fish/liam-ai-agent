@@ -207,7 +207,7 @@
 | `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:30 |
 | `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:00，自動 commit 報告 |
 | `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:00，超60天未回購則 Email，自動 commit 報告 |
-| `yt_auto_post.yml` | YouTube 自動 Shorts（療癒系動畫，無人臉） | 每天 10:00，AI生影片自動上傳 |
+| `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，2-3分鐘） | 每天 10:00，AI生影片自動上傳 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 
 ### GitHub Secrets 總覽
@@ -757,12 +757,12 @@ Subscribe and never miss a new Why. 🔔
 ## YouTube 自動 Shorts 頻道系統（2026-06-28 建立）
 
 ### 定位
-全新**無人臉 AI 頻道**，主題 **療癒系（Healing/Cozy）**（2026-06-28 從歷史謎團改方向）：柔和粉彩動畫風、溫柔英文女聲（Aria，語速-8%）、繁中字幕、慢運鏡、療癒短語/微故事。架構複用 IG 發文系統。
-- 風格參數在 `build_video.py`：`VOICE`(en-US-AriaNeural)、`RATE`(-8%)、`gen_image` 畫風(soft pastel storybook/Ghibli)、Ken Burns 放慢(0.0004→1.10)。要換回戲劇/其他風只改這幾處＋`generate_script` 的 prompt
-- **固定吉祥物結尾**：`MASCOT_SCENE`＝Mochi(奶油色小貓+額頭月牙印)，每支影片結尾自動 append 一張面向觀眾「說話」的吉祥物圖（靜態圖+輕推鏡，非真對嘴；真lip-sync需Kling等工具無法全自動）
-- **空靈聲線**：最終合成對旁白加 `aecho` 殘響+highpass
-- **BGM**：`youtube_auto/bgm.mp3`（ffmpeg 生成的療癒環境墊音，可換無版權音樂，或用 `YT_BGM` 指定），最終以 `amix` 低音量(0.16)混入；輸出音訊 44.1kHz 立體聲
-- **長度＝1～3 分鐘一般影片**（2026-06-28 從 Shorts 改長）：`generate_script` prompt 要 14-18 句、8-12 場景、200-280字；`max_tokens` 升到 3000；`make_and_upload` 已移除強制 `#shorts`。要改長度就調 prompt 的句數/場景數。圖片數越多 FLUX 生成越久（本機 Intel Mac 約 4 分鐘/支，雲端 runner 較快、在 20 分鐘上限內）
+全新**無人臉 AI 頻道**，主題 **宇宙未解之謎 + 古代文明之謎 + 激發好奇心**（2026-06-29 從療癒系改回神秘方向；療癒系曾於 06-28 試做後捨棄）。電影感寫實畫面、沉穩英文男聲、繁中字幕、史詩氛圍。架構複用 IG 發文系統。
+- 風格參數在 `build_video.py`：`VOICE`(en-US-GuyNeural 沉穩男聲)、`RATE`(-3%)、`gen_image` 畫風(cinematic/epic/photoreal/dramatic)、Ken Burns(0.0004→1.10)。要再換方向只改這幾處＋`generate_script` 的 prompt
+- **固定收尾角色**：`MASCOT_SCENE`＝大角鴞(琥珀眼、滿月星空、面向觀眾如要透露秘密)，每支影片結尾自動 append 一張「對你說話」的角色圖（靜態圖+輕推鏡，非真對嘴；真lip-sync需Kling無法全自動）
+- **聲線**：旁白加 `aecho` 殘響+highpass（宇宙回音/份量感）
+- **BGM**：`youtube_auto/bgm.mp3`（ffmpeg 生成的低沉神秘氛圍 drone，可換無版權音樂或 `YT_BGM` 指定），`amix` 低音量(0.16)混入；輸出 44.1kHz 立體聲。**注意：這版 ffmpeg 的 `tremolo` filter 會 exit 222（Result too large），生成 BGM 別用 tremolo**
+- **長度＝2～3 分鐘一般影片**：`generate_script` prompt 要 18-24 句、10-14 場景、290-380字；`max_tokens`=3000；`make_and_upload` 無 `#shorts`。改長度調 prompt 句數/場景數。圖片越多 FLUX 越久（本機 Intel Mac 約 4-5 分鐘/支，雲端 runner 較快、在 20 分鐘上限內）
 
 ### 模組 `youtube_auto/`
 | 檔案 | 職責 |
