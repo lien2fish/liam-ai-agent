@@ -5,6 +5,7 @@
 只用 stdlib + requests + edge-tts + 系統 ffmpeg。
 """
 import json, os, io, asyncio, platform, random, subprocess, tempfile, time, urllib.parse, urllib.request
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(BASE)
@@ -15,6 +16,35 @@ VOICE = os.environ.get("YT_VOICE", "en-US-GuyNeural")  # 沉穩男聲（神秘/�
 RATE = os.environ.get("YT_RATE", "-3%")  # 略慢增添份量
 # 中文字幕字型：macOS 用黑體-繁，Linux(GitHub Actions) 用 Noto CJK
 CJK_FONT = "Heiti TC" if platform.system() == "Darwin" else "Noto Sans CJK TC"
+INTRO_DUR = 4.5  # 開場標題卡秒數
+
+
+def _title_font(size):
+    """開場標題用英文字型（mac Futura → Helvetica；Linux DejaVu）"""
+    for p, i in [
+        ("/System/Library/Fonts/Supplemental/Futura.ttc", 2),
+        ("/System/Library/Fonts/HelveticaNeue.ttc", 0),
+        ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 0),
+    ]:
+        try:
+            return ImageFont.truetype(p, size, index=i)
+        except Exception:
+            pass
+    return ImageFont.load_default()
+
+
+def _cjk_font_path():
+    """PIL 用的 CJK 字型檔路徑"""
+    if platform.system() == "Darwin":
+        return ("/System/Library/Fonts/PingFang.ttc", 3)
+    fc = subprocess.run(
+        ["fc-list", ":lang=zh", "--format=%{file}\n"], capture_output=True, text=True
+    )
+    noto = [l.strip() for l in fc.stdout.splitlines() if "Noto" in l and "CJK" in l]
+    if noto:
+        return (noto[0], 3 if noto[0].endswith(".ttc") else 0)
+    return ("/usr/share/fonts/opentype/noto/NotoSansCJK-Medium.ttc", 3)
+
 
 # 頻道固定收尾角色——每支影片結尾出現、面向觀眾「對你說話」
 MASCOT_SCENE = (
@@ -229,6 +259,94 @@ def get_duration(path):
     return int(h) * 3600 + int(mi) * 60 + float(s)
 
 
+def _wrap_pil(draw, text, font, max_w, cjk):
+    lines, cur = [], ""
+    units = list(text) if cjk else text.split()
+    join = "" if cjk else " "
+    for u in units:
+        test = (cur + join + u).strip() if cur else u
+        if draw.textlength(test, font=font) <= max_w or not cur:
+            cur = test
+        else:
+            lines.append(cur)
+            cur = u
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def make_title_card(bg_path, title, intro_zh, out_png):
+    """開場標題卡：暗化首張場景 + 大標題(英) + 主題介紹(中)"""
+    base = Image.open(bg_path).convert("RGB")
+    bw, bh = base.size
+    ratio = max(W / bw, H / bh)
+    base = base.resize((int(bw * ratio), int(bh * ratio)), Image.LANCZOS)
+    x = (base.width - W) // 2
+    y = (base.height - H) // 2
+    base = base.crop((x, y, x + W, y + H))
+    base = Image.composite(
+        Image.new("RGB", (W, H), (4, 6, 16)), base, Image.new("L", (W, H), 150)
+    )
+    d = ImageDraw.Draw(base)
+
+    tfont = _title_font(108)
+    tlines = _wrap_pil(d, title.upper(), tfont, W - 140, cjk=False)
+    cp, ci = _cjk_font_path()
+    ifont = ImageFont.truetype(cp, 54, index=ci)
+    ilines = _wrap_pil(d, intro_zh, ifont, W - 180, cjk=True)
+
+    th = len(tlines) * 132
+    ih = len(ilines) * 78
+    total = th + 70 + ih
+    cy = (H - total) // 2
+    for ln in tlines:
+        w = d.textlength(ln, font=tfont)
+        for off in ((-3, -3), (3, 3), (-3, 3), (3, -3)):
+            d.text(((W - w) / 2 + off[0], cy + off[1]), ln, font=tfont, fill=(0, 0, 0))
+        d.text(((W - w) / 2, cy), ln, font=tfont, fill=(245, 240, 225))
+        cy += 132
+    d.line(
+        [(W / 2 - 110, cy + 18), (W / 2 + 110, cy + 18)], fill=(212, 175, 90), width=3
+    )
+    cy += 70
+    for ln in ilines:
+        w = d.textlength(ln, font=ifont)
+        d.text(((W - w) / 2 + 2, cy + 2), ln, font=ifont, fill=(0, 0, 0))
+        d.text(((W - w) / 2, cy), ln, font=ifont, fill=(206, 214, 230))
+        cy += 78
+    base.save(out_png)
+
+
+def title_card_clip(png, dur, out):
+    frames = max(1, int(dur * FPS))
+    vf = (
+        f"scale=2160:3840:force_original_aspect_ratio=increase,crop=2160:3840,"
+        f"zoompan=z='min(zoom+0.0004,1.08)':d={frames}:x='iw/2-(iw/zoom/2)':"
+        f"y='ih/2-(ih/zoom/2)':s={W}x{H}:fps={FPS},"
+        f"fade=t=in:st=0:d=0.6,fade=t=out:st={dur-0.6:.2f}:d=0.6,format=yuv420p"
+    )
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-loop",
+            "1",
+            "-i",
+            png,
+            "-t",
+            f"{dur:.3f}",
+            "-vf",
+            vf,
+            "-r",
+            str(FPS),
+            "-an",
+            out,
+        ],
+        check=True,
+        capture_output=True,
+    )
+
+
 def build_video(script, out_path, workdir=None):
     tmp = workdir or tempfile.mkdtemp(prefix="ytshort_")
     scenes = script["scenes"]
@@ -255,11 +373,20 @@ def build_video(script, out_path, workdir=None):
     imgs.append(mp)
     print("   吉祥物結尾完成", flush=True)
 
-    print("[3/4] 製作中文字幕 + Ken Burns 片段...", flush=True)
+    print("[3/4] 製作開場標題卡 + 中文字幕 + Ken Burns 片段...", flush=True)
+    # 開場標題卡：暗化首張場景 + 吸睛標題 + 主題介紹
+    title_png = os.path.join(tmp, "title.png")
+    intro_zh = script.get("intro_zh") or (zh_list[0] if zh_list else "")
+    make_title_card(imgs[0], script.get("title", ""), intro_zh, title_png)
+    intro_clip = os.path.join(tmp, "intro.mp4")
+    title_card_clip(title_png, INTRO_DUR, intro_clip)
+
     ass = os.path.join(tmp, "caps.ass")
+    for s in segs:  # 字幕時間後移，讓出開場卡時間
+        s["start"] += INTRO_DUR
     build_captions(segs, zh_list, ass)
     per = (audio_dur + 0.6) / len(imgs)  # 多 0.6s 收尾
-    clips = []
+    clips = [intro_clip]  # 開場卡接在最前
     for i, img in enumerate(imgs):
         c = os.path.join(tmp, f"clip_{i}.mp4")
         kenburns_clip(img, per, c)
@@ -290,9 +417,10 @@ def build_video(script, out_path, workdir=None):
     ass_esc = ass.replace("\\", "/").replace(":", "\\:")
     inputs = ["-i", silent, "-i", voice_mp3]
     # 旁白加殘響做空靈感
+    ms = int(INTRO_DUR * 1000)  # 旁白延後到開場卡之後
     filt = [
         f"[0:v]subtitles='{ass_esc}'[v]",
-        "[1:a]aecho=0.8:0.85:60|110:0.35|0.22,highpass=f=90[va]",
+        f"[1:a]adelay={ms}|{ms},aecho=0.8:0.85:60|110:0.35|0.22,highpass=f=90[va]",
     ]
     if BGM:
         inputs += ["-stream_loop", "-1", "-i", BGM]
