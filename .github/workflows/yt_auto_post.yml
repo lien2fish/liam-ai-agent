@@ -1,8 +1,8 @@
-name: YouTube 每日自動 Shorts
+name: YouTube 每日自動影片
 
 on:
   schedule:
-    - cron: '0 2 * * *'    # UTC 02:00 = 台灣時間 10:00（與 IG 08:00 錯開）
+    - cron: '0 2 * * *'    # UTC 02:00 = 台灣 10:00 製作影片；當天 18:00 自動轉公開
   workflow_dispatch:
 
 jobs:
@@ -37,7 +37,8 @@ jobs:
           YT_OAUTH_CLIENT_ID:      ${{ secrets.YT_OAUTH_CLIENT_ID }}
           YT_OAUTH_CLIENT_SECRET:  ${{ secrets.YT_OAUTH_CLIENT_SECRET }}
           YT_OAUTH_REFRESH_TOKEN:  ${{ secrets.YT_OAUTH_REFRESH_TOKEN }}
-          YT_PRIVACY:              'private'   # 驗證無誤後改成 public
+          YT_PRIVACY:              'private'
+          YT_PUBLISH_HOUR:         '18'        # 台灣時間18:00自動轉公開（排程發布）
           GITHUB_TOKEN:            ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPO:             ${{ github.repository }}
         run: python youtube_auto/make_and_upload.py
