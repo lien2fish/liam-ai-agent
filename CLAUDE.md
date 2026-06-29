@@ -759,6 +759,7 @@ Subscribe and never miss a new Why. 🔔
 ### 定位
 全新**無人臉 AI 頻道**，主題 **宇宙未解之謎 + 古代文明之謎 + 激發好奇心**（2026-06-29 從療癒系改回神秘方向；療癒系曾於 06-28 試做後捨棄）。電影感寫實畫面、沉穩英文男聲、繁中字幕、史詩氛圍。架構複用 IG 發文系統。
 - 風格參數在 `build_video.py`：`VOICE`(en-US-GuyNeural 沉穩男聲)、`RATE`(-3%)、`gen_image` 畫風(cinematic/epic/photoreal/dramatic)、Ken Burns(0.0004→1.10)。要再換方向只改這幾處＋`generate_script` 的 prompt
+- **開場標題卡**（2026-06-29 加）：影片最前 `INTRO_DUR`(4.5s) 顯示——暗化的首張場景 ＋ 吸睛英文標題(`title`) ＋ 金色分隔線 ＋ 中文主題介紹(`intro_zh`，Claude 新增欄位)。`make_title_card`(PIL) + `title_card_clip`(ffmpeg zoom+fade)；字幕時間後移 INTRO_DUR、旁白用 `adelay` 延後，BGM 從頭播
 - **固定收尾角色**：`MASCOT_SCENE`＝大角鴞(琥珀眼、滿月星空、面向觀眾如要透露秘密)，每支影片結尾自動 append 一張「對你說話」的角色圖（靜態圖+輕推鏡，非真對嘴；真lip-sync需Kling無法全自動）
 - **聲線**：旁白加 `aecho` 殘響+highpass（宇宙回音/份量感）
 - **BGM**：`youtube_auto/bgm.mp3`（ffmpeg 生成的低沉神秘氛圍 drone，可換無版權音樂或 `YT_BGM` 指定），`amix` 低音量(0.16)混入；輸出 44.1kHz 立體聲。**注意：這版 ffmpeg 的 `tremolo` filter 會 exit 222（Result too large），生成 BGM 別用 tremolo**
