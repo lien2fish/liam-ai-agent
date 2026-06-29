@@ -78,7 +78,8 @@ def build_prompt(recent):
 Generate ONE 2-3 minute video. Output ONLY a JSON object, no markdown, no commentary:
 {{
   "topic": "short unique kebab-case slug for de-duplication, e.g. dark-matter or gobekli-tepe",
-  "title": "intriguing, curiosity-driven English title under 70 characters (evokes wonder, not clickbait lies)",
+  "title": "intriguing, curiosity-driven English title under 60 characters (evokes wonder, not clickbait lies) — shown on the opening title card",
+  "intro_zh": "一句吸引人的繁體中文開場白，點出這支影片要探討的謎團是什麼（約 18-32 字，勾起好奇，顯示在開場標題卡）",
   "sentences": [{{"en": "one spoken English sentence", "zh": "對應的繁體中文（口語、精煉、保留神秘感）"}}],
   "scenes": ["10 to 14 cinematic image-generation prompts in English, one per beat. Epic, awe-inspiring, atmospheric scenes (deep space nebulae, black holes, ancient stone ruins, lost pyramids, mysterious artefacts, vast cosmic vistas). Photoreal, dramatic lighting, cinematic."],
   "description": "2-3 sentence YouTube description followed by 4-6 relevant hashtags",
