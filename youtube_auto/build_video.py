@@ -109,7 +109,18 @@ def synth_sentences(sentences, mp3_path, tmp):
     parts, segs, cursor = [], [], 0.0
     for i, s in enumerate(sentences):
         p = os.path.join(tmp, f"s_{i}.mp3")
-        asyncio.run(_synth_one(s, p))
+        last = None
+        for attempt in range(6):  # edge-tts 在雲端偶爾 NoAudioReceived，重試
+            try:
+                asyncio.run(_synth_one(s, p))
+                if os.path.exists(p) and os.path.getsize(p) > 800:
+                    break
+                last = "empty audio"
+            except Exception as e:
+                last = e
+            time.sleep(3)
+        else:
+            raise RuntimeError(f"edge-tts 連續失敗（第 {i+1} 句）：{last}")
         d = get_duration(p)
         segs.append({"start": cursor, "dur": d})
         cursor += d
