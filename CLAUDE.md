@@ -225,9 +225,10 @@
 | `GMAIL_CLIENT_SECRET` | Gmail OAuth |
 | `GMAIL_REFRESH_TOKEN` | Gmail OAuth |
 | `NOTION_TOKEN` | Notion API Token |
-| `YT_API_KEY` | YouTube Data API v3 金鑰（無到期問題）|
-| `YT_CHANNEL_ID` | YouTube 頻道 ID |
-| `GMAIL_APP_PASSWORD` | Gmail App 密碼，供 YouTube 留言通知寄信用 |
+| `YT_API_KEY` | YouTube Data API v3 金鑰（無到期問題；連老闆留言通知＋The Unknown Hour 頻道日報共用）|
+| `YT_CHANNEL_ID` | YouTube 頻道 ID（連老闆-產地到餐桌）|
+| `YT_OAUTH_CLIENT_ID` / `YT_OAUTH_CLIENT_SECRET` / `YT_OAUTH_REFRESH_TOKEN` | The Unknown Hour 自動上傳 OAuth（scope youtube.upload，同意畫面已發Production不過期）2026-06-29設 |
+| `GMAIL_APP_PASSWORD` | Gmail App 密碼，供 YouTube 留言通知＋頻道日報＋回購提醒寄信用 |
 
 ---
 
