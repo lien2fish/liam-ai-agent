@@ -100,6 +100,20 @@ def upload(
     return vid
 
 
+def set_thumbnail(video_id, image_path):
+    """設定自訂縮圖（需頻道已完成驗證；scope youtube.upload 即可）"""
+    token = access_token()
+    data = open(image_path, "rb").read()
+    req = urllib.request.Request(
+        f"https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId={video_id}",
+        data=data,
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "image/png"},
+        method="POST",
+    )
+    urllib.request.urlopen(req)
+    print("✅ 已設定自訂縮圖", flush=True)
+
+
 if __name__ == "__main__":
     import sys
 
