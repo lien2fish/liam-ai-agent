@@ -76,6 +76,14 @@ def main():
             publish_at=publish_at,
         )
 
+        # 長片設自訂縮圖（Shorts 用影格即可，不需）
+        thumb = os.path.join(tmp, "thumb.png")
+        if fmt == "long" and os.path.exists(thumb):
+            try:
+                upload.set_thumbnail(vid, thumb)
+            except Exception as e:
+                log(f"⚠️ 設縮圖失敗（頻道可能需先完成電話驗證）：{e}")
+
         generate_script.save_recent(recent, script["topic"])
         log(f"完成：https://youtu.be/{vid} ｜ {fmt} ｜ 主題 {script['topic']}")
     finally:
