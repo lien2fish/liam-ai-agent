@@ -45,10 +45,15 @@ def resolve_channel():
 
 
 def recent_videos(uploads, n=15):
-    items = api_get(
-        "playlistItems",
-        {"part": "contentDetails", "playlistId": uploads, "maxResults": n},
-    )["items"]
+    try:
+        items = api_get(
+            "playlistItems",
+            {"part": "contentDetails", "playlistId": uploads, "maxResults": n},
+        )["items"]
+    except urllib.error.HTTPError as e:
+        if e.code in (403, 404):  # 尚無公開影片
+            return []
+        raise
     ids = [i["contentDetails"]["videoId"] for i in items]
     if not ids:
         return []
