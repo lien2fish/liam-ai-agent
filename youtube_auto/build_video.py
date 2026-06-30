@@ -355,6 +355,34 @@ def title_card_clip(png, dur, out):
     )
 
 
+def make_thumbnail(bg_path, title, out_png):
+    """長片自訂縮圖 1280×720：場景圖 + 底部漸層 + 大標題（左下，金色重點條）"""
+    TW, TH = 1280, 720
+    base = Image.open(bg_path).convert("RGB")
+    bw, bh = base.size
+    r = max(TW / bw, TH / bh)
+    base = base.resize((int(bw * r), int(bh * r)), Image.LANCZOS)
+    x, y = (base.width - TW) // 2, (base.height - TH) // 2
+    base = base.crop((x, y, x + TW, y + TH))
+    grad = Image.new("L", (TW, TH), 0)
+    gd = ImageDraw.Draw(grad)
+    for i in range(TH):
+        gd.line([(0, i), (TW, i)], fill=int(220 * max(0, (i - TH * 0.3) / (TH * 0.7))))
+    base = Image.composite(Image.new("RGB", (TW, TH), (3, 5, 14)), base, grad)
+    d = ImageDraw.Draw(base)
+    f = _title_font(86)
+    lines = _wrap_pil(d, title.upper(), f, TW - 120, cjk=False)
+    lh = 100
+    cy = TH - 70 - len(lines) * lh
+    d.rectangle([60, cy - 26, 150, cy - 14], fill=(212, 175, 90))
+    for ln in lines:
+        for off in ((-3, -3), (3, 3), (-3, 3), (3, -3), (0, 4)):
+            d.text((60 + off[0], cy + off[1]), ln, font=f, fill=(0, 0, 0))
+        d.text((60, cy), ln, font=f, fill=(245, 240, 225))
+        cy += lh
+    base.save(out_png)
+
+
 def build_video(script, out_path, workdir=None):
     tmp = workdir or tempfile.mkdtemp(prefix="ytshort_")
     scenes = script["scenes"]
@@ -468,6 +496,15 @@ def build_video(script, out_path, workdir=None):
         capture_output=True,
     )
     print(f"✅ 影片完成：{out_path}（{get_duration(out_path):.1f}s）", flush=True)
+
+    # 長片(16:9)自動產縮圖 → workdir/thumb.png（取中段場景）
+    if W > H:
+        try:
+            thumb = os.path.join(tmp, "thumb.png")
+            make_thumbnail(imgs[len(scenes) // 2], script.get("title", ""), thumb)
+            print(f"   縮圖完成：{thumb}", flush=True)
+        except Exception as e:
+            print(f"   縮圖略過：{e}", flush=True)
     return out_path
 
 
