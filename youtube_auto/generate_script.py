@@ -107,15 +107,13 @@ The "sentences" array is the spoken narration split sentence by sentence ({n_sen
 Pick genuinely fascinating themes: unsolved cosmic mysteries (dark matter, black holes, the edge of the universe, the Fermi paradox, what came before the Big Bang) and ancient civilisation enigmas (Göbekli Tepe, lost cities, unexplained megaliths, vanished peoples, undeciphered scripts). Be factual; where unproven, frame it honestly as an open mystery that invites wonder.{avoid}"""
 
 
-def generate(recent=None, mode="long"):
-    recent = recent if recent is not None else load_recent()
-    prompt = build_prompt(recent, mode)
+def _call_claude(prompt):
     req = urllib.request.Request(
         "https://api.anthropic.com/v1/messages",
         data=json.dumps(
             {
                 "model": CLAUDE_MODEL,
-                "max_tokens": 3000,
+                "max_tokens": 4096,
                 "messages": [{"role": "user", "content": prompt}],
             }
         ).encode(),
@@ -131,12 +129,26 @@ def generate(recent=None, mode="long"):
         raise RuntimeError(f"Claude 回傳異常：{data}")
     text = data["content"][0]["text"]
     s, e = text.find("{"), text.rfind("}")
-    script = json.loads(text[s : e + 1])
-    # 由 sentences 推導英文旁白（TTS 用）與中文字幕清單
-    sents = script.get("sentences", [])
-    script["narration"] = " ".join(x["en"] for x in sents)
-    script["subtitles_zh"] = [x["zh"] for x in sents]
-    return script
+    return json.loads(text[s : e + 1])  # 可能拋 JSONDecodeError
+
+
+def generate(recent=None, mode="long"):
+    recent = recent if recent is not None else load_recent()
+    prompt = build_prompt(recent, mode)
+    last = None
+    for _ in range(3):  # Claude 偶爾吐不合法/截斷 JSON，重試生成
+        try:
+            script = _call_claude(prompt)
+            sents = script.get("sentences", [])
+            if not sents:
+                raise ValueError("無 sentences")
+            script["narration"] = " ".join(x["en"] for x in sents)
+            script["subtitles_zh"] = [x["zh"] for x in sents]
+            return script
+        except Exception as e:
+            last = e
+            print(f"[generate] 解析失敗，重試：{e}", flush=True)
+    raise RuntimeError(f"Claude 腳本生成連續失敗：{last}")
 
 
 if __name__ == "__main__":
