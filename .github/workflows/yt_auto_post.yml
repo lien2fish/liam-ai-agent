@@ -28,7 +28,7 @@ jobs:
           fc-cache -f
 
       - name: Install Python dependencies
-        run: pip install edge-tts requests
+        run: pip install edge-tts requests Pillow
 
       - name: Generate and upload Short
         env:
