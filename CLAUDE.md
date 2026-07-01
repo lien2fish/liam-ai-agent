@@ -207,6 +207,7 @@
 | `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:30 |
 | `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:00，自動 commit 報告 |
 | `life_visit_reminder.yml` | 壽險客戶固定拜訪提醒 | 每天 08:40，讀Notion算下次拜訪日，本週到期Email（**無commit，客戶個資只走Email**）|
+| `birthday_reminder.yml` | 壽險客戶生日提醒 | 每天 08:05，未來7天內生日則Email（含歲數，無commit）|
 | `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:00，超60天未回購則 Email，自動 commit 報告 |
 | `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；**Shorts每天發、長片維持週二/五/日追加**） | 每天 10:00 製作上傳，**排程當天 18:00 自動轉公開** |
 | `yt_channel_report.yml` | The Unknown Hour 頻道每日表現日報（觀看/讚/留言+新留言Email） | 每天 08:20，用YT_API_KEY讀公開數據，自動commit報告 |
@@ -622,6 +623,7 @@ Subscribe and never miss a new Why. 🔔
 - **隱私**：repo為public，`visit_reminder.py` 只寄Email、**不commit報告**（含客戶姓名/電話），workflow無commit步驟。本機xlsx/numbers含身分證只留Desktop不進repo
 - 使用流程：拜訪後在Notion填「上次拜訪日」→系統自動算下次拜訪日並在到期前7天Email提醒。週期可在Notion個別改每季/每年
 - 已雲端驗證通過（180位全部待首次安排、0到期）
+- **生日提醒**（2026-07-01加）：`insurance/birthday_reminder.py`+`birthday_reminder.yml`，每天08:05讀壽險名單「生日」欄，未來7天內生日則Email（含歲數）。共用 visit_config.json(birthday_days=7)。**只壽險有生日**；鑫酒藏/海產/茶坊名單無生日欄，之後要納入需先加生日欄+填資料
 
 ---
 
