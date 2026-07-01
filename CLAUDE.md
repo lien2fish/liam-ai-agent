@@ -206,6 +206,7 @@
 | `seafood_prices.yml` | 漁獲市場行情追蹤 | 每天 09:30 |
 | `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:30 |
 | `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:00，自動 commit 報告 |
+| `life_visit_reminder.yml` | 壽險客戶固定拜訪提醒 | 每天 08:40，讀Notion算下次拜訪日，本週到期Email（**無commit，客戶個資只走Email**）|
 | `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:00，超60天未回購則 Email，自動 commit 報告 |
 | `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；**Shorts每天發、長片維持週二/五/日追加**） | 每天 10:00 製作上傳，**排程當天 18:00 自動轉公開** |
 | `yt_channel_report.yml` | The Unknown Hour 頻道每日表現日報（觀看/讚/留言+新留言Email） | 每天 08:20，用YT_API_KEY讀公開數據，自動commit報告 |
@@ -602,6 +603,25 @@ Subscribe and never miss a new Why. 🔔
 | 通知 | `GMAIL_APP_PASSWORD` smtplib寄信（與OAuth系統無關不會過期） |
 | 報告 | `reports/產險到期提醒_YYYY-MM-DD.md`，自動commit進repo |
 | 提醒窗口 | `REMINDER_WINDOW_DAYS = 14`（續保日落在未來14天內才提醒） |
+
+## 壽險客戶名單 + 固定拜訪系統（2026-07-01 建立）
+
+### 核心資訊
+| 項目 | 說明 |
+|------|------|
+| 來源 | `/Users/lien/Desktop/20260701_連傳正_客戶清單.xlsx`（磊山保經416筆），篩選**保單類型含「壽」＝180位**（壽103/壽產65/壽團7/壽產團5）|
+| 建置腳本 | `insurance/build_life_clients.py`（擷取→本機xlsx+numbers→建Notion DB+匯入，一次性）|
+| 本機檔 | `/Users/lien/Desktop/鉅鑫管理顧問/磊山保經/客戶名單/壽險客戶名單_20260701.xlsx`＋`.numbers`（**保留完整欄位含身分證**）|
+| Notion DB | 「🛡️ 壽險客戶名單（固定拜訪）」`390f4149-a6aa-81bf-98e1-c3bffc0caad2`（建在CRM主頁下，**不含身分證**）|
+| 拜訪欄位 | 拜訪週期(select:每季/每半年/每年，**預設每半年**)、上次拜訪日、下次拜訪日、拜訪狀態(待拜訪/已完成/暫緩)、拜訪備註 |
+| 提醒腳本 | `insurance/visit_reminder.py`：讀Notion→下次拜訪日＝上次+週期月數→本週(7天內)到期則Email；上次拜訪日空＝待首次安排；順便PATCH回Notion下次拜訪日 |
+| 排程 | `.github/workflows/life_visit_reminder.yml`，每天08:40台灣，env NOTION_TOKEN+GMAIL_APP_PASSWORD |
+| 設定 | `insurance/visit_config.json`（Notion DB id、reminder_days=7，已進版控）|
+
+### 重要
+- **隱私**：repo為public，`visit_reminder.py` 只寄Email、**不commit報告**（含客戶姓名/電話），workflow無commit步驟。本機xlsx/numbers含身分證只留Desktop不進repo
+- 使用流程：拜訪後在Notion填「上次拜訪日」→系統自動算下次拜訪日並在到期前7天Email提醒。週期可在Notion個別改每季/每年
+- 已雲端驗證通過（180位全部待首次安排、0到期）
 
 ---
 
