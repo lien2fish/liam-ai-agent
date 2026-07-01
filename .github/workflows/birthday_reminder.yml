@@ -1,0 +1,27 @@
+name: 壽險客戶生日提醒
+
+on:
+  schedule:
+    - cron: '5 0 * * *'    # UTC 00:05 = 台灣 08:05
+  workflow_dispatch:
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run birthday reminder
+        env:
+          NOTION_TOKEN:        ${{ secrets.NOTION_TOKEN }}
+          GMAIL_APP_PASSWORD:  ${{ secrets.GMAIL_APP_PASSWORD }}
+          BIRTHDAY_DAYS:       '7'
+        run: python insurance/birthday_reminder.py
