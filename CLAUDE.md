@@ -207,7 +207,7 @@
 | `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:30 |
 | `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:00，自動 commit 報告 |
 | `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:00，超60天未回購則 Email，自動 commit 報告 |
-| `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；**長片16:9與Shorts9:16自動輪替**） | 每天 10:00 製作上傳，**排程當天 18:00 自動轉公開** |
+| `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；**Shorts每天發、長片維持週二/五/日追加**） | 每天 10:00 製作上傳，**排程當天 18:00 自動轉公開** |
 | `yt_channel_report.yml` | The Unknown Hour 頻道每日表現日報（觀看/讚/留言+新留言Email） | 每天 08:20，用YT_API_KEY讀公開數據，自動commit報告 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 
@@ -767,7 +767,7 @@ Subscribe and never miss a new Why. 🔔
 - **聲線**：旁白加 `aecho` 殘響+highpass（宇宙回音/份量感）
 - **BGM**：`youtube_auto/bgm.mp3`（ffmpeg 生成的低沉神秘氛圍 drone，可換無版權音樂或 `YT_BGM` 指定），`amix` 低音量(0.16)混入；輸出 44.1kHz 立體聲。**注意：這版 ffmpeg 的 `tremolo` filter 會 exit 222（Result too large），生成 BGM 別用 tremolo**
 - **長度＝2～3 分鐘一般影片**：`generate_script` prompt 要 18-24 句、10-14 場景、290-380字；`max_tokens`=3000；`make_and_upload` 無 `#shorts`。改長度調 prompt 句數/場景數。**生圖用 Pollinations（免費）較慢**：本機約 10 分鐘/支，workflow `timeout-minutes` 已調 30；圖太多可能逼近上限，必要時減場景數
-- **長片與 Shorts 自動輪替**（2026-06-29）：`make_and_upload.decide_format()` 依星期決定——**週二/五/日＝長片(16:9, 2-3分鐘, 18-24句)；其餘四天＝Shorts(9:16, ~50秒, 6-8句)**。可用 `YT_FORMAT=long/short` 手動覆寫。make_and_upload 設好 `YT_ASPECT` 後才 import build_video（讓比例生效）；short 模式自動加 `#shorts`、開場卡縮短為 3s
+- **Shorts 每天發＋長片維持原頻率**（2026-07-01 改）：`make_and_upload.formats_for_today()` 決定當天產出——**Shorts(9:16, ~50秒, 6-8句)每天都發；長片(16:9, 2-3分鐘, 18-24句)僅週二/五/日追加一支**（長片日＝一次跑出 Shorts＋長片兩支）。可用 `YT_FORMAT=long/short` 手動覆寫成只產一支。多格式日各格式跑獨立 subprocess（避免 build_video 模組級 `YT_ASPECT` 只在 import 時生效）；make_and_upload 設好 `YT_ASPECT` 後才 import build_video；short 模式自動加 `#shorts`、開場卡縮短為 3s。workflow `timeout-minutes` 已提到 55（兩支影片）
 - **影片比例**：`YT_ASPECT`（16:9=1920×1080 / 9:16=1080×1920）。W/H、生圖尺寸、Ken Burns、字幕字級(16:9=54/9:16=60)與位置、開場卡時長皆隨比例自動調整
 
 ### 模組 `youtube_auto/`
