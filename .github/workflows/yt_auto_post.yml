@@ -8,7 +8,7 @@ on:
 jobs:
   post:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 55    # 長片日會同時產 Shorts + 長片兩支，需較長時間
     permissions:
       contents: write
 
@@ -39,7 +39,7 @@ jobs:
           YT_OAUTH_REFRESH_TOKEN:  ${{ secrets.YT_OAUTH_REFRESH_TOKEN }}
           YT_PRIVACY:              'private'
           YT_PUBLISH_HOUR:         '18'        # 台灣時間18:00自動轉公開（排程發布）
-          # 格式(長片16:9 / Shorts9:16)由 make_and_upload 依星期自動決定；可設 YT_FORMAT 覆寫
+          # Shorts 每天發；長片(週二/五/日)當天追加一支。可設 YT_FORMAT=long/short 覆寫只產一支
           GITHUB_TOKEN:            ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPO:             ${{ github.repository }}
         run: python youtube_auto/make_and_upload.py
