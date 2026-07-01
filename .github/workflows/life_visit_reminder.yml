@@ -1,0 +1,27 @@
+name: 壽險客戶固定拜訪提醒
+
+on:
+  schedule:
+    - cron: '40 0 * * *'    # UTC 00:40 = 台灣 08:40
+  workflow_dispatch:
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run visit reminder
+        env:
+          NOTION_TOKEN:        ${{ secrets.NOTION_TOKEN }}
+          GMAIL_APP_PASSWORD:  ${{ secrets.GMAIL_APP_PASSWORD }}
+          VISIT_REMINDER_DAYS: '7'
+        run: python insurance/visit_reminder.py
