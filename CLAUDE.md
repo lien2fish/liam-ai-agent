@@ -201,7 +201,7 @@
 | `daily_post.yml` | IG+FB 每日發文 | 每天 08:00 |
 | `ig_comment_reply.yml` | IG 留言自動回覆 | 每 5 分鐘（**實測常delay 1.5~4小時，GitHub高頻排程平台限制，非設定錯誤**） |
 | `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:00，自動 commit 報告 |
-| `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:00 |
+| `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:00（**2026-07-02 修**：CRM 於 06-26 整併後，`notion_crm/monthly_report.py` 原引用不存在的 `DB["sales"]` 且欄位名對不上，已改讀「全品牌銷售紀錄」統一DB `38bf4149-a6aa-81db-9b89-c47410857a2c`，欄位＝金額/出貨日期/客戶名稱）|
 | `market_daily.yml` | 每日股市全面分析報告 | 每天 **12:00**（台灣），自動 commit 報告 |
 | `seafood_prices.yml` | 漁獲市場行情追蹤 | 每天 09:30 |
 | `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:30 |
