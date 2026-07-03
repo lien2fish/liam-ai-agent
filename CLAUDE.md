@@ -391,6 +391,21 @@ wt clean   # 清除額外 worktree
 
 ---
 
+## 點陣圖轉向量 .ai 工具（2026-07-03 建立）
+
+把「文字＋簡單圖形」的點陣輸出圖（TIFF/PNG）轉成 Illustrator 可編輯的**真向量 .ai**。
+
+| 項目 | 說明 |
+|------|------|
+| 腳本 | `tools/image_to_vector_ai.py`（改 `JOBS` 清單：來源檔名／第1行／第2行／輸出名，再跑）|
+| 原理 | reportlab 產向量 PDF → 存 `.ai` 副檔名（PDF 相容，AI 可開）。原生二進位 .ai 無法直接寫 |
+| 字型 | `/System/Library/Fonts/STHeiti Medium.ttc`（PingFang 是 CFF，reportlab 會報錯）；`setTextRenderMode(2)` 填色+描邊 fake-bold |
+| 自動偵測 | sips 轉 RGB→判斷有無六邊形（bbox 填充率>0.55）→ 求平頂六邊形頂點＋文字行帶；**逐張取樣原檔 CMYK** 保留職級色碼 |
+| 校準 | `em_px=原字高×1.104`、baseline=`cy+0.38×em_px`、畫板=原像素尺寸 |
+| 地雷 | **檔名不一定=內容**（惜食「雙板1~5」實為 6 位理事），轉檔前 Read 視覺確認文字；輸出背景透明適合模切 |
+
+> 首次應用：惜食第七屆理監事六邊形牌 43 張全數轉檔（`…/惜食廚房輸出/第七屆理監事樹調整/向量ai檔案/`）。詳見 memory `feedback_raster_to_vector_ai.md`
+
 ## 海報圖片生成系統（2026-05-26 建立）
 
 ### 公益活動圓形徽章（4張）
