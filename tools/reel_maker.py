@@ -31,6 +31,8 @@ ZHF = "/System/Library/Fonts/STHeiti Medium.ttc"
 ASS_FONT = "Heiti TC"
 ORANGE_BGR = r"\c&H00309CF5&"  # 橘黃(ASS 是 BGR)
 WHITE_BGR = r"\c&H00FFFFFF&"
+BASE_FS = 64  # 字幕基準字級(需與 build_ass Style 的 Fontsize 一致)
+HL_FS = 82  # 關鍵字放大字級
 ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
 
@@ -276,8 +278,22 @@ def bgm_bed(duration, vol=0.15):
 
 # ---------- 高光 ASS ----------
 def hl(text, kws):
+    # 關鍵字：橘黃高光 + 字體放大（需大括號包 override 才生效）
     for k in kws:
-        text = text.replace(k, ORANGE_BGR + k + WHITE_BGR)
+        text = text.replace(
+            k,
+            "{"
+            + ORANGE_BGR
+            + r"\fs"
+            + str(HL_FS)
+            + "}"
+            + k
+            + "{"
+            + WHITE_BGR
+            + r"\fs"
+            + str(BASE_FS)
+            + "}",
+        )
     return text
 
 
