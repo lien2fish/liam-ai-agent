@@ -850,6 +850,24 @@ Subscribe and never miss a new Why. 🔔
 - **一次性人工步驟**（無法自動化）：建 YouTube 頻道、Google Cloud OAuth、首次授權，見 `youtube_auto/SETUP.md`
 - 變現非保證：YPP 門檻 1,000 訂閱 + 90天1,000萬 Shorts 觀看，且需原創價值避開低品質AI內容政策
 
+## 跨裝置存取（電腦＋手機 Claude Code，2026-07-06 建立）
+
+雙 repo 架構，讓手機也能讀改任務/記憶/待辦：
+
+| repo | 可見性 | 內容 |
+|------|--------|------|
+| `lien2fish/liam-ai-agent`（本 repo）| 🌐 公開 | 任務腳本、tools/、workflows |
+| `lien2fish/liam-workspace` | 🔒 私人 | 記憶(`memory/`)、`MEMORY.md`、`DISCUSSIONS.md`(決策摘要)、`TODO.md`、`plans/`、`PHONE_START.md` |
+
+- **敏感資料（客戶/財務/身分證）只進私人 repo**，永不進公開庫；身分證等最高敏感原始檔維持純本機、不進任何 repo。
+- 本機 clone：`~/liam-workspace/`；同步腳本 `~/liam-workspace/sync_workspace.sh`（`push`＝本機→repo、`pull`＝repo→本機並先備份）。
+- **同步方式＝手動**（2015 Air 記憶體吃緊，不掛 SessionStart 自動同步 hook）。使用者說「手機改過了」→ 跑 `pull`；本機記憶更新後 → `push`。
+- 手機：claude.ai/code 登入同帳號→授權兩個 repo→開 `liam-workspace` 貼 `PHONE_START.md` 開場提示。
+- 詳見 memory `project_cross_device_workspace.md`。
+
+## 惜食廚房外牆防水布（最新：招募志工面，2026-07-07）
+- 主牆定稿 `外牆防水布_主牆25m5_招募志工版.png`（25500×1300，第7面已改成志工招募：暖光志工廚房底圖＋5項服務金圓圖示＋3步驟＋QR「了解更多/立即報名」＋扶輪3501捐贈框）。腳本 scratchpad/vol_panel2.py。規格與地雷見 memory `savefood-kitchen-signage`。
+
 ## 開發原則
 - 所有檔案操作預設在此資料夾進行
 - 不寫不必要的註解，程式碼命名清楚就是最好的說明
