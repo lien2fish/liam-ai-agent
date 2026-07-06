@@ -391,6 +391,19 @@ wt clean   # 清除額外 worktree
 
 ---
 
+## 長片轉短影音 reel_maker（2026-07-06 建立）
+
+連老闆-產地到餐桌 個人品牌 KOL，把漁港實拍長片剪成品牌短影音（IG/Shorts/TikTok）。全自建、不裝第三方。
+
+| 項目 | 說明 |
+|------|------|
+| 工具 | `tools/reel_maker.py`（兩步：`transcribe 長片` 出可編輯字幕稿+config範本 → `build config.json` 產出 影片+封面+發文案）|
+| 設定範本 | `tools/reel_config_example.json`（赤筆為例：segments段落/cues字幕含高光詞/cover封面/hooks文案）|
+| 定案規格 | 原始畫面**滿版letterbox不放大**／關鍵字**橘黃高光**字幕(往上MarginV560)／領夾麥**前景過濾**濾背景人聲／降噪+**自合成輕快BGM**(無whoosh音效)／完整版**1.3倍速**／檔名用**主題名**(不加完整版/版本字樣) |
+| 地雷 | 字幕**必須人工校對**(Whisper會錯,例:赤筆聽成刺筆)；opencv這台裝不起來→人臉追蹤不用改letterbox；yt-dlp下載參考要`--extractor-args youtube:player_client=android` |
+
+> 詳見 memory `project_viral_reel_maker.md`。播放器顯示的檔名≠影片內字，發佈後不會出現。
+
 ## 點陣圖轉向量 .ai 工具（2026-07-03 建立）
 
 把「文字＋簡單圖形」的點陣輸出圖（TIFF/PNG）轉成 Illustrator 可編輯的**真向量 .ai**。
