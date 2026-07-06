@@ -35,3 +35,4 @@ screenshots/
 # YouTube 自動影片產物
 youtube_auto/out.mp4
 youtube_auto/*.mp4
+tools/assets/
