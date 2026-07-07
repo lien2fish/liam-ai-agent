@@ -652,6 +652,7 @@ Subscribe and never miss a new Why. 🔔
 - 使用流程：拜訪後在Notion填「上次拜訪日」→系統自動算下次拜訪日並在到期前7天Email提醒。週期可在Notion個別改每季/每年
 - 已雲端驗證通過（180位全部待首次安排、0到期）
 - **生日提醒**（2026-07-01加）：`insurance/birthday_reminder.py`+`birthday_reminder.yml`，每天08:05讀壽險名單「生日」欄，未來7天內生日則Email（含歲數）。共用 visit_config.json(birthday_days=7)。**只壽險有生日**；鑫酒藏/海產/茶坊名單無生日欄，之後要納入需先加生日欄+填資料
+- **名單更新（2026-07-07）**：來源已改成 `/Users/lien/Desktop/20260701_連傳正_客戶清單.numbers`（xlsx 已不存在，用 `numbers_parser` 讀）。名單縮減為 **134 位**（壽67/壽產59/壽產團2/壽團6），Notion DB 180→134（移除45位失效客戶、含一組同名重複的多餘頁）。本機檔改 `壽險客戶名單_20260707.xlsx`+`.numbers`。⚠️`build_life_clients.py` 是**一次性建新DB**腳本（SRC仍指失效xlsx），**日後更新勿直接重跑**（會複製重複DB+洗掉拜訪追蹤）；改用**增量同步**：Notion API 依姓名比對 archive移除者/PATCH刷新欄位、保留拜訪欄與同一DB id。更新前確認拜訪資料全空才可放心（本次0筆）
 
 ---
 
@@ -817,6 +818,7 @@ Subscribe and never miss a new Why. 🔔
 - **聲線**：旁白加 `aecho` 殘響+highpass（宇宙回音/份量感）
 - **BGM**：`youtube_auto/bgm.mp3`（ffmpeg 生成的低沉神秘氛圍 drone，可換無版權音樂或 `YT_BGM` 指定），`amix` 低音量(0.16)混入；輸出 44.1kHz 立體聲。**注意：這版 ffmpeg 的 `tremolo` filter 會 exit 222（Result too large），生成 BGM 別用 tremolo**
 - **長度＝2～3 分鐘一般影片**：`generate_script` prompt 要 18-24 句、10-14 場景、290-380字；`max_tokens`=3000；`make_and_upload` 無 `#shorts`。改長度調 prompt 句數/場景數。**生圖用 Pollinations（免費）較慢**：本機約 10 分鐘/支，workflow `timeout-minutes` 已調 30；圖太多可能逼近上限，必要時減場景數
+- **生圖容錯（2026-07-07 修，commit c3b7517）**：Pollinations 免費服務偶發 HTTP 500，原本任一張生圖最終失敗即 raise、**毀掉整支影片**（07-07 第9/14張中止）。已改 `gen_image` 回傳 bool、單張重試 4→**6次**（遞增退避+每次換seed），**單張最終失敗不再中止**：沿用前一張場景圖（首張才用 `_placeholder_image` 備援底圖），吉祥物結尾同理。日後單張500會自動降級不開天窗
 - **Shorts 每天發＋長片維持原頻率**（2026-07-01 改）：`make_and_upload.formats_for_today()` 決定當天產出——**Shorts(9:16, ~50秒, 6-8句)每天都發；長片(16:9, 2-3分鐘, 18-24句)僅週二/五/日追加一支**（長片日＝一次跑出 Shorts＋長片兩支）。可用 `YT_FORMAT=long/short` 手動覆寫成只產一支。多格式日各格式跑獨立 subprocess（避免 build_video 模組級 `YT_ASPECT` 只在 import 時生效）；make_and_upload 設好 `YT_ASPECT` 後才 import build_video；short 模式自動加 `#shorts`、開場卡縮短為 3s。workflow `timeout-minutes` 已提到 55（兩支影片）
 - **影片比例**：`YT_ASPECT`（16:9=1920×1080 / 9:16=1080×1920）。W/H、生圖尺寸、Ken Burns、字幕字級(16:9=54/9:16=60)與位置、開場卡時長皆隨比例自動調整
 
@@ -867,6 +869,11 @@ Subscribe and never miss a new Why. 🔔
 
 ## 惜食廚房外牆防水布（最新：招募志工面，2026-07-07）
 - 主牆定稿 `外牆防水布_主牆25m5_招募志工版.png`（25500×1300，第7面已改成志工招募：暖光志工廚房底圖＋5項服務金圓圖示＋3步驟＋QR「了解更多/立即報名」＋扶輪3501捐贈框）。腳本 scratchpad/vol_panel2.py。規格與地雷見 memory `savefood-kitchen-signage`。
+- **立即報名 QR 更新（2026-07-07）**：右 QR 改指志工報名表單 `https://forms.gle/Njoas8PnUuEuZCqk7`。腳本已遺失，改「就地替換」：偵測白卡內黑模組定位右QR(x24762~25098/y652~988)→`qrcode`(border=0,EC=Q)產330px置中蓋回→清白舊區防殘影。左「了解更多」官網QR未動。原檔備份 `外牆防水布/備份_20260703/..._改QR前_20260707.png`。**這台無 pyzbar/opencv 可解碼**，QR正確性靠「直接用URL產生」保證，送印前請手機實掃
+
+## 惜食便當捐款卡轉 .ai（2026-07-07）
+- 來源 `惜食廚房輸出/惜食便當捐款卡/惜食便當捐款卡_印刷40cm.png`（4724×4724=40cm@300dpi，成品點陣圖含Logo/愛心/漸層，無法真向量化）。交印刷廠用 reportlab 產 **PDF相容 .ai**（`drawImage` 內嵌300dpi，`mask='auto'` 保留透明SMask）。
+- **最終定案＝立體便當版**：只取奶白圓角卡本體(x455~4268/y503~4055,圓角120)、**外圍米色底盤去背透明**，用輪廓掃掠(逐步offset paste同色遮罩,近NEAR#DBC99C→遠FAR#A88E58)做出牛皮紙盒身**立體側邊+下邊**(往右下D=150,厚度減半版)。輸出 `惜食便當捐款卡.ai`+`_立體_透明.png`。過程反覆：整張box→只本體→回原版去背→加回立體→厚度減半（使用者最終要「本體長立體側邊、白底去背」）
 
 ## 開發原則
 - 所有檔案操作預設在此資料夾進行
