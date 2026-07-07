@@ -69,29 +69,34 @@ def gen_image(prompt, out_path):
         "highly detailed, photoreal, deep moody color grade, sense of mystery and wonder, "
         f"{comp}, no text, no watermark"
     )
-    q = urllib.parse.urlencode(
-        {
-            "width": W,
-            "height": H,
-            "model": "flux",
-            "nologo": "true",
-            "seed": random.randint(1, 9_999_999),
-        }
-    )
-    url = POLLI_URL + urllib.parse.quote(full) + "?" + q
     last = None
-    for _ in range(4):
+    for attempt in range(6):
+        q = urllib.parse.urlencode(
+            {
+                "width": W,
+                "height": H,
+                "model": "flux",
+                "nologo": "true",
+                "seed": random.randint(1, 9_999_999),
+            }
+        )
+        url = POLLI_URL + urllib.parse.quote(full) + "?" + q
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
             with urllib.request.urlopen(req, timeout=180) as r:
                 data = r.read()
             if data and len(data) > 5000:
                 open(out_path, "wb").write(data)
-                return
+                return True
         except Exception as e:
             last = e
-        time.sleep(5)
-    raise RuntimeError(f"Pollinations 生圖失敗：{last}")
+        time.sleep(min(8 + attempt * 7, 40))
+    print(f"   ⚠️ Pollinations 生圖失敗（{last}）", flush=True)
+    return False
+
+
+def _placeholder_image(path):
+    Image.new("RGB", (W, H), (16, 18, 26)).save(path)
 
 
 async def _synth_one(text, mp3_path):
@@ -411,14 +416,24 @@ def build_video(script, out_path, workdir=None):
     imgs = []
     for i, sc in enumerate(scenes):
         p = os.path.join(tmp, f"scene_{i}.png")
-        gen_image(sc, p)
-        imgs.append(p)
-        print(f"   場景 {i+1}/{len(scenes)} 完成", flush=True)
+        if gen_image(sc, p):
+            imgs.append(p)
+            print(f"   場景 {i+1}/{len(scenes)} 完成", flush=True)
+        elif imgs:
+            imgs.append(imgs[-1])
+            print(f"   場景 {i+1}/{len(scenes)} 生圖失敗，沿用前一張", flush=True)
+        else:
+            _placeholder_image(p)
+            imgs.append(p)
+            print(f"   場景 {i+1}/{len(scenes)} 生圖失敗，用備援底圖", flush=True)
     # 結尾固定吉祥物（面向觀眾說話）
     mp = os.path.join(tmp, "mascot.png")
-    gen_image(MASCOT_SCENE, mp)
-    imgs.append(mp)
-    print("   吉祥物結尾完成", flush=True)
+    if gen_image(MASCOT_SCENE, mp):
+        imgs.append(mp)
+        print("   吉祥物結尾完成", flush=True)
+    else:
+        imgs.append(imgs[-1])
+        print("   吉祥物生圖失敗，沿用前一張", flush=True)
 
     print("[3/4] 製作開場標題卡 + 中文字幕 + Ken Burns 片段...", flush=True)
     # 開場標題卡：暗化首張場景 + 吸睛標題 + 主題介紹
