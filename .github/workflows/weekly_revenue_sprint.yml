@@ -1,0 +1,26 @@
+name: 營收衝刺週報
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'    # UTC 週一 00:00 = 台灣 週一 08:00
+  workflow_dispatch:
+
+jobs:
+  sprint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Send weekly revenue sprint email
+        env:
+          NOTION_TOKEN:       ${{ secrets.NOTION_TOKEN }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python insurance/weekly_revenue_sprint.py
