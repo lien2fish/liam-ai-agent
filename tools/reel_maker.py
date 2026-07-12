@@ -149,7 +149,8 @@ def write_draft(segs, video):
         "cues": [[x["start"], x["end"], clean(x["text"]), []] for x in fg],
         "cover": {
             "time": round(fg[0]["start"] + 3, 1) if fg else 3,
-            "main": "主標題？",
+            "main": "四字高光",
+            "line2": "",
             "sub": "副標籤",
         },
         "hooks": {"A": "鉤子一句", "B": "教學一句", "C": "稀有一句"},
@@ -317,7 +318,7 @@ def build_ass(cues_new, path):
 
 
 # ---------- 封面 ----------
-def make_cover(video, t, main, sub, out):
+def make_cover(video, t, main, sub, out, line2=""):
     from PIL import Image, ImageDraw, ImageFont
 
     base = tempfile.mktemp(suffix=".jpg")
@@ -342,39 +343,74 @@ def make_cover(video, t, main, sub, out):
         capture_output=True,
     )
     img = Image.open(base).convert("RGB")
-    d = ImageDraw.Draw(img)
-    W = 1080
-    grad = Image.new("L", (W, 470), 0)
-    gd = ImageDraw.Draw(grad)
-    for y in range(470):
-        gd.line([(0, y), (W, y)], fill=int(150 * (1 - y / 470)))
-    img.paste(Image.new("RGB", (W, 470), (0, 0, 0)), (0, 0), grad)
-    d = ImageDraw.Draw(img)
-
-    def outl(cx, y, tx, fs, fill, sw, sc, ls=0):
-        f = ImageFont.truetype(ZHF, fs)
-        tw = (
-            sum(d.textlength(c, font=f) + ls for c in tx) - ls
-            if ls
-            else d.textlength(tx, font=f)
-        )
-        x = cx - tw / 2
-        for c in tx:
-            d.text((x, y), c, font=f, fill=fill, stroke_width=sw, stroke_fill=sc)
-            x += d.textlength(c, font=f) + ls
-
-    outl(W // 2, 90, main, 150, (245, 150, 30), 16, (15, 15, 15), 2)
-    if sub:
-        f2 = ImageFont.truetype(ZHF, 72)
-        tw = d.textlength(sub, font=f2)
-        d.rounded_rectangle(
-            [W // 2 - tw / 2 - 36, 280, W // 2 + tw / 2 + 36, 392],
-            radius=18,
-            fill=(15, 15, 15),
-        )
-        d.text((W // 2 - tw / 2, 296), sub, font=f2, fill=(255, 255, 255))
+    draw_cover_title(img, main, sub, line2)
     img.save(out, quality=92)
     os.remove(base)
+
+
+# 四字高光大標（亮黃厚黑描邊、壓中下方，可紅色第二行）
+HL_YELLOW = (255, 205, 35)
+HL_RED = (228, 46, 38)
+
+
+def draw_cover_title(img, main, sub="", line2=""):
+    from PIL import Image, ImageDraw, ImageFont
+
+    d = ImageDraw.Draw(img)
+    W, H = img.size
+
+    # 中下方加深，讓高光字更突出、好讀
+    scrim = Image.new("L", (W, H), 0)
+    sd = ImageDraw.Draw(scrim)
+    for y in range(H):
+        a = int(170 * ((y - H * 0.38) / (H * 0.62))) if y > H * 0.38 else 0
+        sd.line([(0, y), (W, y)], fill=max(0, min(a, 170)))
+    img.paste(Image.new("RGB", (W, H), (0, 0, 0)), (0, 0), scrim)
+    d = ImageDraw.Draw(img)
+
+    def fit(tx, cap):
+        fs = cap
+        while fs > 44:
+            f = ImageFont.truetype(ZHF, fs)
+            ls = fs * 0.05
+            w = sum(d.textlength(c, font=f) + ls for c in tx) - ls
+            if w <= W - 150:
+                return f, ls
+            fs -= 6
+        return ImageFont.truetype(ZHF, 44), 44 * 0.05
+
+    lines = [(main, HL_YELLOW, 250 if not line2 else 240)]
+    if line2:
+        lines.append((line2, HL_RED, 210))
+    measured = []
+    for tx, fill, cap in lines:
+        f, ls = fit(tx, cap)
+        asc, desc = f.getmetrics()
+        measured.append((tx, fill, f, ls, asc + desc))
+
+    gap = 20
+    block_h = sum(m[4] for m in measured) + gap * (len(measured) - 1)
+    y = int(H * 0.60) - block_h // 2
+    for tx, fill, f, ls, h in measured:
+        w = sum(d.textlength(c, font=f) + ls for c in tx) - ls
+        x = (W - w) / 2
+        sw = max(14, f.size // 10)
+        for c in tx:
+            d.text(
+                (x, y), c, font=f, fill=fill, stroke_width=sw, stroke_fill=(18, 18, 18)
+            )
+            x += d.textlength(c, font=f) + ls
+        y += h + gap
+
+    if sub:
+        f2 = ImageFont.truetype(ZHF, 60)
+        tw = d.textlength(sub, font=f2)
+        d.rounded_rectangle(
+            [W / 2 - tw / 2 - 32, y + 6, W / 2 + tw / 2 + 32, y + 110],
+            radius=16,
+            fill=(18, 18, 18),
+        )
+        d.text((W / 2 - tw / 2, y + 22), sub, font=f2, fill=(255, 255, 255))
 
 
 # ---------- build 主流程 ----------
@@ -501,6 +537,7 @@ def build(cfg):
             cov.get("main", subject),
             cov.get("sub", ""),
             os.path.join(out_dir, f"{subject}_封面.jpg"),
+            cov.get("line2", ""),
         )
     # 發文案
     write_captions(cfg, os.path.join(out_dir, f"{subject}_發文案.md"))
