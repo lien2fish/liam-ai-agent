@@ -17,7 +17,7 @@ reel_maker — 長片轉品牌短影音 一鍵工具（連老闆-產地到餐桌
   - 畫面：原始拍攝畫面「滿版不放大」（模糊背景 letterbox，不硬裁緊）
   - 字幕：關鍵字橘黃高光、位置往上(MarginV 560)、STHeiti、整句好讀
   - 前景過濾：領夾麥音量差濾掉背景/旁人講話（<最大-8dB 剔除）
-  - 音訊：highpass+afftdn+dynaudnorm 降噪 ＋ 自合成輕快 BGM（無 whoosh 音效）
+  - 音訊：highpass+afftdn 降噪 + speechnorm 拉齊小聲對話 ＋ 自合成輕快 BGM（無 whoosh 音效）
   - 完整版：1.3 倍速（字幕/BGM 同步）
   - CTA：片尾金句「留言加一，下次OO出現通知你」（放進 cues 即可）
   - 檔名：用主題名，不加「完整版/版本/倍速」字樣
@@ -302,16 +302,54 @@ def ts(x):
     return f"{int(x//3600)}:{int(x%3600//60):02d}:{x%60:05.2f}"
 
 
+SAFE_W = 900  # 單行安全寬度(px)，超過就自動換行
+
+
+def _hl_mask(t, kws):
+    mask = [False] * len(t)
+    for k in kws:
+        i = t.find(k)
+        while i >= 0:
+            for j in range(i, i + len(k)):
+                mask[j] = True
+            i = t.find(k, i + len(k))
+    return mask
+
+
+def _char_w(ch, big):
+    fs = HL_FS if big else BASE_FS
+    return fs * 0.55 if ch.isascii() else fs  # 拉丁/數字半形較窄
+
+
+def wrap_lines(t, kws):
+    mask = _hl_mask(t, kws)
+    w = [_char_w(c, mask[i]) for i, c in enumerate(t)]
+    if sum(w) <= SAFE_W:
+        return [t]
+    n = len(t)
+    ok = lambda i: 0 < i < n and not (mask[i - 1] and mask[i])  # 不切斷高光詞
+    puncts = [i + 1 for i, c in enumerate(t) if c in "，、。！？"]
+    cand = [i for i in puncts if ok(i)] or [i for i in range(1, n) if ok(i)]
+    best = min(cand, key=lambda i: max(sum(w[:i]), sum(w[i:])))
+    l1 = t[:best].rstrip("，、")
+    l2 = t[best:].lstrip("，、")
+    return [l1, l2]
+
+
+def wrap_cue(t, kws):
+    return r"\N".join(hl(line, kws) for line in wrap_lines(t, kws))
+
+
 def build_ass(cues_new, path):
     head = (
-        "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\n"
+        "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\nWrapStyle: 0\n"
         "[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, "
         "Bold, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n"
         f"Style: Def, {ASS_FONT}, 64, &H00FFFFFF, &H00101010, &H00000000, 1, 1, 6, 2, 2, 80, 80, 560, 1\n"
         "[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n"
     )
     body = "".join(
-        f"Dialogue: 0,{ts(s)},{ts(e)},Def,,0,0,0,,{hl(t,kw)}\n"
+        f"Dialogue: 0,{ts(s)},{ts(e)},Def,,0,0,0,,{wrap_cue(t,kw)}\n"
         for s, e, t, kw in cues_new
     )
     open(path, "w", encoding="utf-8").write(head + body)
@@ -451,7 +489,7 @@ def build(cfg):
                 "-map",
                 "0:a",
                 "-af",
-                "highpass=f=120,afftdn=nf=-25,dynaudnorm",
+                "highpass=f=100,afftdn=nf=-28,speechnorm=e=6.25:r=0.00015",
                 "-c:v",
                 "libx264",
                 "-preset",
