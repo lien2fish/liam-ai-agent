@@ -403,9 +403,13 @@ wt clean   # 清除額外 worktree
 | 工具 | `tools/reel_maker.py`（兩步：`transcribe 長片` 出可編輯字幕稿+config範本 → `build config.json` 產出 影片+封面+發文案）|
 | 設定範本 | `tools/reel_config_example.json`（赤筆為例：segments段落/cues字幕含高光詞/cover封面/hooks文案）|
 | 定案規格 | 原始畫面**滿版letterbox不放大**／關鍵字**橘黃高光**字幕(往上MarginV560)／領夾麥**前景過濾**濾背景人聲／降噪+**自合成輕快BGM**(無whoosh音效)／完整版**1.3倍速**／檔名用**主題名**(不加完整版/版本字樣) |
-| 地雷 | 字幕**必須人工校對**(Whisper會錯,例:赤筆聽成刺筆)；opencv這台裝不起來→人臉追蹤不用改letterbox；yt-dlp下載參考要`--extractor-args youtube:player_client=android` |
+| 字幕自動換行(2026-07-12) | `build_ass` 加 `wrap_cue`/`wrap_lines`：單行超 `SAFE_W=900px` 自動折兩行(逗號優先、否則平衡中點)，**不切斷高光關鍵字**；header 加 `WrapStyle: 0`。中文無空格原本會超框 |
+| 音訊(2026-07-12) | 改 `highpass=f=100,afftdn=nf=-28,speechnorm=e=6.25:r=0.00015`：降噪放輕+**speechnorm 把小聲對話拉齊主講者**(原 dynaudnorm 不夠、較小聲對話會被前景偵測判背景而沒字幕，須另補cue) |
+| 兩片合一 | reel_maker 只吃單一 video；多支長片要合成一支 reel＝先 ffmpeg `concat -c copy` 串成單一來源檔(同規格 iPhone MOV 可直接 copy)，再照單片流程走 |
+| 搞笑定格特效 | 非內建。客製 `gag_render.py`(letterbox+片尾定格 tpad+drawtext爆字+numpy合成boing/pop音效)＋`build_with_gags.py`(把 gag 段插進 segments、算好cue偏移)。若要常用可正式併進 reel_maker |
+| 地雷 | 字幕**必須人工校對**(Whisper會錯,例:赤筆→刺筆、扁鱈→鞭血、圓鱈→鴛鱈/園巡、比目魚→底木魚)；**選段保留的畫面若有講話一定要給cue**否則該幾秒無字幕；opencv裝不起來→人臉追蹤不用；yt-dlp下載要`--extractor-args youtube:player_client=android` |
 
-> 詳見 memory `project_viral_reel_maker.md`。播放器顯示的檔名≠影片內字，發佈後不會出現。
+> 詳見 memory `project_viral_reel_maker.md`。播放器顯示的檔名≠影片內字，發佈後不會出現。首個成品：好市多實測「扁鱈vs圓鱈」(2片合1、3:03、含2搞笑定格段)。
 
 ## 點陣圖轉向量 .ai 工具（2026-07-03 建立）
 
@@ -873,6 +877,9 @@ Subscribe and never miss a new Why. 🔔
 ## 惜食廚房外牆防水布（最新：招募志工面，2026-07-07）
 - 主牆定稿 `外牆防水布_主牆25m5_招募志工版.png`（25500×1300，第7面已改成志工招募：暖光志工廚房底圖＋5項服務金圓圖示＋3步驟＋QR「了解更多/立即報名」＋扶輪3501捐贈框）。腳本 scratchpad/vol_panel2.py。規格與地雷見 memory `savefood-kitchen-signage`。
 - **立即報名 QR 更新（2026-07-07）**：右 QR 改指志工報名表單 `https://forms.gle/Njoas8PnUuEuZCqk7`。腳本已遺失，改「就地替換」：偵測白卡內黑模組定位右QR(x24762~25098/y652~988)→`qrcode`(border=0,EC=Q)產330px置中蓋回→清白舊區防殘影。左「了解更多」官網QR未動。原檔備份 `外牆防水布/備份_20260703/..._改QR前_20260707.png`。**這台無 pyzbar/opencv 可解碼**，QR正確性靠「直接用URL產生」保證，送印前請手機實掃
+- **3501致贈框位置調整（2026-07-12）**：從主牆志工面右上角**移除**(用框下方乾淨照片逐欄垂直內插補背景，端點接合無矩形補丁)，改放**次牆14m45第一面**右上空白框(填深綠#084D22粗體「國際扶輪3501地區捐贈」置中)。就地替換、原檔備份於 `備份_20260703/`
+- **新增單面布「惜食台灣行動協會」（2026-07-12）**：`防水布_惜食台灣行動協會_3.6x1.25m.png`(3600×1250=1000px/m)，白底+品牌綠#079E3F外框+惜食台灣logo(HQ透明版`二樓面外大logo/惜食台灣_logo_HQ.png`)左+協會名綠字+橘副標「疼惜食物·疼惜台灣」
+- **⚠️防水布輸出一律 CMYK（2026-07-12 使用者指定）**：PNG不支援CMYK→交印檔用 **TIFF**(CMYK,LZW,嵌ICC profile)，RGB PNG留預覽。轉換走 `ImageCms`+系統`/System/Library/ColorSync/Profiles/Generic CMYK Profile.icc`(PERCEPTUAL)，**勿**用PIL粗略`.convert("CMYK")`。三張布已產 `*_CMYK.tif`。詳見 memory `feedback_banner_cmyk`
 
 ## 惜食便當捐款卡轉 .ai（2026-07-07）
 - 來源 `惜食廚房輸出/惜食便當捐款卡/惜食便當捐款卡_印刷40cm.png`（4724×4724=40cm@300dpi，成品點陣圖含Logo/愛心/漸層，無法真向量化）。交印刷廠用 reportlab 產 **PDF相容 .ai**（`drawImage` 內嵌300dpi，`mask='auto'` 保留透明SMask）。
