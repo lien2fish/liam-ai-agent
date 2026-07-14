@@ -411,6 +411,21 @@ wt clean   # 清除額外 worktree
 
 > 詳見 memory `project_viral_reel_maker.md`。播放器顯示的檔名≠影片內字，發佈後不會出現。首個成品：好市多實測「扁鱈vs圓鱈」(2片合1、3:03、含2搞笑定格段)。
 
+## 樂器演奏短影音 music_reel（2026-07-14 建立）
+
+直笛/樂器演奏長片轉 9:16 reels，**與 reel_maker 海鮮流程完全獨立、勿混用**（使用者明確指示不動 reel_maker）。
+
+| 項目 | 說明 |
+|------|------|
+| 工具 | `tools/music_reel.py`（兩步：`analyze 長片` 出每秒能量曲線+config範本 → `build config.json` 產出 影片 到桌面）|
+| 定案規格 | **原音直出**：不降噪/不speechnorm/不變速/不混BGM/無字幕（音樂就是內容）；段落交界 0.15s afade 防爆音；音訊192k、1080×1920、crf20、24fps；檔名＝曲名 |
+| 版型（蓋臉版） | 頂部白底大樂譜面板 `score_h=450`（`shift_y=0`+`score_y=0`）**從頂端蓋到鼻子，只露吹奏嘴型+手部**（保護孩子肖像，使用者指定）；樂譜圖去白邊放大置中，隨演奏換頁（每頁2小節含注音唱名）；0~2s 曲名橫幅（白格紋紙底+棕色 MarkerFelt 手寫字）疊面板下方，全程不露臉 |
+| config 要點 | `segments`=[[演奏起-0.4s, 迄+0.5s]]（原片時間軸）；`score` 換頁時間=**輸出後時間軸**，估法：演奏總長÷頁數均分再依聽感微調；頭位置不同只調 `score_h` |
+| 可攜版 | 桌面 `樂器演奏reels工具/`（music_reel.py+README+範例config），供另一台電腦執行；新機需 `pip3 install numpy pillow`+ffmpeg（不需ffprobe）；MarkerFelt 為 mac 內建字型，非 mac 要改 `MARKER_FONT` |
+| 首支成品 | NO BATIDÃO（素材 `VID_20260710081733888.MP4`、樂譜 IMG_6458/6459/6461/6462.JPG、config `NO_BATIDAO_config.json`，皆在桌面）；發布平台未定 |
+
+> 詳見 memory `project_music_reel.md`。
+
 ## 點陣圖轉向量 .ai 工具（2026-07-03 建立）
 
 把「文字＋簡單圖形」的點陣輸出圖（TIFF/PNG）轉成 Illustrator 可編輯的**真向量 .ai**。
