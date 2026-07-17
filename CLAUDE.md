@@ -124,7 +124,7 @@
 ### 注意事項
 - Meta Webhook 機制限制多（新版 Use Cases 架構無法用 `subscribed_apps`），改用輪詢
 - Cloudflare Worker（`ig-auto-reply.lien2fish.workers.dev`）已部署但未使用，可保留或刪除
-- IG Token 到期（2026-07-16）後需同時更新 `config/instagram_config.json` 和 GitHub Secret `IG_TOKEN`
+- IG Token **實測永不過期**（2026-07-17 debug_token 驗證：is_valid=true、expires_at=0），但**資料存取權 2026-08-20 到期**，屆時需重新授權並同時更新 `config/instagram_config.json` 和 GitHub Secret `IG_TOKEN`
 - `gemini-3.5-flash` 不設 `thinkingBudget: 0` 會導致回覆只輸出幾個字（MAX_TOKENS 截斷）
 
 ### Facebook 粉絲專頁資訊
@@ -897,6 +897,7 @@ Subscribe and never miss a new Why. 🔔
 - **⚠️防水布輸出一律 CMYK（2026-07-12 使用者指定）**：PNG不支援CMYK。轉換走 `ImageCms`+系統`/System/Library/ColorSync/Profiles/Generic CMYK Profile.icc`(PERCEPTUAL)，**勿**用PIL粗略`.convert("CMYK")`。詳見 memory `feedback_banner_cmyk`
 - **⚠️交印刷廠改用 CMYK PDF、勿交 CMYK TIFF（2026-07-15）**：三冠彩印的RIP把PIL產的CMYK TIFF油墨值反相解讀（整張負片化：白變黑、綠變暗紫）。改交純Python自組PDF（DeviceCMYK+FlateDecode、頁面1:10縮尺、內嵌影像升採樣全尺寸72dpi），大檔用分段串流寫入（8GB機器直接產72dpi大TIFF會寫壞檔）。**最終交付＝`輸出用_分面PDF_調亮100dpi/` 12份分面1:1 PDF**（2026-07-16：使用者反映偏暗＋字小，全面調亮版取代舊版——主標字放大1.2倍(遮罩取字+膨脹修補背景防殘影，多行區域不可重疊)、亮度+10%/飽和+22%/銳利化、100dpi全尺寸），腳本 scratchpad/enhance_faces.py＋make_face_pdfs_v2.py；舊72dpi版 `輸出用_分面PDF/`、整條1:10版留存備用
 - **全面加大字體（2026-07-17，印刷反映字不清楚）**：11 面母檔 PNG 就地放大文字（裁字區→LANCZOS放大→羽化貼回；招募志工面最徹底：中欄5項×1.35/右欄3步驟×1.3/左欄小字×1.25~1.35；其餘面英文副標×1.45~1.5、中文小標×1.3~1.35、主標×1.15~1.2 補回母檔）→ 12 份 `輸出用_分面PDF_調亮100dpi/` 全部重產並 sips 抽驗無反相。腳本已進 repo：`design/tarp_text_enlarge.py`(apply_ops通用)＋`design/tarp_text_enlarge_all_faces.py`(各面ops座標)＋`design/tarp_face_pdf.py`(單面調亮100dpi CMYK PDF，參數=母檔/x0/x1/輸出)。改前母檔備份於 `備份_20260703/*_加大字體前_20260717.png`。地雷：羽化寬度必須≤裁切留邊、勿用dy位移（原字露出殘影）；`分面_印刷ai檔/` 72dpi .ai 版未重產仍是舊字
+- **鮮豔度/亮度再各 +50%（2026-07-17，使用者要求）**：`design/tarp_face_pdf.py` 的 `enhance()` 改用常數 `BRIGHTNESS=1.65`（前1.10×1.5）＋`COLOR=1.83`（前1.22×1.5），12 面全部重產(3.8分)並 sips 抽驗無反相。過曝(≥250三通道)僅 9.14%→9.82% 不爆（白底本就白、變亮的是彩色圖文區）。舊 1.10 版備份 `外牆防水布/備份_分面PDF_舊亮度1.10_20260717/`。⚠️飽和1.83偏強會把近中性字推色（志工面「傳遞溫暖與愛」偏橘、QR標籤偏綠），嫌太跳改折衷 亮1.35/飽1.50
 
 ## 惜食便當捐款卡轉 .ai（2026-07-07）
 - 來源 `惜食廚房輸出/惜食便當捐款卡/惜食便當捐款卡_印刷40cm.png`（4724×4724=40cm@300dpi，成品點陣圖含Logo/愛心/漸層，無法真向量化）。交印刷廠用 reportlab 產 **PDF相容 .ai**（`drawImage` 內嵌300dpi，`mask='auto'` 保留透明SMask）。
