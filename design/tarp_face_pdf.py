@@ -12,10 +12,14 @@ SRGB = ImageCms.createProfile("sRGB")
 CMYK = ImageCms.getOpenProfile(ICC)
 PXMM = 100 / 25.4  # 100dpi → px per mm
 
+# 2026-07-17：使用者要求鮮豔度與亮度再各 +50%（相對前版 1.10/1.22）
+BRIGHTNESS = 1.65  # 前版 1.10 × 1.5
+COLOR = 1.83  # 前版 1.22 × 1.5
+
 
 def enhance(img):
-    img = ImageEnhance.Brightness(img).enhance(1.10)
-    img = ImageEnhance.Color(img).enhance(1.22)
+    img = ImageEnhance.Brightness(img).enhance(BRIGHTNESS)
+    img = ImageEnhance.Color(img).enhance(COLOR)
     return img.filter(ImageFilter.UnsharpMask(radius=2, percent=120, threshold=3))
 
 
