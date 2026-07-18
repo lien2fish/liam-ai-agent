@@ -411,6 +411,19 @@ wt clean   # 清除額外 worktree
 
 > 詳見 memory `project_viral_reel_maker.md`。播放器顯示的檔名≠影片內字，發佈後不會出現。首個成品：好市多實測「扁鱈vs圓鱈」(2片合1、3:03、含2搞笑定格段)。
 
+## 甜點頻道「甜點輕鬆做．師傅真心話」（2026-07-18 建立）
+
+YouTube 全新頻道，**團隊視角**（主講＝合作的專業甜點師朋友、2007年入行開線上課；使用者＝經營/訪談）。標語「配方可以簡單，但話要說真的。」品牌文案＝`~/Desktop/甜點頻道_品牌文案.md`。
+
+| 項目 | 說明 |
+|------|------|
+| 工具 | `tools/dessert_longform.py`（與 reel_maker/music_reel **完全獨立勿混用**）：`build config.json`／`bgm 影片 [warm\|lively]` |
+| config | `videos`多來源檔＋`segments`=[[vi,s,e]]＋`cues`=[[vi,s,e,字幕,[高光]]]＋`speed`＋`bgm`＋`cover`＋`cover_intro`（秒數，預設1.0，0=關）|
+| 定案規格 | 直式1080×1920滿版、橘黃高光字幕（同reel樣式MarginV560）、降噪+speechnorm、**9:16封面卡自動壓進影片開頭1秒**（與`_封面.jpg`同一張，concat copy不重編正片）、自合成BGM兩款（warm 76bpm柔和／lively 112bpm輕快，勿用ffmpeg tremolo會exit 222）|
+| 首批產出 | 桌面`肉桂捲研發日記/`：長片《六種口味肉桂捲全記錄》13:30(1.2x)＋系列EP1~7(1.3x, 1:47~2:19)。config＝repo `dessert/`（EP1~7＋長片＋產生器`make_ep_configs.py`）|
+| 發佈策略 | 開站日長片+EP1同天，之後每週二/五一集，Shorts（抹茶色素/180元極限/杜拜巧克力）穿插；播放清單《肉桂捲研發日記》|
+| 地雷 | **iCloud 在磁碟吃緊時會無聲回收桌面大檔**（2026-07-18 批次剪輯中 IMG_4106/4107 被回收→EP5只出16秒）。跑剪輯前確認來源非`.icloud`佔位檔、必要時`brctl download`；工具已加seg產出檢查（<10KB即raise）。concat清單內路徑一律用**絕對路徑**（相對路徑以清單所在目錄解析）|
+
 ## 樂器演奏短影音 music_reel（2026-07-14 建立）
 
 直笛/樂器演奏長片轉 9:16 reels，**與 reel_maker 海鮮流程完全獨立、勿混用**（使用者明確指示不動 reel_maker）。
