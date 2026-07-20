@@ -405,13 +405,22 @@ wt clean   # 清除額外 worktree
 | 工具 | `tools/reel_maker.py`（兩步：`transcribe 長片` 出可編輯字幕稿+config範本 → `build config.json` 產出 影片+封面+發文案）|
 | 設定範本 | `tools/reel_config_example.json`（赤筆為例：segments段落/cues字幕含高光詞/cover封面/hooks文案）|
 | 定案規格 | 原始畫面**滿版letterbox不放大**／關鍵字**橘黃高光**字幕(往上MarginV560)／領夾麥**前景過濾**濾背景人聲／降噪+**自合成輕快BGM**(無whoosh音效)／完整版**1.3倍速**／檔名用**主題名**(不加完整版/版本字樣) |
-| 字幕自動換行(2026-07-12) | `build_ass` 加 `wrap_cue`/`wrap_lines`：單行超 `SAFE_W=900px` 自動折兩行(逗號優先、否則平衡中點)，**不切斷高光關鍵字**；header 加 `WrapStyle: 0`。中文無空格原本會超框 |
+| 字幕自動換行(2026-07-21 大修) | `SAFE_W` 900→**820px**(版面可用寬920、扣描邊剩908，900等於零淨空會貼邊)；`wrap_lines` 改**遞迴**換行(原本最多切一刀，逗號後半段可達1196px直接衝出畫布)；斷點不切全形括號內、虛字不落行首；**裝了 jieba 就依詞邊界斷行**(否則會切出「可/以」「客/人」)，未裝自動退回啟發式故可攜版不受影響 |
 | 音訊(2026-07-12) | 改 `highpass=f=100,afftdn=nf=-28,speechnorm=e=6.25:r=0.00015`：降噪放輕+**speechnorm 把小聲對話拉齊主講者**(原 dynaudnorm 不夠、較小聲對話會被前景偵測判背景而沒字幕，須另補cue) |
-| 兩片合一 | reel_maker 只吃單一 video；多支長片要合成一支 reel＝先 ffmpeg `concat -c copy` 串成單一來源檔(同規格 iPhone MOV 可直接 copy)，再照單片流程走 |
+| 多來源跨檔重組(2026-07-20) | config 改用 `videos:[路徑...]`＋`segments:[[vi,s,e]]`＋`cues:[[vi,s,e,文字,[高光]]]`，可從多支素材抽段重組成一支。**取代舊的 concat -c copy 前置合檔**(各段本來就獨立重編碼再串接，順帶解決 23.98/24fps 混幀漂移)。單來源舊格式仍相容 |
+| 封面卡壓開頭(2026-07-20) | `cover_intro`(預設1.0秒，0=關)：`_封面.jpg` 同一張以相同編碼參數產生後 concat copy 壓進開頭，不重編正片。`cover.video_index` 指定從哪支取幀 |
+| 留白給旁白的素材(2026-07-21) | 無人聲B-roll要自行配音時：`bgm:false` 不混配樂、`af:"highpass=f=80"` 不做動態壓縮(預設的 speechnorm 會把環境雜訊拉爆)、`speed:1.0` 留足旁白時間、`cues:[]` 無字幕 |
+| 批次轉錄 | `batch <工作資料夾> <影片...>`：多支素材一次轉錄，`transcripts/*.json`＋單一 `字幕稿_全部.txt` 供一次校對，不散落桌面 |
 | 搞笑定格特效 | 非內建。客製 `gag_render.py`(letterbox+片尾定格 tpad+drawtext爆字+numpy合成boing/pop音效)＋`build_with_gags.py`(把 gag 段插進 segments、算好cue偏移)。若要常用可正式併進 reel_maker |
 | 地雷 | 字幕**必須人工校對**(Whisper會錯,例:赤筆→刺筆、扁鱈→鞭血、圓鱈→鴛鱈/園巡、比目魚→底木魚)；**選段保留的畫面若有講話一定要給cue**否則該幾秒無字幕；opencv裝不起來→人臉追蹤不用；yt-dlp下載要`--extractor-args youtube:player_client=android` |
 
 > 詳見 memory `project_viral_reel_maker.md`。播放器顯示的檔名≠影片內字，發佈後不會出現。首個成品：好市多實測「扁鱈vs圓鱈」(2片合1、3:03、含2搞笑定格段)。
+
+### 崁仔頂魚市批次（2026-07-20～21）
+17 支 4K 直式素材（`~/Desktop/IMG_40xx.MOV`，7/14 拍）重組成 4 支：**十年功夫才敢下這刀**(2:09 鮭魚+黑鮪分切)／**一斤1300到台北變2000**(1:41 價格內幕)／**連翻車魚都有**(1:13 親子認魚)／**崁仔頂魚市**(1:56 無字幕無BGM，待自行配音，附 `崁仔頂魚市_口說腳本.md`)。
+- config 全在 repo `reels/`，改字幕或段落**直接改 config 重跑 build，不必重新轉錄**
+- 逐字稿工作檔留在 `~/Desktop/連老闆_reels_20260720/`（transcripts JSON＋字幕校對稿），要從同批素材再剪別支可直接沿用
+- **地雷**：17 支裡有 6 支無人聲，Whisper 對無聲段會吐出 initial_prompt 或「請訂閱按讚」等**幻覺文字**，別當成逐字稿用；魚種校對出現 龜魚→**鮭魚**、石木魚→**虱目魚**、土豬→土魠、紅鞋→紅喉、189斤→18.9斤
 
 ## 甜點頻道「甜點輕鬆做．師傅真心話」（2026-07-18 建立）
 
