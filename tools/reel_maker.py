@@ -9,6 +9,10 @@ reel_maker — 長片轉品牌短影音 一鍵工具（連老闆-產地到餐桌
      產出：<長片>_transcript.json（逐字稿）、<長片>_字幕稿.txt（可編輯，改字用）
      ＋ <長片>_config_範本.json（把段落/字幕填好給下一步）
 
+  1b) 多支素材一次轉錄（跨檔重組用）：
+       python3 tools/reel_maker.py batch <工作資料夾> <影片1> <影片2> ...
+     產出：<工作資料夾>/transcripts/*.json、<工作資料夾>/字幕稿_全部.txt
+
   2) 依設定產出 影片＋封面＋發文案：
        python3 tools/reel_maker.py build config.json
      產出（存到設定的 out_dir，預設桌面）：<主題>.mp4、<主題>_封面.jpg、<主題>_發文案.md
@@ -21,6 +25,11 @@ reel_maker — 長片轉品牌短影音 一鍵工具（連老闆-產地到餐桌
   - 完整版：1.3 倍速（字幕/BGM 同步）
   - CTA：片尾金句「留言加一，下次OO出現通知你」（放進 cues 即可）
   - 檔名：用主題名，不加「完整版/版本/倍速」字樣
+  - 封面卡：另存 _封面.jpg，同一張壓進影片開頭 cover_intro 秒（預設 1.0，0=關）
+
+config 支援單/多來源：
+  單來源 "video": 路徑，segments [[s,e]]、cues [[s,e,文字,[高光詞]]]
+  多來源 "videos": [路徑...]，segments [[vi,s,e]]、cues [[vi,s,e,文字,[高光詞]]]
 
 相依：ffmpeg（完整版）、openai-whisper、numpy、Pillow。字型 STHeiti（mac 內建）。
 """
@@ -160,6 +169,36 @@ def write_draft(segs, video):
     print(" ", base + "_字幕稿.txt   ← 改字")
     print(" ", base + "_config_範本.json ← 填段落/cues/封面後給 build")
     print(" ", base + "_transcript.json")
+
+
+def batch_transcribe(work_dir, videos):
+    """多支素材一次轉錄，產出集中在 work_dir，字幕稿合成單一檔供一次校對。"""
+    work_dir = os.path.expanduser(work_dir)
+    tdir = os.path.join(work_dir, "transcripts")
+    os.makedirs(tdir, exist_ok=True)
+    draft = open(os.path.join(work_dir, "字幕稿_全部.txt"), "w", encoding="utf-8")
+    draft.write("字幕稿 — 只列你的話(前景)，請改成真正要講的字\n")
+    draft.write("格式：[片#] 時間 | Whisper聽到(可能錯) → 你的版本\n" + "=" * 70 + "\n")
+    for v in videos:
+        name = os.path.splitext(os.path.basename(v))[0]
+        print(f"轉錄 {name} ...", flush=True)
+        segs = transcribe(v)
+        json.dump(
+            segs,
+            open(os.path.join(tdir, name + ".json"), "w"),
+            ensure_ascii=False,
+            indent=1,
+        )
+        draft.write(f"\n----- {name} -----\n")
+        for x in segs:
+            if not x["fg"]:
+                continue
+            draft.write(
+                f'[{name}] {x["start"]:6.1f}-{x["end"]:5.1f} | {clean(x["text"]):30} → \n'
+            )
+        draft.flush()
+    draft.close()
+    print("完成，產出在", work_dir)
 
 
 # ---------- BGM(自合成輕快，快取) ----------
@@ -451,15 +490,73 @@ def draw_cover_title(img, main, sub="", line2=""):
         d.text((W / 2 - tw / 2, y + 22), sub, font=f2, fill=(255, 255, 255))
 
 
+def prepend_intro(out_mp4, card_jpg, dur=1.0):
+    """封面卡壓進影片開頭 dur 秒（同編碼參數，concat copy 不重編正片）。"""
+    tmp = tempfile.mkdtemp()
+    intro = os.path.join(tmp, "intro.mp4")
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-loop",
+            "1",
+            "-t",
+            str(dur),
+            "-i",
+            card_jpg,
+            "-f",
+            "lavfi",
+            "-t",
+            str(dur),
+            "-i",
+            "anullsrc=r=48000:cl=stereo",
+            "-vf",
+            "scale=1080:1920,format=yuv420p",
+            "-c:v",
+            "libx264",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "20",
+            "-c:a",
+            "aac",
+            "-ar",
+            "48000",
+            "-ac",
+            "2",
+            "-b:a",
+            "160k",
+            "-r",
+            "24",
+            "-shortest",
+            intro,
+        ],
+        capture_output=True,
+    )
+    cc = os.path.join(tmp, "cc.txt")
+    open(cc, "w").write(f"file '{intro}'\nfile '{os.path.abspath(out_mp4)}'\n")
+    merged = os.path.join(tmp, "merged.mp4")
+    r = subprocess.run(
+        ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", cc, "-c", "copy", merged],
+        capture_output=True,
+    )
+    if r.returncode == 0 and os.path.getsize(merged) > os.path.getsize(out_mp4):
+        os.replace(merged, out_mp4)
+    else:
+        raise RuntimeError("intro concat 失敗")
+
+
 # ---------- build 主流程 ----------
 def build(cfg):
-    video = cfg["video"]
+    # 單來源 video:[s,e]/[s,e,文字,[高光]]；多來源 videos:[vi,s,e]/[vi,s,e,文字,[高光]]
+    multi = "videos" in cfg
+    videos = cfg["videos"] if multi else [cfg["video"]]
     subject = cfg["subject"]
     speed = cfg.get("speed", 1.3)
     out_dir = os.path.expanduser(cfg.get("out_dir", "~/Desktop"))
     os.makedirs(out_dir, exist_ok=True)
-    segs = cfg["segments"]
-    caps = cfg["cues"]
+    segs = cfg["segments"] if multi else [[0] + list(x) for x in cfg["segments"]]
+    caps = cfg["cues"] if multi else [[0] + list(x) for x in cfg["cues"]]
     LB = (
         "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=25:2,eq=brightness=-0.08[bg];"
         "[0:v]scale=1080:-1[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2[v]"
@@ -468,8 +565,8 @@ def build(cfg):
     parts = []
     offs = []
     cum = 0.0
-    for i, (s, e) in enumerate(segs):
-        offs.append((cum, s, e))
+    for i, (vi, s, e) in enumerate(segs):
+        offs.append((cum, vi, s, e))
         cum += e - s
         p = os.path.join(tmp, f"seg{i}.mp4")
         subprocess.run(
@@ -481,7 +578,7 @@ def build(cfg):
                 "-t",
                 str(e - s),
                 "-i",
-                video,
+                videos[vi],
                 "-filter_complex",
                 LB,
                 "-map",
@@ -508,7 +605,12 @@ def build(cfg):
             ],
             capture_output=True,
         )
+        if not os.path.exists(p) or os.path.getsize(p) < 10000:
+            raise RuntimeError(
+                f"seg{i} 產出失敗（來源 {videos[vi]} 可能被 iCloud 回收，先 brctl download）"
+            )
         parts.append(p)
+        print(f"  seg {i+1}/{len(segs)} 完成 ({e-s:.1f}s)", flush=True)
     cc = os.path.join(tmp, "cc.txt")
     open(cc, "w").write("\n".join(f"file '{p}'" for p in parts))
     joined = os.path.join(tmp, "joined.mp4")
@@ -519,18 +621,18 @@ def build(cfg):
     total = cum
 
     # cues → 新時間軸(concat) → 再 /speed
-    def newt(t):
-        for cs, s, e in offs:
-            if s - 0.05 <= t <= e + 0.05:
-                return (cs + (t - s)) / speed
+    def newt(vi, t):
+        for cs, svi, s, e in offs:
+            if svi == vi and s - 0.05 <= t <= e + 0.05:
+                return (cs + min(max(t - s, 0.0), e - s)) / speed
         return None
 
     cues_new = []
-    for c in caps:
-        s, e, txt, kw = c
-        ns, ne = newt(s), newt(e)
-        if ns is not None and ne is not None:
+    for vi, s, e, txt, kw in caps:
+        ns, ne = newt(vi, s), newt(vi, e)
+        if ns is not None and ne is not None and ne > ns:
             cues_new.append((ns, ne, txt, kw))
+    print(f"  cues 對上 {len(cues_new)}/{len(caps)}", flush=True)
     ass = os.path.join(tmp, "sub.ass")
     build_ass(cues_new, ass)
     bed = bgm_bed(total / speed)
@@ -558,6 +660,10 @@ def build(cfg):
             "20",
             "-c:a",
             "aac",
+            "-ar",
+            "48000",
+            "-ac",
+            "2",
             "-b:a",
             "160k",
             "-r",
@@ -566,17 +672,22 @@ def build(cfg):
         ],
         capture_output=True,
     )
-    # 封面
+    # 封面（另存縮圖用，同一張再壓進影片開頭）
     cov = cfg.get("cover")
     if cov:
+        card = os.path.join(out_dir, f"{subject}_封面.jpg")
         make_cover(
-            video,
+            videos[cov.get("video_index", 0)],
             cov["time"],
             cov.get("main", subject),
             cov.get("sub", ""),
-            os.path.join(out_dir, f"{subject}_封面.jpg"),
+            card,
             cov.get("line2", ""),
         )
+        intro_dur = float(cfg.get("cover_intro", 1.0))
+        if intro_dur > 0:
+            prepend_intro(out_mp4, card, intro_dur)
+            print(f"  封面卡已壓進開頭 {intro_dur:.0f} 秒", flush=True)
     # 發文案
     write_captions(cfg, os.path.join(out_dir, f"{subject}_發文案.md"))
     print("完成，已存到", out_dir)
@@ -607,13 +718,15 @@ def write_captions(cfg, path):
 
 
 def main():
-    if len(sys.argv) < 2 or sys.argv[1] not in ("transcribe", "build"):
+    if len(sys.argv) < 2 or sys.argv[1] not in ("transcribe", "batch", "build"):
         print(__doc__)
         return
     if sys.argv[1] == "transcribe":
         video = sys.argv[2]
         segs = transcribe(video)
         write_draft(segs, video)
+    elif sys.argv[1] == "batch":
+        batch_transcribe(sys.argv[2], sys.argv[3:])
     else:
         cfg = json.load(open(sys.argv[2], encoding="utf-8"))
         build(cfg)
