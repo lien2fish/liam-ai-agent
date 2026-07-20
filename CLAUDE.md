@@ -213,6 +213,7 @@
 | `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；**Shorts每天發、長片維持週二/五/日追加**） | 每天 10:00 製作上傳，**排程當天 18:00 自動轉公開** |
 | `yt_channel_report.yml` | The Unknown Hour 頻道每日表現日報（觀看/讚/留言+新留言Email） | 每天 08:20，用YT_API_KEY讀公開數據，自動commit報告 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
+| `rotary_birthday_reminder.yml` | 中城網路扶輪社社友生日提醒（剛好前14天Email一次；資料=私人repo `liam-workspace/rotary/中城網路社友通訊錄.json` 71位，用`WORKSPACE_PAT` checkout，**個資不進公開repo、無commit**） | 每天 08:10 |
 
 ### GitHub Secrets 總覽
 | Secret | 用途 |
@@ -232,6 +233,7 @@
 | `YT_CHANNEL_ID` | YouTube 頻道 ID（連老闆-產地到餐桌）|
 | `YT_OAUTH_CLIENT_ID` / `YT_OAUTH_CLIENT_SECRET` / `YT_OAUTH_REFRESH_TOKEN` | The Unknown Hour 自動上傳 OAuth（scope youtube.upload，同意畫面已發Production不過期）2026-06-29設 |
 | `GMAIL_APP_PASSWORD` | Gmail App 密碼，供 YouTube 留言通知＋頻道日報＋回購提醒寄信用 |
+| `WORKSPACE_PAT` | 存取私人 repo `liam-workspace` 的 PAT（＝本機 liam-workspace remote 內同一組，永不過期），供扶輪社生日提醒 checkout 個資 |
 
 ---
 
