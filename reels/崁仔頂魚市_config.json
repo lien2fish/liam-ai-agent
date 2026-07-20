@@ -1,0 +1,41 @@
+{
+ "videos": [
+  "/Users/lien/Desktop/IMG_4049.MOV",
+  "/Users/lien/Desktop/IMG_4044.MOV",
+  "/Users/lien/Desktop/IMG_4053.MOV",
+  "/Users/lien/Desktop/IMG_4071.MOV",
+  "/Users/lien/Desktop/IMG_4070.MOV",
+  "/Users/lien/Desktop/IMG_4046.MOV"
+ ],
+ "subject": "崁仔頂魚市",
+ "speed": 1.0,
+ "bgm": false,
+ "af": "highpass=f=80",
+ "cover_intro": 1.0,
+ "out_dir": "~/Desktop",
+ "segments": [
+  [0, 3.5, 8.0],
+  [0, 10.5, 18.0],
+  [1, 12.0, 28.0],
+  [2, 4.0, 20.0],
+  [3, 6.0, 16.0],
+  [3, 22.0, 30.0],
+  [3, 38.0, 46.0],
+  [3, 52.0, 62.0],
+  [4, 28.0, 47.0],
+  [5, 44.0, 60.0]
+ ],
+ "cues": [],
+ "cover": {
+  "video_index": 0,
+  "time": 12.0,
+  "main": "崁仔頂",
+  "line2": "凌晨才開市",
+  "sub": "基隆．產地直擊"
+ },
+ "hooks": {
+  "A": "（待錄旁白後補）",
+  "B": "（待錄旁白後補）",
+  "C": "（待錄旁白後補）"
+ }
+}
