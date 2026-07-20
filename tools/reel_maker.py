@@ -341,7 +341,9 @@ def ts(x):
     return f"{int(x//3600)}:{int(x%3600//60):02d}:{x%60:05.2f}"
 
 
-SAFE_W = 900  # 單行安全寬度(px)，超過就自動換行
+# 單行安全寬度(px)。版面可用寬 920(1080-左右margin 80)，扣描邊 12 剩 908；
+# 取 820 讓左右各留約 130px 淨空，避免手機上貼邊或被平台 UI 蓋到。
+SAFE_W = 820
 
 
 def _hl_mask(t, kws):
@@ -360,19 +362,69 @@ def _char_w(ch, big):
     return fs * 0.55 if ch.isascii() else fs  # 拉丁/數字半形較窄
 
 
+def _word_bounds(t):
+    """中文詞邊界(可換行位置)。沒裝 jieba 就回 None，改用啟發式斷點。"""
+    try:
+        import jieba
+    except ImportError:
+        return None
+    jieba.setLogLevel(60)
+    bounds = set()
+    i = 0
+    for word in jieba.cut(t):
+        i += len(word)
+        bounds.add(i)
+    return bounds
+
+
 def wrap_lines(t, kws):
+    """超過 SAFE_W 就換行；切完仍過寬會繼續切，不切斷高光詞。"""
     mask = _hl_mask(t, kws)
     w = [_char_w(c, mask[i]) for i, c in enumerate(t)]
     if sum(w) <= SAFE_W:
         return [t]
     n = len(t)
-    ok = lambda i: 0 < i < n and not (mask[i - 1] and mask[i])  # 不切斷高光詞
+    spans = []
+    stack = []
+    for idx, c in enumerate(t):
+        if c in "（(「":
+            stack.append(idx)
+        elif c in "）)」" and stack:
+            spans.append((stack.pop(), idx))
+
+    def ok(i):
+        if not (0 < i < n) or (mask[i - 1] and mask[i]):  # 不切斷高光詞
+            return False
+        if any(s < i <= e for s, e in spans):  # 不切在括號內
+            return False
+        if t[i] in "的了嗎呢啊吧喔）」，、。！？":  # 虛字/標點不當行首
+            return False
+        return t[i - 1] not in "（「"
+
     puncts = [i + 1 for i, c in enumerate(t) if c in "，、。！？"]
-    cand = [i for i in puncts if ok(i)] or [i for i in range(1, n) if ok(i)]
+    # 詞邊界(jieba)；沒有就退回：高光詞開頭 + 常見詞首字
+    wb = _word_bounds(t)
+    if wb is None:
+        good = [i for i in range(1, n) if mask[i] and not mask[i - 1]]
+        good += [
+            i
+            for i in range(1, n)
+            if t[i] in "就也都我你他這那所因而然再不沒要會把被從在是有可請讓每"
+        ]
+    else:
+        good = [i for i in range(1, n) if i in wb or (mask[i] and not mask[i - 1])]
+    cand = (
+        [i for i in puncts if ok(i)]
+        or sorted(set(i for i in good if ok(i)))
+        or [i for i in range(1, n) if ok(i)]
+        or [i for i in range(1, n) if not (mask[i - 1] and mask[i])]
+    )
     best = min(cand, key=lambda i: max(sum(w[:i]), sum(w[i:])))
     l1 = t[:best].rstrip("，、")
     l2 = t[best:].lstrip("，、")
-    return [l1, l2]
+    if not l1 or not l2:
+        return [t]
+    return wrap_lines(l1, kws) + wrap_lines(l2, kws)
 
 
 def wrap_cue(t, kws):
@@ -557,6 +609,8 @@ def build(cfg):
     os.makedirs(out_dir, exist_ok=True)
     segs = cfg["segments"] if multi else [[0] + list(x) for x in cfg["segments"]]
     caps = cfg["cues"] if multi else [[0] + list(x) for x in cfg["cues"]]
+    # 純環境音素材(留白給旁白)可設 af 關掉動態壓縮、bgm=false 不混配樂
+    af = cfg.get("af", "highpass=f=100,afftdn=nf=-28,speechnorm=e=6.25:r=0.00015")
     LB = (
         "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=25:2,eq=brightness=-0.08[bg];"
         "[0:v]scale=1080:-1[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2[v]"
@@ -586,7 +640,7 @@ def build(cfg):
                 "-map",
                 "0:a",
                 "-af",
-                "highpass=f=100,afftdn=nf=-28,speechnorm=e=6.25:r=0.00015",
+                af,
                 "-c:v",
                 "libx264",
                 "-preset",
@@ -635,19 +689,24 @@ def build(cfg):
     print(f"  cues 對上 {len(cues_new)}/{len(caps)}", flush=True)
     ass = os.path.join(tmp, "sub.ass")
     build_ass(cues_new, ass)
-    bed = bgm_bed(total / speed)
     out_mp4 = os.path.join(out_dir, f"{subject}.mp4")
+    vf = f"[0:v]setpts=PTS/{speed}[vs];[vs]subtitles={ass}[v];"
+    if cfg.get("bgm", True):
+        bed = bgm_bed(total / speed)
+        src = ["-i", joined, "-i", bed]
+        fc = vf + f"[0:a]atempo={speed}[va];[va][1:a]amix=inputs=2:duration=first[a]"
+    else:
+        src = ["-i", joined]
+        fc = vf + f"[0:a]atempo={speed}[a]"
     subprocess.run(
         [
             "ffmpeg",
             "-y",
-            "-i",
-            joined,
-            "-i",
-            bed,
+        ]
+        + src
+        + [
             "-filter_complex",
-            f"[0:v]setpts=PTS/{speed}[vs];[vs]subtitles={ass}[v];"
-            f"[0:a]atempo={speed}[va];[va][1:a]amix=inputs=2:duration=first[a]",
+            fc,
             "-map",
             "[v]",
             "-map",
