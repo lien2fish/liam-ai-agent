@@ -1,0 +1,33 @@
+name: 扶輪社友生日提醒
+
+on:
+  schedule:
+    - cron: '10 0 * * *'    # UTC 00:10 = 台灣 08:10
+  workflow_dispatch:
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Checkout private workspace
+        uses: actions/checkout@v4
+        with:
+          repository: lien2fish/liam-workspace
+          token: ${{ secrets.WORKSPACE_PAT }}
+          path: workspace
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run rotary birthday reminder
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          TRIGGER_DAYS: '14'
+        run: python rotary/birthday_reminder.py
