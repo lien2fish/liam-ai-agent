@@ -163,6 +163,12 @@ JOBS = [
         "六邊形牌_理事黃秀敏_邊長8.5cm_向量",
     ),
     (
+        "六邊形牌_理事許博智_邊長8.5cm_CMYK.tiff",
+        "理事",
+        "許博智",
+        "六邊形牌_理事許博智_邊長8.5cm_向量",
+    ),
+    (
         "六邊形牌_榮譽顧問張煥章_邊長8.5cm_雙板.tiff",
         "榮譽顧問",
         "張煥章",
@@ -434,9 +440,11 @@ def process(job):
     return (ob, "hex" if hexmode else "text", f"{W}x{H}", f"lines={len(bd)}")
 
 
+FILTER = sys.argv[4] if len(sys.argv) > 4 else None  # 只跑檔名含此字串的 job
 ok = 0
 err = []
-for j in JOBS:
+jobs = [j for j in JOBS if not FILTER or FILTER in j[0]]
+for j in jobs:
     try:
         r = process(j)
         ok += 1
@@ -444,4 +452,4 @@ for j in JOBS:
     except Exception as e:
         err.append((j[0], str(e)))
         print("ERR ", j[0], e)
-print(f"\n完成 {ok}/{len(JOBS)}  失敗 {len(err)}")
+print(f"\n完成 {ok}/{len(jobs)}  失敗 {len(err)}")
