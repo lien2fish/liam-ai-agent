@@ -9,8 +9,9 @@
  ],
  "subject": "崁仔頂魚市",
  "speed": 1.0,
- "bgm": false,
- "af": "highpass=f=80",
+ "bgm": true,
+ "bgm_vol": 0.38,
+ "mute_source": true,
  "cover_intro": 1.0,
  "out_dir": "~/Desktop",
  "segments": [
