@@ -31,6 +31,12 @@ config 支援單/多來源：
   單來源 "video": 路徑，segments [[s,e]]、cues [[s,e,文字,[高光詞]]]
   多來源 "videos": [路徑...]，segments [[vi,s,e]]、cues [[vi,s,e,文字,[高光詞]]]
 
+聲畫分離(配音蓋圖)：segments 元素改寫成 dict，借用別段的對白配這段畫面
+  {"v": [2, 12.0, 20.0], "a": [0, 88.5, 96.0]}
+  v=畫面來源/區間，a=聲音來源/區間(省略即畫聲同源)。以畫面長度為準，
+  聲音較短補靜音、較長裁掉；該段原始現場音完全丟棄。
+  字幕 cue 用「對白來源」的時間碼寫（a 的那支、那段時間）。
+
 相依：ffmpeg（完整版）、openai-whisper、numpy、Pillow。字型 STHeiti（mac 內建）。
 """
 import sys, os, re, json, subprocess, wave, tempfile
@@ -485,6 +491,9 @@ HL_RED = (228, 46, 38)
 def draw_cover_title(img, main, sub="", line2=""):
     from PIL import Image, ImageDraw, ImageFont
 
+    # STHeiti 沒有這些字形，會畫成豆腐方框
+    fix = lambda t: t.replace("・", "·").replace("／", "/")
+    main, sub, line2 = fix(main), fix(sub), fix(line2)
     d = ImageDraw.Draw(img)
     W, H = img.size
 
@@ -607,7 +616,17 @@ def build(cfg):
     speed = cfg.get("speed", 1.3)
     out_dir = os.path.expanduser(cfg.get("out_dir", "~/Desktop"))
     os.makedirs(out_dir, exist_ok=True)
-    segs = cfg["segments"] if multi else [[0] + list(x) for x in cfg["segments"]]
+    # segments 元素：[vi,s,e] 畫聲同源；{"v":[vi,s,e],"a":[vi,s,e]} 聲畫分離(借用別段對白)
+    segs = []
+    for x in cfg["segments"]:
+        if isinstance(x, dict):
+            v, a = list(x["v"]), (list(x["a"]) if x.get("a") else None)
+        else:
+            v, a = list(x), None
+        if not multi:
+            v = [0] + v
+            a = [0] + a if a else None
+        segs.append((v, a))
     caps = cfg["cues"] if multi else [[0] + list(x) for x in cfg["cues"]]
     # 純環境音素材(留白給旁白)可設 af 關掉動態壓縮、bgm=false 不混配樂
     af = cfg.get("af", "highpass=f=100,afftdn=nf=-28,speechnorm=e=6.25:r=0.00015")
@@ -619,28 +638,34 @@ def build(cfg):
     parts = []
     offs = []
     cum = 0.0
-    for i, (vi, s, e) in enumerate(segs):
-        offs.append((cum, vi, s, e))
+    for i, ((vi, s, e), a) in enumerate(segs):
+        offs.append((cum, vi, s, e, a))
         cum += e - s
         p = os.path.join(tmp, f"seg{i}.mp4")
+        if a:  # 借用別段對白：畫面長度為準，聲音短則補靜音、長則裁掉
+            avi, as_, ae = a
+            src = [
+                "-ss", str(s), "-t", str(e - s), "-i", videos[vi],
+                "-ss", str(as_), "-t", str(ae - as_), "-i", videos[avi],
+            ]  # fmt: skip
+            amap = [
+                "-filter_complex", f"{LB};[1:a]{af},apad[a]",
+                "-map", "[v]", "-map", "[a]", "-t", str(e - s),
+            ]  # fmt: skip
+        else:
+            src = ["-ss", str(s), "-t", str(e - s), "-i", videos[vi]]
+            amap = [
+                "-filter_complex", LB,
+                "-map", "[v]", "-map", "0:a", "-af", af,
+            ]  # fmt: skip
         subprocess.run(
             [
                 "ffmpeg",
                 "-y",
-                "-ss",
-                str(s),
-                "-t",
-                str(e - s),
-                "-i",
-                videos[vi],
-                "-filter_complex",
-                LB,
-                "-map",
-                "[v]",
-                "-map",
-                "0:a",
-                "-af",
-                af,
+            ]
+            + src
+            + amap
+            + [
                 "-c:v",
                 "libx264",
                 "-preset",
@@ -664,7 +689,8 @@ def build(cfg):
                 f"seg{i} 產出失敗（來源 {videos[vi]} 可能被 iCloud 回收，先 brctl download）"
             )
         parts.append(p)
-        print(f"  seg {i+1}/{len(segs)} 完成 ({e-s:.1f}s)", flush=True)
+        tag = f"，聲音借自 {os.path.basename(videos[a[0]])} {a[1]}-{a[2]}s" if a else ""
+        print(f"  seg {i+1}/{len(segs)} 完成 ({e-s:.1f}s{tag})", flush=True)
     cc = os.path.join(tmp, "cc.txt")
     open(cc, "w").write("\n".join(f"file '{p}'" for p in parts))
     joined = os.path.join(tmp, "joined.mp4")
@@ -676,8 +702,13 @@ def build(cfg):
 
     # cues → 新時間軸(concat) → 再 /speed
     def newt(vi, t):
-        for cs, svi, s, e in offs:
-            if svi == vi and s - 0.05 <= t <= e + 0.05:
+        # 借音段優先：字幕跟著對白走，用對白來源的時間碼寫 cue
+        for cs, svi, s, e, a in offs:
+            if a and a[0] == vi and a[1] - 0.05 <= t <= a[2] + 0.05:
+                return (cs + min(max(t - a[1], 0.0), e - s)) / speed
+        for cs, svi, s, e, a in offs:
+            # 借音段的畫面時間碼不拿來對字幕（原場音已丟棄，對到會是幽靈字幕）
+            if not a and svi == vi and s - 0.05 <= t <= e + 0.05:
                 return (cs + min(max(t - s, 0.0), e - s)) / speed
         return None
 
@@ -691,13 +722,19 @@ def build(cfg):
     build_ass(cues_new, ass)
     out_mp4 = os.path.join(out_dir, f"{subject}.mp4")
     vf = f"[0:v]setpts=PTS/{speed}[vs];[vs]subtitles={ass}[v];"
-    if cfg.get("bgm", True):
-        bed = bgm_bed(total / speed)
+    use_bgm = cfg.get("bgm", True)
+    mute = cfg.get("mute_source", False)  # 去掉原始收音，只留 BGM
+    if use_bgm:
+        bed = bgm_bed(total / speed, cfg.get("bgm_vol", 0.15))
         src = ["-i", joined, "-i", bed]
-        fc = vf + f"[0:a]atempo={speed}[va];[va][1:a]amix=inputs=2:duration=first[a]"
+        fc = vf + (
+            "[1:a]anull[a]"
+            if mute
+            else f"[0:a]atempo={speed}[va];[va][1:a]amix=inputs=2:duration=first[a]"
+        )
     else:
         src = ["-i", joined]
-        fc = vf + f"[0:a]atempo={speed}[a]"
+        fc = vf + (f"[0:a]atempo={speed}[a]" if not mute else "anullsrc[a]")
     subprocess.run(
         [
             "ffmpeg",
