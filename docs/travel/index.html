@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <meta name="theme-color" content="#e8804a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>親子旅遊規劃</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="map"></div>
+
+  <main id="panel">
+    <nav id="tabbar">
+      <button class="tab active" data-tab="trip">🗺️ 行程</button>
+      <button class="tab" data-tab="budget">💰 花費</button>
+      <button class="tab" data-tab="settings">⚙️ 設定</button>
+    </nav>
+
+    <!-- 行程 -->
+    <section class="view active" id="view-trip">
+      <div class="row">
+        <select id="tripSelect" title="選擇行程"></select>
+        <button id="newTripBtn" class="mini">＋新行程</button>
+      </div>
+      <div id="dayTabs" class="daytabs"></div>
+      <div class="searchwrap">
+        <input id="placeSearch" type="text" placeholder="🔍 搜尋景點 / 住宿 / 餐廳…" autocomplete="off" />
+      </div>
+      <div class="catpick" id="catPick">
+        <span>加入為：</span>
+        <button class="chip active" data-cat="景點">景點</button>
+        <button class="chip" data-cat="住宿">住宿</button>
+        <button class="chip" data-cat="餐飲">餐飲</button>
+        <button class="chip" data-cat="交通">交通</button>
+        <button class="chip" data-cat="其他">其他</button>
+      </div>
+      <ul id="stopList" class="stoplist"></ul>
+      <p id="dayTotals" class="daytotals"></p>
+    </section>
+
+    <!-- 花費 -->
+    <section class="view" id="view-budget">
+      <div class="row">
+        <label>總預算　<input id="budgetInput" type="number" inputmode="numeric" placeholder="例：15000" /> 元</label>
+      </div>
+      <div id="budgetSummary" class="budget-summary"></div>
+      <h3>各類別</h3>
+      <ul id="catBreakdown" class="breakdown"></ul>
+      <h3>逐日花費</h3>
+      <ul id="dayBreakdown" class="breakdown"></ul>
+    </section>
+
+    <!-- 設定 -->
+    <section class="view" id="view-settings">
+      <div class="card">
+        <h3>Google Maps 金鑰</h3>
+        <p class="hint">貼上你的 Google Maps API 金鑰。金鑰只存這支手機、不會上傳。</p>
+        <input id="keyInput" type="text" placeholder="AIza…" autocomplete="off" />
+        <button id="saveKeyBtn" class="primary">儲存並載入地圖</button>
+        <details class="howto">
+          <summary>如何取得金鑰？（一次性）</summary>
+          <ol>
+            <li>到 Google Cloud Console 建立/選一個專案並開啟計費（有每月 US$200 免費額度，家用幾乎不收費）。</li>
+            <li>啟用三支 API：<b>Maps JavaScript API</b>、<b>Places API</b>、<b>Directions API</b>。</li>
+            <li>建立「API 金鑰」，應用程式限制設 <b>HTTP 參照網址</b>：<code>https://lien2fish.github.io/*</code></li>
+            <li>把金鑰貼到上面，按儲存。</li>
+          </ol>
+        </details>
+      </div>
+
+      <div class="card">
+        <h3>交通方式</h3>
+        <div class="catpick">
+          <button class="chip mode active" data-mode="DRIVING">🚗 開車</button>
+          <button class="chip mode" data-mode="TRANSIT">🚆 大眾運輸</button>
+          <button class="chip mode" data-mode="WALKING">🚶 步行</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>行程管理</h3>
+        <div class="row wrap">
+          <button id="renameTripBtn" class="mini">✏️ 改名</button>
+          <button id="setDaysBtn" class="mini">📅 天數</button>
+          <button id="exportBtn" class="mini">⬆️ 匯出備份</button>
+          <button id="importBtn" class="mini">⬇️ 匯入</button>
+          <button id="deleteTripBtn" class="mini danger">🗑️ 刪除此行程</button>
+        </div>
+        <input id="importFile" type="file" accept="application/json" hidden />
+      </div>
+      <p class="ver">親子旅遊規劃 · 資料存於本機</p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
