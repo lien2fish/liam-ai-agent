@@ -1,0 +1,17 @@
+{
+  "name": "親子旅遊規劃",
+  "short_name": "旅遊規劃",
+  "description": "規劃親子旅遊：景點、住宿、交通時間、花費與行程路線",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fdf3e3",
+  "theme_color": "#e8804a",
+  "lang": "zh-TW",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
