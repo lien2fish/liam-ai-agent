@@ -1,12 +1,14 @@
 /* 親子旅遊規劃 PWA — Service Worker
    App 外殼 cache-first 供離線；Google 地圖/API 一律走網路（不快取）。 */
-const CACHE = "trip-planner-v2";
+const CACHE = "trip-planner-v4";
 const SHELL = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
   "./manifest.webmanifest",
+  "./vendor/leaflet/leaflet.js",
+  "./vendor/leaflet/leaflet.css",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
 ];
