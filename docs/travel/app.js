@@ -586,11 +586,28 @@ function apiKey() {
 const PLAN_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["title", "summary", "notes", "days"],
+  required: ["title", "summary", "notes", "accommodation", "days"],
   properties: {
     title: { type: "string", description: "行程標題，簡短有畫面感" },
     summary: { type: "string", description: "這趟行程的設計邏輯：為什麼這樣排、動線與體力如何安排，一段話" },
     notes: { type: "string", description: "整趟的注意事項與提醒（帶小孩要準備什麼、時段陷阱等）" },
+    accommodation: {
+      type: "array",
+      description: "建議住宿；同一區連住就合併成一筆，換區才多一筆",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["nights", "nights_count", "area", "reason", "price_range", "cost_per_night"],
+        properties: {
+          nights: { type: "string", description: "住哪幾晚，例：第1-2晚" },
+          nights_count: { type: "integer", description: "這筆住幾晚（數字），用於花費試算" },
+          area: { type: "string", description: "建議住宿區域，只寫地圖查得到的乾淨地名（例：礁溪、羅東、花蓮市），不加括號補述" },
+          reason: { type: "string", description: "為什麼住這區：動線、親子友善設施、生活機能" },
+          price_range: { type: "string", description: "每晚價位帶，例：$3,000-4,500" },
+          cost_per_night: { type: "integer", description: "每晚每間房概估（新台幣），用於花費試算" },
+        },
+      },
+    },
     days: {
       type: "array",
       items: {
@@ -650,6 +667,14 @@ ${extra}
 - 11:30-13:00、17:30-19:00 前後必須有餐飲安排
 - 避開常見公休（多數館所週一休）
 
+【住宿建議】
+- 只推薦**住宿區域**，**絕對不要指定飯店或民宿名稱**——訂不到房會造成實質困擾
+- area 只寫**地圖查得到的乾淨地名**（如「礁溪」「羅東」「花蓮市」），**不要加括號或「周邊」「一帶」等補述**，細節寫在 reason
+- reason 說明選這區的理由：離隔天行程近、有親子設施、生活機能好、停車方便等
+- 同一區連住就合併成一筆；只有換區才多一筆
+- ${c.days > 1 ? `這趟 ${c.days} 天，需要 ${c.days - 1} 晚住宿` : "當日來回，accommodation 回傳空陣列"}
+- cost_per_night 是**每晚每間房**的概估，不是每人
+
 【地點名稱｜最重要】
 - name 必須是地圖查得到的**單一具體地點正式全名**，之後要拿去查座標
 - 嚴禁描述性寫法：不可出現「在地」「附近」「或」「等」「（如…）」，也不可只寫「海鮮餐廳」「素食小館」這種類別
@@ -703,8 +728,11 @@ function renderPlan(plan) {
   const days = plan.days || [];
   if (!days.length) return (box.innerHTML = `<p class="empty">沒有產生行程，換個條件試試</p>`);
   const spots = days.reduce((a, d) => a + (d.spots || []).length, 0);
-  const cost = days.reduce((a, d) => a + (d.spots || []).reduce((x, s) => x + (+s.cost_estimate || 0), 0), 0);
+  const perHead = days.reduce((a, d) => a + (d.spots || []).reduce((x, s) => x + (+s.cost_estimate || 0), 0), 0);
   const heads = (lastCond ? lastCond.adults + lastCond.kids.length : 1) || 1;
+  const stays = plan.accommodation || [];
+  const stayCost = stays.reduce((a, s) => a + (+s.cost_per_night || 0) * (+s.nights_count || 0), 0);
+  const total = perHead * heads + stayCost;
 
   box.innerHTML = `
     <div class="plan-card">
@@ -713,8 +741,17 @@ function renderPlan(plan) {
       <div class="plan-meta">
         <span>📅 ${days.length} 天</span>
         <span>📍 ${spots} 個點</span>
-        <span>💰 每人估 <b>$${cost.toLocaleString()}</b>${heads > 1 ? `（全家約 $${(cost * heads).toLocaleString()}）` : ""}</span>
+        <span>💰 全家約 <b>$${total.toLocaleString()}</b></span>
       </div>
+      <div class="plan-costbreak">
+        景點餐飲 $${(perHead * heads).toLocaleString()}（每人 $${perHead.toLocaleString()} × ${heads} 人）${stayCost ? ` ＋ 住宿 $${stayCost.toLocaleString()}` : ""}
+      </div>
+      ${stays.length ? `<ul class="plan-stays">${stays.map((s) => `
+        <li>
+          <div class="s-head">🏨 ${escapeHtml(s.nights || "")} · ${escapeHtml(s.area || "")}</div>
+          <div class="s-price">${escapeHtml(s.price_range || "")}／晚　共 ${s.nights_count || 0} 晚　約 $${((+s.cost_per_night || 0) * (+s.nights_count || 0)).toLocaleString()}</div>
+          <div class="s-why">${escapeHtml(s.reason || "")}</div>
+        </li>`).join("")}</ul>` : ""}
       <ul class="plan-days">
         ${days.map((d) => `
           <li>
@@ -732,6 +769,7 @@ function renderPlan(plan) {
 
 async function adoptPlan(plan) {
   const region = (lastCond && lastCond.region) || "旅程";
+  const heads = (lastCond ? lastCond.adults + lastCond.kids.length : 1) || 1;
   const t = newTrip(`${region}·${plan.title || ""}`.slice(0, 28));
   t.days = (plan.days || []).length || 1;
   t.budget = (lastCond && lastCond.budget) || null;
@@ -743,7 +781,7 @@ async function adoptPlan(plan) {
         address: [s.age_range, s.opening_hours].filter(Boolean).join(" · "),
         lat: null, lng: null,
         category: CATS.includes(s.category) ? s.category : "景點",
-        cost: +s.cost_estimate || 0,
+        cost: (+s.cost_estimate || 0) * heads, // schema 給每人，行程一律存全家總額
         note: s.reason || "",
         indoor: !!s.indoor,
         minutes: +s.duration_minutes || 0,
@@ -751,9 +789,28 @@ async function adoptPlan(plan) {
       })
     )
   );
+  // 住宿：一筆放在該住宿區間的第一天末尾，費用是整段總額（每晚每間房 × 晚數）
+  let night = 1;
+  (plan.accommodation || []).forEach((a) => {
+    const n = +a.nights_count || 0;
+    if (!n) return;
+    t.stops.push({
+      id: uid(), day: Math.min(night, t.days), order: 99,
+      name: a.area,
+      address: [a.nights, a.price_range ? a.price_range + "／晚" : ""].filter(Boolean).join(" · "),
+      lat: null, lng: null,
+      category: "住宿",
+      cost: (+a.cost_per_night || 0) * n,
+      note: a.reason || "",
+      minutes: 0,
+      _q: `${a.area}, ${region}`,
+    });
+    night += n;
+  });
   state.trips.push(t);
   state.activeTripId = t.id;
   state.activeDay = 1;
+  reindex(); // 住宿用 order:99 插在當天最後，設為作用中行程後才能正確重排
   save();
   document.querySelector('.tab[data-tab="trip"]').click();
   renderAll();
@@ -803,7 +860,16 @@ function mockPlan(cond) {
     }
     days.push({ day: d, theme: `${region}示範行程第 ${d} 天`, rainy_alternative: "示範資料", spots });
   }
-  return { title: `${region}示範行程`, summary: "這是未設定金鑰時的內建示範，不是 AI 規劃結果。", notes: "到設定頁貼上 API 金鑰即可使用真正的 AI 規劃。", days };
+  const nights = Math.max(0, days.length - 1);
+  return {
+    title: `${region}示範行程`,
+    summary: "這是未設定金鑰時的內建示範，不是 AI 規劃結果。",
+    notes: "到設定頁貼上 API 金鑰即可使用真正的 AI 規劃。",
+    accommodation: nights
+      ? [{ nights: `第1-${nights}晚`, nights_count: nights, area: `${region}市區`, reason: "示範資料", price_range: "$3,000-4,000", cost_per_night: 3500 }]
+      : [],
+    days,
+  };
 }
 
 /* ---------- 金鑰設定 ---------- */
