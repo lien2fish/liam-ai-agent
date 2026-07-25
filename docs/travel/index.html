@@ -127,7 +127,14 @@
           <button id="clearKeyBtn" class="mini danger">🗑️ 清除</button>
         </div>
         <p class="hint" id="keyState"></p>
-        <p class="hint">Anthropic API 金鑰，只存在這支手機的瀏覽器裡，不會上傳。未填則「智慧規劃」只跑內建示範方案。金鑰申請：console.anthropic.com</p>
+        <p class="hint">支援 <b>Claude</b>（<code>sk-ant-…</code>，console.anthropic.com）與 <b>ChatGPT</b>（<code>sk-…</code>，platform.openai.com），貼上後自動辨識。金鑰只存在這支手機裡、不會上傳；未填則只跑內建示範方案。</p>
+        <details class="howto">
+          <summary>進階：指定模型</summary>
+          <div class="field"><input id="modelInput" type="text" placeholder="留空＝各家預設（Claude: claude-haiku-4-5／ChatGPT: gpt-4o-mini）" /></div>
+          <button id="saveModelBtn" class="mini">儲存模型</button>
+          <p class="hint" id="modelState"></p>
+        </details>
+        <p class="hint">⚠️ 這裡要的是 <b>API 金鑰</b>，跟 ChatGPT Plus／Claude Pro 的月訂閱是不同東西——訂閱不能拿來產生金鑰，需另外開 API 帳號並儲值。</p>
       </div>
 
       <div class="card">
