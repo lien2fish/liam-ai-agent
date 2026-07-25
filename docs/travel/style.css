@@ -109,6 +109,13 @@ button { font-family: inherit; cursor: pointer; }
 .howto code { background: #f3ead8; padding: 1px 5px; border-radius: 5px; }
 .ver { text-align: center; color: var(--muted); font-size: 12px; }
 
+/* 定位失敗的行程點：保留在清單、標示可手動定位 */
+.stop.unlocated { border-left: 3px solid #d9a441; }
+.stop-warn { font-size: 12px; color: #9a6b12; background: #fdf4e0; border-radius: 8px; padding: 6px 8px; margin-top: 6px; }
+.stop-note { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+.iconbtn.locate { color: #d9a441; }
+.d-rainy { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
 /* 規劃表單 */
 .lead { color: var(--muted); font-size: 14px; margin: 2px 0 14px; }
 .lead b { color: var(--accent); }
