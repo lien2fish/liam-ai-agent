@@ -888,7 +888,7 @@ Subscribe and never miss a new Why. 🔔
 ### 模組 `youtube_auto/`
 | 檔案 | 職責 |
 |------|------|
-| `generate_script.py` | Claude Sonnet 4.6 生英文腳本 JSON（title/narration/scenes/description/tags/topic），主題去重 `recent_topics.json` |
+| `generate_script.py` | Claude Sonnet 4.6 生英文腳本 JSON（title/narration/scenes/description/tags/topic），主題去重 `recent_topics.json`。**2026-07-25 加 Gemini fallback**（Claude 重試3次仍失敗→降級 2.5-flash→2.0-flash→2.0-flash-lite），避免 API 額度耗盡/當機時整支影片開天窗；workflow 需帶 `GEMINI_KEY` |
 | `build_video.py` | **Pollinations.ai**(免費免金鑰)生10-14張電影感插圖 ＋ **edge-tts**英文配音 ＋ ffmpeg Ken Burns ＋ 燒錄字幕 → 1080×1920 MP4 |
 | `upload.py` | YouTube Data API v3 resumable 上傳（OAuth refresh token，純 urllib） |
 | `make_and_upload.py` | 每日進入點：生腳本→產影片→上傳→記錄去重 |
