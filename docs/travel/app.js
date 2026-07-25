@@ -569,9 +569,9 @@ $("genBtn").onclick = async () => {
   lastCond = cond;
   const box = $("planResults"), btn = $("genBtn");
   btn.disabled = true;
-  box.innerHTML = `<div class="gen-loading"><div class="spin"></div><p>AI 規劃中… 約 20-30 秒，請勿關閉</p></div>`;
+  box.innerHTML = `<div class="gen-loading"><div class="spin"></div><p>AI 規劃兩種方案中… 約 30-50 秒，請勿關閉</p></div>`;
   try {
-    renderPlan(await generatePlan(cond));
+    renderPlans(await generatePlans(cond));
   } catch (e) {
     box.innerHTML = `<p class="empty">生成失敗：${escapeHtml(e.message || "請稍後再試")}</p>`;
   } finally {
@@ -586,9 +586,18 @@ function apiKey() {
 const PLAN_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["title", "summary", "notes", "accommodation", "days"],
+  required: ["plans"],
+  properties: {
+    plans: {
+      type: "array",
+      description: "兩種風格明顯不同的行程方案",
+      items: {
+  type: "object",
+  additionalProperties: false,
+  required: ["title", "theme", "summary", "notes", "accommodation", "days"],
   properties: {
     title: { type: "string", description: "行程標題，簡短有畫面感" },
+    theme: { type: "string", description: "這個方案的風格標籤，4-8 字，例：室內文化路線、戶外放電路線" },
     summary: { type: "string", description: "這趟行程的設計邏輯：為什麼這樣排、動線與體力如何安排，一段話" },
     notes: { type: "string", description: "整趟的注意事項與提醒（帶小孩要準備什麼、時段陷阱等）" },
     accommodation: {
@@ -640,6 +649,9 @@ const PLAN_SCHEMA = {
       },
     },
   },
+      },
+    },
+  },
 };
 
 function planPrompt(c) {
@@ -648,7 +660,7 @@ function planPrompt(c) {
     c.wants.length ? `偏好類型：${c.wants.join("、")}` : "",
     c.pace ? `步調：${c.pace}` : "",
   ].filter(Boolean).join("\n");
-  return `你是熟悉台灣各地親子旅遊的規劃專家。請為以下家庭規劃一趟行程。
+  return `你是熟悉台灣各地親子旅遊的規劃專家。請為以下家庭規劃**兩種風格明顯不同**的行程方案。
 
 目的地：${c.region}
 天數：${c.days} 天
@@ -659,14 +671,21 @@ function planPrompt(c) {
 特殊需求：${c.needs || "無"}
 ${extra}
 
-【硬條件】
+【兩個方案的差異】
+- 必須是**真的不同的玩法**，不是同一份行程換順序或換餐廳
+- 兩案的景點重疊不得超過一個；住宿區域也盡量不同
+- 用 theme 標出風格差異，例如：室內文化路線 vs 戶外放電路線、經典必玩 vs 在地深度、
+  緊湊多點 vs 悠閒少點。依這個家庭的條件選兩個最合適的方向
+- summary 要讓人一眼看出「什麼情況下該選這個方案」
+
+【硬條件｜兩個方案都要遵守】
 - 依孩子年齡與體力篩選，每個景點都要說明為什麼適合
 - 同一天景點之間的車程總和不得超過 ${c.maxDrive} 分鐘
 - 交通方式為 ${c.transport}，據此決定景點之間的可行性
 - 每天至少安排一個室內景點（indoor=true）作為雨天備案
 - 11:30-13:00、17:30-19:00 前後必須有餐飲安排
 - 避開常見公休（多數館所週一休）
-- **整趟行程中同一個地點只能出現一次**：不同天不可重複排同一個景點或餐廳，
+- **同一個方案內，同一個地點只能出現一次**：不同天不可重複排同一個景點或餐廳，
   也不要換個寫法重排同一個地方（例如「羅東夜市」與「羅東觀光夜市」算同一個）。
   ${c.days} 天就要有 ${c.days} 天份的不同內容，想不出來寧可該天少排一個點
 
@@ -712,17 +731,20 @@ function findDupes(plan) {
   return [...new Set(dupes)];
 }
 
-async function generatePlan(cond) {
-  const key = apiKey();
-  if (!key) { await sleep(900); return mockPlan(cond); } // 未設金鑰＝示範行程
+const allDupes = (plans) => [...new Set(plans.flatMap(findDupes))];
 
-  let plan = await callPlan(cond, key);
+async function generatePlans(cond) {
+  const key = apiKey();
+  if (!key) { await sleep(900); return mockPlans(cond); } // 未設金鑰＝示範行程
+
+  let plans = (await callPlan(cond, key)).plans || [];
   // Haiku 偶爾會跨天重排同一個地點，重生一次通常就乾淨了
-  if (findDupes(plan).length) {
-    const retry = await callPlan(cond, key, findDupes(plan));
-    if (findDupes(retry).length <= findDupes(plan).length) plan = retry;
+  const bad = allDupes(plans);
+  if (bad.length) {
+    const retry = (await callPlan(cond, key, bad)).plans || [];
+    if (retry.length && allDupes(retry).length <= bad.length) plans = retry;
   }
-  return plan;
+  return plans;
 }
 
 async function callPlan(cond, key, avoidDupes) {
@@ -739,7 +761,7 @@ async function callPlan(cond, key, avoidDupes) {
     },
     body: JSON.stringify({
       model: CLAUDE_MODEL,
-      max_tokens: 8000,
+      max_tokens: 16000, // 兩個方案，長天數會用到一萬以上
       output_config: { format: { type: "json_schema", schema: PLAN_SCHEMA } }, // Haiku 不支援 effort，加了會 400
       messages: [{ role: "user", content: planPrompt(cond) + extra }],
     }),
@@ -760,10 +782,19 @@ async function callPlan(cond, key, avoidDupes) {
   return JSON.parse(text);
 }
 
-function renderPlan(plan) {
+function renderPlans(plans) {
   const box = $("planResults");
+  if (!plans.length) return (box.innerHTML = `<p class="empty">沒有產生行程，換個條件試試</p>`);
+  box.innerHTML =
+    `<h3>為你規劃了 ${plans.length} 種方案</h3>` + plans.map(planCard).join("") +
+    `<p class="hint">營業時間與費用為 AI 概估，出發前請向店家確認。</p>`;
+  box.querySelectorAll(".plan-adopt").forEach((b) =>
+    (b.onclick = () => adoptPlan(plans[+b.dataset.pi]))
+  );
+}
+
+function planCard(plan, pi) {
   const days = plan.days || [];
-  if (!days.length) return (box.innerHTML = `<p class="empty">沒有產生行程，換個條件試試</p>`);
   const spots = days.reduce((a, d) => a + (d.spots || []).length, 0);
   const perHead = days.reduce((a, d) => a + (d.spots || []).reduce((x, s) => x + (+s.cost_estimate || 0), 0), 0);
   const heads = (lastCond ? lastCond.adults + lastCond.kids.length : 1) || 1;
@@ -772,9 +803,9 @@ function renderPlan(plan) {
   const total = perHead * heads + stayCost;
   const dupes = findDupes(plan);
 
-  box.innerHTML = `
+  return `
     <div class="plan-card">
-      <h3>${escapeHtml(plan.title || "行程")}</h3>
+      <h3>${escapeHtml(plan.title || "行程")} <span class="plan-theme">${escapeHtml(plan.theme || "")}</span></h3>
       <p class="plan-sum">${escapeHtml(plan.summary || "")}</p>
       <div class="plan-meta">
         <span>📅 ${days.length} 天</span>
@@ -800,10 +831,8 @@ function renderPlan(plan) {
       </ul>
       ${plan.notes ? `<div class="plan-acc">📝 ${escapeHtml(plan.notes)}</div>` : ""}
       ${dupes.length ? `<div class="plan-warn">⚠️ 這份行程把「${escapeHtml(dupes.join("、"))}」重複排在不同天，可再按一次生成換一份。</div>` : ""}
-      <button class="primary plan-adopt">採用這份行程 →</button>
-      <p class="hint">營業時間與費用為 AI 概估，出發前請向店家確認。</p>
+      <button class="primary plan-adopt" data-pi="${pi}">採用這個方案 →</button>
     </div>`;
-  box.querySelector(".plan-adopt").onclick = () => adoptPlan(plan);
 }
 
 async function adoptPlan(plan) {
@@ -875,7 +904,7 @@ async function adoptPlan(plan) {
 }
 
 /* 內建示範行程（未設金鑰時用）*/
-function mockPlan(cond) {
+function mockPlans(cond) {
   const region = cond.region || "台灣";
   const presets = {
     宜蘭: ["蘭陽博物館", "國立傳統藝術中心", "羅東林業文化園區", "冬山河親水公園"],
@@ -885,30 +914,33 @@ function mockPlan(cond) {
   };
   const key = Object.keys(presets).find((k) => region.includes(k));
   const pool = key ? presets[key] : [`${region}火車站`, `${region}文化中心`, `${region}公園`, `${region}老街`];
-  const days = [];
-  let idx = 0;
-  for (let d = 1; d <= Math.max(1, cond.days || 2); d++) {
-    const spots = [];
-    for (let k = 0; k < 3; k++, idx++) {
-      spots.push({
-        name: pool[idx % pool.length],
-        reason: "示範資料：設定 API 金鑰後才會產生真正依家庭條件規劃的理由",
-        age_range: "全年齡", indoor: k === 0, duration_minutes: 90,
-        category: "景點", opening_hours: "請自行確認", cost_estimate: 100 * (k + 1),
-      });
+  const build = (offset, theme) => {
+    const days = [];
+    let idx = offset;
+    for (let d = 1; d <= Math.max(1, cond.days || 2); d++) {
+      const spots = [];
+      for (let k = 0; k < 3; k++, idx++) {
+        spots.push({
+          name: pool[idx % pool.length],
+          reason: "示範資料：設定 API 金鑰後才會產生真正依家庭條件規劃的理由",
+          age_range: "全年齡", indoor: k === 0, duration_minutes: 90,
+          category: "景點", opening_hours: "請自行確認", cost_estimate: 100 * (k + 1),
+        });
+      }
+      days.push({ day: d, theme: `示範行程第 ${d} 天`, rainy_alternative: "示範資料", spots });
     }
-    days.push({ day: d, theme: `${region}示範行程第 ${d} 天`, rainy_alternative: "示範資料", spots });
-  }
-  const nights = Math.max(0, days.length - 1);
-  return {
-    title: `${region}示範行程`,
-    summary: "這是未設定金鑰時的內建示範，不是 AI 規劃結果。",
-    notes: "到設定頁貼上 API 金鑰即可使用真正的 AI 規劃。",
-    accommodation: nights
-      ? [{ nights: `第1-${nights}晚`, nights_count: nights, area: `${region}市區`, reason: "示範資料", price_range: "$3,000-4,000", cost_per_night: 3500 }]
-      : [],
-    days,
+    const nights = Math.max(0, days.length - 1);
+    return {
+      title: `${region}${theme}`, theme,
+      summary: "這是未設定金鑰時的內建示範，不是 AI 規劃結果。",
+      notes: "到設定頁貼上 API 金鑰即可使用真正的 AI 規劃。",
+      accommodation: nights
+        ? [{ nights: `第1-${nights}晚`, nights_count: nights, area: `${region}市區`, reason: "示範資料", price_range: "$3,000-4,000", cost_per_night: 3500 }]
+        : [],
+      days,
+    };
   };
+  return [build(0, "示範方案A"), build(2, "示範方案B")];
 }
 
 /* ---------- 金鑰設定 ---------- */
