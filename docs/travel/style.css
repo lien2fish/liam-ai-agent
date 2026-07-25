@@ -166,3 +166,4 @@ h3 { font-size: 15px; margin: 16px 0 8px; }
   font-size: 14px; z-index: 50; opacity: 0; transition: opacity .2s; pointer-events: none; }
 .toast.show { opacity: .95; }
 .pac-container { z-index: 99999; }
+.plan-warn { font-size: 12px; color: #9a6b12; background: #fdf4e0; border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; line-height: 1.5; }
