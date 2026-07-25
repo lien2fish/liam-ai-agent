@@ -666,6 +666,9 @@ ${extra}
 - 每天至少安排一個室內景點（indoor=true）作為雨天備案
 - 11:30-13:00、17:30-19:00 前後必須有餐飲安排
 - 避開常見公休（多數館所週一休）
+- **整趟行程中同一個地點只能出現一次**：不同天不可重複排同一個景點或餐廳，
+  也不要換個寫法重排同一個地方（例如「羅東夜市」與「羅東觀光夜市」算同一個）。
+  ${c.days} 天就要有 ${c.days} 天份的不同內容，想不出來寧可該天少排一個點
 
 【住宿建議】
 - 只推薦**住宿區域**，**絕對不要指定飯店或民宿名稱**——訂不到房會造成實質困擾
@@ -688,10 +691,44 @@ ${extra}
 - 全部用繁體中文`;
 }
 
+/* 找出跨天重複的地點；正規化後比對（去空白/全形括號補述/「觀光」等贅字） */
+function normName(s) {
+  return (s || "")
+    .replace(/[（(].*?[）)]/g, "")
+    .replace(/觀光|國立|市立|縣立/g, "")
+    .replace(/\s+/g, "")
+    .trim();
+}
+function findDupes(plan) {
+  const seen = new Map(), dupes = [];
+  (plan.days || []).forEach((d) =>
+    (d.spots || []).forEach((s) => {
+      const k = normName(s.name);
+      if (!k) return;
+      if (seen.has(k) && seen.get(k) !== d.day) dupes.push(s.name);
+      else if (!seen.has(k)) seen.set(k, d.day);
+    })
+  );
+  return [...new Set(dupes)];
+}
+
 async function generatePlan(cond) {
   const key = apiKey();
   if (!key) { await sleep(900); return mockPlan(cond); } // 未設金鑰＝示範行程
 
+  let plan = await callPlan(cond, key);
+  // Haiku 偶爾會跨天重排同一個地點，重生一次通常就乾淨了
+  if (findDupes(plan).length) {
+    const retry = await callPlan(cond, key, findDupes(plan));
+    if (findDupes(retry).length <= findDupes(plan).length) plan = retry;
+  }
+  return plan;
+}
+
+async function callPlan(cond, key, avoidDupes) {
+  const extra = avoidDupes && avoidDupes.length
+    ? `\n\n⚠️ 上一次的結果把「${avoidDupes.join("、")}」重複排在不同天，這次務必讓每個地點只出現一次。`
+    : "";
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -704,7 +741,7 @@ async function generatePlan(cond) {
       model: CLAUDE_MODEL,
       max_tokens: 8000,
       output_config: { format: { type: "json_schema", schema: PLAN_SCHEMA } }, // Haiku 不支援 effort，加了會 400
-      messages: [{ role: "user", content: planPrompt(cond) }],
+      messages: [{ role: "user", content: planPrompt(cond) + extra }],
     }),
   });
 
@@ -733,6 +770,7 @@ function renderPlan(plan) {
   const stays = plan.accommodation || [];
   const stayCost = stays.reduce((a, s) => a + (+s.cost_per_night || 0) * (+s.nights_count || 0), 0);
   const total = perHead * heads + stayCost;
+  const dupes = findDupes(plan);
 
   box.innerHTML = `
     <div class="plan-card">
@@ -761,6 +799,7 @@ function renderPlan(plan) {
           </li>`).join("")}
       </ul>
       ${plan.notes ? `<div class="plan-acc">📝 ${escapeHtml(plan.notes)}</div>` : ""}
+      ${dupes.length ? `<div class="plan-warn">⚠️ 這份行程把「${escapeHtml(dupes.join("、"))}」重複排在不同天，可再按一次生成換一份。</div>` : ""}
       <button class="primary plan-adopt">採用這份行程 →</button>
       <p class="hint">營業時間與費用為 AI 概估，出發前請向店家確認。</p>
     </div>`;
