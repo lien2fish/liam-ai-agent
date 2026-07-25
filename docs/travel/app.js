@@ -4,7 +4,7 @@
 const LS_KEY = "tripPlanner.v1";
 const CATS = ["景點", "住宿", "餐飲", "交通", "其他"];
 const KEY_LS = "anthropicKey";
-const CLAUDE_MODEL = "claude-opus-5";
+const CLAUDE_MODEL = "claude-haiku-4-5"; // 實測 Sonnet 5 貴 11 倍慢 5.7 倍，只多 14pt 定位率，不值得
 const MODE_LABEL = { driving: "🚗", walking: "🚶" };
 
 let state = load();
@@ -193,16 +193,20 @@ function renderStops() {
   el.stopList.innerHTML = stops
     .map((s, i) => {
       const opts = CATS.map((c) => `<option ${c === s.category ? "selected" : ""}>${c}</option>`).join("");
+      const unlocated = typeof s.lat !== "number";
       return `
-      <li class="stop" data-id="${s.id}">
+      <li class="stop${unlocated ? " unlocated" : ""}" data-id="${s.id}">
         <div class="stop-head">
           <div class="badge">${i + 1}</div>
-          <div class="stop-name">${escapeHtml(s.name)}<div class="stop-cat">${s.category}</div></div>
+          <div class="stop-name">${escapeHtml(s.name)}<div class="stop-cat">${s.category}${s.minutes ? " · 停留 " + s.minutes + " 分" : ""}</div></div>
+          ${unlocated ? `<button class="iconbtn locate" title="地圖上查不到，手動定位">📍</button>` : ""}
           <button class="iconbtn up" title="上移">▲</button>
           <button class="iconbtn down" title="下移">▼</button>
           <button class="iconbtn danger del" title="刪除">✕</button>
         </div>
+        ${s.note ? `<div class="stop-note">${escapeHtml(s.note)}</div>` : ""}
         ${s.address ? `<div class="stop-addr">${escapeHtml(s.address)}</div>` : ""}
+        ${unlocated ? `<div class="stop-warn">地圖上查不到這個地點，行程仍會保留。按 📍 可手動搜尋定位。</div>` : ""}
         <div class="stop-ctrls">
           <select class="cat">${opts}</select>
           <input class="cost-in" type="number" inputmode="numeric" placeholder="花費" value="${s.cost || ""}" />
@@ -217,6 +221,8 @@ function renderStops() {
     const id = li.dataset.id;
     li.querySelector(".up").onclick = () => move(id, -1);
     li.querySelector(".down").onclick = () => move(id, 1);
+    const locBtn = li.querySelector(".locate");
+    if (locBtn) locBtn.onclick = () => relocate(id);
     li.querySelector(".del").onclick = () => {
       activeTrip().stops = activeTrip().stops.filter((x) => x.id !== id);
       reindex();
@@ -339,7 +345,18 @@ function initMap() {
 }
 
 /* ---- Nominatim 地名搜尋（免金鑰） ---- */
-let searchTimer, searchBox;
+let searchTimer, searchBox, relocating = null;
+
+/* 定位失敗的點：把名稱帶進搜尋框，選中結果後更新該筆而非新增 */
+function relocate(id) {
+  const s = getStop(id);
+  if (!s) return;
+  relocating = id;
+  el.placeSearch.value = s.name;
+  el.placeSearch.focus();
+  el.placeSearch.dispatchEvent(new Event("input"));
+  toast("選一個搜尋結果來定位這個點");
+}
 function shortName(p) {
   return p.name || (p.display_name || "").split(",")[0];
 }
@@ -362,7 +379,23 @@ function setupSearch() {
         searchBox.querySelectorAll(".sr").forEach((li) =>
           (li.onclick = () => {
             const p = list[+li.dataset.i];
-            addStop({ name: shortName(p), address: p.display_name || "", lat: +p.lat, lng: +p.lon });
+            const info = { name: shortName(p), address: p.display_name || "", lat: +p.lat, lng: +p.lon };
+            if (relocating) {
+              const s = getStop(relocating);
+              if (s) {
+                s.lat = info.lat;
+                s.lng = info.lng;
+                s.address = info.address;
+                delete s.locateFail;
+                save();
+                renderStops();
+                renderMapRoute();
+                toast(`已定位「${s.name}」`);
+              }
+              relocating = null;
+            } else {
+              addStop(info);
+            }
             el.placeSearch.value = "";
             searchBox.innerHTML = "";
           })
@@ -459,14 +492,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let kids = [];
 let wants = new Set();
 let pace = "適中";
+let transport = "自駕";
 let lastCond = null;
-
-function mapCat(c) {
-  c = c || "";
-  if (/住宿|飯店|旅館|民宿|hotel/i.test(c)) return "住宿";
-  if (/美食|餐|小吃|dining|food/i.test(c)) return "餐飲";
-  return "景點";
-}
 async function nomSearch(params) {
   try {
     const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=zh-TW&${params}`);
@@ -517,15 +544,20 @@ $("wantPick").querySelectorAll(".want").forEach((c) =>
 $("pacePick").querySelectorAll(".pace").forEach((c) =>
   (c.onclick = () => { $("pacePick").querySelectorAll(".pace").forEach((x) => x.classList.remove("active")); c.classList.add("active"); pace = c.dataset.pace; })
 );
+$("transportPick").querySelectorAll(".trans").forEach((c) =>
+  (c.onclick = () => { $("transportPick").querySelectorAll(".trans").forEach((x) => x.classList.remove("active")); c.classList.add("active"); transport = c.dataset.t; })
+);
 
 function collectCond() {
   return {
-    origin: $("f_origin").value.trim(),
     region: $("f_region").value.trim(),
     adults: parseInt($("f_adults").value) || 0,
     kids: kids.map((a) => parseInt(a) || 0),
     days: parseInt($("f_days").value) || 1,
     budget: parseFloat($("f_budget").value) || null,
+    transport,
+    maxDrive: parseInt($("f_maxdrive").value) || 90,
+    needs: $("f_needs").value.trim(),
     wants: [...wants],
     pace,
   };
@@ -537,10 +569,9 @@ $("genBtn").onclick = async () => {
   lastCond = cond;
   const box = $("planResults"), btn = $("genBtn");
   btn.disabled = true;
-  box.innerHTML = `<div class="gen-loading"><div class="spin"></div><p>AI 規劃中… 約 30-60 秒，請勿關閉</p></div>`;
+  box.innerHTML = `<div class="gen-loading"><div class="spin"></div><p>AI 規劃中… 約 20-30 秒，請勿關閉</p></div>`;
   try {
-    const data = await generatePlans(cond);
-    renderPlanCards(data.plans || []);
+    renderPlan(await generatePlan(cond));
   } catch (e) {
     box.innerHTML = `<p class="empty">生成失敗：${escapeHtml(e.message || "請稍後再試")}</p>`;
   } finally {
@@ -555,54 +586,36 @@ function apiKey() {
 const PLAN_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["plans"],
+  required: ["title", "summary", "notes", "days"],
   properties: {
-    plans: {
+    title: { type: "string", description: "行程標題，簡短有畫面感" },
+    summary: { type: "string", description: "這趟行程的設計邏輯：為什麼這樣排、動線與體力如何安排，一段話" },
+    notes: { type: "string", description: "整趟的注意事項與提醒（帶小孩要準備什麼、時段陷阱等）" },
+    days: {
       type: "array",
       items: {
         type: "object",
         additionalProperties: false,
-        required: ["title", "theme", "summary", "est_total", "accommodation", "days"],
+        required: ["day", "theme", "rainy_alternative", "spots"],
         properties: {
-          title: { type: "string", description: "方案名稱，4-8 字" },
-          theme: { type: "string", description: "主題標籤，4-6 字" },
-          summary: { type: "string", description: "一句話說明這個方案適合誰" },
-          est_total: { type: "integer", description: "全程預估總花費（新台幣）" },
-          accommodation: {
-            type: "object",
-            additionalProperties: false,
-            required: ["area", "price_range", "note"],
-            properties: {
-              area: { type: "string", description: "建議住宿區域" },
-              price_range: { type: "string", description: "例：$2500-3500/晚" },
-              note: { type: "string", description: "選這區的理由" },
-            },
-          },
-          days: {
+          day: { type: "integer", description: "第幾天，從 1 開始" },
+          theme: { type: "string", description: "當日主題一句話，例：海邊放電日" },
+          rainy_alternative: { type: "string", description: "當日下雨時的室內替代方案（具體地點或做法）" },
+          spots: {
             type: "array",
             items: {
               type: "object",
               additionalProperties: false,
-              required: ["day", "area", "items"],
+              required: ["name", "reason", "age_range", "indoor", "duration_minutes", "category", "opening_hours", "cost_estimate"],
               properties: {
-                day: { type: "integer" },
-                area: { type: "string", description: "當天主要活動區域" },
-                items: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    additionalProperties: false,
-                    required: ["name", "city", "category", "why", "est_cost", "hours"],
-                    properties: {
-                      name: { type: "string", description: "真實存在的地點正式名稱" },
-                      city: { type: "string", description: "所在鄉鎮市區" },
-                      category: { type: "string", description: "景點／美食／住宿 三選一" },
-                      why: { type: "string", description: "為什麼適合這個家庭（含小孩年齡考量）" },
-                      est_cost: { type: "integer", description: "全家在此的預估花費" },
-                      hours: { type: "number", description: "建議停留小時數" },
-                    },
-                  },
-                },
+                name: { type: "string", description: "地點的官方正式名稱，必須是真實存在、地圖上查得到的地點" },
+                reason: { type: "string", description: "一句話說明為什麼適合這個家庭，要具體對應孩子年齡與需求" },
+                age_range: { type: "string", description: "適合年齡帶，例：3-8歲、全年齡" },
+                indoor: { type: "boolean", description: "true=室內可避雨，false=室外" },
+                duration_minutes: { type: "integer", description: "建議停留時間（分鐘）" },
+                category: { type: "string", enum: CATS },
+                opening_hours: { type: "string", description: "營業時間與公休日；不確定就寫「請自行確認」" },
+                cost_estimate: { type: "integer", description: "每人預估花費（新台幣），免費景點填 0" },
               },
             },
           },
@@ -614,30 +627,45 @@ const PLAN_SCHEMA = {
 
 function planPrompt(c) {
   const kids = c.kids.length ? c.kids.map((a) => a + "歲").join("、") : "無";
-  const perDay = c.pace === "緊湊" ? "4-5" : c.pace === "悠閒" ? "2-3" : "3-4";
-  return `你是熟悉台灣各地親子旅遊的規劃專家。請為以下家庭規劃 3-4 種不同風格的行程方案。
+  const extra = [
+    c.wants.length ? `偏好類型：${c.wants.join("、")}` : "",
+    c.pace ? `步調：${c.pace}` : "",
+  ].filter(Boolean).join("\n");
+  return `你是熟悉台灣各地親子旅遊的規劃專家。請為以下家庭規劃一趟行程。
 
-出發地：${c.origin || "未指定"}
 目的地：${c.region}
 天數：${c.days} 天
 大人：${c.adults} 位　小孩：${kids}
-總預算：${c.budget ? "NT$" + c.budget : "未設定（請給合理估算）"}
-偏好類型：${c.wants.length ? c.wants.join("、") : "無特別偏好"}
-步調：${c.pace}（每天安排 ${perDay} 個點）
+交通方式：${c.transport}
+單日車程上限：${c.maxDrive} 分鐘
+預算：${c.budget ? "NT$" + c.budget : "未設定"}
+特殊需求：${c.needs || "無"}
+${extra}
 
-規則：
-1. 景點必須是**真實存在**的地點，用官方正式名稱（例：「國立傳統藝術中心」而非「傳藝中心」），之後要用地圖搜尋定位。
-2. 每天最後一個點安排餐飲（category 填「美食」），其餘填「景點」。
-3. 動線要順：同一天的點盡量集中在鄰近區域，不要南北來回跑。
-4. why 欄位要具體對應小孩年齡（例：3歲有推車友善步道／8歲可下水體驗）。
-5. 各方案風格要真的不同（例：經典必玩／悠閒放鬆／自然戶外／文化體驗），不要只是換順序。
-6. 花費估算貼近台灣實際票價與消費水準。
-7. 全部用繁體中文。`;
+【硬條件】
+- 依孩子年齡與體力篩選，每個景點都要說明為什麼適合
+- 同一天景點之間的車程總和不得超過 ${c.maxDrive} 分鐘
+- 交通方式為 ${c.transport}，據此決定景點之間的可行性
+- 每天至少安排一個室內景點（indoor=true）作為雨天備案
+- 11:30-13:00、17:30-19:00 前後必須有餐飲安排
+- 避開常見公休（多數館所週一休）
+
+【地點名稱｜最重要】
+- name 必須是地圖查得到的**單一具體地點正式全名**，之後要拿去查座標
+- 嚴禁描述性寫法：不可出現「在地」「附近」「或」「等」「（如…）」，也不可只寫「海鮮餐廳」「素食小館」這種類別
+- 餐飲同樣要給得出正式店名；**寫不出具體店名就不要排這個餐飲點**，改把該時段併入鄰近有明確名稱的地點
+- 不要自創、不要用俗稱或簡稱，不要把兩個地點合併成一個名字
+
+【誠實原則】
+- 只依「適合這個家庭」推薦，不考慮任何商業因素
+- opening_hours 不確定就寫「請自行確認」，不要猜
+- cost_estimate 是概估，抓不準就給保守數字
+- 全部用繁體中文`;
 }
 
-async function generatePlans(cond) {
+async function generatePlan(cond) {
   const key = apiKey();
-  if (!key) { await sleep(900); return mockPlans(cond); } // 未設金鑰＝示範方案
+  if (!key) { await sleep(900); return mockPlan(cond); } // 未設金鑰＝示範行程
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -649,8 +677,8 @@ async function generatePlans(cond) {
     },
     body: JSON.stringify({
       model: CLAUDE_MODEL,
-      max_tokens: 16000,
-      output_config: { effort: "medium", format: { type: "json_schema", schema: PLAN_SCHEMA } },
+      max_tokens: 8000,
+      output_config: { format: { type: "json_schema", schema: PLAN_SCHEMA } }, // Haiku 不支援 effort，加了會 400
       messages: [{ role: "user", content: planPrompt(cond) }],
     }),
   });
@@ -664,47 +692,62 @@ async function generatePlans(cond) {
 
   const data = await res.json();
   if (data.stop_reason === "refusal") throw new Error("AI 婉拒了這個請求，換個描述試試");
+  if (data.stop_reason === "max_tokens") throw new Error("行程太長被截斷，請減少天數再試");
   const text = (data.content || []).filter((b) => b.type === "text").map((b) => b.text).join("");
   if (!text) throw new Error("AI 沒有回傳內容，請再試一次");
   return JSON.parse(text);
 }
 
-function renderPlanCards(plans) {
+function renderPlan(plan) {
   const box = $("planResults");
-  if (!plans.length) return (box.innerHTML = `<p class="empty">沒有產生方案，換個條件試試</p>`);
-  box.innerHTML =
-    `<h3>為你規劃了 ${plans.length} 種方案</h3>` +
-    plans
-      .map((p, pi) => `
-      <div class="plan-card">
-        <h3>${escapeHtml(p.title || "方案")} <span class="plan-theme">${escapeHtml(p.theme || "")}</span></h3>
-        <p class="plan-sum">${escapeHtml(p.summary || "")}</p>
-        <div class="plan-meta">
-          <span>📅 ${p.days.length} 天</span>
-          ${p.est_total ? `<span>💰 估 <b>$${(+p.est_total).toLocaleString()}</b></span>` : ""}
-          <span>📍 ${p.days.reduce((a, d) => a + (d.items ? d.items.length : 0), 0)} 個點</span>
-        </div>
-        <ul class="plan-days">
-          ${p.days.map((d) => `<li><div class="d-head">Day ${d.day}${d.area ? " · " + escapeHtml(d.area) : ""}</div><div class="d-items">${(d.items || []).map((it) => escapeHtml(it.name)).join("、")}</div></li>`).join("")}
-        </ul>
-        ${p.accommodation ? `<div class="plan-acc">🏨 住宿：${escapeHtml(p.accommodation.area || "")}${p.accommodation.price_range ? "（" + escapeHtml(p.accommodation.price_range) + "）" : ""}${p.accommodation.note ? " · " + escapeHtml(p.accommodation.note) : ""}</div>` : ""}
-        <button class="primary plan-adopt" data-pi="${pi}">採用此方案 →</button>
-      </div>`)
-      .join("");
-  box.querySelectorAll(".plan-adopt").forEach((b) => (b.onclick = () => adoptPlan(plans[+b.dataset.pi])));
+  const days = plan.days || [];
+  if (!days.length) return (box.innerHTML = `<p class="empty">沒有產生行程，換個條件試試</p>`);
+  const spots = days.reduce((a, d) => a + (d.spots || []).length, 0);
+  const cost = days.reduce((a, d) => a + (d.spots || []).reduce((x, s) => x + (+s.cost_estimate || 0), 0), 0);
+  const heads = (lastCond ? lastCond.adults + lastCond.kids.length : 1) || 1;
+
+  box.innerHTML = `
+    <div class="plan-card">
+      <h3>${escapeHtml(plan.title || "行程")}</h3>
+      <p class="plan-sum">${escapeHtml(plan.summary || "")}</p>
+      <div class="plan-meta">
+        <span>📅 ${days.length} 天</span>
+        <span>📍 ${spots} 個點</span>
+        <span>💰 每人估 <b>$${cost.toLocaleString()}</b>${heads > 1 ? `（全家約 $${(cost * heads).toLocaleString()}）` : ""}</span>
+      </div>
+      <ul class="plan-days">
+        ${days.map((d) => `
+          <li>
+            <div class="d-head">Day ${d.day} · ${escapeHtml(d.theme || "")}</div>
+            <div class="d-items">${(d.spots || []).map((s) => `${s.indoor ? "🏠" : "🌤"} ${escapeHtml(s.name)}`).join("　")}</div>
+            ${d.rainy_alternative ? `<div class="d-rainy">☔️ 雨天：${escapeHtml(d.rainy_alternative)}</div>` : ""}
+          </li>`).join("")}
+      </ul>
+      ${plan.notes ? `<div class="plan-acc">📝 ${escapeHtml(plan.notes)}</div>` : ""}
+      <button class="primary plan-adopt">採用這份行程 →</button>
+      <p class="hint">營業時間與費用為 AI 概估，出發前請向店家確認。</p>
+    </div>`;
+  box.querySelector(".plan-adopt").onclick = () => adoptPlan(plan);
 }
 
 async function adoptPlan(plan) {
-  const t = newTrip(`${(lastCond && lastCond.region) || "旅程"}·${plan.title || ""}`.slice(0, 28));
-  t.days = plan.days.length || 1;
-  t.budget = (lastCond && lastCond.budget) || (plan.est_total ? +plan.est_total : null);
-  plan.days.forEach((d, di) =>
-    (d.items || []).forEach((it, oi) =>
+  const region = (lastCond && lastCond.region) || "旅程";
+  const t = newTrip(`${region}·${plan.title || ""}`.slice(0, 28));
+  t.days = (plan.days || []).length || 1;
+  t.budget = (lastCond && lastCond.budget) || null;
+  (plan.days || []).forEach((d, di) =>
+    (d.spots || []).forEach((s, oi) =>
       t.stops.push({
         id: uid(), day: d.day || di + 1, order: oi,
-        name: it.name, address: [it.city, it.category].filter(Boolean).join(" · "),
-        lat: null, lng: null, category: mapCat(it.category), cost: +it.est_cost || 0, note: it.why || "",
-        _q: `${it.name}, ${it.city || (lastCond && lastCond.region) || ""}`,
+        name: s.name,
+        address: [s.age_range, s.opening_hours].filter(Boolean).join(" · "),
+        lat: null, lng: null,
+        category: CATS.includes(s.category) ? s.category : "景點",
+        cost: +s.cost_estimate || 0,
+        note: s.reason || "",
+        indoor: !!s.indoor,
+        minutes: +s.duration_minutes || 0,
+        _q: `${s.name}, ${region}`,
       })
     )
   );
@@ -714,55 +757,53 @@ async function adoptPlan(plan) {
   save();
   document.querySelector('.tab[data-tab="trip"]').click();
   renderAll();
-  toast("方案已帶入行程，定位景點中…");
-  const regionGeo = await geocodeRegion((lastCond && lastCond.region) || "");
+  toast("行程已帶入，定位景點中…");
+
+  const regionGeo = await geocodeRegion(region);
   let miss = 0;
   for (const s of t.stops) {
     const g = await geocodeNear(s._q, regionGeo);
-    if (g) { s.lat = g.lat; s.lng = g.lng; } else miss++;
+    if (g) {
+      s.lat = g.lat;
+      s.lng = g.lng;
+    } else {
+      s.locateFail = true; // 查不到不刪除，保留在行程裡供手動定位
+      miss++;
+    }
     delete s._q;
     save();
     if (state.activeTripId === t.id) { renderStops(); renderMapRoute(); }
     await sleep(1100); // 尊重 Nominatim 1 req/s
   }
-  toast(miss ? `定位完成，有 ${miss} 個景點查不到、可手動搜尋加入` : "景點定位完成 ✓");
+  toast(miss ? `定位完成，${miss} 個點地圖上查不到，可按 📍 手動定位` : "景點定位完成 ✓");
 }
 
-/* 內建示範方案（未接 Worker 前用；接上真 AI 後自動改用）*/
-function mockPlans(cond) {
+/* 內建示範行程（未設金鑰時用）*/
+function mockPlan(cond) {
   const region = cond.region || "台灣";
   const presets = {
-    宜蘭: ["幾米廣場", "蘭陽博物館", "國立傳統藝術中心", "羅東夜市", "冬山河親水公園", "羅東林業文化園區", "礁溪溫泉公園", "頭城老街"],
-    台北: ["台北市立動物園", "國立故宮博物院", "兒童新樂園", "大安森林公園", "士林夜市", "台北101", "北投溫泉博物館"],
-    花蓮: ["太魯閣國家公園", "七星潭", "花蓮觀光糖廠", "東大門夜市", "鯉魚潭", "遠雄海洋公園"],
-    台中: ["國立自然科學博物館", "台中市立動物園", "彩虹眷村", "審計新村", "逢甲夜市", "高美濕地"],
+    宜蘭: ["蘭陽博物館", "國立傳統藝術中心", "羅東林業文化園區", "冬山河親水公園"],
+    台北: ["國立故宮博物院", "台北市立動物園", "大安森林公園", "北投溫泉博物館"],
+    花蓮: ["七星潭", "鯉魚潭", "花蓮觀光糖廠", "石梯坪"],
+    台中: ["國立自然科學博物館", "東勢林場", "台中市中山公園", "高美濕地"],
   };
   const key = Object.keys(presets).find((k) => region.includes(k));
-  const pool = key
-    ? presets[key]
-    : [`${region}火車站`, `${region}夜市`, `${region}文化中心`, `${region}公園`, `${region}老街`, `${region}博物館`];
-  const days = Math.max(1, cond.days || 2);
-  const perDay = cond.pace === "緊湊" ? 4 : cond.pace === "悠閒" ? 2 : 3;
-  const budget = cond.budget || 12000;
-  const build = (offset) => {
-    const out = [];
-    let idx = offset;
-    for (let d = 1; d <= days; d++) {
-      const items = [];
-      for (let k = 0; k < perDay; k++, idx++) {
-        items.push({ name: pool[idx % pool.length], city: region, category: k === perDay - 1 ? "美食" : "景點", why: "適合親子", est_cost: 200 + k * 100, hours: 2 });
-      }
-      out.push({ day: d, area: region, items });
+  const pool = key ? presets[key] : [`${region}火車站`, `${region}文化中心`, `${region}公園`, `${region}老街`];
+  const days = [];
+  let idx = 0;
+  for (let d = 1; d <= Math.max(1, cond.days || 2); d++) {
+    const spots = [];
+    for (let k = 0; k < 3; k++, idx++) {
+      spots.push({
+        name: pool[idx % pool.length],
+        reason: "示範資料：設定 API 金鑰後才會產生真正依家庭條件規劃的理由",
+        age_range: "全年齡", indoor: k === 0, duration_minutes: 90,
+        category: "景點", opening_hours: "請自行確認", cost_estimate: 100 * (k + 1),
+      });
     }
-    return out;
-  };
-  return {
-    plans: [
-      { title: "經典必玩", theme: "熱門景點", summary: `${region}最受歡迎的親子景點一次玩到`, est_total: budget, accommodation: { area: `${region}市區`, price_range: "$2500-3500/晚", note: "近車站交通方便" }, days: build(0) },
-      { title: "悠閒放鬆", theme: "慢步調", summary: "景點少、留白多，適合幼齡孩子", est_total: Math.round(budget * 0.85), accommodation: { area: `${region}溫泉區`, price_range: "$3000-4500/晚", note: "有溫泉可泡湯" }, days: build(2) },
-      { title: "自然戶外", theme: "親近大自然", summary: "公園、生態、戶外活動為主", est_total: Math.round(budget * 0.9), accommodation: { area: `${region}近郊`, price_range: "$2000-3000/晚", note: "民宿有草坪" }, days: build(4) },
-    ],
-  };
+    days.push({ day: d, theme: `${region}示範行程第 ${d} 天`, rainy_alternative: "示範資料", spots });
+  }
+  return { title: `${region}示範行程`, summary: "這是未設定金鑰時的內建示範，不是 AI 規劃結果。", notes: "到設定頁貼上 API 金鑰即可使用真正的 AI 規劃。", days };
 }
 
 /* ---------- 金鑰設定 ---------- */

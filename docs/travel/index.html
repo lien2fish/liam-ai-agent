@@ -26,8 +26,14 @@
     <!-- 智慧規劃 -->
     <section class="view active" id="view-plan">
       <p class="lead">填家庭條件，AI 幫你規劃 <b>3-4 種親子行程方案</b>。</p>
-      <div class="field"><label>出發地點</label><input id="f_origin" type="text" placeholder="例：台北市" /></div>
       <div class="field"><label>目標城市 / 地區</label><input id="f_region" type="text" placeholder="例：宜蘭" /></div>
+      <div class="field">
+        <label>交通方式</label>
+        <div class="catpick" id="transportPick">
+          <button class="chip trans active" data-t="自駕">🚗 自駕</button>
+          <button class="chip trans" data-t="大眾運輸">🚆 大眾運輸</button>
+        </div>
+      </div>
       <div class="field3">
         <div><label>大人數</label><input id="f_adults" type="number" inputmode="numeric" value="2" min="0" /></div>
         <div><label>天數</label><input id="f_days" type="number" inputmode="numeric" value="2" min="1" max="14" /></div>
@@ -38,6 +44,8 @@
         <div id="kidsWrap" class="kids"></div>
         <button id="addKid" class="mini">＋ 加一位小孩</button>
       </div>
+      <div class="field"><label>單日車程上限（分鐘）</label><input id="f_maxdrive" type="number" inputmode="numeric" value="90" min="20" max="480" /></div>
+      <div class="field"><label>特殊需求</label><input id="f_needs" type="text" placeholder="例：小孩要午睡、素食、有長輩同行" /></div>
       <div class="field">
         <label>想要的景點類型（可多選）</label>
         <div class="catpick" id="wantPick">
