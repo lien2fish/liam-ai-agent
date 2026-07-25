@@ -4,7 +4,64 @@
 const LS_KEY = "tripPlanner.v1";
 const CATS = ["景點", "住宿", "餐飲", "交通", "其他"];
 const KEY_LS = "anthropicKey";
-const CLAUDE_MODEL = "claude-haiku-4-5"; // 實測 Sonnet 5 貴 11 倍慢 5.7 倍，只多 14pt 定位率，不值得
+const MODEL_LS = "aiModel";
+/* 支援自帶金鑰：依金鑰前綴自動判斷供應商，兩邊都用 structured outputs 保證合法 JSON。
+   Claude Haiku 4.5 為預設（實測 Sonnet 5 貴 11 倍慢 5.7 倍，只多 14pt 定位率，不值得）。*/
+const PROVIDERS = {
+  anthropic: {
+    label: "Claude",
+    model: "claude-haiku-4-5",
+    match: (k) => k.startsWith("sk-ant-"),
+    url: "https://api.anthropic.com/v1/messages",
+    headers: (k) => ({
+      "content-type": "application/json",
+      "x-api-key": k,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    }),
+    body: (model, prompt) => ({
+      model,
+      max_tokens: 16000,
+      output_config: { format: { type: "json_schema", schema: PLAN_SCHEMA } }, // Haiku 不支援 effort，加了會 400
+      messages: [{ role: "user", content: prompt }],
+    }),
+    parse: (d) => {
+      if (d.stop_reason === "refusal") throw new Error("AI 婉拒了這個請求，換個描述試試");
+      if (d.stop_reason === "max_tokens") throw new Error("行程太長被截斷，請減少天數再試");
+      return (d.content || []).filter((b) => b.type === "text").map((b) => b.text).join("");
+    },
+  },
+  openai: {
+    label: "ChatGPT",
+    model: "gpt-4o-mini",
+    match: (k) => k.startsWith("sk-"),
+    url: "https://api.openai.com/v1/chat/completions",
+    headers: (k) => ({ "content-type": "application/json", authorization: `Bearer ${k}` }),
+    body: (model, prompt) => ({
+      model,
+      max_completion_tokens: 16000,
+      response_format: {
+        type: "json_schema",
+        json_schema: { name: "trip_plans", strict: true, schema: PLAN_SCHEMA },
+      },
+      messages: [{ role: "user", content: prompt }],
+    }),
+    parse: (d) => {
+      const c = (d.choices || [])[0];
+      if (!c) throw new Error("AI 沒有回傳內容，請再試一次");
+      if (c.finish_reason === "length") throw new Error("行程太長被截斷，請減少天數再試");
+      if (c.message && c.message.refusal) throw new Error("AI 婉拒了這個請求，換個描述試試");
+      return (c.message || {}).content || "";
+    },
+  },
+};
+
+function providerFor(key) {
+  return Object.values(PROVIDERS).find((p) => p.match(key)) || PROVIDERS.anthropic;
+}
+function modelFor(p) {
+  return (localStorage.getItem(MODEL_LS) || "").trim() || p.model;
+}
 const MODE_LABEL = { driving: "🚗", walking: "🚶" };
 
 let state = load();
@@ -751,33 +808,31 @@ async function callPlan(cond, key, avoidDupes) {
   const extra = avoidDupes && avoidDupes.length
     ? `\n\n⚠️ 上一次的結果把「${avoidDupes.join("、")}」重複排在不同天，這次務必讓每個地點只出現一次。`
     : "";
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": key,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
-    },
-    body: JSON.stringify({
-      model: CLAUDE_MODEL,
-      max_tokens: 16000, // 兩個方案，長天數會用到一萬以上
-      output_config: { format: { type: "json_schema", schema: PLAN_SCHEMA } }, // Haiku 不支援 effort，加了會 400
-      messages: [{ role: "user", content: planPrompt(cond) + extra }],
-    }),
-  });
+  const p = providerFor(key);
+  const model = modelFor(p);
+  let res;
+  try {
+    res = await fetch(p.url, {
+      method: "POST",
+      headers: p.headers(key),
+      body: JSON.stringify(p.body(model, planPrompt(cond) + extra)),
+    });
+  } catch (e) {
+    throw new Error(`連不上 ${p.label}，請檢查網路（若剛換金鑰，確認格式正確）`);
+  }
 
   if (!res.ok) {
     const detail = await res.json().catch(() => null);
-    if (res.status === 401) throw new Error("金鑰無效，請到設定重新貼上");
+    const msg = detail && detail.error && detail.error.message;
+    if (res.status === 401) throw new Error(`${p.label} 金鑰無效，請到設定重新貼上`);
     if (res.status === 429) throw new Error("呼叫太頻繁或額度用完，稍後再試");
-    throw new Error((detail && detail.error && detail.error.message) || `伺服器回應 ${res.status}`);
+    if (res.status === 404 || /model/i.test(msg || "")) {
+      throw new Error(`${p.label} 找不到模型「${model}」，可到設定改指定模型`);
+    }
+    throw new Error(msg || `${p.label} 回應 ${res.status}`);
   }
 
-  const data = await res.json();
-  if (data.stop_reason === "refusal") throw new Error("AI 婉拒了這個請求，換個描述試試");
-  if (data.stop_reason === "max_tokens") throw new Error("行程太長被截斷，請減少天數再試");
-  const text = (data.content || []).filter((b) => b.type === "text").map((b) => b.text).join("");
+  const text = p.parse(await res.json());
   if (!text) throw new Error("AI 沒有回傳內容，請再試一次");
   return JSON.parse(text);
 }
@@ -946,10 +1001,22 @@ function mockPlans(cond) {
 /* ---------- 金鑰設定 ---------- */
 function renderKeyState() {
   const k = apiKey();
-  el.keyState.textContent = k
-    ? `✅ 已設定（${k.slice(0, 7)}…${k.slice(-4)}），智慧規劃走真 AI`
-    : "尚未設定，智慧規劃跑內建示範方案";
+  if (!k) {
+    el.keyState.textContent = "尚未設定，智慧規劃跑內建示範方案";
+  } else {
+    const p = providerFor(k);
+    el.keyState.textContent = `✅ 已設定 ${p.label}（${k.slice(0, 7)}…${k.slice(-4)}）· 模型 ${modelFor(p)}`;
+  }
+  const m = (localStorage.getItem(MODEL_LS) || "").trim();
+  $("modelState").textContent = m ? `目前指定：${m}` : "使用各家預設模型";
 }
+$("saveModelBtn").onclick = () => {
+  const v = $("modelInput").value.trim();
+  v ? localStorage.setItem(MODEL_LS, v) : localStorage.removeItem(MODEL_LS);
+  $("modelInput").value = "";
+  renderKeyState();
+  toast(v ? `模型已設為 ${v}` : "已改回預設模型");
+};
 $("saveKeyBtn").onclick = () => {
   const v = el.apiKeyInput.value.trim();
   if (!v) return toast("請先貼上金鑰");
