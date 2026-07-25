@@ -33,7 +33,7 @@ body {
 
 .row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
 .row.wrap { flex-wrap: wrap; }
-select, input[type=text], input[type=number] {
+select, input[type=text], input[type=number], input[type=password] {
   font-size: 16px; padding: 10px 12px; border: 1px solid var(--line);
   border-radius: 10px; background: #fff; color: var(--ink); width: 100%;
 }
@@ -51,7 +51,21 @@ button { font-family: inherit; cursor: pointer; }
   border-radius: 999px; padding: 7px 14px; font-size: 14px; font-weight: 700; white-space: nowrap; }
 .daytab.active { background: var(--accent2); color: #fff; border-color: var(--accent2); }
 
-.searchwrap { margin: 4px 0 8px; }
+.searchwrap { margin: 4px 0 8px; position: relative; }
+.searchresults { list-style: none; margin: 4px 0 0; padding: 0; position: absolute; left: 0; right: 0;
+  top: 100%; z-index: 40; background: #fff; border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(120,90,40,.14); overflow: hidden; max-height: 46vh; overflow-y: auto; }
+.searchresults:empty { display: none; }
+.searchresults .sr { padding: 10px 12px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.searchresults .sr:last-child { border-bottom: 0; }
+.searchresults .sr:active { background: #fbf3e6; }
+.searchresults .sr b { display: block; font-size: 15px; }
+.searchresults .sr span { display: block; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.searchresults .sr-hint { padding: 12px; color: var(--muted); font-size: 14px; text-align: center; }
+.num-marker { background: none; border: 0; }
+.num-marker > div { width: 28px; height: 28px; border-radius: 50%; background: var(--accent);
+  color: #fff; font-weight: 700; font-size: 15px; display: grid; place-items: center;
+  border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.35); }
 .catpick { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; font-size: 13px; color: var(--muted); }
 .chip { border: 1px solid var(--line); background: #fff; color: var(--muted);
   border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 600; }
@@ -94,6 +108,41 @@ button { font-family: inherit; cursor: pointer; }
 .howto ol { padding-left: 18px; line-height: 1.6; }
 .howto code { background: #f3ead8; padding: 1px 5px; border-radius: 5px; }
 .ver { text-align: center; color: var(--muted); font-size: 12px; }
+
+/* 規劃表單 */
+.lead { color: var(--muted); font-size: 14px; margin: 2px 0 14px; }
+.lead b { color: var(--accent); }
+.field { margin-bottom: 14px; }
+.field > label { display: block; font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.field3 { display: flex; gap: 8px; margin-bottom: 14px; }
+.field3 > div { flex: 1; }
+.field3 label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.kids { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.kid { display: flex; align-items: center; gap: 4px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 4px 6px 4px 10px; }
+.kid input { width: 54px; padding: 6px 4px; text-align: center; border: 0; }
+.kid button { border: 0; background: none; color: var(--danger); font-size: 16px; padding: 0 4px; }
+.kids:empty::after { content: "還沒加小孩（可只有大人）"; color: var(--muted); font-size: 13px; }
+.chip.want, .chip.pace { }
+#genBtn { margin-top: 4px; }
+#genBtn:disabled { opacity: .6; }
+
+/* 方案卡 */
+#planResults { margin-top: 18px; }
+.plan-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin-bottom: 14px; box-shadow: 0 2px 6px rgba(120,90,40,.07); }
+.plan-card h3 { margin: 0; font-size: 17px; display: flex; align-items: center; gap: 8px; }
+.plan-theme { font-size: 12px; font-weight: 700; color: #5a3a12; background: var(--amber); border-radius: 999px; padding: 3px 10px; }
+.plan-sum { color: var(--muted); font-size: 14px; margin: 8px 0; }
+.plan-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; margin-bottom: 8px; }
+.plan-meta b { color: var(--accent); }
+.plan-days { list-style: none; margin: 6px 0 0; padding: 0; }
+.plan-days > li { padding: 8px 0; border-top: 1px dashed var(--line); font-size: 14px; }
+.plan-days .d-head { font-weight: 700; color: var(--accent2); }
+.plan-days .d-items { color: var(--ink); margin-top: 2px; line-height: 1.5; }
+.plan-acc { font-size: 13px; color: var(--muted); margin-top: 8px; background: #fbf3e6; border-radius: 10px; padding: 8px 10px; }
+.plan-adopt { margin-top: 12px; }
+.gen-loading { text-align: center; color: var(--muted); padding: 20px; }
+.gen-loading .spin { display: inline-block; width: 22px; height: 22px; border: 3px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: sp 0.8s linear infinite; }
+@keyframes sp { to { transform: rotate(360deg); } }
 
 h3 { font-size: 15px; margin: 16px 0 8px; }
 .empty { text-align: center; color: var(--muted); font-size: 14px; padding: 24px 10px; }

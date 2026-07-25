@@ -9,6 +9,7 @@
   <title>親子旅遊規劃</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -16,13 +17,55 @@
 
   <main id="panel">
     <nav id="tabbar">
-      <button class="tab active" data-tab="trip">🗺️ 行程</button>
+      <button class="tab active" data-tab="plan">✨ 規劃</button>
+      <button class="tab" data-tab="trip">🗺️ 行程</button>
       <button class="tab" data-tab="budget">💰 花費</button>
       <button class="tab" data-tab="settings">⚙️ 設定</button>
     </nav>
 
+    <!-- 智慧規劃 -->
+    <section class="view active" id="view-plan">
+      <p class="lead">填家庭條件，AI 幫你規劃 <b>3-4 種親子行程方案</b>。</p>
+      <div class="field"><label>出發地點</label><input id="f_origin" type="text" placeholder="例：台北市" /></div>
+      <div class="field"><label>目標城市 / 地區</label><input id="f_region" type="text" placeholder="例：宜蘭" /></div>
+      <div class="field3">
+        <div><label>大人數</label><input id="f_adults" type="number" inputmode="numeric" value="2" min="0" /></div>
+        <div><label>天數</label><input id="f_days" type="number" inputmode="numeric" value="2" min="1" max="14" /></div>
+        <div><label>總預算</label><input id="f_budget" type="number" inputmode="numeric" placeholder="15000" /></div>
+      </div>
+      <div class="field">
+        <label>小孩年齡</label>
+        <div id="kidsWrap" class="kids"></div>
+        <button id="addKid" class="mini">＋ 加一位小孩</button>
+      </div>
+      <div class="field">
+        <label>想要的景點類型（可多選）</label>
+        <div class="catpick" id="wantPick">
+          <button class="chip want" data-w="自然生態">🌳 自然生態</button>
+          <button class="chip want" data-w="親子樂園">🎠 親子樂園</button>
+          <button class="chip want" data-w="動物">🦒 動物</button>
+          <button class="chip want" data-w="博物館科教">🔬 博物館科教</button>
+          <button class="chip want" data-w="文化古蹟">🏛️ 文化古蹟</button>
+          <button class="chip want" data-w="美食">🍜 美食</button>
+          <button class="chip want" data-w="海邊">🏖️ 海邊</button>
+          <button class="chip want" data-w="溫泉">♨️ 溫泉</button>
+          <button class="chip want" data-w="採果農場">🍓 採果農場</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>步調</label>
+        <div class="catpick" id="pacePick">
+          <button class="chip pace" data-pace="悠閒">悠閒</button>
+          <button class="chip pace active" data-pace="適中">適中</button>
+          <button class="chip pace" data-pace="緊湊">緊湊</button>
+        </div>
+      </div>
+      <button id="genBtn" class="primary">✨ 生成行程方案</button>
+      <div id="planResults"></div>
+    </section>
+
     <!-- 行程 -->
-    <section class="view active" id="view-trip">
+    <section class="view" id="view-trip">
       <div class="row">
         <select id="tripSelect" title="選擇行程"></select>
         <button id="newTripBtn" class="mini">＋新行程</button>
@@ -58,28 +101,25 @@
     <!-- 設定 -->
     <section class="view" id="view-settings">
       <div class="card">
-        <h3>Google Maps 金鑰</h3>
-        <p class="hint">貼上你的 Google Maps API 金鑰。金鑰只存這支手機、不會上傳。</p>
-        <input id="keyInput" type="text" placeholder="AIza…" autocomplete="off" />
-        <button id="saveKeyBtn" class="primary">儲存並載入地圖</button>
-        <details class="howto">
-          <summary>如何取得金鑰？（一次性）</summary>
-          <ol>
-            <li>到 Google Cloud Console 建立/選一個專案並開啟計費（有每月 US$200 免費額度，家用幾乎不收費）。</li>
-            <li>啟用三支 API：<b>Maps JavaScript API</b>、<b>Places API</b>、<b>Directions API</b>。</li>
-            <li>建立「API 金鑰」，應用程式限制設 <b>HTTP 參照網址</b>：<code>https://lien2fish.github.io/*</code></li>
-            <li>把金鑰貼到上面，按儲存。</li>
-          </ol>
-        </details>
+        <h3>交通方式</h3>
+        <div class="catpick">
+          <button class="chip mode active" data-mode="driving">🚗 開車</button>
+          <button class="chip mode" data-mode="walking">🚶 步行</button>
+        </div>
+        <p class="hint">交通時間由免費 OSRM 路網計算（開車實際路線；步行為距離估算）。</p>
       </div>
 
       <div class="card">
-        <h3>交通方式</h3>
-        <div class="catpick">
-          <button class="chip mode active" data-mode="DRIVING">🚗 開車</button>
-          <button class="chip mode" data-mode="TRANSIT">🚆 大眾運輸</button>
-          <button class="chip mode" data-mode="WALKING">🚶 步行</button>
+        <h3>AI 規劃金鑰</h3>
+        <div class="field">
+          <input id="apiKeyInput" type="password" placeholder="sk-ant-..." autocomplete="off" />
         </div>
+        <div class="row wrap">
+          <button id="saveKeyBtn" class="mini">💾 儲存金鑰</button>
+          <button id="clearKeyBtn" class="mini danger">🗑️ 清除</button>
+        </div>
+        <p class="hint" id="keyState"></p>
+        <p class="hint">Anthropic API 金鑰，只存在這支手機的瀏覽器裡，不會上傳。未填則「智慧規劃」只跑內建示範方案。金鑰申請：console.anthropic.com</p>
       </div>
 
       <div class="card">
@@ -93,10 +133,11 @@
         </div>
         <input id="importFile" type="file" accept="application/json" hidden />
       </div>
-      <p class="ver">親子旅遊規劃 · 資料存於本機</p>
+      <p class="ver">親子旅遊規劃 · 資料存於本機<br>地圖 OpenStreetMap · 搜尋 Nominatim · 路線 OSRM（皆免費）</p>
     </section>
   </main>
 
+  <script src="vendor/leaflet/leaflet.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
