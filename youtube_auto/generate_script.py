@@ -14,16 +14,20 @@ RECENT_KEEP = 120
 CLAUDE_MODEL = "claude-sonnet-4-6"
 
 
-def _load_key():
-    if os.environ.get("ANTHROPIC_API_KEY"):
-        return os.environ["ANTHROPIC_API_KEY"]
+GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite"]
+
+
+def _load_key(env_name, cfg_name):
+    if os.environ.get(env_name):
+        return os.environ[env_name]
     cfg = os.path.join(REPO, "config", "instagram_config.json")
     if os.path.exists(cfg):
-        return json.load(open(cfg)).get("anthropic_api_key", "")
+        return json.load(open(cfg)).get(cfg_name, "")
     return ""
 
 
-ANTHROPIC_KEY = _load_key()
+ANTHROPIC_KEY = _load_key("ANTHROPIC_API_KEY", "anthropic_api_key")
+GEMINI_KEY = _load_key("GEMINI_KEY", "gemini_api_key")
 
 
 def load_recent():
@@ -107,6 +111,13 @@ The "sentences" array is the spoken narration split sentence by sentence ({n_sen
 Pick genuinely fascinating themes: unsolved cosmic mysteries (dark matter, black holes, the edge of the universe, the Fermi paradox, what came before the Big Bang) and ancient civilisation enigmas (Göbekli Tepe, lost cities, unexplained megaliths, vanished peoples, undeciphered scripts). Be factual; where unproven, frame it honestly as an open mystery that invites wonder.{avoid}"""
 
 
+def _extract_json(text):
+    s, e = text.find("{"), text.rfind("}")
+    if s < 0 or e < 0:
+        raise ValueError(f"回應未含 JSON：{text[:200]}")
+    return json.loads(text[s : e + 1])
+
+
 def _call_claude(prompt):
     req = urllib.request.Request(
         "https://api.anthropic.com/v1/messages",
@@ -127,28 +138,60 @@ def _call_claude(prompt):
     data = json.load(urllib.request.urlopen(req))
     if "content" not in data:
         raise RuntimeError(f"Claude 回傳異常：{data}")
-    text = data["content"][0]["text"]
-    s, e = text.find("{"), text.rfind("}")
-    return json.loads(text[s : e + 1])  # 可能拋 JSONDecodeError
+    return _extract_json(data["content"][0]["text"])
+
+
+def _call_gemini(prompt):
+    """Claude 不可用時的備援；思考型模型須關掉 thinking，否則輸出被截斷。"""
+    last = None
+    for model in GEMINI_MODELS:
+        cfg = {"response_mime_type": "application/json", "maxOutputTokens": 8192}
+        if any(t in model for t in ("2.5", "3.1", "3.5", "3-")):
+            cfg["thinkingConfig"] = {"thinkingBudget": 0}
+        req = urllib.request.Request(
+            f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}",
+            data=json.dumps(
+                {"contents": [{"parts": [{"text": prompt}]}], "generationConfig": cfg}
+            ).encode(),
+            headers={"content-type": "application/json"},
+            method="POST",
+        )
+        try:
+            data = json.load(urllib.request.urlopen(req))
+            return _extract_json(data["candidates"][0]["content"]["parts"][0]["text"])
+        except Exception as e:
+            last = e
+            print(f"[gemini/{model}] 失敗：{e}", flush=True)
+    raise RuntimeError(f"所有 Gemini 模型均失敗：{last}")
+
+
+def _finalize(script):
+    sents = script.get("sentences", [])
+    if not sents:
+        raise ValueError("無 sentences")
+    script["narration"] = " ".join(x["en"] for x in sents)
+    script["subtitles_zh"] = [x["zh"] for x in sents]
+    return script
 
 
 def generate(recent=None, mode="long"):
     recent = recent if recent is not None else load_recent()
     prompt = build_prompt(recent, mode)
     last = None
-    for _ in range(3):  # Claude 偶爾吐不合法/截斷 JSON，重試生成
+    if ANTHROPIC_KEY:
+        for _ in range(3):  # Claude 偶爾吐不合法/截斷 JSON，重試生成
+            try:
+                return _finalize(_call_claude(prompt))
+            except Exception as e:
+                last = e
+                print(f"[claude] 解析失敗，重試：{e}", flush=True)
+    if GEMINI_KEY:
+        print(f"[generate] Claude 不可用，改用 Gemini fallback（{last}）", flush=True)
         try:
-            script = _call_claude(prompt)
-            sents = script.get("sentences", [])
-            if not sents:
-                raise ValueError("無 sentences")
-            script["narration"] = " ".join(x["en"] for x in sents)
-            script["subtitles_zh"] = [x["zh"] for x in sents]
-            return script
+            return _finalize(_call_gemini(prompt))
         except Exception as e:
             last = e
-            print(f"[generate] 解析失敗，重試：{e}", flush=True)
-    raise RuntimeError(f"Claude 腳本生成連續失敗：{last}")
+    raise RuntimeError(f"腳本生成失敗（Claude 與 Gemini 皆不可用）：{last}")
 
 
 if __name__ == "__main__":
