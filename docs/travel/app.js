@@ -7,7 +7,7 @@ const KEY_LS = "anthropicKey";
 const MODEL_LS = "aiModel";
 /* 後端代打：部署 travel_worker 後把網址填這裡，一般使用者就免自備金鑰。
    留空＝只能自帶金鑰或跑示範資料。自帶金鑰者一律走自己的，不吃這裡的配額。*/
-const WORKER_URL = "";
+const WORKER_URL = "https://travel-planner.lien2fish.workers.dev";
 /* 支援自帶金鑰：依金鑰前綴自動判斷供應商，兩邊都用 structured outputs 保證合法 JSON。
    Claude Haiku 4.5 為預設（實測 Sonnet 5 貴 11 倍慢 5.7 倍，只多 14pt 定位率，不值得）。*/
 const PROVIDERS = {
@@ -1053,7 +1053,9 @@ function mockPlans(cond) {
 function renderKeyState() {
   const k = apiKey();
   if (!k) {
-    el.keyState.textContent = "尚未設定，智慧規劃跑內建示範方案";
+    el.keyState.textContent = WORKER_URL
+      ? "未設定，使用免費共用額度（每天 5 次）"
+      : "尚未設定，智慧規劃跑內建示範方案";
   } else {
     const p = providerFor(k);
     el.keyState.textContent = `✅ 已設定 ${p.label}（${k.slice(0, 7)}…${k.slice(-4)}）· 模型 ${modelFor(p)}`;
