@@ -147,6 +147,7 @@ el.tripSelect.addEventListener("change", () => {
   save();
   renderAll();
 });
+$("navDayBtn").addEventListener("click", navigateDay);
 $("newTripBtn").addEventListener("click", () => {
   const name = prompt("新行程名稱？", "宜蘭三天兩夜");
   if (!name) return;
@@ -259,7 +260,8 @@ function renderStops() {
         <div class="stop-head">
           <div class="badge">${i + 1}</div>
           <div class="stop-name">${escapeHtml(s.name)}<div class="stop-cat">${s.category}${s.minutes ? " · 停留 " + s.minutes + " 分" : ""}</div></div>
-          ${unlocated ? `<button class="iconbtn locate" title="地圖上查不到，手動定位">📍</button>` : ""}
+          <button class="iconbtn gmap" title="用 Google 地圖開啟">🧭</button>
+          ${unlocated ? `<button class="iconbtn locate" title="行程內地圖查不到，手動定位">📍</button>` : ""}
           <button class="iconbtn up" title="上移">▲</button>
           <button class="iconbtn down" title="下移">▼</button>
           <button class="iconbtn danger del" title="刪除">✕</button>
@@ -281,6 +283,7 @@ function renderStops() {
     const id = li.dataset.id;
     li.querySelector(".up").onclick = () => move(id, -1);
     li.querySelector(".down").onclick = () => move(id, 1);
+    li.querySelector(".gmap").onclick = () => openInGmap(id);
     const locBtn = li.querySelector(".locate");
     if (locBtn) locBtn.onclick = () => relocate(id);
     li.querySelector(".del").onclick = () => {
@@ -304,6 +307,33 @@ function renderStops() {
   });
   updateDayTotals();
 }
+/* ---- Google 地圖導向（吃地名不吃座標，定位失敗的點照樣能導航）---- */
+function gmapQuery(s) {
+  // 有座標就用座標（最準），沒有就用「地名, 地區」讓 Google 自己找
+  if (typeof s.lat === "number") return `${s.lat},${s.lng}`;
+  const region = (activeTrip().name.split("·")[0] || "").trim();
+  return encodeURIComponent(region && !s.name.includes(region) ? `${s.name} ${region}` : s.name);
+}
+function openInGmap(id) {
+  const s = getStop(id);
+  if (!s) return;
+  window.open(`https://www.google.com/maps/search/?api=1&query=${gmapQuery(s)}`, "_blank");
+}
+function navigateDay() {
+  const stops = dayStops(state.activeDay);
+  if (stops.length < 1) return toast("這天還沒有行程點");
+  if (stops.length === 1) return openInGmap(stops[0].id);
+  const pts = stops.map(gmapQuery);
+  const origin = pts[0];
+  const destination = pts[pts.length - 1];
+  const mid = pts.slice(1, -1).slice(0, 9); // Google 連結最多 9 個中繼點
+  const mode = activeTrip().travelMode === "walking" ? "walking" : "driving";
+  let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=${mode}`;
+  if (mid.length) url += `&waypoints=${mid.join("|")}`;
+  window.open(url, "_blank");
+  if (stops.length > 11) toast("Google 導航最多 11 個點，已帶入前 11 個");
+}
+
 function updateDayTotals() {
   const stops = dayStops(state.activeDay);
   const cost = stops.reduce((a, s) => a + (s.cost || 0), 0);
