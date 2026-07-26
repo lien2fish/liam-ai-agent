@@ -6,11 +6,11 @@ compatibility_date = "2026-07-25"
 # 下面兩個 id 要用 `wrangler kv namespace create` 產生後貼回來
 [[kv_namespaces]]
 binding = "LIMITS"
-id = "PUT_LIMITS_NAMESPACE_ID_HERE"
+id = "2e95eae807b24401a4f1edb20a4d143e"
 
 [[kv_namespaces]]
 binding = "CACHE"
-id = "PUT_CACHE_NAMESPACE_ID_HERE"
+id = "4012d725bdae4961a3f2d990f3b75028"
 
 # 金鑰不寫在這裡，用 `wrangler secret put ANTHROPIC_API_KEY`
 # 選用：`wrangler secret put TURNSTILE_SECRET`（沒設就跳過機器人驗證）
