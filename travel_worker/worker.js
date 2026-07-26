@@ -95,6 +95,7 @@ function planPrompt(c) {
   ].filter(Boolean).join("\n");
   return `你是熟悉台灣各地親子旅遊的規劃專家。請為以下家庭規劃**兩種風格明顯不同**的行程方案。
 
+出發地：${c.origin || "未指定"}
 目的地：${c.region}
 天數：${c.days} 天
 大人：${c.adults} 位　小孩：${kids}
@@ -126,7 +127,18 @@ ${extra}
   }
 - 每天至少安排一個室內景點（indoor=true）作為雨天備案
 - 11:30-13:00、17:30-19:00 前後必須有餐飲安排
-- 避開常見公休（多數館所週一休）
+- 避開常見公休（多數館所週一休）${
+    c.origin
+      ? `
+- **往返交通要一併規劃**：第一天要考慮從 ${c.origin} 過來的移動時間（別排太早或太滿），
+  最後一天要留返回 ${c.origin} 的時間。在 summary 或當天 theme 說明怎麼去、大約多久${
+    c.transport === "大眾運輸"
+      ? "，並寫明搭什麼（高鐵／台鐵／客運）、從哪站到哪站"
+      : "，並估算開車時程"
+  }
+- 移動本身**不要當成一個景點寫進 spots**，spots 只放真正會停留的地點`
+      : ""
+  }
 - **同一個方案內，同一個地點只能出現一次**：不同天不可重複排同一個景點或餐廳，
   也不要換個寫法重排同一個地方（例如「羅東夜市」與「羅東觀光夜市」算同一個）。
   ${c.days} 天就要有 ${c.days} 天份的不同內容，想不出來寧可該天少排一個點
@@ -192,6 +204,7 @@ function sanitize(p) {
     return isNaN(x) ? def : Math.min(max, Math.max(min, x));
   };
   return {
+    origin: s(p.origin, 40),
     region: s(p.region, 40),
     days: n(p.days, 2, 1, 10),
     adults: n(p.adults, 2, 0, 20),
