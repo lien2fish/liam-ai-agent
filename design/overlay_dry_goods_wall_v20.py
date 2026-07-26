@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-"""志工牆 v20 = v9 空白模板(nobanner，標題白底已移除) 填入：
-- 志工格：37 位真人照片(志工-*.jpg/.png，頭高統一正規化、肩膀以上)＋3 位無照者(張吳菊梅/楊佳靜/劉麗萍)用女性插畫，依姓名筆劃排序。
-- 廚師排(牆頂5格)：從右邊數第1格=連科盛(標籤改「廚師」)、第2格=李鳳君廚助(標籤改「廚助」)，其餘3格留空。
+"""志工牆 v20 = v9 空白模板(clean_base，標題白底/切斷散圖/殘影已清) 填入：
+- 志工格：真人照片(志工-*.jpg/.png，頭高正規化＋去背白底)＋無照者用女性插畫，依姓名筆劃排序。
+- 廚師排(牆頂5格，右錨點：廚師在右、廚助在左)：綠標籤重繪(角色)＋照片＋下方姓名。
+- 標題帶：兩側食材圖示對稱填滿。
 幾何常數對齊 overlay_dry_goods_wall_v9.py（唯一真實來源）。"""
 import os, sys, glob
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 SP = os.path.dirname(os.path.abspath(__file__)).replace(
     "/Users/lien/Downloads/Liam AI agent/design",
     "/private/tmp/claude-501/-Users-lien-Downloads-Liam-AI-agent/ddbfd06c-c552-4b8c-9b01-8af25af2627a/scratchpad",
 )
 sys.path.insert(0, SP)
-from cellphoto import cell_photo
+from cellphoto import cell_photo, contain_photo
 
 DESIGN = os.path.dirname(os.path.abspath(__file__))
 DESK = "/Users/lien/Desktop/鉅鑫管理顧問/鉅鑫專案/惜食廚房/惜食廚房輸出/一樓乾貨牆-志工名單（可拆換）"
@@ -25,22 +26,28 @@ DGREEN = (6, 104, 44)
 GREEN = (108, 168, 74)
 WHITE = (255, 255, 255)
 
-NO_PHOTO = "張吳菊梅 楊佳靜".split()
+NO_PHOTO = []  # 全員已有真人照片（張吳菊梅 2026-07-26 補齊）
 FEMALE = set(NO_PHOTO)
 # 白底棚拍 png 頭部偵測受寬髮/帽子影響，逐張微調頭高倍率(其餘預設 1.0)
 SCALE_MUL = {
     "曾秀珠": 1.22,
     "陳玉欣": 1.12,
     "劉麗萍": 2.0,
-    "徐富祐": 1.6,
     "馬秀芳": 1.15,
+    "張吳菊梅": 1.12,
+    "徐富祐": 1.15,
 }
-# 廚師排(從右邊數)：廚師在右側先排、廚助接續在左。第1格連科盛、2徐富祐(皆廚師)、3李鳳君、4劉麗萍(皆廚助)，第5格留空
+# 證件照(下巴以下素材少)者：頭往上移多露肩膀，避免浮頭。其餘預設 0.34
+HEADROOM = {"張吳菊梅": 0.22}
+# 原照片人像偏小/緊裁去背者：整張不裁 contain 塞進格子(目前無)
+CONTAIN_NAMES = set()
+# 廚師排(從右邊數)：順序右→左＝連科盛(主廚)/劉麗萍/李鳳君/楊佳靜/徐富祐
 CHEF_FROM_RIGHT = [
-    ("連科盛", "廚師", "廚師-連科盛.jpg"),
+    ("連科盛", "主廚", "廚師-連科盛.jpg"),
+    ("劉麗萍", "廚師", "廚助-劉麗萍.png"),
+    ("李鳳君", "廚師", "廚助-李鳳君.jpg"),
+    ("楊佳靜", "廚師", "廚師-楊佳靜.jpg"),
     ("徐富祐", "廚師", "廚師-徐富祐.png"),
-    ("李鳳君", "廚助", "廚助-李鳳君.jpg"),
-    ("劉麗萍", "廚助", "廚助-劉麗萍.png"),
 ]
 AV = {"F": (Image.open(DESIGN + "/assets/dry_goods_avatar_female_v2.png").convert("RGBA"), 3, 610, 505),
       "M": (Image.open(DESIGN + "/assets/dry_goods_avatar_male_v2.png").convert("RGBA"), 3, 700, 560)}  # fmt: skip
@@ -72,7 +79,7 @@ def main():
     img = Image.open(SRC).convert("RGB").convert("RGBA")
     W, H = img.size
 
-    # 標題帶：用兩側食材圖示對稱填滿標題左右米色空白(不覆蓋標題文字 x1352~1795)
+    # 標題帶：兩側食材圖示對稱填滿標題左右米色空白(不覆蓋標題文字 x1352~1795)
     ICONS = [
         Image.open(f"{DESIGN}/assets/dry_goods_ic_{n}.png").convert("RGBA")
         for n in ("box", "carrot", "tomato", "bowl", "heart")
@@ -106,8 +113,8 @@ def main():
     namef = ImageFont.truetype(NAMEFONT, int(hh * 0.88))
     cheff = ImageFont.truetype(CHEFFONT, int(vh * 0.27))
 
-    def ctext(box, t, f, fill, bold=1):
-        """bold＝stroke_width 假粗體(字型無更粗字重，用描邊加粗)"""
+    def ctext(box, t, f, fill, bold=0):
+        """bold＝stroke_width 假粗體。CJK 多筆劃字 stroke=1 就會黏連，維持 0 最好讀"""
         x0, y0, x1, y1 = box
         bb = d.textbbox((0, 0), t, font=f, stroke_width=bold)
         w, hgt = bb[2] - bb[0], bb[3] - bb[1]
@@ -119,6 +126,26 @@ def main():
             stroke_width=bold,
             stroke_fill=fill,
         )
+
+    def frame_paste(pb, cell, mask, rad):
+        """照片格立體效果：柔和投影(凸起) ＋ 內襯裱框(深棕外框＋米色內襯＋金色細線)。"""
+        pb = [int(v) for v in pb]
+        sa = Image.new("L", img.size, 0)
+        ImageDraw.Draw(sa).rounded_rectangle(
+            (pb[0] + 3, pb[1] + 4, pb[2] + 3, pb[3] + 4), radius=rad + 2, fill=150
+        )
+        sa = sa.filter(ImageFilter.GaussianBlur(5))
+        img.paste((40, 30, 20), (0, 0), sa)  # 投影(就地)
+        img.paste(cell, (pb[0], pb[1]), mask)  # 照片蓋回，投影只留在框外
+        # 內襯裱框(往內)：米色內襯 → 深棕外框 → 金色細線
+        d.rounded_rectangle(pb, radius=rad, outline=(253, 239, 202), width=8)
+        d.rounded_rectangle(pb, radius=rad, outline=(90, 62, 38), width=3)
+        d.rounded_rectangle(
+            (pb[0] + 9, pb[1] + 9, pb[2] - 9, pb[3] - 9),
+            radius=max(2, rad - 4),
+            outline=(198, 150, 60),
+            width=2,
+        )  # 金線
 
     def slot(i):
         r, c = divmod(i, VC)
@@ -133,8 +160,15 @@ def main():
         ctext((x0, y0, x1, y0 + hh), name, namef, DGREEN)
         pb = (x0 + 8, y0 + hh + 8, x1 - 8, y1 - 24)
         pw, ph = int(pb[2] - pb[0]), int(pb[3] - pb[1])
-        cell, mask = cell_photo(files[name], pw, ph, scale_mul=SCALE_MUL.get(name, 1.0))
-        img.paste(cell, (int(pb[0]), int(pb[1])), mask)
+        if name in CONTAIN_NAMES:
+            cell, mask = contain_photo(files[name], pw, ph)
+        else:
+            cell, mask = cell_photo(
+                files[name], pw, ph,
+                scale_mul=SCALE_MUL.get(name, 1.0),
+                headroom=HEADROOM.get(name, 0.34),
+            )  # fmt: skip
+        frame_paste(pb, cell, mask, 9)
         idx += 1
 
     for j, name in enumerate(noimg_names):
@@ -152,13 +186,26 @@ def main():
         cell.paste(a, (round(pw / 2 - a_cx * s), round(9 - a_ht * s)), a)
         m = Image.new("L", (pw, ph), 0)
         ImageDraw.Draw(m).rounded_rectangle((0, 0, pw, ph), radius=9, fill=255)
-        img.paste(cell, (int(pb[0]), int(pb[1])), m)
+        frame_paste(pb, cell, m, 9)
         idx += 1
 
-    # ===== 廚師排(牆頂5格)：從右邊數第1、2格 =====
+    # ===== 廚師排(牆頂5格)：綠標籤=「角色-姓名」(上方)＋照片(原大小) =====
     n = 5
     cgap = (gw - n * vw) / (n - 1)
     hh_c = vh * 0.26
+    # 廚師標籤較高→照片框較矮→頭部偏小。target_frac 補償，使頭部絕對大小＝志工
+    vol_ph = vh - hh - 8 - 24
+    chef_ph = vh - hh_c - 8 - 24
+    CHEF_TF = 0.57 * vol_ph / chef_ph
+
+    def fit_font(text, maxw, maxsize):
+        sz = maxsize
+        while (
+            sz > 12 and d.textlength(text, font=ImageFont.truetype(CHEFFONT, sz)) > maxw
+        ):
+            sz -= 1
+        return ImageFont.truetype(CHEFFONT, sz)
+
     for k, (name, label, fname) in enumerate(CHEF_FROM_RIGHT):
         i = (n - 1) - k  # 從右邊數
         x0 = vl + i * (vw + cgap)
@@ -166,22 +213,18 @@ def main():
         y0, y1 = chef_top, chef_top + vh
         d.rounded_rectangle((x0, y0, x1, y0 + hh_c), radius=12, fill=GREEN)
         d.rectangle((x0, y0 + hh_c - 12, x1, y0 + hh_c), fill=GREEN)
-        ctext((x0, y0, x1, y0 + hh_c), label, cheff, WHITE)
-        pb = (x0 + 8, y0 + hh_c + 8, x1 - 8, y1 - 24)
+        txt = f"{label}-{name}"  # 例：廚師-連科盛 / 廚助-李鳳君
+        ctext((x0, y0, x1, y0 + hh_c), txt, fit_font(txt, vw - 26, cheff.size), WHITE)
+        pb = (x0 + 8, y0 + hh_c + 8, x1 - 8, y1 - 24)  # 照片恢復原大小
         pw, ph = int(pb[2] - pb[0]), int(pb[3] - pb[1])
-        cell, mask = cell_photo(
-            f"{PHOTOS}/{fname}", pw, ph, rad=10, scale_mul=SCALE_MUL.get(name, 1.0)
-        )
-        img.paste(cell, (int(pb[0]), int(pb[1])), mask)
-
-    # 最左空格改標籤「廚助」(與廚助群一致)，不放照片、保留灰色佔位
-    i = (n - 1) - len(CHEF_FROM_RIGHT)
-    if i >= 0:
-        x0 = vl + i * (vw + cgap)
-        x1 = x0 + vw
-        d.rounded_rectangle((x0, chef_top, x1, chef_top + hh_c), radius=12, fill=GREEN)
-        d.rectangle((x0, chef_top + hh_c - 12, x1, chef_top + hh_c), fill=GREEN)
-        ctext((x0, chef_top, x1, chef_top + hh_c), "廚助", cheff, WHITE)
+        if name in CONTAIN_NAMES:
+            cell, mask = contain_photo(f"{PHOTOS}/{fname}", pw, ph, rad=10)
+        else:
+            cell, mask = cell_photo(
+                f"{PHOTOS}/{fname}", pw, ph, rad=10,
+                target_frac=CHEF_TF, headroom=0.15, scale_mul=SCALE_MUL.get(name, 1.0),
+            )  # fmt: skip
+        frame_paste(pb, cell, mask, 10)
 
     img.save(OUT)
     print("志工格填", idx, "格(", len(photo_names), "照片+", len(noimg_names), "插畫)")
