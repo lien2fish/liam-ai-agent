@@ -11,7 +11,7 @@ const WORKER_URL = "https://travel-planner.lien2fish.workers.dev";
 /* Turnstile 人機驗證（只用於免金鑰的後端路徑；自帶金鑰者不經過 Worker）。
    ⚠️ 上線順序：先填這個 site key 並部署前端，**之後**才在 Worker 設
    TURNSTILE_SECRET。反過來做會讓所有免金鑰請求在前端補上 token 前全部 403。*/
-const TURNSTILE_SITEKEY = "";
+const TURNSTILE_SITEKEY = "0x4AAAAAAD-R5AR51vnP-sAY";
 /* 支援自帶金鑰：依金鑰前綴自動判斷供應商，兩邊都用 structured outputs 保證合法 JSON。
    Claude Haiku 4.5 為預設（實測 Sonnet 5 貴 11 倍慢 5.7 倍，只多 14pt 定位率，不值得）。*/
 const PROVIDERS = {
