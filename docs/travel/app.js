@@ -350,9 +350,10 @@ function renderStops() {
   updateDayTotals();
 }
 /* ---- Google 地圖導向（吃地名不吃座標，定位失敗的點照樣能導航）---- */
+/* 一律用地名，不用座標。Nominatim 的台灣 POI 常配錯（實測「北投溫泉浴場」
+   會配到中正區的教育部停車場，且在 60km 防線之內躲過檢查），拿那個座標
+   去開 Google 反而把使用者導到錯的地方。Google 自己的圖資準得多。*/
 function gmapQuery(s) {
-  // 有座標就用座標（最準），沒有就用「地名, 地區」讓 Google 自己找
-  if (typeof s.lat === "number") return `${s.lat},${s.lng}`;
   const region = (activeTrip().name.split("·")[0] || "").trim();
   return encodeURIComponent(region && !s.name.includes(region) ? `${s.name} ${region}` : s.name);
 }
@@ -362,8 +363,9 @@ function openInGmap(id) {
   window.open(`https://www.google.com/maps/search/?api=1&query=${gmapQuery(s)}`, "_blank");
 }
 function navigateDay() {
-  const stops = dayStops(state.activeDay);
-  if (stops.length < 1) return toast("這天還沒有行程點");
+  // 交通項目（「高鐵台北→左營」之類）不是地點，放進路線會讓導航亂掉
+  const stops = dayStops(state.activeDay).filter((s) => s.category !== "交通");
+  if (stops.length < 1) return toast("這天還沒有可導航的地點");
   if (stops.length === 1) return openInGmap(stops[0].id);
   const pts = stops.map(gmapQuery);
   const origin = pts[0];
@@ -651,13 +653,25 @@ function haversineKm(a, b) {
   return 2 * R * Math.asin(Math.sqrt(s));
 }
 // 先在地區範圍內找(bounded)，查不到放寬；離地區中心太遠＝誤配則捨棄(回 null)
+/* 名稱防線：只擋距離擋不掉「近但完全不對」的結果（實測「北投溫泉浴場」
+   配到中正區的教育部停車場）。要求配到的地點名稱與查詢至少共用兩個連續字。*/
+function nameLooksRight(query, p) {
+  const core = query.split(",")[0].replace(/\s+/g, "");
+  const hay = ((p.name || "") + " " + (p.display_name || "")).replace(/\s+/g, "");
+  for (let i = 0; i + 2 <= core.length; i++) {
+    if (hay.includes(core.slice(i, i + 2))) return true;
+  }
+  return false;
+}
+
 async function geocodeNear(q, region) {
   const vb = region && region.viewbox;
   let p = vb ? await nomSearch(`q=${encodeURIComponent(q)}&viewbox=${vb}&bounded=1`) : null;
   if (!p) p = await nomSearch(`q=${encodeURIComponent(q)}`);
   if (!p) return null;
   const pt = { lat: +p.lat, lng: +p.lon };
-  if (region && region.lat && haversineKm(pt, region) > 60) return null; // 誤配防線
+  if (region && region.lat && haversineKm(pt, region) > 60) return null; // 距離防線
+  if (!nameLooksRight(q, p)) return null; // 名稱防線
   return pt;
 }
 
