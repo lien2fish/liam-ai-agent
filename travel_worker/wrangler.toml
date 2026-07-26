@@ -1,0 +1,16 @@
+name = "travel-planner"
+main = "worker.js"
+compatibility_date = "2026-07-25"
+
+# KV：LIMITS 存每日計數（限流／熔斷），CACHE 存熱門組合結果
+# 下面兩個 id 要用 `wrangler kv namespace create` 產生後貼回來
+[[kv_namespaces]]
+binding = "LIMITS"
+id = "PUT_LIMITS_NAMESPACE_ID_HERE"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "PUT_CACHE_NAMESPACE_ID_HERE"
+
+# 金鑰不寫在這裡，用 `wrangler secret put ANTHROPIC_API_KEY`
+# 選用：`wrangler secret put TURNSTILE_SECRET`（沒設就跳過機器人驗證）
