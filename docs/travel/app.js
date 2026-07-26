@@ -8,6 +8,10 @@ const MODEL_LS = "aiModel";
 /* 後端代打：部署 travel_worker 後把網址填這裡，一般使用者就免自備金鑰。
    留空＝只能自帶金鑰或跑示範資料。自帶金鑰者一律走自己的，不吃這裡的配額。*/
 const WORKER_URL = "https://travel-planner.lien2fish.workers.dev";
+/* Turnstile 人機驗證（只用於免金鑰的後端路徑；自帶金鑰者不經過 Worker）。
+   ⚠️ 上線順序：先填這個 site key 並部署前端，**之後**才在 Worker 設
+   TURNSTILE_SECRET。反過來做會讓所有免金鑰請求在前端補上 token 前全部 403。*/
+const TURNSTILE_SITEKEY = "";
 /* 支援自帶金鑰：依金鑰前綴自動判斷供應商，兩邊都用 structured outputs 保證合法 JSON。
    Claude Haiku 4.5 為預設（實測 Sonnet 5 貴 11 倍慢 5.7 倍，只多 14pt 定位率，不值得）。*/
 const PROVIDERS = {
@@ -838,14 +842,52 @@ async function generatePlans(cond) {
   return plans;
 }
 
+/* ---- Turnstile：無形驗證，只在免金鑰路徑取 token ---- */
+let tsWidget = null;
+
+function initTurnstile() {
+  if (!TURNSTILE_SITEKEY) return;
+  const s = document.createElement("script");
+  s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+  s.async = true;
+  s.defer = true;
+  document.head.appendChild(s);
+}
+
+/* token 是一次性且會過期，所以每次請求都重新取一個 */
+function turnstileToken() {
+  if (!TURNSTILE_SITEKEY) return Promise.resolve(null);
+  if (!window.turnstile) return Promise.reject(new Error("人機驗證載入失敗，請重新整理"));
+  return new Promise((resolve, reject) => {
+    let done = false;
+    const ok = (t) => { if (!done) { done = true; resolve(t); } };
+    const fail = (msg) => { if (!done) { done = true; reject(new Error(msg)); } };
+    if (tsWidget === null) {
+      tsWidget = window.turnstile.render("#cf-turnstile", {
+        sitekey: TURNSTILE_SITEKEY,
+        appearance: "interaction-only",
+        execution: "execute",
+        callback: ok,
+        "error-callback": () => fail("人機驗證失敗，請重新整理再試"),
+        "timeout-callback": () => fail("人機驗證逾時，請再試一次"),
+      });
+    } else {
+      window.turnstile.reset(tsWidget);
+    }
+    window.turnstile.execute(tsWidget);
+    setTimeout(() => fail("人機驗證逾時，請再試一次"), 30000);
+  });
+}
+
 /* 後端代打：只送表單欄位，prompt 與金鑰都在 Worker 那邊 */
 async function callWorker(cond) {
+  const turnstileToken_ = await turnstileToken();
   let res;
   try {
     res = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ params: cond }),
+      body: JSON.stringify({ params: cond, turnstileToken: turnstileToken_ }),
     });
   } catch (e) {
     throw new Error("連不上規劃服務，請檢查網路");
@@ -1087,6 +1129,7 @@ $("clearKeyBtn").onclick = () => {
 
 /* ---------- 啟動 ---------- */
 renderKeyState();
+initTurnstile();
 renderAll();
 renderKids();
 initMap();
