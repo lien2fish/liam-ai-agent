@@ -38,6 +38,32 @@ const PROVIDERS = {
       return (d.content || []).filter((b) => b.type === "text").map((b) => b.text).join("");
     },
   },
+  gemini: {
+    label: "Gemini",
+    model: "gemini-2.5-flash",
+    // Google 金鑰有新舊兩種格式：舊的 AIzaSy…、新的 AQ.…
+    match: (k) => k.startsWith("AIza") || k.startsWith("AQ."),
+    url: (k, model) =>
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(k)}`,
+    headers: () => ({ "content-type": "application/json" }),
+    body: (model, prompt) => ({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema: toGeminiSchema(PLAN_SCHEMA),
+        maxOutputTokens: 16000,
+        // 思考型模型不關掉會把 token 用在思考上、輸出被截斷成不合法 JSON
+        thinkingConfig: { thinkingBudget: 0 },
+      },
+    }),
+    parse: (d) => {
+      const c = (d.candidates || [])[0];
+      if (!c) throw new Error((d.error && d.error.message) || "AI 沒有回傳內容，請再試一次");
+      if (c.finishReason === "MAX_TOKENS") throw new Error("行程太長被截斷，請減少天數再試");
+      if (c.finishReason === "SAFETY") throw new Error("AI 婉拒了這個請求，換個描述試試");
+      return ((c.content || {}).parts || []).map((x) => x.text || "").join("");
+    },
+  },
   openai: {
     label: "ChatGPT",
     model: "gpt-4o-mini",
@@ -63,8 +89,20 @@ const PROVIDERS = {
   },
 };
 
+/* Gemini 的 responseSchema 是 OpenAPI 子集，不吃 additionalProperties，帶了會 400 */
+function toGeminiSchema(s) {
+  if (Array.isArray(s)) return s.map(toGeminiSchema);
+  if (!s || typeof s !== "object") return s;
+  const out = {};
+  for (const [k, v] of Object.entries(s)) {
+    if (k === "additionalProperties") continue;
+    out[k] = typeof v === "object" ? toGeminiSchema(v) : v;
+  }
+  return out;
+}
+
 function providerFor(key) {
-  return Object.values(PROVIDERS).find((p) => p.match(key)) || PROVIDERS.anthropic;
+  return Object.values(PROVIDERS).find((p) => p.match(key)) || null;
 }
 function modelFor(p) {
   return (localStorage.getItem(MODEL_LS) || "").trim() || p.model;
@@ -903,10 +941,16 @@ async function callPlan(cond, key, avoidDupes) {
     ? `\n\n⚠️ 上一次的結果把「${avoidDupes.join("、")}」重複排在不同天，這次務必讓每個地點只出現一次。`
     : "";
   const p = providerFor(key);
+  if (!p) {
+    throw new Error(
+      "認不出這個金鑰的格式。目前支援 Claude（sk-ant-…）、ChatGPT（sk-…）、Gemini（AIza… 或 AQ.…）"
+    );
+  }
   const model = modelFor(p);
+  const url = typeof p.url === "function" ? p.url(key, model) : p.url;
   let res;
   try {
-    res = await fetch(p.url, {
+    res = await fetch(url, {
       method: "POST",
       headers: p.headers(key),
       body: JSON.stringify(p.body(model, planPrompt(cond) + extra)),
@@ -1101,7 +1145,9 @@ function renderKeyState() {
       : "尚未設定，智慧規劃跑內建示範方案";
   } else {
     const p = providerFor(k);
-    el.keyState.textContent = `✅ 已設定 ${p.label}（${k.slice(0, 7)}…${k.slice(-4)}）· 模型 ${modelFor(p)}`;
+    el.keyState.textContent = p
+      ? `✅ 已設定 ${p.label}（${k.slice(0, 7)}…${k.slice(-4)}）· 模型 ${modelFor(p)}`
+      : "⚠️ 認不出這個金鑰格式，支援 Claude（sk-ant-…）／ChatGPT（sk-…）／Gemini（AIza… 或 AQ.…）";
   }
   const m = (localStorage.getItem(MODEL_LS) || "").trim();
   $("modelState").textContent = m ? `目前指定：${m}` : "使用各家預設模型";
