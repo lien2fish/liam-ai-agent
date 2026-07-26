@@ -11,7 +11,7 @@ const ALLOWED_ORIGINS = [
   "https://lien2fish.github.io",
   "http://localhost:8899", // 本機測試
 ];
-const DAILY_GLOBAL_CAP = 40; // 全站每日熔斷：沒有導購收入抵銷，抓保守值（每月最壞約 NT$1,000）
+const DAILY_GLOBAL_CAP = 10; // 全站每日熔斷：沒有導購收入抵銷，抓保守值（每月最壞約 NT$750）
 const DAILY_PER_IP_CAP = 5;  // 每人每日
 const CATS = ["景點", "住宿", "餐飲", "交通", "其他"];
 const MODEL = "claude-haiku-4-5"; // 不可帶 output_config.effort，Haiku 不支援會 400
