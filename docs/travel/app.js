@@ -5,6 +5,9 @@ const LS_KEY = "tripPlanner.v1";
 const CATS = ["景點", "住宿", "餐飲", "交通", "其他"];
 const KEY_LS = "anthropicKey";
 const MODEL_LS = "aiModel";
+/* 後端代打：部署 travel_worker 後把網址填這裡，一般使用者就免自備金鑰。
+   留空＝只能自帶金鑰或跑示範資料。自帶金鑰者一律走自己的，不吃這裡的配額。*/
+const WORKER_URL = "";
 /* 支援自帶金鑰：依金鑰前綴自動判斷供應商，兩邊都用 structured outputs 保證合法 JSON。
    Claude Haiku 4.5 為預設（實測 Sonnet 5 貴 11 倍慢 5.7 倍，只多 14pt 定位率，不值得）。*/
 const PROVIDERS = {
@@ -792,7 +795,8 @@ const allDupes = (plans) => [...new Set(plans.flatMap(findDupes))];
 
 async function generatePlans(cond) {
   const key = apiKey();
-  if (!key) { await sleep(900); return mockPlans(cond); } // 未設金鑰＝示範行程
+  if (!key && WORKER_URL) return callWorker(cond); // 免金鑰：走後端配額
+  if (!key) { await sleep(900); return mockPlans(cond); } // 兩者皆無＝示範行程
 
   let plans = (await callPlan(cond, key)).plans || [];
   // Haiku 偶爾會跨天重排同一個地點，重生一次通常就乾淨了
@@ -802,6 +806,23 @@ async function generatePlans(cond) {
     if (retry.length && allDupes(retry).length <= bad.length) plans = retry;
   }
   return plans;
+}
+
+/* 後端代打：只送表單欄位，prompt 與金鑰都在 Worker 那邊 */
+async function callWorker(cond) {
+  let res;
+  try {
+    res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ params: cond }),
+    });
+  } catch (e) {
+    throw new Error("連不上規劃服務，請檢查網路");
+  }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.message || `規劃服務回應 ${res.status}`);
+  return data.plans || [];
 }
 
 async function callPlan(cond, key, avoidDupes) {
