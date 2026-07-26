@@ -857,11 +857,12 @@ function initTurnstile() {
 /* token 是一次性且會過期，所以每次請求都重新取一個 */
 function turnstileToken() {
   if (!TURNSTILE_SITEKEY) return Promise.resolve(null);
-  if (!window.turnstile) return Promise.reject(new Error("人機驗證載入失敗，請重新整理"));
+  const BYPASS = "，或到設定貼上自己的 API 金鑰即可略過驗證";
+  if (!window.turnstile) return Promise.reject(new Error("人機驗證載入失敗，請重新整理" + BYPASS));
   return new Promise((resolve, reject) => {
     let done = false;
     const ok = (t) => { if (!done) { done = true; resolve(t); } };
-    const fail = (msg) => { if (!done) { done = true; reject(new Error(msg)); } };
+    const fail = (msg) => { if (!done) { done = true; reject(new Error(msg + BYPASS)); } };
     if (tsWidget === null) {
       tsWidget = window.turnstile.render("#cf-turnstile", {
         sitekey: TURNSTILE_SITEKEY,
