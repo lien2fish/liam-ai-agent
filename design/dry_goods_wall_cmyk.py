@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-"""志工牆 RGB PNG → 調亮 → CMYK 送印檔（DeviceCMYK PDF 交三冠彩印 ＋ CMYK TIF 其他廠）。
+"""志工牆 RGB PNG → 調亮 → CMYK 送印檔（DeviceCMYK PDF 交三冠彩印 ＋ CMYK TIF 其他廠 ＋ 同內容 .ai）。
 原像素當 150dpi：3148×1344px = 53.3×22.8cm。實際板尺寸不同再改 DPI。
+.ai ＝與 PDF 同一份位元組另存副檔名（Illustrator 讀 PDF 相容檔）；牆面是照片合成、無法真向量化。
 """
 import os, zlib
 from PIL import Image, ImageCms, ImageEnhance
@@ -9,6 +10,7 @@ DESK = "/Users/lien/Desktop/鉅鑫管理顧問/鉅鑫專案/惜食廚房/惜食�
 SRC = DESK + "/dry_goods_wall_v20_志工照片版.png"
 PDF = DESK + "/dry_goods_wall_v20_CMYK.pdf"
 TIF = DESK + "/dry_goods_wall_v20_CMYK.tif"
+AI = DESK + "/dry_goods_wall_v20_CMYK.ai"
 ICC = "/System/Library/ColorSync/Profiles/Generic CMYK Profile.icc"
 DPI = 150
 BRIGHTNESS, COLOR = 1.12, 1.06  # 使用者要整體調亮(含背景)
@@ -70,10 +72,12 @@ def main():
         f.write(
             f"trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n".encode()
         )
+    with open(PDF, "rb") as f, open(AI, "wb") as g:
+        g.write(f.read())
+
     print(f"OK {W}x{H}px = {W/DPI*2.54:.1f}×{H/DPI*2.54:.1f}cm @{DPI}dpi")
-    print(
-        "PDF", os.path.getsize(PDF) / 1e6, "MB / TIF", os.path.getsize(TIF) / 1e6, "MB"
-    )
+    for label, path in (("PDF", PDF), ("TIF", TIF), ("AI", AI)):
+        print(label, round(os.path.getsize(path) / 1e6, 2), "MB")
 
 
 if __name__ == "__main__":
