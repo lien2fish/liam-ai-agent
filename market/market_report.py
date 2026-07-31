@@ -790,6 +790,83 @@ def save_markdown_report(md, prediction, date_str):
     path = REPORTS_DIR / f"市場日報_{date_str}.md"
     path.write_text("\n".join(lines), encoding="utf-8")
     log(f"  Markdown 已儲存：{path.name}")
+    return path
+
+
+# ── 產出驗證 ──────────────────────────────────────────────────────
+def verify(md, prediction, blocks, page_id, report_path):
+    """這支不會崩，只會安靜產出爛報告，所以驗的是「內容夠不夠格交件」。
+
+    硬性沒過 → 回傳 False，main 以 exit 1 收場，workflow 就不會 commit
+    半殘的報告；軟性只警告（Gemini 額度用罄是常態，不該天天擋掉整份日報）。
+    """
+    hard, soft = [], []
+
+    all_quotes = [d for g in md.values() for d in g]
+    valid = [d for d in all_quotes if d["price"]]
+    hard.append(
+        (
+            f"有效報價 {len(valid)}/{len(all_quotes)} 筆",
+            len(valid) * 2 >= len(all_quotes),
+        )
+    )
+
+    taiex = next((d for d in md["indices"] if d["code"] == "^TWII"), None)
+    hard.append(("台灣加權指數有報價", bool(taiex and taiex["price"])))
+
+    text = report_path.read_text(encoding="utf-8") if report_path.exists() else ""
+    hard.append(
+        (f"Markdown 共 {len(text.splitlines())} 行", len(text.splitlines()) >= 20)
+    )
+
+    missing = [s for s in ("全球指數", "宏觀指標", "台灣觀察清單") if s not in text]
+    hard.append(
+        (
+            "報告三大區塊齊全" + ("，缺 " + "、".join(missing) if missing else ""),
+            not missing,
+        )
+    )
+
+    # 分批 PATCH 中途失敗會留下半空白頁面，抓回來比對才看得出來
+    try:
+        got = len(
+            notion_req("GET", f"blocks/{page_id}/children?page_size=100").get(
+                "results", []
+            )
+        )
+        hard.append((f"Notion 區塊 {got}/{len(blocks)}", got == len(blocks)))
+    except Exception as e:
+        hard.append((f"Notion 頁面可讀取（{e}）", False))
+
+    soft.append(("Gemini 分析已取得", bool(prediction)))
+
+    ts = max((d["ts"] for d in valid), default=0)
+    age = (datetime.now() - datetime.fromtimestamp(ts)).days if ts else 99
+    soft.append((f"報價新鮮度 {age} 天前", age <= 4))  # 連假可能超過，看到再判斷
+
+    def base(code):
+        return str(code).split(".")[0]
+
+    held = {base(d["code"]) for d in md["stocks"] + md["us_stocks"] if d.get("holding")}
+    if held:
+        advised = {
+            base(h.get("code", "")) for h in prediction.get("holdings_advice", [])
+        }
+        soft.append(
+            (f"持股建議涵蓋 {len(held & advised)}/{len(held)} 檔", held <= advised)
+        )
+
+    if prediction:
+        score = prediction.get("sentiment_score")
+        soft.append((f"樂觀指數 {score}", isinstance(score, int) and 1 <= score <= 10))
+
+    print("\n{:<40} {}".format("驗證項目", "結果"))
+    print("-" * 52)
+    for name, passed in hard:
+        print("{:<40} {}".format(name, "✅" if passed else "❌"))
+    for name, passed in soft:
+        print("{:<40} {}".format(name, "✅" if passed else "⚠️"))
+    return all(p for _, p in hard)
 
 
 # ── Config ───────────────────────────────────────────────────────
@@ -840,10 +917,13 @@ def main():
     log(f"更新 Notion ({len(blocks)} blocks)...")
     update_notion_page(page_id, blocks)
 
-    save_markdown_report(md, prediction, today)
+    report_path = save_markdown_report(md, prediction, today)
 
-    log("✅ 完成！")
+    ok = verify(md, prediction, blocks, page_id, report_path)
+    log("✅ 完成！" if ok else "❌ 硬性驗證未過，不交件")
     log(f"   https://notion.so/{page_id.replace('-', '')}")
+    if not ok:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
