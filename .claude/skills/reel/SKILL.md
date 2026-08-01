@@ -113,3 +113,23 @@ YouTube 全新頻道，**團隊視角**（主講＝合作的專業甜點師朋�
 
 > 詳見 memory `project_music_reel.md`。
 
+
+---
+
+## 輸出編碼規格（2026-08-01 修，勿改回去）
+
+封面卡是事後 `concat` 壓進開頭，所以**封面卡與正片的編碼參數必須完全一致**：
+
+| 位置 | 必要參數 |
+|------|---------|
+| 正片編碼 | `-pix_fmt yuv420p -profile:v high -level 4.0 -movflags +faststart` |
+| 封面卡編碼 | `-color_range tv -profile:v high -level 4.0`、scale 加 `out_range=tv` |
+| concat | `-c:v copy -c:a aac ... -movflags +faststart`（畫面 copy，只重編音訊） |
+
+三者少任何一項，YouTube 都會在「處理中」跑完後的下一步報**「無法上傳影片」**：
+
+- concat 純 `-c copy` → 接縫 non-monotonic DTS
+- 沒 faststart → moov atom 在檔尾
+- 沒釘 pix_fmt/color_range → 正片與封面卡 profile 或色彩範圍不一致，`concat copy` 只保留第一段的 SPS/PPS，整支正片會用錯的解碼參數
+
+⚠️ 曾經誤判成「1.3 倍速造成 VFR」——**不是**，`-r 24` 本來就強制 CFR。詳見 memory `feedback_youtube_upload_reel`。
