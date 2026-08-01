@@ -572,13 +572,20 @@ def prepend_intro(out_mp4, card_jpg, dur=1.0):
             "-i",
             "anullsrc=r=48000:cl=stereo",
             "-vf",
-            "scale=1080:1920,format=yuv420p",
+            "scale=1080:1920:out_range=tv,format=yuv420p",
             "-c:v",
             "libx264",
             "-preset",
             "veryfast",
             "-crf",
             "20",
+            "-color_range",
+            "tv",
+            # profile/level 必須與正片一致：concat copy 只保留第一段的 SPS/PPS
+            "-profile:v",
+            "high",
+            "-level",
+            "4.0",
             "-c:a",
             "aac",
             "-ar",
@@ -597,8 +604,32 @@ def prepend_intro(out_mp4, card_jpg, dur=1.0):
     cc = os.path.join(tmp, "cc.txt")
     open(cc, "w").write(f"file '{intro}'\nfile '{os.path.abspath(out_mp4)}'\n")
     merged = os.path.join(tmp, "merged.mp4")
+    # 音訊必須重編：純 -c copy 在接縫會出 non-monotonic DTS，YouTube 處理完
+    # 才會在下一步報「無法上傳影片」。畫面仍 copy，正片不重編、零畫質損失。
     r = subprocess.run(
-        ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", cc, "-c", "copy", merged],
+        [
+            "ffmpeg",
+            "-y",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            cc,
+            "-c:v",
+            "copy",
+            "-c:a",
+            "aac",
+            "-ar",
+            "48000",
+            "-ac",
+            "2",
+            "-b:a",
+            "160k",
+            "-movflags",
+            "+faststart",
+            merged,
+        ],  # fmt: skip
         capture_output=True,
     )
     if r.returncode == 0 and os.path.getsize(merged) > os.path.getsize(out_mp4):
@@ -754,6 +785,14 @@ def build(cfg):
             "veryfast",
             "-crf",
             "20",
+            # 不釘死的話 pix_fmt 隨來源跑（444 素材會編成 High 4:4:4），
+            # 與封面卡的 yuv420p 對不上，concat copy 後解碼參數就錯了
+            "-pix_fmt",
+            "yuv420p",
+            "-profile:v",
+            "high",
+            "-level",
+            "4.0",
             "-c:a",
             "aac",
             "-ar",
@@ -764,6 +803,8 @@ def build(cfg):
             "160k",
             "-r",
             "24",
+            "-movflags",
+            "+faststart",
             out_mp4,
         ],
         capture_output=True,
