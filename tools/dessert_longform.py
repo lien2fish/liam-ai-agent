@@ -193,13 +193,20 @@ def prepend_intro(out_mp4, card_png, dur=1.0):
             "-i",
             "anullsrc=r=48000:cl=stereo",
             "-vf",
-            "scale=1080:1920,format=yuv420p",
+            "scale=1080:1920:out_range=tv,format=yuv420p",
             "-c:v",
             "libx264",
             "-preset",
             "veryfast",
             "-crf",
             "20",
+            "-color_range",
+            "tv",
+            # profile/level 必須與本片一致：concat copy 只保留第一段的 SPS/PPS
+            "-profile:v",
+            "high",
+            "-level",
+            "4.0",
             "-c:a",
             "aac",
             "-ar",
@@ -216,8 +223,30 @@ def prepend_intro(out_mp4, card_png, dur=1.0):
     cc = os.path.join(tmp, "cc.txt")
     open(cc, "w").write(f"file '{intro}'\nfile '{os.path.abspath(out_mp4)}'\n")
     merged = os.path.join(tmp, "merged.mp4")
+    # 音訊必須重編：純 -c copy 在接縫會出 non-monotonic DTS，YouTube 處理完
+    # 才會在下一步報「無法上傳影片」。畫面仍 copy，本片不重編、零畫質損失。
     r = subprocess.run(
-        ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", cc, "-c", "copy", merged],
+        [
+            "ffmpeg",
+            "-y",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            cc,
+            "-c:v",
+            "copy",
+            "-c:a",
+            "aac",
+            "-ar",
+            "48000",
+            "-b:a",
+            "160k",
+            "-movflags",
+            "+faststart",
+            merged,
+        ],  # fmt: skip
         capture_output=True,
     )
     if r.returncode == 0 and os.path.getsize(merged) > os.path.getsize(out_mp4):
@@ -403,7 +432,26 @@ def build(cfg):
     subprocess.run(
         ["ffmpeg", "-y", "-i", joined]
         + vfargs
-        + ["-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-r", "24", out_mp4],
+        + [
+            "-c:v",
+            "libx264",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "20",
+            "-r",
+            "24",
+            # pix_fmt/profile 要與封面卡一致，否則 concat copy 後解碼參數對不上
+            "-pix_fmt",
+            "yuv420p",
+            "-profile:v",
+            "high",
+            "-level",
+            "4.0",
+            "-movflags",
+            "+faststart",
+            out_mp4,
+        ],  # fmt: skip
         capture_output=True,
     )
     cov = cfg.get("cover")
@@ -641,6 +689,9 @@ def mix_bgm(video, style="warm"):
             "48000",
             "-b:a",
             "160k",
+            # 這是有 BGM 時的最後一道，faststart 要在這裡補回來
+            "-movflags",
+            "+faststart",
             out,
         ],
         capture_output=True,
