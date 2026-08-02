@@ -30,6 +30,7 @@ def load_corrections():
         for group, pairs in raw.items()
         if not group.startswith("_")
         for wrong, right in pairs.items()
+        if "勿誤改" not in right  # 白名單：這是正確詞，不該當錯字警告
     }
 
 
@@ -158,6 +159,49 @@ def check_coverage(offs, caps, issues):
             )
 
 
+def check_gaps(offs, caps, transcript, issues):
+    """段落內「有講話卻沒字幕」的空檔。
+
+    原本只驗「整段沒字幕」，但實際踩到的是段內漏句——尤其對話式影片，
+    另一個人講的話容易被漏掉，成片就會出現有人聲卻沒字幕的段落。
+    """
+    if not transcript:
+        return
+    for i, (cs, svi, s, e, a) in enumerate(offs):
+        avi, as_, ae = a if a else (svi, s, e)
+        for t in transcript.get(avi, []):
+            if not (as_ <= t["start"] <= ae) or len(t["text"]) < 4:
+                continue
+            # 用區間重疊判定，不用起點比對：Scribe 的段落起點常含前面的停頓，
+            # 起點差幾秒但內容其實已經有字幕，用起點會一直誤報
+            span = t["end"] - t["start"]
+            overlap = sum(
+                max(0.0, min(ce, t["end"]) - max(cs2, t["start"]))
+                for vi, cs2, ce, _, _ in caps
+                if vi == avi
+            )
+            covered = overlap >= span * 0.4
+            if not covered and (t["end"] - t["start"]) >= 1.5:
+                who = "" if t.get("fg", True) else "旁人 "
+                issues.append(
+                    ("⚠️", f'seg{i} {t["start"]:.1f}s 有人講話沒字幕：{who}「{t["text"][:24]}」')
+                )
+
+
+def load_transcripts(videos):
+    """找同名的 *_scribe.json 逐字稿；沒有就跳過段內覆蓋檢查。"""
+    import glob
+
+    out = {}
+    for vi, v in enumerate(videos):
+        base = os.path.splitext(os.path.basename(v))[0]
+        for cand in glob.glob(f"素材/transcripts/{base}*.json"):
+            if "scribe" in cand:
+                out[vi] = json.load(open(cand, encoding="utf-8"))
+                break
+    return out
+
+
 def check_text(caps, issues):
     corrections = load_corrections()
     for n, (vi, s, e, txt, kw) in enumerate(caps):
@@ -225,6 +269,7 @@ def check_config(path):
     check_segments(videos, segs, issues)
     hit = check_cues(offs, newt, caps, issues)
     check_coverage(offs, caps, issues)
+    check_gaps(offs, caps, load_transcripts(videos), issues)
     check_text(caps, issues)
     check_cover(videos, segs, cfg, issues)
 
