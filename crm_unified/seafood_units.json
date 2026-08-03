@@ -1,0 +1,12 @@
+{
+  "_說明": "海產原表未標明庫存數量的單位，這裡逐項補。unit=數量單位；catty_per_unit=每單位幾台斤（進價以斤計時用來換算成本）；省略 catty_per_unit 表示進價本身就是每單位的價格，直接數量×進價。",
+  "台灣鮑魚": { "unit": "顆", "catty_per_unit": 0.25 },
+  "巨大虎蝦": { "unit": "盒" },
+  "一台斤/紅喉": { "unit": "尾", "catty_per_unit": 1 },
+  "一台斤/紅條": { "unit": "尾", "catty_per_unit": 1 },
+  "家庭/肉魚(二入)": { "unit": "包", "catty_per_unit": null },
+  "家庭/赤宗": { "unit": "包", "catty_per_unit": null },
+  "家庭/紅喉": { "unit": "包", "catty_per_unit": null },
+  "家庭/紅條": { "unit": "包", "catty_per_unit": null },
+  "家庭/老鼠斑": { "unit": "包", "catty_per_unit": null }
+}
