@@ -201,21 +201,20 @@ def rebuild_audio(cfg, bgm_vol, tmp, voice_boost=0, voice_target=None,
     videos = cfg["videos"] if "videos" in cfg else [cfg["video"]]
     speed = cfg.get("speed", 1.3)
     af = cfg.get("af", "highpass=f=100,afftdn=nf=-28,speechnorm=e=6.25:r=0.00015")
+    post = ""
     if denoise:
         # 原鏈只做輕度降噪，且 speechnorm 在無人聲時會把環境噪音一起拉高。
         # 強化：切掉語音頻段外的低頻隆隆與高頻嘶聲、加重降噪、補人聲清晰度
         # 的 3kHz 齒音帶，最後用 limiter 保護峰值。
+        # 增益必須加在 speechnorm/限幅器「之前」——加在之後等於把已經壓到
+        # 0.92 的訊號再乘好幾倍，最終限幅器只能死命壓，聽起來就是爆音
         af = (
-            # 頻段收窄到人聲帶，切掉低頻隆隆與高頻嘶聲
             "highpass=f=160,lowpass=f=6500,"
             "afftdn=nf=-48:tn=1,"
-            # 噪音閘門吃掉「同一句話裡字與字之間」的環境音——DUCK 只處理
-            # 整段沒人講話的空檔，字縫要靠這個。實測字縫降 21dB、人聲只掉 0.2dB
             "agate=threshold=0.012:ratio=4:attack=8:release=180,"
-            "equalizer=f=2800:t=q:w=1.4:g=5,"
-            "speechnorm=e=10:r=0.0003:l=1,"
-            "alimiter=limit=0.92"
+            "equalizer=f=2800:t=q:w=1.4:g=5"
         )
+        post = ",speechnorm=e=10:r=0.0003:l=1,alimiter=limit=0.92"
 
     parts, total = [], 0.0
     for i, x in enumerate(cfg["segments"]):
@@ -243,6 +242,7 @@ def rebuild_audio(cfg, bgm_vol, tmp, voice_boost=0, voice_target=None,
         vf = af_seg + boost_filter(rg, g)
         if duck:
             vf += duck_filter(gaps_of(all_speech(cfg, src_i, ss, ss + dur), dur), duck)
+        vf += post  # 正規化與限幅擺最後，吸收前面所有增益
         run(["ffmpeg", "-y", "-ss", str(ss), "-t", str(dur), "-i", videos[src_i],
              "-vn", "-af", vf, "-ar", "48000", "-ac", "2", p])  # fmt: skip
         if a and dur < (e - s):  # 借音較短：補靜音到畫面長度
