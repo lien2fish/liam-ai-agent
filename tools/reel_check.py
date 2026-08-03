@@ -169,6 +169,28 @@ CORR = {
 }
 
 
+def user_verified():
+    """驗收清單裡標成 present 的字幕＝使用者親耳確認過的內容。
+
+    這些句子逐字稿常抓不到或聽錯（收音差、專有名詞），拿逐字稿比對只會
+    一直誤報，直接豁免。
+    """
+    p = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "reels", "驗收清單.json",
+    )
+    if not os.path.exists(p):
+        return set()
+    led = json.load(open(p, encoding="utf-8"))
+    return {
+        e["值"]
+        for g, es in led.items()
+        if not g.startswith("_")
+        for e in es
+        if e.get("規則") == "present" and isinstance(e.get("值"), str)
+    }
+
+
 def check_wording(caps, transcript, issues):
     """字幕文字 vs 該時段實際說出的字。
 
@@ -179,7 +201,10 @@ def check_wording(caps, transcript, issues):
 
     if not transcript:
         return
+    verified = user_verified()
     for n, (vi, s, e, txt, kw) in enumerate(caps):
+        if txt in verified:  # 使用者親耳確認過的內容，逐字稿聽錯不算數
+            continue
         words = [
             w["w"]
             for seg in transcript.get(vi, [])
