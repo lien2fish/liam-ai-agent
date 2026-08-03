@@ -11,6 +11,7 @@ build 約 5 倍實時，2 分鐘的片重跑一次要 10 分鐘。這支在幾�
 
 import json
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -159,6 +160,51 @@ def check_coverage(offs, caps, issues):
             )
 
 
+CORR = {
+    w: r.split("（")[0]
+    for g, pairs in json.load(open(CORRECTIONS, encoding="utf-8")).items()
+    if isinstance(pairs, dict) and not g.startswith("_")
+    for w, r in pairs.items()
+    if "勿誤改" not in r and "同上" not in r and "幻覺" not in r
+}
+
+
+def check_wording(caps, transcript, issues):
+    """字幕文字 vs 該時段實際說出的字。
+
+    cue 對得上時間軸不代表內容對得上——把長句濃縮改寫、時間卻照抄原段落，
+    字幕就會在他講別的內容時停在螢幕上。逐詞比對才驗得出來。
+    """
+    import difflib
+
+    if not transcript:
+        return
+    for n, (vi, s, e, txt, kw) in enumerate(caps):
+        words = [
+            w["w"]
+            for seg in transcript.get(vi, [])
+            for w in seg.get("words", [])
+            if s - 0.15 <= w["s"] <= e + 0.15
+        ]
+        # 去掉全部標點再算長度：只剩一兩個殘字時無從比對，那是逐字稿沒抓到的
+        # 區間（人工聽寫補的字幕），不該被判成不符
+        actual = re.sub(r"[，。、？！,.?!\s]", "", "".join(words))
+        for wrong, right in CORR.items():  # 字幕已套錯字表，比對前要一起套
+            actual = actual.replace(wrong, right)
+        if len(actual) < 5:
+            continue
+        r = difflib.SequenceMatcher(None, txt, actual).ratio()
+        if r < 0.5:
+            issues.append(
+                ("❌", f"cue[{n}] 文字與該時段不符（相似度 {r:.0%}）\n"
+                       f"        字幕：{txt}\n        實際：{actual[:30]}")
+            )
+        elif r < 0.65:
+            issues.append(
+                ("⚠️", f"cue[{n}] 文字偏離（{r:.0%}）「{txt}」← 實際「{actual[:22]}」")
+            )
+
+
 def check_gaps(offs, caps, transcript, issues):
     """段落內「有講話卻沒字幕」的空檔。
 
@@ -269,7 +315,9 @@ def check_config(path):
     check_segments(videos, segs, issues)
     hit = check_cues(offs, newt, caps, issues)
     check_coverage(offs, caps, issues)
-    check_gaps(offs, caps, load_transcripts(videos), issues)
+    tr = load_transcripts(videos)
+    check_gaps(offs, caps, tr, issues)
+    check_wording(caps, tr, issues)
     check_text(caps, issues)
     check_cover(videos, segs, cfg, issues)
 

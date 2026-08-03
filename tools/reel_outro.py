@@ -123,6 +123,9 @@ def normalize(outro, tmp):
                f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2,format=yuv420p",
         "-c:v", "libx264", "-preset", "veryfast", "-crf", "18",
         "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.0", "-color_range", "tv",
+        # 外部片尾常匯出成 0dB 滿格，跟正片講話（約 −25dB）差 25dB，
+        # 看完影片會被音效嚇到，平台響度正規化也會反過來壓低整支
+        "-af", "volume=-12dB",
         "-c:a", "aac", "-ar", "48000", "-ac", "2", "-b:a", "160k",
         "-r", str(FPS), "-video_track_timescale", "12288", out,
     ])  # fmt: skip
