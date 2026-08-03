@@ -52,6 +52,14 @@ ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
 
 # ---------- 音訊/轉錄 ----------
+
+def _cleanup(path):
+    """用完就清。這幾支工具原本只建暫存不清理，跑幾十輪累積 394 個目錄、
+    塞爆 113GB 磁碟，導致長片換音軌中途失敗（No space left on device）。"""
+    import shutil
+
+    shutil.rmtree(path, ignore_errors=True)
+
 def extract_audio(video, out=None):
     out = out or tempfile.mktemp(suffix=".wav")
     subprocess.run(
@@ -632,9 +640,11 @@ def prepend_intro(out_mp4, card_jpg, dur=1.0):
         ],  # fmt: skip
         capture_output=True,
     )
-    if r.returncode == 0 and os.path.getsize(merged) > os.path.getsize(out_mp4):
+    ok = r.returncode == 0 and os.path.getsize(merged) > os.path.getsize(out_mp4)
+    if ok:
         os.replace(merged, out_mp4)
-    else:
+    _cleanup(tmp)
+    if not ok:
         raise RuntimeError("intro concat 失敗")
 
 
@@ -827,6 +837,7 @@ def build(cfg):
             print(f"  封面卡已壓進開頭 {intro_dur:.0f} 秒", flush=True)
     # 發文案
     write_captions(cfg, os.path.join(out_dir, f"{subject}_發文案.md"))
+    _cleanup(tmp)
     print("完成，已存到", out_dir)
     print(" ", f"{subject}.mp4  (約{total/speed:.0f}秒, {speed}x)")
     if cov:

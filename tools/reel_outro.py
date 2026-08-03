@@ -34,6 +34,14 @@ TEXT_Y, TEXT_SIZE = 1120, 76
 TEXT = "記得按讚訂閱"
 
 
+
+def _cleanup(path):
+    """用完就清。這幾支工具原本只建暫存不清理，跑幾十輪累積 394 個目錄、
+    塞爆 113GB 磁碟，導致長片換音軌中途失敗（No space left on device）。"""
+    import shutil
+
+    shutil.rmtree(path, ignore_errors=True)
+
 def run(args):
     r = subprocess.run(args, capture_output=True)
     if r.returncode != 0:
@@ -109,6 +117,7 @@ def make(avatar_path, out):
         "-c:a", "aac", "-ar", "48000", "-ac", "2", "-b:a", "160k",
         "-r", str(FPS), "-shortest", "-movflags", "+faststart", out,
     ])  # fmt: skip
+    _cleanup(tmp)
     print(f"✅ 片尾卡：{out}（{DUR}s）")
 
 
@@ -135,6 +144,13 @@ def normalize(outro, tmp):
 def append(outro, videos):
     tmp0 = tempfile.mkdtemp()
     outro = normalize(outro, tmp0)
+    try:
+        _append(outro, videos, tmp0)
+    finally:
+        _cleanup(tmp0)
+
+
+def _append(outro, videos, tmp0):
     for v in videos:
         if not os.path.exists(v):
             print(f"  ⚠️ 找不到 {v}")
@@ -152,6 +168,7 @@ def append(outro, videos):
             "-movflags", "+faststart", merged,
         ])  # fmt: skip
         os.replace(merged, v)
+        _cleanup(tmp)
         print(f"  ✅ {os.path.basename(v)}")
 
 
