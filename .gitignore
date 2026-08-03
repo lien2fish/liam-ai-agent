@@ -45,3 +45,6 @@ tools/assets/
 *.MP4
 *.m4v
 *.wav
+
+# 影片成品（repo 為 public，且檔案巨大）
+成品/
