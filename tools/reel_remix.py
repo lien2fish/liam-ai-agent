@@ -25,6 +25,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import reel_maker as rm
 
 
+
+def _cleanup(path):
+    """用完就清。這幾支工具原本只建暫存不清理，跑幾十輪累積 394 個目錄、
+    塞爆 113GB 磁碟，導致長片換音軌中途失敗（No space left on device）。"""
+    import shutil
+
+    shutil.rmtree(path, ignore_errors=True)
+
 def run(args):
     r = subprocess.run(args, capture_output=True)
     if r.returncode != 0:
@@ -211,10 +219,29 @@ def rebuild_audio(cfg, bgm_vol, tmp, voice_boost=0, voice_target=None,
         af = (
             "highpass=f=160,lowpass=f=6500,"
             "afftdn=nf=-48:tn=1,"
-            "agate=threshold=0.012:ratio=4:attack=8:release=180,"
+            # 閘門放慢：attack 8→25ms、ratio 4→2、release 180→450ms、加 knee
+            # 原設定開關太快，會在字與字之間抽動
+            "agate=threshold=0.010:ratio=2:attack=30:release=600:knee=8,"
             "equalizer=f=2800:t=q:w=1.4:g=5"
         )
-        post = ",speechnorm=e=10:r=0.0003:l=1,alimiter=limit=0.92"
+        # 音量平滑改用 dynaudnorm（1 秒滑動視窗）而非 speechnorm。
+        # speechnorm 逐個音節拉平音量，實測把逐字抖動從 4.3 惡化到 5.3dB；
+        # dynaudnorm 在視窗內平滑，三支素材實測都壓到 5.5dB 以下，
+        # 字縫雜音還更低。音量高低仍交給逐段量測的增益負責。
+        # dynaudnorm 會把它之前的增益吃掉（它自己做正規化），所以補音量要加在
+        # 它後面、限幅器前面
+        # speechnorm 的擴張倍率必須壓低：e=10 會逐個音節去拉平音量，實測把
+        # 逐字抖動從 4.3 惡化到 5.3dB。e=4 讓抖動回到原始素材的水準，音量
+        # 則交給前面逐段量測的增益負責，兩者不互搶。
+        # （試過 dynaudnorm，平滑效果略好但會把段落增益整個吃掉、音量掉 8dB）
+        # 平滑方式依素材而定，config 用 "smooth" 指定：
+        #   speechnorm（預設）— 音量準確，但壓不住本身起伏就大的現場收音
+        #   dynaudnorm        — 1 秒視窗平滑，抖動更低，但會吃掉段落增益差，
+        #                       只適合段落來源性質相近的片子
+        if cfg.get("smooth") == "dynaudnorm":
+            post = ",dynaudnorm=f=1000:g=31:p=0.95:m=8,volume=4dB,alimiter=limit=0.92"
+        else:
+            post = ",speechnorm=e=4:r=0.0001:l=1,alimiter=limit=0.92"
 
     parts, total = [], 0.0
     for i, x in enumerate(cfg["segments"]):
@@ -267,6 +294,9 @@ def rebuild_audio(cfg, bgm_vol, tmp, voice_boost=0, voice_target=None,
               if not cfg.get("mute_source") else "[1:a]alimiter=limit=0.89[a]")  # fmt: skip
         run(["ffmpeg", "-y", "-i", joined, "-i", bed, "-filter_complex", fc,
              "-map", "[a]", out])  # fmt: skip
+        # bgm_bed() 用 mktemp 產生，長片的 BGM wav 可達 64MB，不刪會累積
+        if os.path.exists(bed):
+            os.remove(bed)
     else:
         run(["ffmpeg", "-y", "-i", joined, "-af", f"atempo={speed}", out])
     return out
@@ -314,6 +344,7 @@ def main():
          "-c:v", "copy", "-c:a", "aac", "-ar", "48000", "-b:a", "160k",
          "-movflags", "+faststart", "-shortest", merged])  # fmt: skip
     os.replace(merged, mp4)
+    _cleanup(tmp)
 
     lvl = subprocess.run(["ffmpeg", "-i", mp4, "-vn", "-af", "volumedetect", "-f", "null", "-"],
                          capture_output=True).stderr.decode()  # fmt: skip

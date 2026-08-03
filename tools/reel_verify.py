@@ -30,6 +30,7 @@ CREST_MIN = 9.0  # 低於此值代表被過度限幅，人聲會有壓扁感
 PEAK_MAX = -1.0  # dBFS
 NOISE_MARGIN = 6.0  # 雜音至少要比人聲低這麼多
 SPEAKER_GAP = 6.0  # 兩位講者音量差上限
+JITTER_MAX = 5.5  # 逐字抖動上限（原始音訊約 4.7dB）
 
 
 
@@ -39,6 +40,12 @@ COMMON_WORDS = ["野生", "養殖", "公斤", "台斤", "漁會", "價格", "彈
                 "大小", "虱目", "土魠", "白蝦", "文蛤", "蛤蜊", "吳郭", "紅條", "崁仔",
                 "龜吼", "集散", "散客", "店家", "魚貨", "單位", "計算", "冷凍", "保鮮"]
 
+
+
+def _cleanup(path):
+    import shutil
+
+    shutil.rmtree(path, ignore_errors=True)
 
 def applies(entry, name):
     return "*" in entry["適用"] or any(a in name for a in entry["適用"])
@@ -157,6 +164,29 @@ def slice_db(A, sr, ranges):
     return db(np.concatenate(ch)) if ch else None
 
 
+def raw_jitter(cfg):
+    """量原始素材的逐字抖動，當作處理後的合理基準。"""
+    try:
+        segs = [list(x["v"]) if isinstance(x, dict) else list(x) for x in cfg["segments"]]
+        vals = []
+        for vi, s, e in segs[:3]:
+            wav = tempfile.mktemp(suffix=".wav")
+            subprocess.run(["ffmpeg", "-y", "-ss", str(s), "-t", str(min(40, e - s)),
+                            "-i", cfg["videos"][vi], "-vn", "-ac", "1", "-ar", "8000", wav],
+                           capture_output=True)  # fmt: skip
+            a, sr = load_wav(wav)
+            os.remove(wav)
+            n = int(0.1 * sr)
+            fr = [np.sqrt(np.mean(a[i : i + n] ** 2)) for i in range(0, len(a) - n, n)]
+            d = 20 * np.log10(np.array(fr) + 1e-9)
+            d = d[d > d.max() - 22]
+            if len(d) > 8:
+                vals.append(float(np.std(np.diff(d))))
+        return max(vals) if vals else None
+    except Exception:
+        return None
+
+
 def audio_checks(cfg, A, sr, ok):
     peak = float(20 * np.log10(np.abs(A).max() + 1e-9))
     ok.append((f"峰值 {peak:.2f}dB（上限 {PEAK_MAX}）", peak <= PEAK_MAX))
@@ -173,6 +203,27 @@ def audio_checks(cfg, A, sr, ok):
             (f"人聲動態 crest {crest:.1f}dB（下限 {CREST_MIN}）", crest >= CREST_MIN)
         )
 
+    if mine:
+        # 逐字抖動：相鄰 0.1 秒的音量變化量。speechnorm 擴張倍率過高時會
+        # 逐個音節去拉平音量，聽起來就是「一個字大聲一個字小聲」。
+        # 原始音訊實測 4.7dB，處理後不該比它差太多。
+        fr = []
+        for a, b in mine:
+            seg = A[int(a * sr) : int(b * sr)]
+            n = int(0.1 * sr)
+            fr += [np.sqrt(np.mean(seg[i : i + n] ** 2)) for i in range(0, len(seg) - n, n)]
+        if len(fr) > 8:
+            d = 20 * np.log10(np.array(fr) + 1e-9)
+            d = d[d > d.max() - 22]
+            jit = float(np.std(np.diff(d)))
+            # 絕對門檻不合理：IMG_4228 原始音訊本身就有 5.9dB 抖動（現場收音、
+            # 講話時會轉頭移動），處理再好也降不到 5.5。改成比對原始素材，
+            # 只要處理沒把它弄得更抖就算過。
+            raw = raw_jitter(cfg)
+            limit = max(JITTER_MAX, raw + 0.4) if raw else JITTER_MAX
+            note = f"（原始 {raw:.1f}，上限 {limit:.1f}）" if raw else f"（上限 {limit}）"
+            ok.append((f"逐字抖動 {jit:.1f}dB{note}", jit <= limit))
+
     m = slice_db(A, sr, mine) if mine else None
     o = slice_db(A, sr, ranges_in_output(cfg, "others"))
     g = slice_db(A, sr, ranges_in_output(cfg, "gaps"))
@@ -186,16 +237,22 @@ def audio_checks(cfg, A, sr, ok):
 
 
 def segment_consistency(cfg, A, sr, ok):
-    """段與段之間不該忽大忽小——長片最容易出這個問題。"""
+    """段與段之間不該忽大忽小——長片最容易出這個問題。
+
+    只量「有人講話」的部分：整段平均會被停頓長短稀釋，停頓多的段落數字
+    偏低，但那不代表講話比較小聲。
+    """
     speed, intro = cfg.get("speed", 1.3), float(cfg.get("cover_intro", 1.0))
+    spoken = sorted(ranges_in_output(cfg, "mine") + ranges_in_output(cfg, "others"))
     levels, cum = [], 0.0
     for x in cfg["segments"]:
         v = list(x["v"]) if isinstance(x, dict) else list(x)
         _, s, e = v
         a, b = intro + cum / speed, intro + (cum + (e - s)) / speed
-        seg = A[int(a * sr) : int(b * sr)]
-        if len(seg):
-            levels.append(db(seg))
+        parts = [A[int(max(a, p) * sr) : int(min(b, q) * sr)] for p, q in spoken if q > a and p < b]
+        parts = [c for c in parts if len(c)]
+        if parts:
+            levels.append(db(np.concatenate(parts)))
         cum += e - s
     if len(levels) > 1:
         spread = max(levels) - min(levels)
@@ -240,6 +297,7 @@ def preflight(config):
     check_readability(cfg, ok)
     audio_checks(cfg, A, sr, ok)
     segment_consistency(cfg, A, sr, ok)
+    _cleanup(tmp)
     return report(f"渲染前檢查點：{cfg['subject']}", ok)
 
 
@@ -272,6 +330,7 @@ def final(config, mp4):
     dur = float([l for l in info.split("\n") if "Duration" in l][0].split(",")[0].split()[-1]
                 .replace(":", " ").split()[-1]) if "Duration" in info else 0
     ok.append(("片尾已接上（長度含 1.6s 片尾）", dur > 1.0))
+    _cleanup(tmp)
     return report(f"成品驗證：{os.path.basename(mp4)}", ok)
 
 
