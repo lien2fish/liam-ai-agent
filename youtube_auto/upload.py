@@ -10,21 +10,26 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(BASE)
 
 
-def _creds():
+def _creds(profile=None):
+    """profile=None＝預設頻道（The Unknown Hour）。
+    給 profile（如 "lien"）則改讀 YT_LIEN_OAUTH_* 環境變數／config/youtube_oauth_lien.json，
+    讓同一支上傳邏輯能服務不同頻道。"""
     e = os.environ
-    if e.get("YT_OAUTH_REFRESH_TOKEN"):
+    prefix = f"YT_{profile.upper()}_OAUTH_" if profile else "YT_OAUTH_"
+    if e.get(prefix + "REFRESH_TOKEN"):
         return (
-            e["YT_OAUTH_CLIENT_ID"],
-            e["YT_OAUTH_CLIENT_SECRET"],
-            e["YT_OAUTH_REFRESH_TOKEN"],
+            e[prefix + "CLIENT_ID"],
+            e[prefix + "CLIENT_SECRET"],
+            e[prefix + "REFRESH_TOKEN"],
         )
-    cfg = os.path.join(REPO, "config", "youtube_oauth.json")
+    name = f"youtube_oauth_{profile}.json" if profile else "youtube_oauth.json"
+    cfg = os.path.join(REPO, "config", name)
     c = json.load(open(cfg))
     return c["client_id"], c["client_secret"], c["refresh_token"]
 
 
-def access_token():
-    cid, csec, refresh = _creds()
+def access_token(profile=None):
+    cid, csec, refresh = _creds(profile)
     data = urllib.parse.urlencode(
         {
             "client_id": cid,
@@ -47,12 +52,18 @@ def upload(
     privacy="private",
     category="27",
     publish_at=None,
+    synthetic_media=False,
+    profile=None,
 ):
     """回傳 video_id。privacy: private/unlisted/public。
     publish_at（RFC3339 UTC，如 2026-06-29T10:00:00Z）有給時＝排程發布：
-    先設 private，YouTube 屆時自動轉公開。category 27=教育, 24=娛樂"""
-    token = access_token()
+    先設 private，YouTube 屆時自動轉公開。category 27=教育, 24=娛樂
+    synthetic_media=True＝揭露為 AI 生成/變造內容（等同 Studio 的「變造或合成內容」勾選）
+    profile＝憑證組（None＝The Unknown Hour；"lien"＝連老闆-產地到餐桌）"""
+    token = access_token(profile)
     status = {"privacyStatus": privacy, "selfDeclaredMadeForKids": False}
+    if synthetic_media:
+        status["containsSyntheticMedia"] = True
     if publish_at:
         status["privacyStatus"] = "private"
         status["publishAt"] = publish_at
@@ -96,13 +107,14 @@ def upload(
     resp = json.load(urllib.request.urlopen(put))
     vid = resp["id"]
     when = f"排程 {publish_at} 自動公開" if publish_at else privacy
-    print(f"✅ 已上傳：https://youtu.be/{vid}（{when}）", flush=True)
+    ai = "，已揭露 AI 生成" if synthetic_media else ""
+    print(f"✅ 已上傳：https://youtu.be/{vid}（{when}{ai}）", flush=True)
     return vid
 
 
-def set_thumbnail(video_id, image_path):
+def set_thumbnail(video_id, image_path, profile=None):
     """設定自訂縮圖（需頻道已完成驗證；scope youtube.upload 即可）"""
-    token = access_token()
+    token = access_token(profile)
     data = open(image_path, "rb").read()
     req = urllib.request.Request(
         f"https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId={video_id}",
