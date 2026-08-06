@@ -8,15 +8,23 @@
   1) python3 youtube_auto/oauth_setup.py            → 印出授權 URL
   2) Safari 開啟、登入、允許 → 跳轉 localhost:8888/?code=XXX，複製 code
   3) python3 youtube_auto/oauth_setup.py "貼上code"  → 換取並存 refresh token
+
+不同頻道用 --profile 分開存憑證（授權畫面務必選到對應頻道）：
+  python3 youtube_auto/oauth_setup.py --profile lien
+  python3 youtube_auto/oauth_setup.py --profile lien "貼上code"
 """
 import json, os, sys, urllib.parse, urllib.request
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(BASE)
 CLIENT = os.path.join(REPO, "config", "youtube_client.json")
-OUT = os.path.join(REPO, "config", "youtube_oauth.json")
 REDIRECT = "http://localhost:8888"
 SCOPE = "https://www.googleapis.com/auth/youtube.upload"
+
+
+def out_path(profile=None):
+    name = f"youtube_oauth_{profile}.json" if profile else "youtube_oauth.json"
+    return os.path.join(REPO, "config", name)
 
 
 def _client():
@@ -40,7 +48,7 @@ def auth_url():
     return "https://accounts.google.com/o/oauth2/v2/auth?" + q
 
 
-def exchange(code):
+def exchange(code, profile=None):
     cid, csec = _client()
     data = urllib.parse.urlencode(
         {
@@ -57,22 +65,31 @@ def exchange(code):
     r = json.load(urllib.request.urlopen(req))
     if "refresh_token" not in r:
         raise RuntimeError(f"未取得 refresh_token（請確認 prompt=consent）：{r}")
+    out = out_path(profile)
     json.dump(
         {
             "client_id": cid,
             "client_secret": csec,
             "refresh_token": r["refresh_token"],
         },
-        open(OUT, "w"),
+        open(out, "w"),
         indent=2,
     )
-    print(f"✅ refresh token 已存到 {OUT}")
+    print(f"✅ refresh token 已存到 {out}")
     print("   下一步：把 client_id / client_secret / refresh_token 設成 GitHub Secrets")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        exchange(sys.argv[1].strip())
+    args = sys.argv[1:]
+    profile = None
+    if "--profile" in args:
+        i = args.index("--profile")
+        profile = args[i + 1]
+        args = args[:i] + args[i + 2 :]
+    if args:
+        exchange(args[0].strip(), profile)
     else:
+        print(f"授權頻道：{profile or '預設 (The Unknown Hour)'}")
+        print("⚠️ 授權畫面請務必選到對應的 YouTube 頻道\n")
         print("在 Safari 開啟以下網址授權：\n")
         print(auth_url())
