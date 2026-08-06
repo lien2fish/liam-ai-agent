@@ -15,6 +15,7 @@
 """
 
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -34,13 +35,13 @@ TEXT_Y, TEXT_SIZE = 1120, 76
 TEXT = "記得按讚訂閱"
 
 
-
 def _cleanup(path):
     """用完就清。這幾支工具原本只建暫存不清理，跑幾十輪累積 394 個目錄、
     塞爆 113GB 磁碟，導致長片換音軌中途失敗（No space left on device）。"""
     import shutil
 
     shutil.rmtree(path, ignore_errors=True)
+
 
 def run(args):
     r = subprocess.run(args, capture_output=True)
@@ -121,14 +122,34 @@ def make(avatar_path, out):
     print(f"✅ 片尾卡：{out}（{DUR}s）")
 
 
+TARGET_CS = "bt470bg"  # reel_maker 成品的色彩矩陣
+CS_SYSTEM = {"bt709": "bt709", "bt470bg": "bt601-6-625", "smpte170m": "bt601-6-525"}
+
+
+def probe_colorspace(path):
+    """取影片的色彩矩陣標記，如 yuv420p(tv, bt709, progressive) → bt709。"""
+    err = subprocess.run(["ffmpeg", "-i", path], capture_output=True, text=True).stderr
+    m = re.search(r"yuv420p\(\w+, ([\w-]+)", err)
+    return m.group(1) if m else None
+
+
 def normalize(outro, tmp):
     """外部工具做的片尾時間基準常是 600 tbn，成品是 12288 tbn，直接 concat copy
     會在接縫出 non-monotonic DTS（YouTube 處理完才報無法上傳的元凶）。
     片尾只有一兩秒，重編成本可忽略。"""
     out = os.path.join(tmp, "outro_norm.mp4")
+    # 外部片尾多半是 bt709，成品是 bt470bg。concat copy 只保留正片的 SPS，
+    # 片尾會被套上正片的色彩參數解碼而偏色，所以先做真正的矩陣轉換。
+    src_cs = probe_colorspace(outro)
+    cs = ""
+    if src_cs in CS_SYSTEM and src_cs != TARGET_CS:
+        cs = (
+            f"colorspace=iall={CS_SYSTEM[src_cs]}:all={CS_SYSTEM[TARGET_CS]}"
+            f":irange=tv:range=tv,"
+        )
     run([
         "ffmpeg", "-y", "-i", outro,
-        "-vf", f"scale={W}:{H}:force_original_aspect_ratio=decrease,"
+        "-vf", f"{cs}scale={W}:{H}:force_original_aspect_ratio=decrease,"
                f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2,format=yuv420p",
         "-c:v", "libx264", "-preset", "veryfast", "-crf", "18",
         "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.0", "-color_range", "tv",

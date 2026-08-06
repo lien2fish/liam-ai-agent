@@ -82,7 +82,7 @@
 
 ### 流程
 1. **Claude Sonnet 4.6** 生成知識 JSON（5～6句＋畫圖提示詞 `illustration_prompt`，三大類：海鮮/捕魚/漁船）。`generate_knowledge()` 以 Claude 為主、Gemini 為 fallback（Claude API 當機時自動降級，當天不開天窗）。模型常數 `CLAUDE_MODEL` 在腳本頂端，省錢可改 Haiku 4.5。**注意：Sonnet 4.6 不支援 assistant message prefill**（會回 invalid_request_error），改用單一 user message＋從回應擷取 `{...}` JSON 子字串
-2. **Pollinations.ai**（免費免金鑰，model=flux）生成圖文對應水彩插圖（吃 Claude 寫的 `illustration_prompt`）。**2026-06-29 從 HF FLUX 改來**：HF Inference 免費額度用罄回 402，撐不起每日用量；Pollinations 免費、白底品質OK（去背門檻>228仍通過）
+2. **OpenAI `gpt-image-1-mini`**（quality=low、1024×1024）生成圖文對應水彩插圖（吃 Claude 寫的 `illustration_prompt`）。**2026-08-06 從 Pollinations 改來**：Pollinations 轉 pollen 付費制且 flux 下架，402 被包成 HTTP 500 難辨識。模型／品質可用 `OPENAI_IMAGE_MODEL`／`OPENAI_IMAGE_QUALITY` 覆蓋。實測畫風正確、去背門檻 245>228 通過，約 $0.005/張
 3. **PIL** 動態排版合成（插圖大小＋字型大小依內容量自動調整）
 4. **GitHub API** 上傳圖片 → raw.githubusercontent.com 公開 URL（repo 必須 public）
 5. **Meta Graph API v19.0** 同時發送：
@@ -90,7 +90,7 @@
    - FB 限時動態透過 `cross_post_ids` 跨發，**不使用** `photo_stories`（該端點持續回傳 unknown error）
 
 ### GitHub Secrets（7個）
-`ANTHROPIC_API_KEY`（文案＋畫圖prompt，**需新增**）/ `GEMINI_KEY`（fallback）/ `HF_TOKEN` / `IG_TOKEN` / `IG_ID` / `FB_PAGE_TOKEN` / `FB_PAGE_ID`
+`ANTHROPIC_API_KEY`（文案＋畫圖prompt）/ `OPENAI_API_KEY`（生圖）/ `GEMINI_KEY`（fallback）/ `HF_TOKEN`（已停用）/ `IG_TOKEN` / `IG_ID` / `FB_PAGE_TOKEN` / `FB_PAGE_ID`
 
 ---
 
@@ -220,7 +220,8 @@
 |--------|------|
 | `ANTHROPIC_API_KEY` | Claude API Key（IG 發文文案＋畫圖 prompt 生成，Sonnet 4.6）。2026-06-26 新增，Console 已儲值（預付制、非訂閱）。模型常數 `CLAUDE_MODEL` 在 `instagram/generate_post.py` 頂端 |
 | `GEMINI_KEY` | Gemini AI Key（claude-workspace-495009，**2.5-flash** 模型）。**注意：實為免費額度，未開通Cloud Billing**（2026-06-23實測證實，`2.5-flash`限20次/天、`2.5-pro`免費額度0），所有共用此Key的自動化共用同一日額度池，理論上會互搶額度 |
-| `HF_TOKEN` | （已停用）Hugging Face FLUX；2026-06-29 免費額度用罄回402，IG與YouTube生圖均改用 Pollinations.ai 免費免金鑰 |
+| `OPENAI_API_KEY` | OpenAI 生圖（IG 插圖＋YouTube 場景圖），`gpt-image-1-mini`。2026-08-06 設定，預付制需儲值。本機備份於 `config/.openai_key` |
+| `HF_TOKEN` | （已停用）Hugging Face FLUX→Pollinations→OpenAI，兩任前身皆因免費額度取消而汰換 |
 | `IG_TOKEN` | Instagram Graph API（到期 2026-07-16）|
 | `IG_ID` | Instagram 帳號 ID |
 | `FB_PAGE_TOKEN` | Facebook Page Token（永不過期）|
@@ -831,8 +832,8 @@ Subscribe and never miss a new Why. 🔔
 - **固定收尾角色**：`MASCOT_SCENE`＝大角鴞(琥珀眼、滿月星空、面向觀眾如要透露秘密)，每支影片結尾自動 append 一張「對你說話」的角色圖（靜態圖+輕推鏡，非真對嘴；真lip-sync需Kling無法全自動）
 - **聲線**：旁白加 `aecho` 殘響+highpass（宇宙回音/份量感）
 - **BGM**：`youtube_auto/bgm.mp3`（ffmpeg 生成的低沉神秘氛圍 drone，可換無版權音樂或 `YT_BGM` 指定），`amix` 低音量(0.16)混入；輸出 44.1kHz 立體聲。**注意：這版 ffmpeg 的 `tremolo` filter 會 exit 222（Result too large），生成 BGM 別用 tremolo**
-- **長度＝2～3 分鐘一般影片**：`generate_script` prompt 要 18-24 句、10-14 場景、290-380字；`max_tokens`=3000；`make_and_upload` 無 `#shorts`。改長度調 prompt 句數/場景數。**生圖用 Pollinations（免費）較慢**：本機約 10 分鐘/支，workflow `timeout-minutes` 已調 30；圖太多可能逼近上限，必要時減場景數
-- **生圖容錯（2026-07-07 修，commit c3b7517）**：Pollinations 免費服務偶發 HTTP 500，原本任一張生圖最終失敗即 raise、**毀掉整支影片**（07-07 第9/14張中止）。已改 `gen_image` 回傳 bool、單張重試 4→**6次**（遞增退避+每次換seed），**單張最終失敗不再中止**：沿用前一張場景圖（首張才用 `_placeholder_image` 備援底圖），吉祥物結尾同理。日後單張500會自動降級不開天窗
+- **長度＝2～3 分鐘一般影片**：`generate_script` prompt 要 18-24 句、10-14 場景、290-380字；`max_tokens`=3000；`make_and_upload` 無 `#shorts`。改長度調 prompt 句數/場景數。**生圖約 15~18 秒/張**（OpenAI，實測）：本機約 5 分鐘/支，workflow `timeout-minutes` 已調 30，尚有餘裕
+- **生圖容錯**：單張最終失敗不中止，沿用前一張場景圖（首張才用 `_placeholder_image` 備援底圖），吉祥物結尾同理。**但過半場景失敗即 `raise` 中止**（2026-08-06 加）——⚠️ 原本只有「沿用前一張」沒有底線，08-05 Pollinations 全掛時產出**整支同一張底圖的影片、workflow 還回報 success 並照排程自動公開**，這種「假成功」比明顯失敗更難發現。重試只在 408/429/5xx，4xx（認證／額度／內容政策）直接中止並印出狀態碼
 - **Shorts 每天發＋長片維持原頻率**（2026-07-01 改）：`make_and_upload.formats_for_today()` 決定當天產出——**Shorts(9:16, ~50秒, 6-8句)每天都發；長片(16:9, 2-3分鐘, 18-24句)僅週二/五/日追加一支**（長片日＝一次跑出 Shorts＋長片兩支）。可用 `YT_FORMAT=long/short` 手動覆寫成只產一支。多格式日各格式跑獨立 subprocess（避免 build_video 模組級 `YT_ASPECT` 只在 import 時生效）；make_and_upload 設好 `YT_ASPECT` 後才 import build_video；short 模式自動加 `#shorts`、開場卡縮短為 3s。workflow `timeout-minutes` 已提到 55（兩支影片）
 - **影片比例**：`YT_ASPECT`（16:9=1920×1080 / 9:16=1080×1920）。W/H、生圖尺寸、Ken Burns、字幕字級(16:9=54/9:16=60)與位置、開場卡時長皆隨比例自動調整
 
@@ -840,7 +841,7 @@ Subscribe and never miss a new Why. 🔔
 | 檔案 | 職責 |
 |------|------|
 | `generate_script.py` | Claude Sonnet 4.6 生英文腳本 JSON（title/narration/scenes/description/tags/topic），主題去重 `recent_topics.json`。**2026-07-25 加 Gemini fallback**（Claude 重試3次仍失敗→降級 2.5-flash→2.0-flash→2.0-flash-lite），避免 API 額度耗盡/當機時整支影片開天窗；workflow 需帶 `GEMINI_KEY` |
-| `build_video.py` | **Pollinations.ai**(免費免金鑰)生10-14張電影感插圖 ＋ **edge-tts**英文配音 ＋ ffmpeg Ken Burns ＋ 燒錄字幕 → 1080×1920 MP4 |
+| `build_video.py` | **OpenAI `gpt-image-1-mini`** 生10-14張電影感插圖 ＋ **edge-tts**英文配音 ＋ ffmpeg Ken Burns ＋ 燒錄字幕 → 1080×1920 MP4。⚠️OpenAI 只接受 1024²/1024×1536/1536×1024，與影片比例對不上，`_fit_to_frame()` 置中裁切後縮放（16:9 與 9:16 各裁掉約16%，實測構圖安全） |
 | `upload.py` | YouTube Data API v3 resumable 上傳（OAuth refresh token，純 urllib） |
 | `make_and_upload.py` | 每日進入點：生腳本→產影片→上傳→記錄去重 |
 | `oauth_setup.py` | 一次性取得 refresh token（手動授權流程，同 Gmail） |
@@ -851,7 +852,7 @@ Subscribe and never miss a new Why. 🔔
 - 控制：workflow env `YT_PUBLISH_HOUR='18'`（台灣整點，有設＝排程發布、影片先 private 屆時自動公開；不設則用 `YT_PRIVACY`）
 - `make_and_upload.scheduled_publish_at()` 算 publishAt；`upload.upload(publish_at=...)` 帶入。**頻道＝Finn's Why**（2026-06-29 已完成 OAuth＋3個 Secret＋測試上傳確認）
 
-### 需新增 GitHub Secrets（共用 ANTHROPIC_API_KEY；生圖用 Pollinations 免金鑰，不需 HF_TOKEN）
+### 需新增 GitHub Secrets（共用 ANTHROPIC_API_KEY 與 OPENAI_API_KEY；HF_TOKEN 已停用）
 `YT_OAUTH_CLIENT_ID` / `YT_OAUTH_CLIENT_SECRET` / `YT_OAUTH_REFRESH_TOKEN`（scope: `youtube.upload`）
 
 ### 重要技術細節
@@ -922,7 +923,7 @@ Subscribe and never miss a new Why. 🔔
 - ⚠️**高光滾降不能當最後一步**：滾降必然壓低平均，以它收尾會系統性欠亮（實測某素材只到 36.7）。正解＝先估收縮率 k、以 `ceil×k` 預降上限，**最後一步才做正規化**，上限剛好彈回 150（×1.65=248<250 保證不過曝）
 - ⚠️**顆粒 σ 只能 1.2**：下游 `enhance()` 的 `UnsharpMask(2,120)` 會把顆粒再放大約一倍，σ=3 在 1:1 印刷尺度看得到明顯雜訊。顆粒唯一用途是抑制大面積暗部的 CMYK 分色帶狀
 - **白字加 7px 深綠描邊**：素材若有亮窗，純白標題壓上去對比不足。228mm 字高下 7px 不會讓 CJK 筆劃黏連（那條「stroke=1 就黏連」的地雷只適用小字）
-- ⚠️**Gemini 影像模型在本 key 免費額度為 0**（`gemini-2.5-flash-image` 回 429 limit:0，同 2.5-pro 情況），改用專案既有的 **Pollinations**（免金鑰）。但它**固定只回 991×594**（要求 1920×1152 也一樣），放到 3.2m 要放大 3.3 倍 → 1:1 印刷尺度是「淺景深的柔」而非鋸齒，2~3m 觀看 OK，**但協會若有現場高解析實拍照，換 `--bg` 素材會更好**
+- ⚠️**Gemini 影像模型在本 key 免費額度為 0**（`gemini-2.5-flash-image` 回 429 limit:0，同 2.5-pro 情況），改用當時專案既有的 **Pollinations**（⚠️**該服務 2026-08 已轉付費且 flux 下架，底圖若要重產須改走 OpenAI**）。但它**固定只回 991×594**（要求 1920×1152 也一樣），放到 3.2m 要放大 3.3 倍 → 1:1 印刷尺度是「淺景深的柔」而非鋸齒，2~3m 觀看 OK，**但協會若有現場高解析實拍照，換 `--bg` 素材會更好**
 
 - ⚠️**左上角是 91.659° 不是直角**：直角化的斜邊只有 345.6cm、短 4.4cm 會露牆。`verify()` 有專項擋這個，**任何人想「順手改成直角」都會被擋下**
 - **異形出血做法**（既有 12 面矩形都沒做）：四層三角形用**內心相似縮放** `k=(r−d)/r`（＝三邊同時垂直位移 d）。出血外緣 d=−25／裁切線 0／綠帶內緣 +26／安全線 +60。綠帶跨過裁切線，裁切公差 ±25mm 內只會讓綠邊變粗細不露白。三邊各 3 支黑色裁切標記在 CUT 外 30~55mm，**不畫角落延伸線**（右上角僅 30.9°，沿邊延伸 30mm 距另一邊只剩 15.4mm 會壓到綠帶）
