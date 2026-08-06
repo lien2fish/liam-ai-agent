@@ -61,9 +61,12 @@ def upload(
     synthetic_media=True＝揭露為 AI 生成/變造內容（等同 Studio 的「變造或合成內容」勾選）
     profile＝憑證組（None＝The Unknown Hour；"lien"＝連老闆-產地到餐桌）"""
     token = access_token(profile)
-    status = {"privacyStatus": privacy, "selfDeclaredMadeForKids": False}
-    if synthetic_media:
-        status["containsSyntheticMedia"] = True
+    status = {
+        "privacyStatus": privacy,
+        "selfDeclaredMadeForKids": False,
+        # 一律明確聲明，不留空白：False＝實拍無 AI 生成、True＝AI 生成/變造
+        "containsSyntheticMedia": bool(synthetic_media),
+    }
     if publish_at:
         status["privacyStatus"] = "private"
         status["publishAt"] = publish_at
@@ -107,7 +110,7 @@ def upload(
     resp = json.load(urllib.request.urlopen(put))
     vid = resp["id"]
     when = f"排程 {publish_at} 自動公開" if publish_at else privacy
-    ai = "，已揭露 AI 生成" if synthetic_media else ""
+    ai = "，已揭露 AI 生成" if synthetic_media else "，AI 標記＝否"
     print(f"✅ 已上傳：https://youtu.be/{vid}（{when}{ai}）", flush=True)
     return vid
 
@@ -116,10 +119,12 @@ def set_thumbnail(video_id, image_path, profile=None):
     """設定自訂縮圖（需頻道已完成驗證；scope youtube.upload 即可）"""
     token = access_token(profile)
     data = open(image_path, "rb").read()
+    ext = os.path.splitext(image_path)[1].lower()
+    mime = "image/jpeg" if ext in (".jpg", ".jpeg") else "image/png"
     req = urllib.request.Request(
         f"https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId={video_id}",
         data=data,
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "image/png"},
+        headers={"Authorization": f"Bearer {token}", "Content-Type": mime},
         method="POST",
     )
     urllib.request.urlopen(req)

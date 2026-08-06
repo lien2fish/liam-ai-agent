@@ -36,6 +36,16 @@ def probe(path):
     return int(wh.group(1)), int(wh.group(2)), int(h) * 3600 + int(m) * 60 + float(s)
 
 
+def find_thumb(video_path):
+    """成品慣例：封面與影片同目錄、檔名為 <片名>_封面.jpg／.png"""
+    stem = os.path.splitext(video_path)[0]
+    for ext in (".jpg", ".jpeg", ".png"):
+        p = f"{stem}_封面{ext}"
+        if os.path.exists(p):
+            return p
+    return None
+
+
 def publish_at_utc(when):
     """'2026-08-07 18:00' (台灣) → RFC3339 UTC"""
     dt = datetime.strptime(when, "%Y-%m-%d %H:%M").replace(tzinfo=TW)
@@ -44,10 +54,31 @@ def publish_at_utc(when):
     return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+SKIP_TAGS = {"shorts", "foryou", "fyp"}
+
+
 def read_desc(path):
+    """解析發文案 .md，回傳 (標題, 描述, 標籤)。
+
+    文案是 IG/YouTube/TikTok 三段式，只取 YouTube 段當標題與描述；
+    標籤則收集全檔 hashtag（不顯示於描述、只影響搜尋，多蒐無妨）。
+    找不到 YouTube 段就退回整檔當描述。
+    """
     text = open(path, encoding="utf-8").read().strip()
-    tags = re.findall(r"#(\w+)", text)
-    return text, tags
+    tags = [t for t in re.findall(r"#(\w+)", text) if t.lower() not in SKIP_TAGS]
+    tags = list(dict.fromkeys(tags))
+
+    block = re.search(r"\*\*YouTube[^*]*\*\*(.*?)(?=\n\*\*|\Z)", text, re.S)
+    if not block:
+        return None, text, tags
+    seg = block.group(1)
+    title = re.search(r"-\s*標題：\s*(.+)", seg)
+    desc = re.search(r"-\s*描述：\s*(.+)", seg)
+    return (
+        title.group(1).strip() if title else None,
+        desc.group(1).strip() if desc else seg.strip(),
+        tags,
+    )
 
 
 def main():
@@ -58,6 +89,8 @@ def main():
     p.add_argument("--at", help="排定發布時間，台灣時間 'YYYY-MM-DD HH:MM'")
     p.add_argument("--tags", help="逗號分隔，覆寫發文案裡抓到的 hashtag")
     p.add_argument("--public", action="store_true", help="立刻公開（預設私人）")
+    p.add_argument("--thumb", help="封面圖；未給則自動找 <片名>_封面.jpg/.png")
+    p.add_argument("--no-thumb", action="store_true", help="不設封面")
     a = p.parse_args()
 
     if not os.path.exists(a.video):
@@ -65,11 +98,11 @@ def main():
 
     w, h, dur = probe(a.video)
     is_short = h > w and dur <= SHORTS_MAX_SEC
-    title = a.title or os.path.splitext(os.path.basename(a.video))[0]
 
-    desc, tags = ("", [])
+    desc, tags, file_title = ("", [], None)
     if a.desc:
-        desc, tags = read_desc(a.desc)
+        file_title, desc, tags = read_desc(a.desc)
+    title = a.title or file_title or os.path.splitext(os.path.basename(a.video))[0]
     if a.tags:
         tags = [t.strip() for t in a.tags.split(",") if t.strip()]
     if is_short and "#shorts" not in desc.lower():
@@ -77,17 +110,23 @@ def main():
 
     publish = publish_at_utc(a.at) if a.at else None
     privacy = "public" if a.public and not publish else "private"
+    thumb = None if a.no_thumb else (a.thumb or find_thumb(a.video))
 
     print(f"影片　：{a.video}")
     print(f"規格　：{w}x{h} {dur:.1f}秒{'（Shorts）' if is_short else ''}")
     print(f"標題　：{title}")
     print(f"標籤　：{tags}")
     print(f"發布　：{'排程 ' + a.at + ' (台灣)' if publish else privacy}")
+    if thumb and is_short:
+        cover_note = f"{thumb}（⚠️ Shorts 需到 Studio 手動上傳，API 無效）"
+    else:
+        cover_note = thumb or "（無，將用影片畫面）"
+    print(f"封面　：{cover_note}")
     print(f"描述　：{desc[:80]}{'...' if len(desc) > 80 else ''}")
     if input("\n確認上傳？(y/N) ").strip().lower() != "y":
         raise SystemExit("已取消")
 
-    yt.upload(
+    vid = yt.upload(
         a.video,
         title,
         desc,
@@ -96,6 +135,12 @@ def main():
         publish_at=publish,
         profile=PROFILE,
     )
+    if thumb and is_short:
+        # API 的 thumbnails/set 對 Shorts 會回 200 但不生效（靜默失敗），不如不呼叫
+        print("⚠️ Shorts 不支援用 API 設縮圖，已跳過。要設封面請到 YouTube Studio：")
+        print(f"   https://studio.youtube.com/video/{vid}/edit　←　上傳 {thumb}")
+    elif thumb:
+        yt.set_thumbnail(vid, thumb, profile=PROFILE)
 
 
 if __name__ == "__main__":
