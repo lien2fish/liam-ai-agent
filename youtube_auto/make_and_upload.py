@@ -18,8 +18,10 @@ import upload
 PRIVACY = os.environ.get("YT_PRIVACY", "private")
 PUBLISH_HOUR = os.environ.get("YT_PUBLISH_HOUR")
 
-# 長片日：週二(1)/週五(4)/週日(6)。Shorts 每天都發
-LONG_WEEKDAYS = {1, 4, 6}
+# 降頻後每週 3 支：Shorts 週二(1)/週五(4)、長片週日(6)。
+# 每日高頻量產正是 YouTube inauthentic content 政策針對的形態，故不再每天發。
+SHORT_WEEKDAYS = {1, 4}
+LONG_WEEKDAYS = {6}
 
 
 def log(m):
@@ -30,9 +32,12 @@ def formats_for_today():
     override = os.environ.get("YT_FORMAT")
     if override in ("long", "short"):
         return [override]
-    fmts = ["short"]  # Shorts 每天發
-    if date.today().weekday() in LONG_WEEKDAYS:
-        fmts.append("long")  # 長片日追加一支長片
+    wd = date.today().weekday()
+    fmts = []
+    if wd in SHORT_WEEKDAYS:
+        fmts.append("short")
+    if wd in LONG_WEEKDAYS:
+        fmts.append("long")
     return fmts
 
 
@@ -67,6 +72,9 @@ def produce(fmt):
         publish_at = scheduled_publish_at()
         log(f"上傳 YouTube（{'排程 '+publish_at if publish_at else PRIVACY}）...")
         desc = script.get("description", "")
+        thesis = script.get("thesis", "").strip()
+        if thesis:
+            desc = f"{thesis}\n\n{desc}"
         if fmt == "short":
             desc += "\n\n#shorts"
         vid = upload.upload(
@@ -76,6 +84,7 @@ def produce(fmt):
             script.get("tags", []),
             privacy=PRIVACY,
             publish_at=publish_at,
+            synthetic_media=True,
         )
 
         # 長片設自訂縮圖（Shorts 用影格即可，不需）
@@ -94,6 +103,9 @@ def produce(fmt):
 
 def main():
     fmts = formats_for_today()
+    if not fmts:
+        log("今天非發片日（Shorts 週二/五、長片週日），跳過")
+        return
     log(f"今日產出格式：{', '.join(fmts)}")
     if len(fmts) == 1:
         produce(fmts[0])
