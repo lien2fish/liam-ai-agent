@@ -218,35 +218,38 @@ def generate_knowledge(exclude_seafood=None):
 
 
 def generate_illustration(illustration_prompt):
-    """Pollinations.ai 免費生成水彩插圖（HF FLUX 免費額度已用罄402，改免金鑰）"""
-    import urllib.parse, random
-
+    """OpenAI 生成水彩插圖；Pollinations 於 2026-08 改付費制且 flux 下架"""
     prompt = (
         f"{illustration_prompt}, pure white background, "
         "traditional natural history watercolor illustration style, "
         "soft warm color palette, highly detailed, beautiful, no text, no shadow, centered composition"
     )
-    q = urllib.parse.urlencode(
-        {
-            "width": 1024,
-            "height": 1024,
-            "model": "flux",
-            "nologo": "true",
-            "seed": random.randint(1, 9_999_999),
-        }
-    )
-    url = "https://image.pollinations.ai/prompt/" + urllib.parse.quote(prompt) + "?" + q
+    body = {
+        "model": os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-1-mini"),
+        "prompt": prompt,
+        "size": "1024x1024",
+        "quality": os.environ.get("OPENAI_IMAGE_QUALITY", "low"),
+        "n": 1,
+    }
     last = None
-    for _ in range(4):
+    for attempt in range(6):
         try:
-            r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=180)
-            if r.status_code == 200 and len(r.content) > 5000:
-                return Image.open(io.BytesIO(r.content)).convert("RGBA")
-            last = f"status {r.status_code}"
+            r = requests.post(
+                "https://api.openai.com/v1/images/generations",
+                headers={"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"},
+                json=body,
+                timeout=180,
+            )
+            if r.status_code == 200:
+                data = base64.b64decode(r.json()["data"][0]["b64_json"])
+                return Image.open(io.BytesIO(data)).convert("RGBA")
+            last = f"HTTP {r.status_code} {r.text[:200]}"
+            if r.status_code not in (408, 429, 500, 502, 503, 504):
+                break
         except Exception as e:
             last = e
-        time.sleep(5)
-    raise RuntimeError(f"Pollinations 插圖生成失敗：{last}")
+        time.sleep(min(5 + attempt * 5, 30))
+    raise RuntimeError(f"插圖生成失敗：{last}")
 
 
 def wrap_text(draw, text, font, max_width):
