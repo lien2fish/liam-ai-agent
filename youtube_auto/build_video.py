@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """把腳本組裝成一支 1080x1920 Shorts MP4。
 
-流程：FLUX 生場景插圖 → edge-tts 英文旁白(含字級時間軸) → ffmpeg Ken Burns + 燒錄字幕。
+流程：OpenAI 生場景插圖 → edge-tts 英文旁白(含字級時間軸) → ffmpeg Ken Burns + 燒錄字幕。
 只用 stdlib + requests + edge-tts + 系統 ffmpeg。
 """
-import json, os, io, asyncio, platform, random, subprocess, tempfile, time, urllib.parse, urllib.request
+import base64, json, os, io, asyncio, platform, random, subprocess, tempfile, time, urllib.error, urllib.parse, urllib.request
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -58,8 +58,25 @@ MASCOT_SCENE = (
 # 背景音樂（療癒墊音）；可用 YT_BGM 指定，預設 youtube_auto/bgm.mp3
 _bgm_default = os.path.join(BASE, "bgm.mp3")
 BGM = os.environ.get("YT_BGM") or (_bgm_default if os.path.exists(_bgm_default) else "")
-# 改用 Pollinations.ai 免費生圖（免金鑰，底層 FLUX）；HF FLUX 免費額度已用罄(402)
-POLLI_URL = "https://image.pollinations.ai/prompt/"
+# 改用 OpenAI 生圖；Pollinations 於 2026-08 改付費制且 flux 下架，402 被包成 500 難以辨識
+OPENAI_IMG_URL = "https://api.openai.com/v1/images/generations"
+OPENAI_IMG_MODEL = os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-1-mini")
+OPENAI_IMG_QUALITY = os.environ.get("OPENAI_IMAGE_QUALITY", "low")
+# OpenAI 只接受這三種尺寸，與影片比例對不上，取最接近的再裁切
+OPENAI_IMG_SIZE = "1024x1536" if W < H else "1536x1024"
+
+
+def _fit_to_frame(data, out_path):
+    """OpenAI 尺寸(3:2 / 2:3)與影片(16:9 / 9:16)比例不同，置中裁切後縮放到 W×H"""
+    im = Image.open(io.BytesIO(data)).convert("RGB")
+    sw, sh = im.size
+    if sw * H > sh * W:
+        nw = round(sh * W / H)
+        im = im.crop(((sw - nw) // 2, 0, (sw - nw) // 2 + nw, sh))
+    else:
+        nh = round(sw * H / W)
+        im = im.crop((0, (sh - nh) // 2, sw, (sh - nh) // 2 + nh))
+    im.resize((W, H), Image.LANCZOS).save(out_path)
 
 
 def gen_image(prompt, out_path):
@@ -69,29 +86,38 @@ def gen_image(prompt, out_path):
         "highly detailed, photoreal, deep moody color grade, sense of mystery and wonder, "
         f"{comp}, no text, no watermark"
     )
+    body = json.dumps(
+        {
+            "model": OPENAI_IMG_MODEL,
+            "prompt": full,
+            "size": OPENAI_IMG_SIZE,
+            "quality": OPENAI_IMG_QUALITY,
+            "n": 1,
+        }
+    ).encode()
     last = None
     for attempt in range(6):
-        q = urllib.parse.urlencode(
-            {
-                "width": W,
-                "height": H,
-                "model": "flux",
-                "nologo": "true",
-                "seed": random.randint(1, 9_999_999),
-            }
-        )
-        url = POLLI_URL + urllib.parse.quote(full) + "?" + q
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            req = urllib.request.Request(
+                OPENAI_IMG_URL,
+                data=body,
+                headers={
+                    "Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}",
+                    "Content-Type": "application/json",
+                },
+            )
             with urllib.request.urlopen(req, timeout=180) as r:
-                data = r.read()
-            if data and len(data) > 5000:
-                open(out_path, "wb").write(data)
-                return True
+                payload = json.load(r)
+            _fit_to_frame(base64.b64decode(payload["data"][0]["b64_json"]), out_path)
+            return True
+        except urllib.error.HTTPError as e:
+            last = f"HTTP {e.code} {e.read().decode('utf-8', 'replace')[:200]}"
+            if e.code not in (408, 429, 500, 502, 503, 504):
+                break
         except Exception as e:
             last = e
         time.sleep(min(8 + attempt * 7, 40))
-    print(f"   ⚠️ Pollinations 生圖失敗（{last}）", flush=True)
+    print(f"   ⚠️ 生圖失敗（{last}）", flush=True)
     return False
 
 
@@ -412,12 +438,17 @@ def build_video(script, out_path, workdir=None):
     audio_dur = get_duration(voice_mp3)
     print(f"   旁白 {audio_dur:.1f}s、{len(en_list)} 句、中文字幕對齊", flush=True)
 
-    print(f"[2/4] 生成 {len(scenes)} 張場景插圖 + 吉祥物結尾（FLUX）...", flush=True)
+    print(
+        f"[2/4] 生成 {len(scenes)} 張場景插圖 + 吉祥物結尾（{OPENAI_IMG_MODEL}）...",
+        flush=True,
+    )
     imgs = []
+    ok = 0
     for i, sc in enumerate(scenes):
         p = os.path.join(tmp, f"scene_{i}.png")
         if gen_image(sc, p):
             imgs.append(p)
+            ok += 1
             print(f"   場景 {i+1}/{len(scenes)} 完成", flush=True)
         elif imgs:
             imgs.append(imgs[-1])
@@ -426,6 +457,11 @@ def build_video(script, out_path, workdir=None):
             _placeholder_image(p)
             imgs.append(p)
             print(f"   場景 {i+1}/{len(scenes)} 生圖失敗，用備援底圖", flush=True)
+    # 沿用前一張是為了單張失敗別毀掉整支；但過半失敗代表生圖服務本身壞了，
+    # 硬做下去會產出整支同一張圖的影片、workflow 還回報成功（2026-08-05 實際發生過）
+    if ok * 2 < len(scenes):
+        raise RuntimeError(f"生圖過半失敗（{ok}/{len(scenes)}），中止以免產出無效影片")
+
     # 結尾固定吉祥物（面向觀眾說話）
     mp = os.path.join(tmp, "mascot.png")
     if gen_image(MASCOT_SCENE, mp):
