@@ -1,5 +1,6 @@
 {
   "recent": [
+    "cosmic-web-void-civilisation",
     "yonaguni-monument-underwater-enigma",
     "bosnian-pyramids-energy-enigma",
     "static-universe-fear-einstein-biggest-blunder",
@@ -40,5 +41,8 @@
     "antikythera-mechanism",
     "fermi-paradox",
     "voynich-manuscript"
+  ],
+  "recent_angles": [
+    "contrarian"
   ]
 }
