@@ -30,7 +30,8 @@ import sys, os, re, json, subprocess, tempfile
 
 ZHF = "/System/Library/Fonts/STHeiti Medium.ttc"
 ASS_FONT = "Heiti TC"
-ORANGE_BGR = r"\c&H00309CF5&"
+# 高光橘黃 #F59C30（ASS 吃 BGR，故寫成 309CF5）。
+HL_BGR = r"\c&H00309CF5&"
 WHITE_BGR = r"\c&H00FFFFFF&"
 BASE_FS = 64
 HL_FS = 82
@@ -42,7 +43,7 @@ def hl(text, kws):
         text = text.replace(
             k,
             "{"
-            + ORANGE_BGR
+            + HL_BGR
             + r"\fs"
             + str(HL_FS)
             + "}"
@@ -108,7 +109,13 @@ def build_ass(cues_new, path):
     open(path, "w", encoding="utf-8").write(head + body)
 
 
-HL_YELLOW = (255, 205, 35)
+# 封面配色。9:16 與 16:9 兩種封面共用。
+COVER_MAIN = (255, 205, 35)
+COVER_STROKE = (18, 18, 18)
+COVER_CAP_BG = (18, 18, 18)
+COVER_CAP_FG = (255, 255, 255)
+COVER_DARK_916 = 0.42
+COVER_DARK_169 = 0.35
 
 
 def make_intro_card_916(video, t, main, sub, out):
@@ -133,7 +140,7 @@ def make_intro_card_916(video, t, main, sub, out):
             (bg.height - H) // 2 + H,
         )
     )
-    img = Image.blend(bg, Image.new("RGB", (W, H), (0, 0, 0)), 0.42)
+    img = Image.blend(bg, Image.new("RGB", (W, H), (0, 0, 0)), COVER_DARK_916)
     d = ImageDraw.Draw(img)
 
     def fit(tx, cap):
@@ -155,9 +162,9 @@ def make_intro_card_916(video, t, main, sub, out):
             ((W - w) / 2, y),
             l,
             font=f,
-            fill=HL_YELLOW,
+            fill=COVER_MAIN,
             stroke_width=max(10, f.size // 12),
-            stroke_fill=(18, 18, 18),
+            stroke_fill=COVER_STROKE,
         )
         y += sum(f.getmetrics()) + 24
     if sub:
@@ -166,9 +173,9 @@ def make_intro_card_916(video, t, main, sub, out):
         d.rounded_rectangle(
             [W / 2 - tw / 2 - 36, y + 24, W / 2 + tw / 2 + 36, y + 24 + 88],
             radius=18,
-            fill=(18, 18, 18),
+            fill=COVER_CAP_BG,
         )
-        d.text((W / 2 - tw / 2, y + 40), sub, font=f2, fill=(255, 255, 255))
+        d.text((W / 2 - tw / 2, y + 40), sub, font=f2, fill=COVER_CAP_FG)
     img.save(out, quality=92)
 
 
@@ -281,7 +288,7 @@ def make_cover_169(video, t, main, sub, out):
     img = Image.new("RGB", (W, H))
     img.paste(bg)
     dark = Image.new("RGB", (W, H), (0, 0, 0))
-    img = Image.blend(img, dark, 0.35)
+    img = Image.blend(img, dark, COVER_DARK_169)
     fh = H
     fw = int(frame.width * fh / frame.height)
     fg = frame.resize((fw, fh))
@@ -309,18 +316,18 @@ def make_cover_169(video, t, main, sub, out):
             (50, y),
             l,
             font=f,
-            fill=HL_YELLOW,
+            fill=COVER_MAIN,
             stroke_width=max(10, f.size // 12),
-            stroke_fill=(18, 18, 18),
+            stroke_fill=COVER_STROKE,
         )
         y += sum(f.getmetrics()) + 16
     if sub:
         f2 = ImageFont.truetype(ZHF, 44)
         tw = d.textlength(sub, font=f2)
         d.rounded_rectangle(
-            [50, y + 14, 50 + tw + 48, y + 14 + 76], radius=14, fill=(18, 18, 18)
+            [50, y + 14, 50 + tw + 48, y + 14 + 76], radius=14, fill=COVER_CAP_BG
         )
-        d.text((74, y + 28), sub, font=f2, fill=(255, 255, 255))
+        d.text((74, y + 28), sub, font=f2, fill=COVER_CAP_FG)
     img.save(out, quality=92)
 
 
@@ -661,11 +668,227 @@ def gen_lively_bgm(duration, vol=0.13):
     return out
 
 
+def gen_halftime_bgm(duration, vol=0.025):
+    """半拍速節奏型 BGM（100bpm，vol 是目標 RMS 不是峰值）：kick 只在 1、3 但每下更重，
+    二四拍 snare，8 分音符 hi-hat，off-beat 和弦刺撐住律動。
+
+    與 warm/lively 的差別在「有沒有鼓」——低頻能量佔比 13% 對 warm 的 2.9%。
+    節奏感來自鼓點配置與切分，不是 BPM。
+    """
+    import wave
+    import numpy as np
+
+    sr = 44100
+    bpm = 100
+    beat = 60 / bpm
+    N = {
+        "C2": 65.41, "F2": 87.31, "G2": 98.0, "A2": 110.0,
+        "C4": 261.63, "D4": 293.66, "E4": 329.63, "F4": 349.23,
+        "G4": 392.0, "A3": 220.0, "B3": 246.94, "F3": 174.61,
+        "G3": 196.0, "C3": 130.81, "E5": 659.25, "G4b": 392.0, "C5": 523.25,
+    }
+
+    def kick(v=0.6):
+        n = int(0.16 * sr)
+        t = np.arange(n) / sr
+        f = 140 * np.exp(-t * 36) + 47
+        return np.sin(2 * np.pi * np.cumsum(f) / sr) * np.exp(-t * 15) * v
+
+    def snare(v=0.30):
+        n = int(0.13 * sr)
+        t = np.arange(n) / sr
+        rng = np.random.default_rng(23)
+        return (rng.standard_normal(n) * np.exp(-t * 34) * 0.75
+                + np.sin(2 * np.pi * 190 * t) * np.exp(-t * 30) * 0.45) * v
+
+    def hat(v=0.085, open_=False):
+        n = int((0.10 if open_ else 0.035) * sr)
+        rng = np.random.default_rng(41)
+        w = np.diff(np.concatenate([[0], rng.standard_normal(n)]))
+        return w * np.exp(-np.arange(n) / sr * (24 if open_ else 105)) * v
+
+    def bass(f, dur, v=0.26):
+        n = int(dur * sr)
+        t = np.arange(n) / sr
+        w = np.sin(2 * np.pi * f * t) + 0.35 * np.sin(2 * np.pi * f * 2 * t)
+        e = np.exp(-t * 5.5)
+        ai = max(1, int(0.005 * sr))
+        e[:ai] *= np.linspace(0, 1, ai)
+        return w / 1.35 * e * v
+
+    def stab(freqs, dur, v=0.10):
+        n = int(dur * sr)
+        t = np.arange(n) / sr
+        w = np.zeros(n)
+        for f in freqs:
+            w += np.sin(2 * np.pi * f * t) + 0.3 * np.sin(2 * np.pi * f * 3 * t)
+        w /= len(freqs) * 1.3
+        e = np.exp(-t * 13)
+        ai = max(1, int(0.004 * sr))
+        e[:ai] *= np.linspace(0, 1, ai)
+        return w * e * v
+
+    prog = [
+        (("C4", "E4", "G4"), "C2"),
+        (("A3", "C4", "E4"), "A2"),
+        (("F3", "F4", "C4"), "F2"),
+        (("G3", "B3", "D4"), "G2"),
+    ]
+    mel = ["C5", None, None, "G4", None, "E5", None, None]
+    bar = 4 * beat
+    loops = int(np.ceil((duration + 2) / (len(prog) * bar)))
+    L = np.zeros(int(loops * len(prog) * bar * sr) + sr)
+    pos = 0.0
+    for _ in range(loops):
+        for chord, bs in prog:
+            def put(w, at):
+                i = int(at * sr)
+                L[i : i + len(w)] += w
+
+            for off in (0.0, 2.0):
+                put(kick(), pos + off * beat)
+                put(bass(N[bs], beat * 1.4), pos + off * beat)
+            for off in (1.0, 3.0):
+                put(snare(), pos + off * beat)
+            for k in range(8):
+                put(hat(open_=(k % 4 == 2)), pos + k * beat / 2)
+            for off in (0.5, 2.5):
+                put(stab([N[c] for c in chord], beat * 0.8), pos + off * beat)
+            for k, nf in enumerate(mel):
+                if nf:
+                    put(stab([N[nf]], beat * 0.55, 0.13), pos + k * 0.5 * beat)
+            pos += bar
+    L = L[: int(duration * sr)]
+    # 用 RMS 正規化而非峰值：鼓點是短脈衝，峰值高但 RMS 低，
+    # 按峰值正規化會讓它聽起來比 warm 小聲 3dB（實測混進影片後差到 6.6dB）。
+    L = L / (np.sqrt(np.mean(L**2)) + 1e-9) * vol
+    L = np.clip(L, -0.95, 0.95)
+    fi, fo = int(0.8 * sr), int(2.0 * sr)
+    L[:fi] *= np.linspace(0, 1, fi)
+    L[-fo:] *= np.linspace(1, 0, fo)
+    out = tempfile.mktemp(suffix=".wav")
+    w = wave.open(out, "wb")
+    w.setnchannels(2)
+    w.setsampwidth(2)
+    w.setframerate(sr)
+    w.writeframes((np.stack([L, L], 1) * 32767).astype(np.int16).tobytes())
+    w.close()
+    return out
+
+
+def gen_happy_bgm(duration, vol=0.016):
+    """歡樂氛圍 BGM（120bpm，vol 是目標 RMS 不是峰值）：
+    木琴主旋律＋溫暖和聲墊＋柔化鼓點，走 C-Am-F-G。
+
+    設計重點是讓「歡樂」來自旋律而非打擊——中頻能量 31%，
+    相較純節奏型的 8% 厚得多，鼓只是墊底不搶戲。
+    """
+    import wave
+    import numpy as np
+
+    sr = 44100
+    bpm = 120
+    beat = 60 / bpm
+    N = {
+        "C3": 130.81, "E3": 164.81, "F3": 174.61, "G3": 196.0, "A3": 220.0,
+        "B3": 246.94, "C4": 261.63, "D4": 293.66, "E4": 329.63, "F4": 349.23,
+        "G4": 392.0, "A4": 440.0, "B4": 493.88, "C5": 523.25, "D5": 587.33,
+        "E5": 659.25, "F5": 698.46, "G5": 783.99, "A5": 880.0, "C6": 1046.5,
+    }
+
+    def mallet(f, dur, v):
+        n = int(dur * sr)
+        t = np.arange(n) / sr
+        w = (np.sin(2 * np.pi * f * t) + 0.5 * np.sin(2 * np.pi * f * 4 * t)
+             + 0.22 * np.sin(2 * np.pi * f * 6 * t)) / 1.72
+        e = np.exp(-t * 8.0)
+        ai = max(1, int(0.004 * sr))
+        e[:ai] *= np.linspace(0, 1, ai)
+        return w * e * v
+
+    def pad(freqs, dur, v):
+        n = int(dur * sr)
+        t = np.arange(n) / sr
+        w = np.zeros(n)
+        for f in freqs:
+            w += (np.sin(2 * np.pi * f * t) + 0.28 * np.sin(2 * np.pi * f * 2 * t)
+                  + 0.12 * np.sin(2 * np.pi * f * 3 * t))
+        w /= len(freqs) * 1.4
+        env = np.ones(n)
+        a, r = int(0.12 * dur * sr), int(0.35 * dur * sr)
+        env[:a] *= np.linspace(0, 1, a)
+        env[-r:] *= np.linspace(1, 0, r)
+        return w * env * v
+
+    def softkick(v=0.34):
+        n = int(0.13 * sr)
+        t = np.arange(n) / sr
+        f = 100 * np.exp(-t * 30) + 45
+        return np.sin(2 * np.pi * np.cumsum(f) / sr) * np.exp(-t * 19) * v
+
+    def shaker(v=0.055):
+        n = int(0.04 * sr)
+        rng = np.random.default_rng(5)
+        w = np.diff(np.concatenate([[0], rng.standard_normal(n)]))
+        return w * np.exp(-np.arange(n) / sr * 80) * v
+
+    def clap(v=0.09):
+        n = int(0.06 * sr)
+        rng = np.random.default_rng(13)
+        return rng.standard_normal(n) * np.exp(-np.arange(n) / sr * 60) * v
+
+    prog = [
+        (("C4", "E4", "G4"), "C3", ["C5", "E5", "G5", "E5", "C6", "G5", "E5", "G5"]),
+        (("A3", "C4", "E4"), "A3", ["A4", "C5", "E5", "C5", "A5", "E5", "C5", "E5"]),
+        (("F3", "A4", "C5"), "F3", ["F4", "A4", "C5", "A4", "F5", "C5", "A4", "C5"]),
+        (("G3", "B3", "D4"), "G3", ["G4", "B4", "D5", "B4", "G5", "D5", "B4", "D5"]),
+    ]
+    bar = 4 * beat
+    loops = int(np.ceil((duration + 2) / (len(prog) * bar)))
+    L = np.zeros(int(loops * len(prog) * bar * sr) + sr)
+    pos = 0.0
+    for _ in range(loops):
+        for chord, bs, mel in prog:
+            def put(w, at):
+                i = int(at * sr)
+                L[i : i + len(w)] += w
+
+            put(pad([N[c] for c in chord], bar * 0.98, 0.10), pos)
+            for b in range(4):
+                put(softkick(), pos + b * beat)
+                put(mallet(N[bs] / 2, beat * 0.9, 0.13), pos + b * beat)
+                if b % 2 == 1:
+                    put(clap(), pos + b * beat)
+            for k in range(8):
+                put(shaker(), pos + k * beat / 2)
+            for k, nf in enumerate(mel):
+                put(mallet(N[nf], beat * 0.75, 0.15), pos + k * 0.5 * beat)
+            pos += bar
+    L = L[: int(duration * sr)]
+    L = L / (np.sqrt(np.mean(L**2)) + 1e-9) * vol
+    L = np.clip(L, -0.95, 0.95)
+    fi, fo = int(0.8 * sr), int(2.0 * sr)
+    L[:fi] *= np.linspace(0, 1, fi)
+    L[-fo:] *= np.linspace(1, 0, fo)
+    out = tempfile.mktemp(suffix=".wav")
+    w = wave.open(out, "wb")
+    w.setnchannels(2)
+    w.setsampwidth(2)
+    w.setframerate(sr)
+    w.writeframes((np.stack([L, L], 1) * 32767).astype(np.int16).tobytes())
+    w.close()
+    return out
+
+
 def mix_bgm(video, style="warm"):
     r = subprocess.run(["ffmpeg", "-i", video], capture_output=True, text=True)
     m = re.search(r"Duration: (\d+):(\d+):([\d.]+)", r.stderr)
     dur = int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3))
-    bed = gen_lively_bgm(dur) if style == "lively" else gen_warm_bgm(dur)
+    bed = {
+        "lively": gen_lively_bgm,
+        "halftime": gen_halftime_bgm,
+        "happy": gen_happy_bgm,
+    }.get(style, gen_warm_bgm)(dur)
     out = tempfile.mktemp(suffix=".mp4")
     subprocess.run(
         [
