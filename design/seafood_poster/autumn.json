@@ -1,0 +1,54 @@
+{
+  "_note": "price 為版面示範值，出稿前請覆寫為實際建議售價",
+  "season": "秋",
+  "brand": "鑫海產",
+  "title": "鮮味聚",
+  "subtitle": "好味，只在對的季節",
+  "intro": [
+    "每一種海鮮，都有專屬於牠的季節",
+    "鑫海產依循漁汛，只在最肥美的時刻端上桌",
+    "從龜吼漁港到您的餐桌，只隔一個清晨"
+  ],
+  "items": [
+    {
+      "en": "WHITE POMFRET  Pampus argenteus",
+      "zh": "東北角現流 白鯧　約 600g／尾",
+      "price": "建議價 NT$2,800"
+    },
+    {
+      "en": "AMBERJACK  Seriola dumerili",
+      "zh": "龜吼野生 紅甘　生食級 油脂豐厚",
+      "price": "建議價 NT$1,600"
+    },
+    {
+      "en": "MUD CRAB  Scylla serrata",
+      "zh": "產地直送 紅蟳　膏滿 約 500g",
+      "price": "建議價 NT$2,200"
+    },
+    {
+      "en": "SWORDTIP SQUID  Uroteuthis edulis",
+      "zh": "當日現撈 透抽　肉厚彈牙",
+      "price": "建議價 NT$1,200"
+    },
+    {
+      "en": "GROUPER  Epinephelus coioides",
+      "zh": "活魚現殺 石斑　肉質細嫩",
+      "price": "建議價 NT$1,900"
+    },
+    {
+      "en": "SPANISH MACKEREL  Scomberomorus commerson",
+      "zh": "秋汛 土魠　油脂豐厚",
+      "price": "建議價 NT$1,500"
+    },
+    {
+      "en": "SPINY LOBSTER  Panulirus ornatus",
+      "zh": "共捕船直送 龍蝦　時令限量",
+      "price": "建議價 NT$3,600"
+    }
+  ],
+  "footer": "龜吼現流·19 艘共捕船直送",
+  "background": "design/seafood_poster/bg_blue_light.png",
+  "bottom_strip": [
+    "design/seafood_poster/photos/autumn_banner.png"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "_note": "price 為版面示範值，出稿前請覆寫為實際建議售價",
+  "season": "夏",
+  "brand": "鑫海產",
+  "title": "鮮味聚",
+  "subtitle": "盛夏海味，一年一會",
+  "intro": [
+    "夏天的漁港，天還沒亮就開始熱鬧",
+    "鑫海產依循漁汛，只在最肥美的時刻端上桌",
+    "從龜吼漁港到您的餐桌，只隔一個清晨"
+  ],
+  "items": [
+    {
+      "en": "MITRE SQUID  Uroteuthis chinensis",
+      "zh": "夏汛盛產 小卷　現撈鮮甜",
+      "price": "建議價 NT$1,200"
+    },
+    {
+      "en": "MAHI MAHI  Coryphaena hippurus",
+      "zh": "野生 鬼頭刀　肉質結實",
+      "price": "建議價 NT$1,300"
+    },
+    {
+      "en": "SCAMPI  Metanephrops thomsoni",
+      "zh": "深海 角蝦　生食級 甘甜",
+      "price": "建議價 NT$2,600"
+    },
+    {
+      "en": "ABALONE  Haliotis diversicolor",
+      "zh": "東北角 九孔　肉質彈牙",
+      "price": "建議價 NT$2,000"
+    },
+    {
+      "en": "BARRED KNIFEJAW  Oplegnathus fasciatus",
+      "zh": "礁岩野生 石鯛　夏季最肥",
+      "price": "建議價 NT$3,200"
+    },
+    {
+      "en": "FILEFISH  Thamnaconus modestus",
+      "zh": "現流 剝皮魚　肉白極鮮",
+      "price": "建議價 NT$1,000"
+    },
+    {
+      "en": "SPINY LOBSTER  Panulirus ornatus",
+      "zh": "共捕船直送 龍蝦　時令限量",
+      "price": "建議價 NT$3,600"
+    }
+  ],
+  "footer": "龜吼現流·19 艘共捕船直送",
+  "background": "design/seafood_poster/bg_blue_light.png",
+  "bottom_strip": [
+    "design/seafood_poster/photos/summer_banner.png"
+  ]
+}
