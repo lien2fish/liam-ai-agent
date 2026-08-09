@@ -1,0 +1,54 @@
+{
+  "_note": "price 為版面示範值，出稿前請覆寫為實際建議售價",
+  "season": "冬",
+  "brand": "鑫海產",
+  "title": "鮮味聚",
+  "subtitle": "冬藏之味，肥美當時",
+  "intro": [
+    "冬天的海鮮，把整年的油脂都存了起來",
+    "鑫海產依循漁汛，只在最肥美的時刻端上桌",
+    "從龜吼漁港到您的餐桌，只隔一個清晨"
+  ],
+  "items": [
+    {
+      "en": "GREY MULLET  Mugil cephalus",
+      "zh": "冬至野生 烏魚　魚卵飽滿",
+      "price": "建議價 NT$2,800"
+    },
+    {
+      "en": "MONKFISH  Lophius litulon",
+      "zh": "深海 鮟鱇　魚肝肥美",
+      "price": "建議價 NT$2,400"
+    },
+    {
+      "en": "BLACKMOUTH CROAKER  Atrobucca nibe",
+      "zh": "野生 黑喉　極品油脂",
+      "price": "建議價 NT$3,000"
+    },
+    {
+      "en": "KURUMA PRAWN  Penaeus japonicus",
+      "zh": "活凍 明蝦　肉質彈牙",
+      "price": "建議價 NT$1,600"
+    },
+    {
+      "en": "SPANISH MACKEREL  Scomberomorus commerson",
+      "zh": "冬汛 土魠　油脂巔峰",
+      "price": "建議價 NT$1,800"
+    },
+    {
+      "en": "PACIFIC OYSTER  Crassostrea gigas",
+      "zh": "產地直送 生蠔　冬季最肥",
+      "price": "建議價 NT$1,400"
+    },
+    {
+      "en": "HAIRTAIL  Trichiurus lepturus",
+      "zh": "現流 白帶魚　肉質細白",
+      "price": "建議價 NT$1,100"
+    }
+  ],
+  "footer": "龜吼現流·19 艘共捕船直送",
+  "background": "design/seafood_poster/bg_blue_light.png",
+  "bottom_strip": [
+    "design/seafood_poster/photos/winter_banner.png"
+  ]
+}
