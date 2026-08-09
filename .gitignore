@@ -48,3 +48,10 @@ tools/assets/
 
 # 影片成品（repo 為 public，且檔案巨大）
 成品/
+
+# 鮮味聚海報：成品可由 config＋底圖重產，不進版控；
+# photos/ 為底部海鮮實拍素材（版權未確認，repo 為 public）
+design/seafood_poster/*.png
+!design/seafood_poster/bg_*.png
+design/seafood_poster/photos/
+design/seafood_poster/備份_*/

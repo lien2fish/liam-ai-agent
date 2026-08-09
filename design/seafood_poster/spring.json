@@ -1,0 +1,54 @@
+{
+  "_note": "price 為版面示範值，出稿前請覆寫為實際建議售價",
+  "season": "春",
+  "brand": "鑫海產",
+  "title": "鮮味聚",
+  "subtitle": "春汛初起，鮮甜最嫩",
+  "intro": [
+    "春天的海，剛從冬眠裡醒來",
+    "鑫海產依循漁汛，只在最肥美的時刻端上桌",
+    "從龜吼漁港到您的餐桌，只隔一個清晨"
+  ],
+  "items": [
+    {
+      "en": "SOFT SQUID  Sepioteuthis lessoniana",
+      "zh": "春汛 軟絲　厚身彈牙 生食級",
+      "price": "建議價 NT$2,200"
+    },
+    {
+      "en": "SAKURA SHRIMP  Sergia lucens",
+      "zh": "東港 櫻花蝦　三月限定 鮮甜",
+      "price": "建議價 NT$1,800"
+    },
+    {
+      "en": "HORSEHEAD  Branchiostegus japonicus",
+      "zh": "野生 馬頭魚　肉質細緻",
+      "price": "建議價 NT$1,900"
+    },
+    {
+      "en": "YELLOWBACK SEABREAM  Dentex tumifrons",
+      "zh": "現流 赤鯮　約 500g／尾",
+      "price": "建議價 NT$1,400"
+    },
+    {
+      "en": "SCARBREAST TUSKFISH  Choerodon azurio",
+      "zh": "礁岩野生 青衣　肉質緊實",
+      "price": "建議價 NT$2,400"
+    },
+    {
+      "en": "MITRE SQUID  Uroteuthis chinensis",
+      "zh": "當日現撈 小卷　鮮甜脆口",
+      "price": "建議價 NT$1,100"
+    },
+    {
+      "en": "HORSE MACKEREL  Trachurus japonicus",
+      "zh": "龜吼 竹筴魚　油脂飽滿",
+      "price": "建議價 NT$980"
+    }
+  ],
+  "footer": "龜吼現流·19 艘共捕船直送",
+  "background": "design/seafood_poster/bg_blue_light.png",
+  "bottom_strip": [
+    "design/seafood_poster/photos/spring_banner.png"
+  ]
+}
