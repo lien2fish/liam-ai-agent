@@ -190,7 +190,61 @@
 | IG + FB | 每日發文 | 每天 08:00 | ✅ 運行中 |
 | IG | 留言自動回覆 | 每 5 分鐘 | ✅ 運行中 |
 | YouTube | Shorts 留言通知（不回覆） | 每天 08:30 | ✅ 運行中 |
+| YouTube | 手動上傳＋排定發布（連老闆／泥馬的真心話） | 手動觸發 | ✅ 見下方 |
 | TikTok | — | — | 手動，不自動化 |
+
+## YouTube 手動上傳＋排程發布（2026-08-13 擴充到甜點頻道）
+
+剪好的成品用指令上傳並排定發布時間，影片先私人、屆時 YouTube 自動轉公開。
+與 `yt_auto_post.yml`（The Unknown Hour 全自動生成）是兩回事。
+
+| 工具 | 用途 |
+|------|------|
+| `tools/yt_upload.py` | 單支上傳。`--desc 發文案.md --at "2026-08-14 18:00" --profile dessert` |
+| `tools/yt_batch_schedule.py` | 批次上傳＋自動排時間表 |
+| `youtube_auto/oauth_setup.py` | 一次性授權，`--profile <名稱>`；要改既有影片再加 `--write` |
+
+### 頻道（profile）與預設值
+
+`upload.py` 的 `PROFILE_DEFAULTS` 分頻道設定，**不可共用一組**：
+
+| profile | 頻道 | categoryId | 語言 |
+|---------|------|-----------|------|
+| （無） | The Unknown Hour | 27 教育 | en |
+| `lien` | 連老闆-產地到餐桌 | 22 人物與網誌 | zh-Hant |
+| `dessert` | **泥馬的真心話**（台名；「甜點輕鬆做．師傅真心話」是標語） | 26 教學與風格 | zh-Hant |
+
+憑證 `config/youtube_oauth_<profile>.json`（gitignore）。
+
+### 批次排程用法
+
+```bash
+# 每週二五 18:00 自動排
+python3 tools/yt_batch_schedule.py 成品/某資料夾 --profile dessert \
+    --start "2026-08-14 18:00" --days tue,fri --dry-run
+
+# 用排程表（可讓多支同一天發，例：長片＋EP1 同天開場）
+python3 tools/yt_batch_schedule.py --plan dessert/千層排程.json --profile dessert
+```
+
+已上傳的記在 `<資料夾>/.yt_uploaded_<profile>.json`（在 gitignore 的 `成品/` 內），
+中斷後重跑同一行會自動跳過。
+
+### ⚠️ 地雷
+
+- **驗收條件＝`processingStatus == succeeded`**，不是「videos.list 查得到」。
+  上傳中斷會留下半成品：查得到、時長 `P0D`、永遠卡在 processing，
+  既不發布也不報錯，放久了還會被 YouTube 清成 `Deleted video`
+- **API 配額三頻道共用**（同一組 OAuth client）：上傳 1600／`videos.update` 50／
+  每日 10,000 → **一天最多 6 支**。重置＝太平洋午夜＝**台灣下午 3 點**
+- **Shorts 的自訂縮圖 API 一律無效**（回 200 但不生效），只能到 Studio 手動傳。
+  長片可以設，但**頻道要先完成電話驗證**（https://www.youtube.com/verify），否則 403
+- **1080×1920 且 ≤3 分鐘一律被當 Shorts 收錄**，會活在 Shorts 頁籤而非一般影片版位
+- **發文案 .md 有兩種格式**，`read_desc` 兩種都吃：連老闆是 IG/YT/TikTok 三段式
+  （`- 標題：`），甜點頻道是 `**標題**`／`**描述**` 程式碼區塊／`**Tags**` 逗號清單
+- `youtube.upload` scope **不含讀取**，查頻道／影片一律 403
+- 背景執行時 `input()` 的提示字尾沒換行，會被誤判成「waiting for interactive input」。
+  看 `.yt_uploaded_*.json` 判斷實際進度，不要砍掉重跑
 
 ## GitHub Actions 自動化總覽（2026-06-02 更新）
 
