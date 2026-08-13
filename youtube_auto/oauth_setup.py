@@ -19,7 +19,16 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(BASE)
 CLIENT = os.path.join(REPO, "config", "youtube_client.json")
 REDIRECT = "http://localhost:8888"
-SCOPE = "https://www.googleapis.com/auth/youtube.upload"
+# readonly 是為了能回查上傳結果（頻道歸屬、影片設定）。
+# 只有 upload 的話 videos.list／channels.list 一律 403，出錯只能靠人工到 Studio 看。
+SCOPE = " ".join(
+    [
+        "https://www.googleapis.com/auth/youtube.upload",
+        "https://www.googleapis.com/auth/youtube.readonly",
+    ]
+)
+# --write 才加：videos.update 改既有影片設定要它。含刪除權限，非必要不要給。
+WRITE_SCOPE = SCOPE + " https://www.googleapis.com/auth/youtube.force-ssl"
 
 
 def out_path(profile=None):
@@ -33,14 +42,14 @@ def _client():
     return c["client_id"], c["client_secret"]
 
 
-def auth_url():
+def auth_url(write=False):
     cid, _ = _client()
     q = urllib.parse.urlencode(
         {
             "client_id": cid,
             "redirect_uri": REDIRECT,
             "response_type": "code",
-            "scope": SCOPE,
+            "scope": WRITE_SCOPE if write else SCOPE,
             "access_type": "offline",
             "prompt": "consent",
         }
@@ -86,10 +95,17 @@ if __name__ == "__main__":
         i = args.index("--profile")
         profile = args[i + 1]
         args = args[:i] + args[i + 2 :]
+    write = "--write" in args
+    if write:
+        args.remove("--write")
     if args:
         exchange(args[0].strip(), profile)
     else:
         print(f"授權頻道：{profile or '預設 (The Unknown Hour)'}")
-        print("⚠️ 授權畫面請務必選到對應的 YouTube 頻道\n")
+        print("⚠️ 授權畫面請務必選到對應的 YouTube 頻道")
+        if write:
+            print("⚠️ 這次含寫入權限（可改／可刪影片）\n")
+        else:
+            print()
         print("在 Safari 開啟以下網址授權：\n")
-        print(auth_url())
+        print(auth_url(write))
