@@ -93,55 +93,6 @@ def save_state(video, profile, key, vid):
     json.dump(d, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
 
 
-def find_uploaded(title, profile, tries=4):
-    """用標題回查頻道最近的上傳，回傳 video_id；找不到回 None。需 readonly scope。
-
-    會斷線到需要回查，通常代表網路正在抖，所以查不到先當成網路問題重試，
-    不要一次失敗就判定影片不存在——那會讓下次重跑傳出重複的一支。
-    """
-    import time, urllib.request
-
-    for i in range(tries):
-        vid = _find_once(title, profile)
-        if vid:
-            return vid
-        if i < tries - 1:
-            time.sleep(15)
-    return None
-
-
-def _find_once(title, profile):
-    import urllib.request
-
-    try:
-        tok = yt.access_token(profile)
-    except Exception:
-        return None
-
-    def get(u):
-        return json.load(
-            urllib.request.urlopen(
-                urllib.request.Request(u, headers={"Authorization": f"Bearer {tok}"})
-            )
-        )
-
-    try:
-        ch = get(
-            "https://www.googleapis.com/youtube/v3/channels?part=contentDetails&mine=true"
-        )["items"][0]
-        pl = ch["contentDetails"]["relatedPlaylists"]["uploads"]
-        r = get(
-            "https://www.googleapis.com/youtube/v3/playlistItems"
-            f"?part=snippet,contentDetails&maxResults=10&playlistId={pl}"
-        )
-        for x in r["items"]:
-            if x["snippet"]["title"].strip() == title.strip()[:100]:
-                return x["contentDetails"]["videoId"]
-    except Exception:
-        return None
-    return None
-
-
 def plan_one(video):
     w, h, dur = probe(video)
     is_short = h > w and dur <= SHORTS_MAX_SEC
@@ -262,14 +213,9 @@ def main():
                 profile=a.profile,
             )  # fmt: skip
         except Exception as e:
-            # 連線在「讀回應」時斷掉的話，影片其實已經建立了（實測過 Broken pipe 就是這樣）。
-            # 直接當失敗會漏記，下次重跑就傳出重複的一支，所以先回查頻道確認。
-            vid = find_uploaded(pl["title"], a.profile)
-            if not vid:
-                print(f"❌ {name}：{e}")
-                print("　 已上傳的有記錄，排除問題後重跑同一行指令即可接續。")
-                raise SystemExit(1)
-            print(f"⚠️ {name} 連線中斷（{e}），但頻道上已存在，視為成功")
+            print(f"❌ {name}：{e}")
+            print("　 已上傳的有記錄，排除問題後重跑同一行指令即可接續。")
+            raise SystemExit(1)
         save_state(pl["video"], a.profile, name, vid)
         print(f"✅ {t:%m-%d %H:%M}　{pl['title']}　→ {vid}")
         if pl["thumb"] and not pl["is_short"]:
