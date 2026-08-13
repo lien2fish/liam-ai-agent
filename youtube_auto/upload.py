@@ -9,6 +9,19 @@ import json, os, urllib.request, urllib.parse
 BASE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(BASE)
 
+# 每個頻道的預設值。原本三台共用 27/en/en（The Unknown Hour 的設定），
+# 中文頻道全被標成英文；categoryId 也各台不同，不能共用一組。
+# 22=人物與網誌 26=教學與風格 27=教育
+PROFILE_DEFAULTS = {
+    None: {"category": "27", "lang": "en", "audio_lang": "en"},  # The Unknown Hour
+    "lien": {"category": "22", "lang": "zh-Hant", "audio_lang": "zh-Hant"},  # 連老闆
+    "dessert": {
+        "category": "26",
+        "lang": "zh-Hant",
+        "audio_lang": "zh-Hant",
+    },  # 泥馬的真心話
+}
+
 
 def _creds(profile=None):
     """profile=None＝預設頻道（The Unknown Hour）。
@@ -50,16 +63,23 @@ def upload(
     description,
     tags,
     privacy="private",
-    category="27",
+    category=None,
     publish_at=None,
     synthetic_media=False,
     profile=None,
+    lang=None,
+    audio_lang=None,
 ):
     """回傳 video_id。privacy: private/unlisted/public。
     publish_at（RFC3339 UTC，如 2026-06-29T10:00:00Z）有給時＝排程發布：
-    先設 private，YouTube 屆時自動轉公開。category 27=教育, 24=娛樂
+    先設 private，YouTube 屆時自動轉公開。
+    category／lang／audio_lang 未給＝取 PROFILE_DEFAULTS[profile]
     synthetic_media=True＝揭露為 AI 生成/變造內容（等同 Studio 的「變造或合成內容」勾選）
-    profile＝憑證組（None＝The Unknown Hour；"lien"＝連老闆-產地到餐桌）"""
+    profile＝憑證組（None＝The Unknown Hour；"lien"＝連老闆；"dessert"＝泥馬的真心話）"""
+    d = PROFILE_DEFAULTS.get(profile, PROFILE_DEFAULTS[None])
+    category = category or d["category"]
+    lang = lang or d["lang"]
+    audio_lang = audio_lang or d["audio_lang"]
     token = access_token(profile)
     status = {
         "privacyStatus": privacy,
@@ -76,8 +96,8 @@ def upload(
             "description": description,
             "tags": tags,
             "categoryId": category,
-            "defaultLanguage": "en",
-            "defaultAudioLanguage": "en",
+            "defaultLanguage": lang,
+            "defaultAudioLanguage": audio_lang,
         },
         "status": status,
     }

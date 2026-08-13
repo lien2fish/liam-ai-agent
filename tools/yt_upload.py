@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""把剪好的影片上傳到「連老闆-產地到餐桌」，可排定發布時間。
+"""把剪好的影片上傳到自己的 YouTube 頻道，可排定發布時間。
 
 用法：
   python3 tools/yt_upload.py 成品/南寮漁港/香螺一斤一千五.mp4 \\
@@ -9,7 +9,9 @@
   --at 未給＝上傳為私人，你自己在 YouTube 決定何時發。
   標題未給＝用檔名（去副檔名）。9:16 且 ≤3 分鐘會自動加 #shorts。
 
-憑證：config/youtube_oauth_lien.json（與 The Unknown Hour 分開，見 --setup）
+憑證：--profile 決定用哪一組，預設 lien（連老闆-產地到餐桌），
+讀 config/youtube_oauth_<profile>.json。新頻道先跑：
+  python3 youtube_auto/oauth_setup.py --profile <名稱>
 """
 import argparse, os, re, subprocess, sys
 from datetime import datetime, timezone, timedelta
@@ -20,7 +22,7 @@ sys.path.insert(0, os.path.join(REPO, "youtube_auto"))
 
 import upload as yt
 
-PROFILE = "lien"
+DEFAULT_PROFILE = "lien"
 TW = timezone(timedelta(hours=8))
 SHORTS_MAX_SEC = 180  # 2024-10 起 Shorts 上限由 60 秒放寬到 3 分鐘
 
@@ -58,27 +60,49 @@ SKIP_TAGS = {"shorts", "foryou", "fyp"}
 
 
 def read_desc(path):
-    """解析發文案 .md，回傳 (標題, 描述, 標籤)。
+    """解析發文案 .md，回傳 (標題, 描述, 標籤)。兩種格式都吃：
 
-    文案是 IG/YouTube/TikTok 三段式，只取 YouTube 段當標題與描述；
-    標籤則收集全檔 hashtag（不顯示於描述、只影響搜尋，多蒐無妨）。
-    找不到 YouTube 段就退回整檔當描述。
+    A 連老闆（IG/YouTube/TikTok 三段式）：取 YouTube 段的「- 標題：」「- 描述：」。
+    B 甜點頻道：**標題** 下一行、**描述** 的 ``` 區塊、**Tags** 的逗號清單。
+
+    標籤預設收集全檔 hashtag（不顯示於描述、只影響搜尋，多蒐無妨），
+    B 格式有明列 Tags 就以那行為準。都對不上則整檔當描述。
     """
     text = open(path, encoding="utf-8").read().strip()
-    tags = [t for t in re.findall(r"#(\w+)", text) if t.lower() not in SKIP_TAGS]
+    tags = [
+        t
+        for t in re.findall(r"#(\w+)", text)
+        if t.lower() not in SKIP_TAGS and not t.isdigit()
+    ]
     tags = list(dict.fromkeys(tags))
 
     block = re.search(r"\*\*YouTube[^*]*\*\*(.*?)(?=\n\*\*|\Z)", text, re.S)
-    if not block:
-        return None, text, tags
-    seg = block.group(1)
-    title = re.search(r"-\s*標題：\s*(.+)", seg)
-    desc = re.search(r"-\s*描述：\s*(.+)", seg)
-    return (
-        title.group(1).strip() if title else None,
-        desc.group(1).strip() if desc else seg.strip(),
-        tags,
-    )
+    if block:
+        seg = block.group(1)
+        title = re.search(r"-\s*標題：\s*(.+)", seg)
+        desc = re.search(r"-\s*描述：\s*(.+)", seg)
+        return (
+            title.group(1).strip() if title else None,
+            desc.group(1).strip() if desc else seg.strip(),
+            tags,
+        )
+
+    title = re.search(r"\*\*標題\*\*\s*\n+\s*(.+)", text)
+    desc = re.search(r"\*\*描述\*\*\s*\n+```\w*\n(.*?)\n```", text, re.S)
+    tagline = re.search(r"\*\*Tags\*\*\s*\n+\s*(.+)", text)
+    if title or desc:
+        if tagline:
+            tags = [
+                t.strip()
+                for t in tagline.group(1).split(",")
+                if t.strip() and t.strip().lower() not in SKIP_TAGS
+            ]
+        return (
+            title.group(1).strip() if title else None,
+            desc.group(1).strip() if desc else text,
+            tags,
+        )
+    return None, text, tags
 
 
 def main():
@@ -91,10 +115,21 @@ def main():
     p.add_argument("--public", action="store_true", help="立刻公開（預設私人）")
     p.add_argument("--thumb", help="封面圖；未給則自動找 <片名>_封面.jpg/.png")
     p.add_argument("--no-thumb", action="store_true", help="不設封面")
+    p.add_argument(
+        "--profile",
+        default=DEFAULT_PROFILE,
+        help=f"憑證組／頻道，預設 {DEFAULT_PROFILE}（連老闆-產地到餐桌）",
+    )
     a = p.parse_args()
 
     if not os.path.exists(a.video):
         raise SystemExit(f"❌ 找不到影片：{a.video}")
+    cred = os.path.join(REPO, "config", f"youtube_oauth_{a.profile}.json")
+    if not os.path.exists(cred):
+        raise SystemExit(
+            f"❌ 找不到憑證 {cred}\n"
+            f"　 先跑：python3 youtube_auto/oauth_setup.py --profile {a.profile}"
+        )
 
     w, h, dur = probe(a.video)
     is_short = h > w and dur <= SHORTS_MAX_SEC
@@ -113,6 +148,7 @@ def main():
     thumb = None if a.no_thumb else (a.thumb or find_thumb(a.video))
 
     print(f"影片　：{a.video}")
+    print(f"頻道　：{a.profile}")
     print(f"規格　：{w}x{h} {dur:.1f}秒{'（Shorts）' if is_short else ''}")
     print(f"標題　：{title}")
     print(f"標籤　：{tags}")
@@ -133,14 +169,14 @@ def main():
         tags,
         privacy=privacy,
         publish_at=publish,
-        profile=PROFILE,
+        profile=a.profile,
     )
     if thumb and is_short:
         # API 的 thumbnails/set 對 Shorts 會回 200 但不生效（靜默失敗），不如不呼叫
         print("⚠️ Shorts 不支援用 API 設縮圖，已跳過。要設封面請到 YouTube Studio：")
         print(f"   https://studio.youtube.com/video/{vid}/edit　←　上傳 {thumb}")
     elif thumb:
-        yt.set_thumbnail(vid, thumb, profile=PROFILE)
+        yt.set_thumbnail(vid, thumb, profile=a.profile)
 
 
 if __name__ == "__main__":
