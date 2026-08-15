@@ -124,7 +124,31 @@
 ### 注意事項
 - Meta Webhook 機制限制多（新版 Use Cases 架構無法用 `subscribed_apps`），改用輪詢
 - Cloudflare Worker（`ig-auto-reply.lien2fish.workers.dev`）已部署但未使用，可保留或刪除
-- IG Token **實測永不過期**（2026-07-17 debug_token 驗證：is_valid=true、expires_at=0），但**資料存取權 2026-08-20 到期**，屆時需重新授權並同時更新 `config/instagram_config.json` 和 GitHub Secret `IG_TOKEN`
+- IG Token 有**兩個獨立的期限，不要只看 `expires_at`**：
+  | 欄位 | 現況 | 意義 |
+  |------|------|------|
+  | `expires_at` | `0`＝永不過期 | token 字串本身不會失效 |
+  | `data_access_expires_at` | **2026-11-13**（2026-08-15 更新） | **到期後 API 會開始拒絕存取資料** |
+
+  ⚠️ **`fb_exchange_token` 換發不會重置 `data_access_expires_at`**——換出來的新 token
+  到期日跟舊的完全一樣（2026-08-15 實測）。這個日期**只有使用者真的走一次授權對話框才會 +90 天**。
+  所以「永不過期」是真的，但不代表不用管。
+  更新流程見下方〈IG Token 更新步驟〉，兩個地方都要改：
+  `config/instagram_config.json` 與 GitHub Secret `IG_TOKEN`
+
+### IG Token 更新步驟（2026-08-15 實跑驗證）
+
+1. Safari 開 `https://developers.facebook.com/tools/explorer/1310018353798687/`
+2. User Token → Permissions 勾滿六項：`instagram_basic` / `instagram_content_publish` /
+   `instagram_manage_comments` / `pages_show_list` / `pages_read_engagement` / `pages_manage_posts`
+3. Generate Access Token → 授權（已授權過要點「編輯先前的設定」確認權限都開）
+4. 拿到的是**短效 token（約 1 小時）**，用 `fb_exchange_token` 換長效：
+   `GET /v19.0/oauth/access_token?grant_type=fb_exchange_token&client_id=<app_id>&client_secret=<app_secret>&fb_exchange_token=<短效>`
+5. `debug_token` 驗證 **`data_access_expires_at` 確實往後推了**（這是唯一的驗收條件）
+6. 寫回 `config/instagram_config.json`（先備份）＋ 用 PyNaCl `SealedBox` 更新 Secret `IG_TOKEN`
+   - GitHub PAT 在 `~/.git-credentials`（**不在** remote URL，remote 是乾淨的 https）
+
+> 這組 token 由三套系統共用：限動預告、IG 留言自動回覆（每 5 分鐘）、IG+FB 每日發文（每天 08:00）。過期會一起掛掉。
 - `gemini-3.5-flash` 不設 `thinkingBudget: 0` 會導致回覆只輸出幾個字（MAX_TOKENS 截斷）
 
 ### Facebook 粉絲專頁資訊
@@ -138,11 +162,13 @@
 | 隱私政策頁 | https://lien2fish.github.io/liam-ai-agent/privacy.html |
 
 ### 重要到期日
-- **IG Token：2026-07-16 到期**，需從 Meta Graph API Explorer 重新取得（需含 `instagram_manage_comments` 權限）
+- **IG Token：token 本身永不過期，但「資料存取權」2026-11-13 到期**（2026-08-15 重新授權後 +90 天）。
+  屆時走上方〈IG Token 更新步驟〉再跑一次即可
 - **FB Page Token：永不過期**（無需更新）
 - 更新 Token 方式：用 `nacl.public.SealedBox` 直接寫入 GitHub Secret（系統 PyNaCl 1.6.2 已支援）
 - **GitHub PAT（舊）：2026-08-15 到期** — 已廢棄，改用新 PAT
-- **GitHub PAT（新）：永不過期**，含 `repo` + `workflow` scope，已設定於 git remote URL
+- **GitHub PAT（新）：永不過期**，含 `repo` + `workflow` scope，存在 `~/.git-credentials`
+  （**不是** remote URL，remote 已改回乾淨的 https）
 
 ### 注意事項
 - Repo 維持 **public**（config/ 已 gitignore，無憑證外洩風險）
@@ -154,6 +180,47 @@
 - FB Page 透過 Business Suite 管理，`/me/accounts` 不會回傳；需用 `debug_token` 的 `granular_scopes` 找真正 Page ID
 - `photo_stories` API 不可用（任何版本皆回傳 unknown error），FB 限時動態改用 IG `cross_post_ids`
 - prompt 為 f-string 時，JSON 範本的 `{}` 必須寫成 `{{}}`，否則 ValueError
+
+---
+
+## IG 限動預告（Reels 導流，2026-08-15 首次跑通）
+
+從**已發布的 Reels** 剪 3 秒預告貼限時動態，結尾標「Reels完整版～」。
+帳號 `lienstable`（連老闆｜產地到餐桌）。
+
+### 規格（使用者定案）
+
+| 項目 | 規則 |
+|------|------|
+| 長度 | **正好 3.00 秒**——使用者要求「最多 3 秒」，而 IG 限動影片**最短也是 3 秒**，只有這個值同時成立 |
+| 結構 | **不同片段拼接**（目前用 3 段，約 1 秒／段），怎麼切由我決定 |
+| ⚠️ 必須跳過 | **開頭的封面／標題卡**與**結尾的訂閱卡**，只取中間內容——標題卡會把梗一次講完，預告就失去意義 |
+| 標記 | 「Reels完整版～」黃字深底膠囊，**燒進畫面**、置中 y≈1430（IG 上下各約 250px 是 UI 安全區）|
+| 選片 | 同一支 Reel **至少一個月內不可重複** |
+
+### 流程
+
+1. 取素材：`GET /{ig-user-id}/media?fields=media_url` → **已發布 Reels 可直接下載 mp4**，
+   不需要外接硬碟（目前 60 支可選）
+2. ffmpeg 切段 → **concat filter** 合併 → overlay 標記 → 3.0 秒
+3. 上傳到 repo `instagram/stories/` 取得 `raw.githubusercontent.com` 公開網址
+4. `POST /{ig-user-id}/media`（`media_type=STORIES`, `video_url=…`）→ 輪詢 `status_code`
+   到 `FINISHED` → `POST /{ig-user-id}/media_publish`
+
+### ⚠️ 地雷
+
+- **發布後刪不掉**：Graph API 只能建立、不能刪除媒體（`DELETE` 回 `(#10) Insufficient
+  permissions`，是平台限制不是權限沒勾）。**發之前一定要先抽格預覽確認**，發錯只能請使用者到 App 手動刪
+- **驗收方式**：發完用 `GET /{media-id}?fields=media_url` 把限動抓回來抽格比對，
+  確認發出去的真的是想發的那支——別只看 API 回 200
+- **`concat` demuxer 的時間戳不連續**：三段接起來後每段都從 0.04 重新計時，
+  `overlay=…:enable='gte(t,N)'` 因此永遠不觸發，**字卡沒疊上去也不會報錯**。
+  改用 **concat filter**（每段當獨立輸入）才正常
+- **`-t` 要放在 `-i` 之後**：放前面是「輸入讀取長度」，不會確實截斷輸出（實測 1.0 秒切成 1.83 秒）
+- **`raw.githubusercontent.com` 覆蓋同一路徑有 CDN 快取延遲**：HEAD 可能還回舊檔大小。
+  不要據此判定失敗，以「抓回已發布的限動比對」為準
+- **API 加不了互動貼紙**（連結／Reels／@提及），所以「Reels完整版～」**點不下去**，
+  觀眾得自己去主頁找。要可點的只能在 App 手動「分享 → 新增到限時動態」
 
 ---
 
