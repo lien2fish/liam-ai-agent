@@ -2,13 +2,13 @@
 """一次上傳多支影片並自動排出發布時間表。
 
 用法：
-  # 每週二、五 18:00，從 8/19 開始
+  # 每 2 天一支 18:00（甜點頻道的節奏，--every 預設就是 2）
   python3 tools/yt_batch_schedule.py 成品/千層蛋糕研發日記 \\
-      --profile dessert --start "2026-08-19 18:00" --days tue,fri
+      --profile dessert --start "2026-08-19 18:00"
 
-  # 每 2 天一支
+  # 每週固定星期，如二、五
   python3 tools/yt_batch_schedule.py a.mp4 b.mp4 --profile dessert \\
-      --start "2026-08-19 18:00" --every 2
+      --start "2026-08-19 18:00" --days tue,fri
 
   # 用排好的時間表（可讓多支同一天發）
   python3 tools/yt_batch_schedule.py --plan dessert/千層排程.json --profile dessert
@@ -102,9 +102,11 @@ def plan_one(video):
     title = file_title or os.path.basename(stem)
     if is_short and "#shorts" not in desc.lower():
         desc = (desc + "\n\n#shorts").strip()
+    # Shorts 不另外設封面：<片名>_封面.jpg 是壓進影片開頭那 1 秒的直式封面卡，
+    # 不是 YouTube 縮圖，直立的它也當不成縮圖，一律用影片畫面。
     return dict(
         video=video, title=title, desc=desc, tags=tags,
-        is_short=is_short, dur=dur, thumb=find_thumb(video),
+        is_short=is_short, dur=dur, thumb=None if is_short else find_thumb(video),
     )  # fmt: skip
 
 
@@ -180,18 +182,12 @@ def main():
     print("-" * 72)
     for pl, t in zip(plans, times):
         kind = "Shorts" if pl["is_short"] else "長片　"
-        cover = "" if pl["thumb"] is None or pl["is_short"] else "＋封面"
+        cover = "＋封面" if pl["thumb"] else ""
         print(
             f"{t:%Y-%m-%d(%a) %H:%M}　{kind}　{pl['dur']:>6.0f}s　{pl['title']}{cover}"
         )
     print("-" * 72)
 
-    shorts_with_cover = [pl for pl in plans if pl["is_short"] and pl["thumb"]]
-    if shorts_with_cover:
-        print(
-            f"⚠️ {len(shorts_with_cover)} 支 Shorts 有封面檔，但 API 設不了，"
-            "要用得到 Studio 手動上傳"
-        )
     if len(plans) > a.max:
         print(
             f"⚠️ 一天配額只夠 {DAILY_UPLOAD_CAP} 支（每支上傳吃 1600 單位／每日 10,000）。"
@@ -218,7 +214,7 @@ def main():
             raise SystemExit(1)
         save_state(pl["video"], a.profile, name, vid)
         print(f"✅ {t:%m-%d %H:%M}　{pl['title']}　→ {vid}")
-        if pl["thumb"] and not pl["is_short"]:
+        if pl["thumb"]:
             # 影片本身已經上傳成功，縮圖失敗不該讓整批中斷（常見＝頻道未做電話驗證，403）
             try:
                 yt.set_thumbnail(vid, pl["thumb"], profile=a.profile)
