@@ -186,21 +186,35 @@ def roc_date(dt: datetime) -> str:
     return f"{dt.year - 1911}{dt.month:02d}{dt.day:02d}"
 
 
+MOA_LOOKBACK_DAYS = 3  # 北部市場約 3% 交易日無資料，往回多抓幾天才不會落空
+
+
 def fetch_from_moa() -> list[dict]:
-    params = urllib.parse.urlencode({"$top": "1000", "$format": "JSON"})
+    # 用日期區間直接取，避免只抓最近 1000 筆而漏掉當天資料
+    params = urllib.parse.urlencode(
+        {
+            "StartDate": roc_date(
+                datetime.now() - timedelta(days=MOA_LOOKBACK_DAYS - 1)
+            ),
+            "EndDate": roc_date(datetime.now()),
+            "$top": "9500",
+            "$format": "JSON",
+        }
+    )
     url = f"{MOA_API}?{params}"
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
     with urllib.request.urlopen(req, timeout=45) as r:
         raw = json.loads(r.read())
 
-    today = roc_date(datetime.now())
-    yesterday = roc_date(datetime.now() - timedelta(days=1))
+    recent = {
+        roc_date(datetime.now() - timedelta(days=i)) for i in range(MOA_LOOKBACK_DAYS)
+    }
     results = []
     for item in raw:
         market = item.get("市場名稱", "")
         if not any(k in market for k in NORTH_MARKETS):
             continue
-        if item.get("交易日期", "") not in (today, yesterday):
+        if item.get("交易日期", "") not in recent:
             continue
         try:
             results.append(
@@ -216,7 +230,11 @@ def fetch_from_moa() -> list[dict]:
             )
         except (KeyError, ValueError):
             continue
-    return results
+
+    if not results:
+        return []
+    latest = max(r["date"] for r in results)  # 只用最新一天，避免多日資料混在一起
+    return [r for r in results if r["date"] == latest]
 
 
 # ── 歷史記錄 ─────────────────────────────────────────────────────
@@ -230,7 +248,17 @@ def load_history() -> dict:
 
 def save_history(history: dict, today_data: list[dict]) -> dict:
     today_str = datetime.now().strftime("%Y-%m-%d")
-    history[today_str] = {i["name"]: i["mid"] for i in today_data if i.get("mid")}
+    # 上價與下價反映當日不同規格（大小、品相）的成交價差，交易量代表到貨規模
+    history[today_str] = {
+        i["name"]: {
+            "high": i.get("high", 0),
+            "mid": i["mid"],
+            "low": i.get("low", 0),
+            "vol": i.get("volume", 0),
+        }
+        for i in today_data
+        if i.get("mid")
+    }
     cutoff = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
     history = {k: v for k, v in history.items() if k >= cutoff}
     HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -243,6 +271,8 @@ def save_history(history: dict, today_data: list[dict]) -> dict:
 def calc_trend(name: str, current_mid: float, history: dict) -> str:
     for date in sorted(history.keys(), reverse=True):
         prev = history[date].get(name)
+        if isinstance(prev, dict):  # 新格式存整組價，舊資料仍是單一中價
+            prev = prev.get("mid")
         if prev and prev > 0 and current_mid > 0:
             pct = (current_mid - prev) / prev * 100
             if pct > 3:
