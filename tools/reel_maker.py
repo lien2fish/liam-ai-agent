@@ -927,23 +927,38 @@ def build(cfg):
     print(" ", f"{subject}_發文案.md")
 
 
+BRAND_TAGS = ["鑫海產", "連老闆", "產地到餐桌", "漁港生活", "海鮮"]
+MAX_HASHTAGS = 13  # YouTube 上限 15，超過會讓整支影片的 hashtag 全部失效，留 2 個餘裕
+TITLE_SOFT_MAX = 30  # 瀏覽／推薦版位大約只顯示到這裡，後面會被截掉
+
+
+def hashtag_line(cfg, *extra):
+    """config 的 `hashtags`（該支的主題字）排前面，品牌字墊後。前 3 個會顯示在標題上方。"""
+    out = []
+    for t in list(cfg.get("hashtags", [])) + list(extra) + BRAND_TAGS:
+        t = t.lstrip("#")
+        if t and t not in out:
+            out.append(t)
+    return " ".join("#" + t for t in out[:MAX_HASHTAGS])
+
+
 def write_captions(cfg, path):
     s = cfg["subject"]
     h = cfg.get("hooks", {})
-    md = f"# {s} · Reels 發佈文案\n\n"
-    md += (
-        "**IG Reels**\n- 標題："
-        + h.get("A", "")
-        + "\n- Hashtag：#鑫海產 #連老闆 #產地到餐桌 #漁港生活 #海鮮知識\n\n"
+    title = h.get("A", "")
+    warn = (
+        f"\n> ⚠️ 標題 {len(title)} 字，超過 {TITLE_SOFT_MAX} 字會在瀏覽／推薦版位被截斷\n"
+        if len(title) > TITLE_SOFT_MAX
+        else ""
     )
-    md += (
-        "**YouTube Shorts**\n- 標題："
-        + (h.get("A", "") + f"｜連老闆 {s}")
-        + "\n- 描述："
-        + h.get("B", "")
-        + " #Shorts #海鮮\n\n"
-    )
-    md += "**TikTok**\n- 文案：" + h.get("A", "") + " #海鮮 #漁港生活 #漲知識 #foryou\n"
+    md = f"# {s} · Reels 發佈文案\n{warn}\n"
+    md += "**IG Reels**\n- 標題：" + title
+    md += "\n- Hashtag：" + hashtag_line(cfg, "海鮮知識") + "\n\n"
+    md += "**YouTube Shorts**\n- 標題：" + title
+    md += "\n- 描述：" + h.get("B", "")
+    md += "\n- Hashtag：" + hashtag_line(cfg, "Shorts") + "\n\n"
+    md += "**TikTok**\n- 文案：" + title
+    md += "\n- Hashtag：" + hashtag_line(cfg, "漲知識", "foryou") + "\n"
     open(path, "w", encoding="utf-8").write(md)
 
 
