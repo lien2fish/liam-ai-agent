@@ -56,6 +56,10 @@ STRIP_SIDE = 40
 BANNER_W = W
 BANNER_BOTTOM = 1880
 BANNER_GAP = 16
+TAGLINE_SIZE = 40
+TAGLINE_BOTTOM = 1722
+TAGLINE_PAD_X = 44
+TAGLINE_PAD_Y = 20
 
 
 def font(path, size, index=0):
@@ -225,6 +229,36 @@ def draw_strip(img, paths):
             )
 
 
+def draw_tagline(img, text):
+    """疊在底部照片之上的洽詢標語，深藍膠囊條＋金框。"""
+    f = font(HEITI_M, TAGLINE_SIZE)
+    draw = ImageDraw.Draw(img, "RGBA")
+    tw = ink_w(draw, text, f)
+    th = TAGLINE_SIZE * 1.2
+    box = [
+        (W - tw) / 2 - TAGLINE_PAD_X,
+        TAGLINE_BOTTOM - th - TAGLINE_PAD_Y * 2,
+        (W + tw) / 2 + TAGLINE_PAD_X,
+        TAGLINE_BOTTOM,
+    ]
+    radius = (box[3] - box[1]) / 2
+
+    shadow = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    ImageDraw.Draw(shadow).rounded_rectangle(
+        [box[0], box[1] + 8, box[2], box[3] + 8], radius=radius, fill=(0, 20, 36, 110)
+    )
+    img.alpha_composite(shadow.filter(ImageFilter.GaussianBlur(14)))
+
+    draw.rounded_rectangle(
+        box,
+        radius=radius,
+        fill=T["footer_bg"] + (222,),
+        outline=T["accent"] + (255,),
+        width=2,
+    )
+    centered(draw, box[1] + TAGLINE_PAD_Y, text, f, T["footer_ink"])
+
+
 def build(cfg, out):
     global T
     T = THEMES[cfg.get("theme", "light")]
@@ -252,6 +286,8 @@ def build(cfg, out):
 
     draw_list(draw, cfg["items"], y + RULE_Y_PAD * 2 + 12, list_bottom)
     draw_strip(img, strip)
+    if cfg.get("tagline"):
+        draw_tagline(img, cfg["tagline"])
 
     draw = ImageDraw.Draw(img, "RGBA")
     draw.rectangle([0, FOOTER_TOP, W, H], fill=T["footer_bg"])
