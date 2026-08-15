@@ -146,6 +146,10 @@ def main():
     publish = publish_at_utc(a.at) if a.at else None
     privacy = "public" if a.public and not publish else "private"
     thumb = None if a.no_thumb else (a.thumb or find_thumb(a.video))
+    if is_short and not a.thumb:
+        # <片名>_封面.jpg 是壓進影片開頭那 1 秒的直式封面卡，不是 YouTube 縮圖，
+        # 直立的它也當不成縮圖。Shorts 一律用影片畫面，不另外設封面。
+        thumb = None
 
     print(f"影片　：{a.video}")
     print(f"頻道　：{a.profile}")
@@ -153,11 +157,7 @@ def main():
     print(f"標題　：{title}")
     print(f"標籤　：{tags}")
     print(f"發布　：{'排程 ' + a.at + ' (台灣)' if publish else privacy}")
-    if thumb and is_short:
-        cover_note = f"{thumb}（⚠️ Shorts 需到 Studio 手動上傳，API 無效）"
-    else:
-        cover_note = thumb or "（無，將用影片畫面）"
-    print(f"封面　：{cover_note}")
+    print(f"封面　：{thumb or '（無，將用影片畫面）'}")
     print(f"描述　：{desc[:80]}{'...' if len(desc) > 80 else ''}")
     if input("\n確認上傳？(y/N) ").strip().lower() != "y":
         raise SystemExit("已取消")
