@@ -43,6 +43,7 @@ import sys, os, re, json, subprocess, wave, tempfile
 import numpy as np
 
 ZHF = "/System/Library/Fonts/STHeiti Medium.ttc"
+SHORTS_MAX_SEC = 180  # 超過就不是 Shorts，會掉進 16:9 一般影片版位
 ASS_FONT = "Heiti TC"
 ORANGE_BGR = r"\c&H00309CF5&"  # 橘黃(ASS 是 BGR)
 WHITE_BGR = r"\c&H00FFFFFF&"
@@ -53,12 +54,14 @@ ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
 # ---------- 音訊/轉錄 ----------
 
+
 def _cleanup(path):
     """用完就清。這幾支工具原本只建暫存不清理，跑幾十輪累積 394 個目錄、
     塞爆 113GB 磁碟，導致長片換音軌中途失敗（No space left on device）。"""
     import shutil
 
     shutil.rmtree(path, ignore_errors=True)
+
 
 def extract_audio(video, out=None):
     out = out or tempfile.mktemp(suffix=".wav")
@@ -559,6 +562,72 @@ def draw_cover_title(img, main, sub="", line2=""):
         d.text((W / 2 - tw / 2, y + 22), sub, font=f2, fill=(255, 255, 255))
 
 
+# 超過 3 分鐘的直式片會掉進 YouTube 一般影片版位（16:9），直式封面塞進去只剩中間一條，
+# 所以另出一張橫式縮圖：模糊放大的同一影格當底、原影格靠右滿高、標題排左邊。
+def make_cover_169(video, t, main, sub, out, line2=""):
+    from PIL import Image, ImageDraw, ImageFont, ImageFilter
+
+    fix = lambda s: s.replace("・", "·").replace("／", "/")
+    main, sub, line2 = fix(main), fix(sub), fix(line2)
+
+    raw = tempfile.mktemp(suffix=".jpg")
+    subprocess.run(
+        ["ffmpeg", "-y", "-ss", str(t), "-i", video, "-frames:v", "1", raw],
+        capture_output=True,
+    )
+    frame = Image.open(raw).convert("RGB")
+    os.remove(raw)
+
+    W, H = 1280, 720
+    s = max(W / frame.width, H / frame.height)
+    bg = frame.resize((int(frame.width * s), int(frame.height * s)))
+    bg = bg.crop(
+        ((bg.width - W) // 2, (bg.height - H) // 2,
+         (bg.width - W) // 2 + W, (bg.height - H) // 2 + H)
+    )  # fmt: skip
+    img = Image.blend(
+        bg.filter(ImageFilter.GaussianBlur(18)),
+        Image.new("RGB", (W, H), (0, 0, 0)),
+        0.4,
+    )
+
+    fw = int(frame.width * H / frame.height)
+    img.paste(frame.resize((fw, H)), (W - fw - 40, 0))
+
+    d = ImageDraw.Draw(img)
+    tx_w = W - fw - 130
+
+    def fit(tx, cap):
+        fs = cap
+        while fs > 40:
+            f = ImageFont.truetype(ZHF, fs)
+            if d.textlength(tx, font=f) <= tx_w:
+                return f
+            fs -= 4
+        return ImageFont.truetype(ZHF, 40)
+
+    lines = [(main, HL_YELLOW, 124)] + ([(line2, HL_RED, 104)] if line2 else [])
+    measured = [(tx, fill, fit(tx, cap)) for tx, fill, cap in lines]
+    block_h = sum(sum(f.getmetrics()) for _, _, f in measured) + 16 * (
+        len(measured) - 1
+    )
+    y = (H - block_h) // 2 - 40
+    for tx, fill, f in measured:
+        d.text(
+            (50, y), tx, font=f, fill=fill,
+            stroke_width=max(10, f.size // 12), stroke_fill=(18, 18, 18),
+        )  # fmt: skip
+        y += sum(f.getmetrics()) + 16
+    if sub:
+        f2 = ImageFont.truetype(ZHF, 44)
+        tw = d.textlength(sub, font=f2)
+        d.rounded_rectangle(
+            [50, y + 14, 50 + tw + 48, y + 104], radius=14, fill=(18, 18, 18)
+        )
+        d.text((74, y + 28), sub, font=f2, fill=(255, 255, 255))
+    img.save(out, quality=92)
+
+
 def prepend_intro(out_mp4, card_jpg, dur=1.0):
     """封面卡壓進影片開頭 dur 秒（同編碼參數，concat copy 不重編正片）。"""
     tmp = tempfile.mkdtemp()
@@ -835,6 +904,17 @@ def build(cfg):
         if intro_dur > 0:
             prepend_intro(out_mp4, card, intro_dur)
             print(f"  封面卡已壓進開頭 {intro_dur:.0f} 秒", flush=True)
+        if total / speed + intro_dur > SHORTS_MAX_SEC:
+            card169 = os.path.join(out_dir, f"{subject}_封面_16x9.jpg")
+            make_cover_169(
+                videos[cov.get("video_index", 0)],
+                cov["time"],
+                cov.get("main", subject),
+                cov.get("sub", ""),
+                card169,
+                cov.get("line2", ""),
+            )
+            print("  超過 3 分鐘＝一般影片版位，已另出 16:9 縮圖", flush=True)
     # 發文案
     write_captions(cfg, os.path.join(out_dir, f"{subject}_發文案.md"))
     _cleanup(tmp)
@@ -842,6 +922,8 @@ def build(cfg):
     print(" ", f"{subject}.mp4  (約{total/speed:.0f}秒, {speed}x)")
     if cov:
         print(" ", f"{subject}_封面.jpg")
+        if total / speed + float(cfg.get("cover_intro", 1.0)) > SHORTS_MAX_SEC:
+            print(" ", f"{subject}_封面_16x9.jpg  ← YouTube 一般影片版位用")
     print(" ", f"{subject}_發文案.md")
 
 
