@@ -651,19 +651,24 @@ python3 /Users/lien/Downloads/gen_a1_list.py
 | 項目 | 說明 |
 |------|------|
 | 腳本 | `design/seafood_poster.py`（版面）／`design/seafood_cutout.py`（照片去背）|
-| Config | `design/seafood_poster/{spring,summer,autumn,winter}.json` |
+| Config | `design/seafood_poster/{spring,summer,autumn,winter}.json`（版面示範）＋`current.json`（**當令實際報價，不綁季節**）|
 | 底圖 | `bg_blue_light.png`（淺藍海洋，使用中）／`bg_blue_deep.png`（深藍夜色，配 `"theme": "dark"`）|
 | 輸出 | 1080×1920 RGB PNG，IG／LINE 用，**不做印刷**。成品另存 `~/Desktop/鑫海產_鮮味聚海報/` |
 | 換季 | 只改 config 的 `items`／`subtitle`／`intro`，跑 `python3 design/seafood_poster.py <config>` |
 
-版面＝品牌小標／主標「鮮·味·聚」（字間金菱形）／副標／3 行引言／7 項×3 行／底部去背海鮮橫幅／深藍標語條。
+版面＝品牌小標／主標「鮮·味·聚」（字間金菱形）／副標／3 行引言／7 項×3 行／底部去背海鮮橫幅／〔洽詢標語條〕／深藍頁尾條。
 
-- **價格全是版面示範值不是真實報價**，出稿前必須覆寫（config `_note` 有註明）
+- **四季 config 的價格全是版面示範值不是真實報價**，出稿前必須覆寫（config `_note` 有註明）。`current.json` 例外，裡面是使用者給的實際店內售價
+- **`tagline` 是選用欄位**（2026-08-15 加）：填了才畫，疊在底部照片**之上**、頁尾條之上方的深藍半透明膠囊條＋金框。`TAGLINE_BOTTOM=1722` 是調過的——貼到 1764 會與頁尾條只剩 24px、兩條深藍黏成一塊。四季 config 沒填此欄，改動後已逐像素回歸驗證 `autumn.png` 完全不變
 - 品項中文行＝**產地／漁獲狀態 ＋ 海鮮名 ＋ 品質形容詞**，**不寫料理方式**（清蒸整尾／一夜干／鹽烤／白灼皆已移除）；「現流／活魚現殺／生食級」屬狀態與等級可留
 - **品項字級中文 40px 是使用者反覆要求放大的結果**（20→32→40），空間靠引言砍到 3 行＋行距係數 1.14＋橫幅下沉擠出來。**不要為了塞內容再改小**
+- **字級由 `draw_list` 依項數自動算**（`min(42, slot*0.38)`），項數就是字級的主要變因：7 項 40／8 項 39／9 項 31（皆含底部照片）。**超過 8 項就會明顯掉到 35 以下**，此時要嘛拆兩張海報、要嘛砍引言行數，別默默讓它縮
+- **不放底部照片可換到更大字級**（`bottom_strip: []` → 品項區吃滿到 y=1745，8 項可到 42px）。有照片 vs 大字只能二選一，讓使用者決定
 - `bottom_strip` 放 1 張＝滿版橫幅（底部沒入頁尾條），放多張＝等寬分格。去背走 u2net 顯著性遮罩 ∪ 非白遮罩，白底棚拍照效果好（冰塊、蝦鬚都留得住）
 - 成品 PNG 與 `photos/` 已 gitignore：前者可重產，後者是實拍素材且 repo 為 public
-- ⚠️ **未解**：現用底部照片是來路不明的截圖（疑似圖庫）且圖上有帝王蟹腳，與「龜吼 19 艘共捕船直送」對不起來，**發布前須確認版權並改用自拍**；春夏冬三季照片仍缺
+- **底部照片素材來源＝鉅鑫官網鑫海產頁**（2026-08-15 確認）：`gs-group.com.tw/wp-content/uploads/2023/08/seafood-{1,2,3}.png` 三張本來就是去背 PNG（綜合魚／草蝦／鮭魚排），下載後只做 alpha 去邊裁切、**不需再跑 `seafood_cutout.py`**，存為 `photos/gs_seafood_{1,2,3}.png`
+- ⚠️ **`autumn_banner.png` 不要用**：來路不明的截圖（疑似圖庫）且圖上有帝王蟹腳，與「龜吼 19 艘共捕船直送」對不起來。秋季 config 仍指著它，出稿前要換掉
+- ⚠️ **`photos/` 與 `design/seafood_poster/*.png` 都在 gitignore**（成品可重產、素材不進 public repo）。代價是**換機或重新 clone 後跑 config 會找不到圖、底部變成空白佔位框**——素材要自己從官網重抓
 - 地雷：STHeiti 的 `·` 是全形寬且字面靠左，前後加空格會有明顯空隙，config 一律寫「鑫海產·私廚」不加空格
 
 ---
