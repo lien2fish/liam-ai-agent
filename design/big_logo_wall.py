@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""二樓面外大 Logo 牆 345×290cm 防水布 — logo ＋ 協會名 ＋ 標語。
+"""二樓面外大 Logo 牆 290×200cm 防水布 — logo ＋ 協會名 ＋ 標語。
 
-防水布只能做矩形，所以整張白底、不留透明。輸出 100dpi，與既有送印檔
-`大Logo牆_345x290cm.tif`（13583×11417）同規格。
+防水布只能做矩形，所以整張白底、不留透明。輸出 100dpi，logo 取自既有送印檔
+`大Logo牆_345x290cm.tif`（13583×11417，舊尺寸的成品，只當 logo 來源）。
 
 logo 取自那份既有送印 tif（裡面 8593px，縮小不放大，色彩已印刷驗證過）。
 設計參數一律以 mm 為單位，改 DPI 不必重調版面。
@@ -29,21 +29,22 @@ ICC = "/System/Library/ColorSync/Profiles/Generic CMYK Profile.icc"
 
 ZHF = "/System/Library/Fonts/STHeiti Medium.ttc"
 
-W_CM, H_CM = 345, 290
+W_CM, H_CM = 290, 200
 
 WHITE = (255, 255, 255)
 GREEN = (7, 154, 63)  # #079A3F
-GOLD = (224, 165, 10)  # #E0A50A
+GOLD = (200, 138, 8)  # #C88A08
 
 ORG = "惜食台灣行動協會"
 SLOGAN = "疼惜食物 疼惜台灣"
 
-# 版面參數，單位 mm
+# 版面參數，單位 mm。這組是 345×290 版的值，整組乘 K 等比縮到目前畫布高度
 LOGO_W_MM = 1800
 ORG_MM = 300
-SLOGAN_MM = 170
+SLOGAN_MM = 220
 GAP_LOGO_ORG_MM = 160
 GAP_ORG_SLOGAN_MM = 100
+CONTENT_FILL = 0.87  # 內容總高佔畫布高的比例，其餘平分為上下留白
 
 
 def ink_bbox(text, font):
@@ -63,12 +64,12 @@ def draw_ink_center(d, text, font, cx, y, fill):
     return x, y, x + (bx1 - bx0), y + (by1 - by0)
 
 
-def load_logo(src):
+def load_logo(src, override=None):
     """回傳白底 RGB 的 logo，已裁到墨色範圍。
 
     白底與本設計的整張白底同色，直接貼上無縫，不必去背。
     """
-    path = SRC_TIF if src == "tif" else SRC_PNG
+    path = override or (SRC_TIF if src == "tif" else SRC_PNG)
     if not os.path.exists(path):
         raise SystemExit(f"找不到 logo 來源：{path}")
     im = Image.open(path).convert("RGB")
@@ -76,18 +77,31 @@ def load_logo(src):
     return im.crop(box), os.path.basename(path)
 
 
+def layout_scale(logo_rgb):
+    """整組版面參數共用的縮放倍率，讓內容總高＝畫布高 × CONTENT_FILL。"""
+    base = (
+        LOGO_W_MM * logo_rgb.height / logo_rgb.width
+        + GAP_LOGO_ORG_MM
+        + ORG_MM
+        + GAP_ORG_SLOGAN_MM
+        + SLOGAN_MM
+    )
+    return CONTENT_FILL * H_CM * 10 / base
+
+
 def build(logo_rgb, S):
     W, H = round(W_CM * 10 * S), round(H_CM * 10 * S)
-    logo_w = round(LOGO_W_MM * S)
+    K = layout_scale(logo_rgb)
+    logo_w = round(LOGO_W_MM * K * S)
     logo_h = round(logo_w * logo_rgb.height / logo_rgb.width)
     logo = logo_rgb.resize((logo_w, logo_h), Image.LANCZOS)
 
-    of = ImageFont.truetype(ZHF, round(ORG_MM * S))
-    sf = ImageFont.truetype(ZHF, round(SLOGAN_MM * S))
+    of = ImageFont.truetype(ZHF, round(ORG_MM * K * S))
+    sf = ImageFont.truetype(ZHF, round(SLOGAN_MM * K * S))
     oh = ink_bbox(ORG, of)[3] - ink_bbox(ORG, of)[1]
     sh = ink_bbox(SLOGAN, sf)[3] - ink_bbox(SLOGAN, sf)[1]
 
-    g1, g2 = round(GAP_LOGO_ORG_MM * S), round(GAP_ORG_SLOGAN_MM * S)
+    g1, g2 = round(GAP_LOGO_ORG_MM * K * S), round(GAP_ORG_SLOGAN_MM * K * S)
     total = logo_h + g1 + oh + g2 + sh
     top = (H - total) // 2
     cx = W // 2
@@ -183,7 +197,7 @@ def to_cmyk_pdf(img, out_pdf, S):
     return sample, (w_pt / 72 * 2.54, h_pt / 72 * 2.54)
 
 
-def verify(img, lg, org, sl, size, S, white_cmyk, pdf_cm):
+def verify(img, lg, org, sl, size, S, K, white_cmyk, pdf_cm):
     W, H = size
     a_top = np.asarray(img.crop((0, 0, W, 4)))
     ok = [
@@ -196,8 +210,8 @@ def verify(img, lg, org, sl, size, S, white_cmyk, pdf_cm):
         (f"協會名 水平置中 cx={(org[0]+org[2])//2}", abs((org[0]+org[2])//2 - W//2) <= 2),
         (f"標語 水平置中 cx={(sl[0]+sl[2])//2}", abs((sl[0]+sl[2])//2 - W//2) <= 2),
         (f"內容垂直置中 上{lg[1]} 下{H-sl[3]}", abs(lg[1] - (H - sl[3])) <= 2),
-        (f"logo→協會名 {org[1]-lg[3]}px", abs((org[1]-lg[3]) - round(GAP_LOGO_ORG_MM*S)) <= 2),
-        (f"協會名→標語 {sl[1]-org[3]}px", abs((sl[1]-org[3]) - round(GAP_ORG_SLOGAN_MM*S)) <= 2),
+        (f"logo→協會名 {org[1]-lg[3]}px", abs((org[1]-lg[3]) - round(GAP_LOGO_ORG_MM*K*S)) <= 2),
+        (f"協會名→標語 {sl[1]-org[3]}px", abs((sl[1]-org[3]) - round(GAP_ORG_SLOGAN_MM*K*S)) <= 2),
         ("協會名 色 = 品牌綠", modal(img, org) == GREEN),
         ("標語 色 = 金黃", modal(img, sl) == GOLD),
         (f"左右留白 {min(lg[0], org[0], sl[0])}px", min(lg[0], org[0], sl[0]) >= 200),
@@ -218,33 +232,38 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dpi", type=int, default=100)
     ap.add_argument("--src", choices=["tif", "png"], default="tif")
+    ap.add_argument("--logo", help="直接指定 logo 來源路徑，蓋過 --src")
     ap.add_argument("--no-pdf", action="store_true")
     args = ap.parse_args()
 
     S = args.dpi / 25.4  # px per mm
-    logo_rgb, name = load_logo(args.src)
-    tgt = round(LOGO_W_MM * S)
+    logo_rgb, name = load_logo(args.src, args.logo)
+    K = layout_scale(logo_rgb)
+    tgt = round(LOGO_W_MM * K * S)
     print(f"logo 來源 {name}　墨色範圍 {logo_rgb.width}×{logo_rgb.height}px")
-    print(f"　→ 縮到 {tgt}px（{LOGO_W_MM/10:.0f}cm），倍率 {tgt/logo_rgb.width:.2f}×"
+    print(
+        f"版面等比縮放 K={K:.3f}（協會名 {ORG_MM*K/10:.1f}cm、標語 {SLOGAN_MM*K/10:.1f}cm）"
+    )
+    print(f"　→ 縮到 {tgt}px（{LOGO_W_MM*K/10:.0f}cm），倍率 {tgt/logo_rgb.width:.2f}×"
           f"{'（縮小，無畫質損失）' if tgt <= logo_rgb.width else '（放大⚠️）'}\n")  # fmt: skip
 
     img, lg, org, sl, size = build(logo_rgb, S)
-    p1 = f"{OUT_DIR}/大Logo牆_345x290cm_含標題.png"
+    p1 = f"{OUT_DIR}/大Logo牆_{W_CM}x{H_CM}cm_含標題.png"
     img.save(p1)
     print(f"✅ 母檔 RGB {p1}")
 
     img.resize((900, round(900 * size[1] / size[0])), Image.LANCZOS).save(
-        f"{OUT_DIR}/預覽_大Logo牆_含標題.png"
+        f"{OUT_DIR}/預覽_大Logo牆_{W_CM}x{H_CM}cm_含標題.png"
     )
 
     white_cmyk, pdf_cm = None, (0, 0)
     if not args.no_pdf:
-        p2 = f"{OUT_DIR}/大Logo牆_345x290cm_含標題_CMYK.pdf"
+        p2 = f"{OUT_DIR}/大Logo牆_{W_CM}x{H_CM}cm_含標題_CMYK.pdf"
         white_cmyk, pdf_cm = to_cmyk_pdf(img, p2, S)
         print(f"✅ 送印 CMYK PDF {p2}　{os.path.getsize(p2)/1e6:.0f}MB")
 
     print()
-    ok = verify(img, lg, org, sl, size, S, white_cmyk, pdf_cm)
+    ok = verify(img, lg, org, sl, size, S, K, white_cmyk, pdf_cm)
     print("\n" + ("全部通過" if ok else "⚠️ 有項目未通過，見上表"))
 
 
