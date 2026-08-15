@@ -1,0 +1,62 @@
+{
+  "_note": "price 為使用者提供之實際店內售價（2026-08-14）",
+  "season": "當令",
+  "brand": "鑫海產",
+  "title": "鮮味聚",
+  "subtitle": "當令海味，現流直送",
+  "intro": [
+    "天還沒亮，漁船就已經靠岸",
+    "鑫海產只挑當日現流，最肥美的那一批",
+    "從龜吼漁港到您的餐桌，只隔一個清晨"
+  ],
+  "items": [
+    {
+      "en": "SALMON FILLET  Salmo salar",
+      "zh": "厚切 鮭魚菲力　油花細緻",
+      "price": "NT$500 / 片"
+    },
+    {
+      "en": "SWORDTIP SQUID  Uroteuthis edulis",
+      "zh": "現流 砲管透抽　肉厚彈牙",
+      "price": "NT$450 / 支"
+    },
+    {
+      "en": "CRIMSON SEABREAM  Dentex tumifrons",
+      "zh": "現流 赤鯮　肉質細嫩",
+      "price": "NT$500 / 尾"
+    },
+    {
+      "en": "HUMPBACK GROUPER  Cromileptes altivelis",
+      "zh": "野生 老鼠斑　斑中極品",
+      "price": "NT$750 / 尾"
+    },
+    {
+      "en": "LARGEHEAD HAIRTAIL  Trichiurus lepturus",
+      "zh": "現流 白帶魚　白肉細嫩",
+      "price": "NT$350 / 斤"
+    },
+    {
+      "en": "TOMATO HIND  Cephalopholis sonnerati",
+      "zh": "野生 紅條　肉質緊實",
+      "price": "NT$600 / 尾"
+    },
+    {
+      "en": "BLACKTHROAT SEAPERCH  Doederleinia berycoides",
+      "zh": "深海 紅喉　油脂豐腴",
+      "price": "NT$1,200 / 尾"
+    },
+    {
+      "en": "JAPANESE BUTTERFISH  Psenopsis anomala",
+      "zh": "現流 肉魚　油脂香甜",
+      "price": "2 尾 NT$400"
+    }
+  ],
+  "tagline": "有想要的其他海鮮可直接洽詢！",
+  "footer": "龜吼現流·19 艘共捕船直送",
+  "background": "design/seafood_poster/bg_blue_light.png",
+  "bottom_strip": [
+    "design/seafood_poster/photos/gs_seafood_1.png",
+    "design/seafood_poster/photos/gs_seafood_2.png",
+    "design/seafood_poster/photos/gs_seafood_3.png"
+  ]
+}
