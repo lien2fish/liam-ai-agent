@@ -2,7 +2,7 @@ name: IG 限動 Reels 預告
 
 on:
   schedule:
-    - cron: '0 11 * * *'    # UTC 11:00 = 台灣 19:00（Reels 18:00 發布後一小時）
+    - cron: '5 10 * * *'    # UTC 10:05 = 台灣 18:05（Reels 固定 18:00 發布，隔 5 分鐘接上）
   workflow_dispatch:
 
 jobs:
