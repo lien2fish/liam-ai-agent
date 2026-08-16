@@ -1,0 +1,48 @@
+name: IG 限動 Reels 預告
+
+on:
+  schedule:
+    - cron: '0 11 * * *'    # UTC 11:00 = 台灣 19:00（Reels 18:00 發布後一小時）
+  workflow_dispatch:
+
+jobs:
+  teaser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install ffmpeg + Chinese fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-noto-cjk
+          fc-cache -fv
+
+      - name: Install Python dependencies
+        run: pip install Pillow numpy
+
+      - name: Build and publish story teaser
+        env:
+          IG_TOKEN:     ${{ secrets.IG_TOKEN }}
+          IG_ID:        ${{ secrets.IG_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 instagram/story_teaser.py
+
+      - name: Commit selection state
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # 影片由腳本經 API 直接推上 main，這裡只記錄「哪支用過」
+          git pull --rebase --autostash
+          git add instagram/story_teaser_state.json
+          git diff --staged --quiet || git commit -m "chore(ig): 更新限動預告選片紀錄"
+          git push
