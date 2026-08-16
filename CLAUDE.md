@@ -191,7 +191,7 @@
 | 項目 | 說明 |
 |------|------|
 | 腳本 | `instagram/story_teaser.py`（`--dry-run` 只剪不發）|
-| 排程 | `.github/workflows/ig_story_teaser.yml`，每天 **19:00 台灣**（Reels 18:00 發布後一小時）|
+| 排程 | `.github/workflows/ig_story_teaser.yml`，每天 **18:05 台灣**（Reels 固定 18:00 落地，隔 5 分鐘接上）|
 | 選片紀錄 | `instagram/story_teaser_state.json`（workflow 自動 commit）|
 | 影片暫存 | `instagram/stories/`，發完自動刪掉前一支（每天約 6MB，不清會撐爆 public repo）|
 
@@ -199,6 +199,10 @@
 
 **挑片段**＝把可用區間切三等分，每段抽 6 個候選格算**梯度能量**取最銳利的。
 ⚠️ 這步不能省：改用等距取樣實測會挑到運鏡糊掉的畫面與靜態解說牌。
+
+⚠️ **18:05 是目標不是保證**：GitHub 排程常誤點（同 `ig_comment_reply` 的 1.5~4 小時），
+真的很在意分秒就得手動觸發。誤點不會壞掉——若新 Reel 還沒上，挑片邏輯會自動退回舊片，
+隔天新片仍在「30 天內沒用過」名單裡，不會漏掉。
 
 ### 規格（使用者定案）
 
@@ -367,7 +371,7 @@ Shorts 若另存子資料夾就不會自動穿插，這種情況改用 `--plan` 
 |--------------|------|------|
 | `daily_post.yml` | IG+FB 每日發文 | 每天 08:00 |
 | `ig_comment_reply.yml` | IG 留言自動回覆 | 每 5 分鐘（**實測常delay 1.5~4小時，GitHub高頻排程平台限制，非設定錯誤**） |
-| `ig_story_teaser.yml` | IG 限動 Reels 預告（從已發布 Reels 剪 3 秒＋「Reels完整版～」，30 天不重複） | 每天 19:00 |
+| `ig_story_teaser.yml` | IG 限動 Reels 預告（從已發布 Reels 剪 3 秒＋「Reels完整版～」，30 天不重複） | 每天 18:05（接 Reels 18:00） |
 | `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:00，自動 commit 報告 |
 | `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:00（**2026-07-02 修**：CRM 於 06-26 整併後，`notion_crm/monthly_report.py` 原引用不存在的 `DB["sales"]` 且欄位名對不上，已改讀「全品牌銷售紀錄」統一DB `38bf4149-a6aa-81db-9b89-c47410857a2c`，欄位＝金額/出貨日期/客戶名稱）|
 | `market_daily.yml` | 每日股市全面分析報告 | 每天 **12:00**（台灣），自動 commit 報告 |
