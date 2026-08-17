@@ -27,6 +27,7 @@ NSEG = 3  # 拼幾段
 HEAD_SKIP = 1.2  # 跳過開頭封面／標題卡：預告一開始就爆雷就沒意義了
 TAIL_SKIP = 2.5  # 跳過結尾「記得訂閱」卡
 TAG = "Reels完整版～"
+TAG_SHOW = 2.00  # 標記顯示幾秒（從結尾往前算）。3 秒的片子留 1 秒讓觀眾先看到畫面
 
 if sys.platform == "darwin":
     FONT, FONT_IDX = "/System/Library/Fonts/STHeiti Medium.ttc", 0
@@ -191,7 +192,7 @@ def cut(src, out_mp4, tmp):
         lab += f"[{i}:v][{i}:a]"
     fc = (
         f"{lab}concat=n={len(parts)}:v=1:a=1[cv][ca];"
-        f"[cv][{len(parts)}:v]overlay=0:0:enable='gte(t,{DUR - 1.25:.2f})'[v]"
+        f"[cv][{len(parts)}:v]overlay=0:0:enable='gte(t,{DUR - TAG_SHOW:.2f})'[v]"
     )
     subprocess.run(
         ["ffmpeg", "-y", *ins, "-i", tag, "-filter_complex", fc,
