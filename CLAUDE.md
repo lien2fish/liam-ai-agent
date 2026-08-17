@@ -382,7 +382,7 @@ Shorts 若另存子資料夾就不會自動穿插，這種情況改用 `--plan` 
 | `birthday_reminder.yml` | 壽險客戶生日提醒 | 每天 08:05，未來7天內生日則Email（含歲數，無commit）|
 | `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:00，超60天未回購則 Email，自動 commit 報告 |
 | `weekly_revenue_sprint.yml` | 營收衝刺週報（本週壽險該接觸名單＋話術：A組未來14天生日切入、B組壽產保單健檢每週輪替6位） | 每週一 08:00，Email（**無commit，客戶個資只走Email**）|
-| `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；**Shorts每天發、長片維持週二/五/日追加**） | 每天 10:00 製作上傳，**排程當天 18:00 自動轉公開** |
+| `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；**Shorts 週二/五、長片週日，約隔兩天一支**） | 每天 10:00 檢查，發片日才製作上傳，**排程當天 18:00 自動轉公開** |
 | `yt_channel_report.yml` | The Unknown Hour 頻道每日表現日報（觀看/讚/留言+新留言Email） | 每天 08:20，用YT_API_KEY讀公開數據，自動commit報告 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 | `rotary_birthday_reminder.yml` | 中城網路扶輪社社友生日提醒（剛好前14天Email一次；資料=私人repo `liam-workspace/rotary/中城網路社友通訊錄.json` 71位，用`WORKSPACE_PAT` checkout，**個資不進公開repo、無commit**） | 每天 08:10 |
@@ -1036,7 +1036,7 @@ Subscribe and never miss a new Why. 🔔
 - **BGM**：`youtube_auto/bgm.mp3`（ffmpeg 生成的低沉神秘氛圍 drone，可換無版權音樂或 `YT_BGM` 指定），`amix` 低音量(0.16)混入；輸出 44.1kHz 立體聲。**注意：這版 ffmpeg 的 `tremolo` filter 會 exit 222（Result too large），生成 BGM 別用 tremolo**
 - **長度＝2～3 分鐘一般影片**：`generate_script` prompt 要 18-24 句、10-14 場景、290-380字；`max_tokens`=3000；`make_and_upload` 無 `#shorts`。改長度調 prompt 句數/場景數。**生圖約 15~18 秒/張**（OpenAI，實測）：本機約 5 分鐘/支，workflow `timeout-minutes` 已調 30，尚有餘裕
 - **生圖容錯**：單張最終失敗不中止，沿用前一張場景圖（首張才用 `_placeholder_image` 備援底圖），吉祥物結尾同理。**但過半場景失敗即 `raise` 中止**（2026-08-06 加）——⚠️ 原本只有「沿用前一張」沒有底線，08-05 Pollinations 全掛時產出**整支同一張底圖的影片、workflow 還回報 success 並照排程自動公開**，這種「假成功」比明顯失敗更難發現。重試只在 408/429/5xx，4xx（認證／額度／內容政策）直接中止並印出狀態碼
-- **Shorts 每天發＋長片維持原頻率**（2026-07-01 改）：`make_and_upload.formats_for_today()` 決定當天產出——**Shorts(9:16, ~50秒, 6-8句)每天都發；長片(16:9, 2-3分鐘, 18-24句)僅週二/五/日追加一支**（長片日＝一次跑出 Shorts＋長片兩支）。可用 `YT_FORMAT=long/short` 手動覆寫成只產一支。多格式日各格式跑獨立 subprocess（避免 build_video 模組級 `YT_ASPECT` 只在 import 時生效）；make_and_upload 設好 `YT_ASPECT` 後才 import build_video；short 模式自動加 `#shorts`、開場卡縮短為 3s。workflow `timeout-minutes` 已提到 55（兩支影片）
+- **約隔兩天發一支**（2026-08-06 改，`SHORT_WEEKDAYS={1,4}`／`LONG_WEEKDAYS={6}`）：`make_and_upload.formats_for_today()` 決定當天產出——**Shorts(9:16, ~50秒, 6-8句)週二、週五；長片(16:9, 2-3分鐘, 18-24句)週日**，一週三支，其餘日子直接跳過不製作。要改節奏只動這兩個常數（週一=0），並同步改 `main()` 裡「今天非發片日」那行提示字。可用 `YT_FORMAT=long/short` 手動覆寫成只產一支。多格式日各格式跑獨立 subprocess（避免 build_video 模組級 `YT_ASPECT` 只在 import 時生效）；make_and_upload 設好 `YT_ASPECT` 後才 import build_video；short 模式自動加 `#shorts`、開場卡縮短為 3s。workflow `timeout-minutes` 已提到 55（兩支影片）
 - **影片比例**：`YT_ASPECT`（16:9=1920×1080 / 9:16=1080×1920）。W/H、生圖尺寸、Ken Burns、字幕字級(16:9=54/9:16=60)與位置、開場卡時長皆隨比例自動調整
 
 ### 模組 `youtube_auto/`
