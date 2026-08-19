@@ -6,10 +6,14 @@ IG 留言自動回覆 - 輪詢版
 
 import json
 import os
+import smtplib
+import ssl
 import sys
 import urllib.request
 import urllib.parse
 from datetime import datetime, timezone, timedelta
+from email.mime.text import MIMEText
+from email.utils import formataddr
 from pathlib import Path
 
 # ── 路徑設定 ──────────────────────────────────────────────────────
@@ -29,6 +33,62 @@ GEMINI_MODELS = [
 ]
 FALLBACK = "感謝支持 🐟"
 MAX_IDS = 2000
+
+GMAIL_PW = os.environ.get("GMAIL_APP_PASSWORD", "")
+ADDR = "lien2fish@gmail.com"
+
+# 問到價格、到貨、訂購的留言一律不自動回——AI 看不到照片也不知道當天行情，
+# 護欄只能讓它不講錯，沒辦法讓它講對。報錯價格會有商業糾紛。
+# 用關鍵字而非 AI 判斷：零成本（不吃 Gemini 額度）、可預測、可稽核。
+NEEDS_HUMAN = [
+    # 價格
+    "多少錢",
+    "價格",
+    "價錢",
+    "怎麼賣",
+    "幾錢",
+    "報價",
+    "費用",
+    "單價",
+    "一斤多少",
+    "多少一斤",
+    "行情",
+    "優惠",
+    "折扣",
+    "便宜",
+    "貴嗎",
+    # 訂購
+    "怎麼買",
+    "怎麼訂",
+    "要買",
+    "想買",
+    "下單",
+    "訂購",
+    "預訂",
+    "可以訂",
+    "團購",
+    # 到貨
+    "什麼時候",
+    "何時",
+    "有貨",
+    "到貨",
+    "還有嗎",
+    "缺貨",
+    "補貨",
+    "現貨",
+    # 配送
+    "宅配",
+    "運費",
+    "寄送",
+    "出貨",
+    "配送",
+    "可以寄",
+    "冷凍寄",
+]
+
+
+def needs_human(text):
+    return any(k in text for k in NEEDS_HUMAN)
 
 
 # ── 載入設定（env var 優先，本機用 config 檔）────────────────────
@@ -68,12 +128,48 @@ def load_state():
     since = (datetime.now(timezone.utc) - timedelta(minutes=6)).strftime(
         "%Y-%m-%dT%H:%M:%S+0000"
     )
-    return {"last_checked": since, "replied_ids": []}
+    return {"last_checked": since, "replied_ids": [], "notified_ids": []}
 
 
 def save_state(state):
     state["replied_ids"] = state["replied_ids"][-MAX_IDS:]
+    state["notified_ids"] = state.get("notified_ids", [])[-MAX_IDS:]
     STATE_FILE.write_text(json.dumps(state, ensure_ascii=False, indent=2))
+
+
+def send_pending_mail(pending):
+    """把需要人工回覆的留言寄給 Lien。"""
+    if not GMAIL_PW:
+        log("  ⚠️ 未設 GMAIL_APP_PASSWORD，跳過寄信")
+        return
+
+    lines = [
+        f"<b>有 {len(pending)} 則留言需要你親自回。</b>",
+        "",
+        "這些留言問到價格、到貨或訂購，系統<b>沒有自動回覆</b>——",
+        "AI 看不到照片也不知道當天行情，答錯價格會有糾紛。",
+        "",
+        "─" * 30,
+    ]
+    for p in pending:
+        lines += [
+            "",
+            f"<b>@{p['user']}</b>　{p['time'][:16].replace('T', ' ')}",
+            f"「{p['text']}」",
+            f'<a href="{p["permalink"]}">→ 到 IG 回覆</a>' if p["permalink"] else "",
+            "─" * 30,
+        ]
+
+    msg = MIMEText("<br>".join(lines), "html", "utf-8")
+    msg["Subject"] = f"🔔 有 {len(pending)} 則 IG 留言要你親自回（問價格／到貨）"
+    msg["From"] = formataddr(("IG 留言助理", ADDR))
+    msg["To"] = ADDR
+    with smtplib.SMTP_SSL(
+        "smtp.gmail.com", 465, context=ssl.create_default_context()
+    ) as s:
+        s.login(ADDR, GMAIL_PW)
+        s.send_message(msg)
+    log(f"  📧 已寄出人工回覆提醒（{len(pending)} 則）")
 
 
 def api_get(path, params=None):
@@ -169,12 +265,14 @@ def main():
     state = load_state()
     since_ts = state["last_checked"]
     replied_ids = set(state["replied_ids"])
+    notified_ids = set(state.get("notified_ids", []))
     now_ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+0000")
     new_replies = 0
+    pending = []
 
     try:
         media_list = api_get(
-            f"{IG_ID}/media", {"fields": "id,timestamp", "limit": "20"}
+            f"{IG_ID}/media", {"fields": "id,timestamp,permalink", "limit": "20"}
         ).get("data", [])
     except Exception as e:
         log(f"❌ 取得貼文列表失敗：{e}")
@@ -199,12 +297,28 @@ def main():
             if c.get("timestamp", "") > since_ts
             and c.get("from", {}).get("id") != IG_ID
             and c["id"] not in replied_ids
+            and c["id"] not in notified_ids
             and c.get("text", "").strip()
         ]
 
         for c in new_comments:
             cid = c["id"]
             text = c["text"].strip()
+
+            # 問價格／到貨／訂購的留給人工，並記進 notified_ids 避免每 5 分鐘重複寄信
+            if needs_human(text):
+                pending.append(
+                    {
+                        "cid": cid,
+                        "user": c.get("from", {}).get("username", "（不明）"),
+                        "text": text,
+                        "time": c.get("timestamp", ""),
+                        "permalink": media.get("permalink", ""),
+                    }
+                )
+                notified_ids.add(cid)
+                log(f"  🔔 留給人工：{text[:30]}")
+                continue
 
             try:
                 reply = gemini_reply(text)
@@ -220,10 +334,20 @@ def main():
             except Exception as e:
                 log(f"  ❌ 回覆失敗：{e}")
 
+    if pending:
+        try:
+            send_pending_mail(pending)
+        except Exception as e:
+            # 寄信失敗就把它們退回未通知，下次再試，不要默默吞掉
+            for p in pending:
+                notified_ids.discard(p.get("cid", ""))
+            log(f"  ❌ 寄信失敗：{e}")
+
     state["last_checked"] = now_ts
     state["replied_ids"] = list(replied_ids)
+    state["notified_ids"] = list(notified_ids)
     save_state(state)
-    log(f"完成，共回覆 {new_replies} 則留言")
+    log(f"完成，自動回覆 {new_replies} 則，留給人工 {len(pending)} 則")
 
 
 if __name__ == "__main__":
