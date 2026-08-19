@@ -1,0 +1,32 @@
+name = "liam-assistant"
+main = "worker.js"
+compatibility_date = "2026-08-18"
+
+# 對話記憶（最近幾輪，TTL 1 小時）。用 `wrangler kv namespace create CHAT` 產生後貼回 id。
+[[kv_namespaces]]
+binding = "CHAT"
+id = "PUT_KV_ID_HERE"
+
+[vars]
+# Telegram 只認這個 chat id，別人傳訊息一律忽略
+TG_CHAT_ID = "PUT_YOUR_CHAT_ID_HERE"
+
+# 換模型只改這一行。成本與能力差異見 README。
+# effort 參數由 worker.js 依模型自動開關，換模型不必改別的地方。
+MODEL = "claude-haiku-4-5"
+
+# Notion 資料庫（與 crm_unified/config.json、inventory_config.json 同步）
+CUSTOMER_DB = "38bf4149-a6aa-816e-9850-f3dfbbb925ec"
+SALES_DB = "38bf4149-a6aa-81db-9b89-c47410857a2c"
+INV_WINE_DB = "3abf4149-a6aa-8104-8d98-fe75f7f367a5"
+INV_TEA_DB = "3abf4149-a6aa-8124-835e-fbaf09d673eb"
+INV_SEAFOOD_DB = "3abf4149-a6aa-8111-b29a-d92909d6962c"
+
+# 金鑰不寫在這裡，用 wrangler secret put：
+#   ANTHROPIC_API_KEY   Claude 對話
+#   OPENAI_API_KEY      語音轉文字（Whisper）
+#   NOTION_TOKEN        查客戶／銷售／庫存
+#   GITHUB_PAT          寫 liam-workspace 的 TODO 與知識庫（需 repo scope）
+#   TG_BOT_TOKEN        Telegram bot token
+#   TG_WEBHOOK_SECRET   webhook 驗證用，自己隨便產一串
+#   NOTIFY_TOKEN        GitHub Actions 推播用，自己隨便產一串
