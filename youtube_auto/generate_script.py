@@ -12,7 +12,7 @@ RECENT_FILE = os.path.join(BASE, "recent_topics.json")
 RECENT_KEEP = 120
 ANGLE_KEEP = 6
 
-CLAUDE_MODEL = "claude-sonnet-4-6"
+CLAUDE_MODEL = "claude-sonnet-5"
 
 # 每支影片隨機挑一個敘事框架，讓結構不重複、且必須帶編輯觀點——
 # YouTube 2026 inauthentic content 政策點名「量產樣板＋逐字朗讀」，靠這個脫離該形態。
@@ -200,7 +200,7 @@ def _call_claude(prompt):
         data=json.dumps(
             {
                 "model": CLAUDE_MODEL,
-                "max_tokens": 4096,
+                "max_tokens": 8192,
                 "messages": [{"role": "user", "content": prompt}],
             }
         ).encode(),
@@ -214,7 +214,9 @@ def _call_claude(prompt):
     data = json.load(urllib.request.urlopen(req))
     if "content" not in data:
         raise RuntimeError(f"Claude 回傳異常：{data}")
-    return _extract_json(data["content"][0]["text"])
+    # Sonnet 5 預設開 adaptive thinking，content[0] 可能是 thinking block
+    text = next((b["text"] for b in data["content"] if b.get("type") == "text"), "")
+    return _extract_json(text)
 
 
 def _call_gemini(prompt):
