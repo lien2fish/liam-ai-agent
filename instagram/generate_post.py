@@ -13,7 +13,7 @@ HISTORY_KEEP = 365  # 保留最近 365 天紀錄（一年不重複）
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 文案＋畫圖提示詞由 Claude 生成（Gemini 保留為 fallback）
-CLAUDE_MODEL = "claude-sonnet-4-6"  # 省錢可改 "claude-haiku-4-5-20251001"
+CLAUDE_MODEL = "claude-sonnet-5"  # 省錢可改 "claude-haiku-4-5"
 
 # 設定來源：GitHub Actions 用環境變數，本機用 config 檔
 if os.environ.get("IG_TOKEN"):
@@ -171,15 +171,16 @@ def knowledge_via_claude(prompt):
         },
         json={
             "model": CLAUDE_MODEL,
-            "max_tokens": 1024,
+            "max_tokens": 2048,
             "messages": [{"role": "user", "content": prompt}],
         },
-        timeout=60,
+        timeout=90,
     )
     data = r.json()
     if "content" not in data:
         raise RuntimeError(f"Claude 回傳異常：{data}")
-    text = data["content"][0]["text"]
+    # Sonnet 5 預設開 adaptive thinking，content[0] 可能是 thinking block
+    text = next((b["text"] for b in data["content"] if b.get("type") == "text"), "")
     start, end = text.find("{"), text.rfind("}")
     if start == -1 or end == -1:
         raise RuntimeError(f"Claude 回應未含 JSON：{text[:200]}")
