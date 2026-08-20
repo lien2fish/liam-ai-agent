@@ -16,6 +16,10 @@ NOISE_PREFIX = (
     "Caveat:",
     "<system-reminder>",
     "<task-notification>",
+    "[Image:",  # 圖片附件的尺寸描述
+    "[Usage limit",  # 系統插話
+    "Base directory for this skill:",  # Skill 載入的內容
+    "The following skills are available",
 )
 
 
