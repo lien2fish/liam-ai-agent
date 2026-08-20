@@ -132,11 +132,12 @@
 | `yt_channel_report.yml` | The Unknown Hour 頻道每日表現日報（觀看/讚/留言+新留言Email） | 每天 08:20，用YT_API_KEY讀公開數據，自動commit報告 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 | `rotary_birthday_reminder.yml` | 中城網路扶輪社社友生日提醒（剛好前14天Email一次；資料=私人repo `liam-workspace/rotary/中城網路社友通訊錄.json` 71位，用`WORKSPACE_PAT` checkout，**個資不進公開repo、無commit**） | 每天 08:10 |
+| `weekly_review.yml` | **AI 工作週報**（上週做了什麼＋可精進＋自動化健康＋下期建議，Email 附正式 PDF）。資料＝私人repo `daily/` 工作日誌＋公開repo git log＋Actions runs API＋`TODO.md` diff；**報告只進私人repo `liam-workspace/reviews/`，不進公開repo** | 每週一 08:50（錯開 08:00 營收週報）|
 
 ### GitHub Secrets 總覽
 | Secret | 用途 |
 |--------|------|
-| `ANTHROPIC_API_KEY` | Claude API Key。2026-06-26 新增，Console 已儲值（**預付制、非訂閱**，與 Claude Code 訂閱是兩筆帳）。三處在用：IG 發文文案＋畫圖 prompt（`instagram/generate_post.py`，**Sonnet 5**）、YouTube 影片腳本（`youtube_auto/generate_script.py`，**Sonnet 5**）、Telegram 手機助理（Haiku 4.5）。模型常數 `CLAUDE_MODEL` 在各腳本頂端。⚠️ **Sonnet 5 起 `content[0]` 可能是 thinking block**，解析回應一律遍歷找 `type == "text"` |
+| `ANTHROPIC_API_KEY` | Claude API Key。2026-06-26 新增，Console 已儲值（**預付制、非訂閱**，與 Claude Code 訂閱是兩筆帳）。四處在用：IG 發文文案＋畫圖 prompt（`instagram/generate_post.py`，**Sonnet 5**）、YouTube 影片腳本（`youtube_auto/generate_script.py`，**Sonnet 5**）、AI 工作週報（`scripts/weekly_review.py`，**Sonnet 5**，每週一次約 6K token）、Telegram 手機助理（Haiku 4.5）。模型常數 `CLAUDE_MODEL` 在各腳本頂端。⚠️ **Sonnet 5 起 `content[0]` 可能是 thinking block**，解析回應一律遍歷找 `type == "text"` |
 | `GEMINI_KEY` | Gemini AI Key（claude-workspace-495009，**2.5-flash** 模型）。**注意：實為免費額度，未開通Cloud Billing**（2026-06-23實測證實，`2.5-flash`限20次/天、`2.5-pro`免費額度0），所有共用此Key的自動化共用同一日額度池，理論上會互搶額度 |
 | `OPENAI_API_KEY` | OpenAI 生圖（IG 插圖＋YouTube 場景圖），`gpt-image-1-mini`。2026-08-06 設定，預付制需儲值。本機備份於 `config/.openai_key` |
 | `HF_TOKEN` | （已停用）Hugging Face FLUX→Pollinations→OpenAI，兩任前身皆因免費額度取消而汰換 |
@@ -190,6 +191,7 @@
 - **敏感資料（客戶/財務/身分證）只進私人 repo**，永不進公開庫；身分證等最高敏感原始檔維持純本機、不進任何 repo。
 - 本機 clone：`~/liam-workspace/`；同步腳本 `~/liam-workspace/sync_workspace.sh`（`push`＝本機→repo、`pull`＝repo→本機並先備份）。
 - **同步方式＝手動**（2015 Air 記憶體吃緊，不掛 SessionStart 自動同步 hook）。使用者說「手機改過了」→ 跑 `pull`；本機記憶更新後 → `push`。
+- **例外：`daily/` 工作日誌自動 push**（`scripts/session_log.py` 的 `push_daily()`，SessionEnd 背景 detach 執行，只 add `daily/`）。週報 workflow 每週一在雲端讀這份日誌，不自動推就會讀到舊資料。失敗一律靜默，不影響 session 結束。
 - 手機：claude.ai/code 登入同帳號→授權兩個 repo→開 `liam-workspace` 貼 `PHONE_START.md` 開場提示。
 - 詳見 memory `project_cross_device_workspace.md`。
 

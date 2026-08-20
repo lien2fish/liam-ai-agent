@@ -6,6 +6,7 @@
 """
 import json
 import os
+import subprocess
 import sys
 from datetime import datetime
 
@@ -104,6 +105,36 @@ def main():
                 % (now.strftime("%Y-%m-%d"), "一二三四五六日"[now.weekday()])
             )
         f.write("\n".join(lines) + "\n")
+
+    push_daily(now)
+
+
+def push_daily(now):
+    """把 daily/ 推上私人 repo——雲端週報每週一才讀得到最新日誌。
+
+    只 add daily/，不動使用者手上未整理的 memory/plans 變更。
+    背景 detach 執行，不佔用 SessionEnd hook 的 timeout；失敗一律靜默。
+    """
+    ws = os.path.expanduser("~/liam-workspace")
+    if not os.path.isdir(os.path.join(ws, ".git")):
+        return
+    script = (
+        "git pull --rebase --autostash -q; "
+        "git add daily/; "
+        "git diff --cached --quiet && exit 0; "
+        "git -c user.name='Liam AI Agent' -c user.email='lien2fish@gmail.com' "
+        "commit -q -m '%s' && git push -q"
+    ) % ("daily: 工作日誌 " + now.strftime("%Y-%m-%d"))
+    try:
+        subprocess.Popen(
+            ["/bin/bash", "-c", script],
+            cwd=ws,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+    except OSError:
+        pass
 
 
 if __name__ == "__main__":
