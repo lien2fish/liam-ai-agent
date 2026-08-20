@@ -25,7 +25,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
 
-CLAUDE_MODEL = "claude-sonnet-5"  # 省錢可改 "claude-haiku-4-5"，但「可精進的地方」品質會變差
+CLAUDE_MODEL = (
+    "claude-sonnet-5"  # 省錢可改 "claude-haiku-4-5"，但「可精進的地方」品質會變差
+)
 MAX_TOKENS = 8000
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -70,15 +72,25 @@ def read_daily(ws, monday, sunday):
 
 def read_commits(monday, sunday):
     raw = subprocess.run(
-        ["git", "log", "--no-merges", "--date=short",
-         "--pretty=format:%cd %s",
-         "--since", monday.isoformat() + " 00:00:00",
-         "--until", sunday.isoformat() + " 23:59:59"],
-        cwd=REPO, capture_output=True, text=True,
+        [
+            "git",
+            "log",
+            "--no-merges",
+            "--date=short",
+            "--pretty=format:%cd %s",
+            "--since",
+            monday.isoformat() + " 00:00:00",
+            "--until",
+            sunday.isoformat() + " 23:59:59",
+        ],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
     ).stdout
 
-    lines = ["- " + l for l in raw.splitlines()
-             if l.strip() and not AUTO_COMMIT.search(l)]
+    lines = [
+        "- " + l for l in raw.splitlines() if l.strip() and not AUTO_COMMIT.search(l)
+    ]
     return "\n".join(lines) or "（本週沒有人為程式改動）"
 
 
@@ -125,16 +137,29 @@ def read_actions(monday, sunday):
 
 def read_todo_diff(ws, monday, sunday):
     raw = subprocess.run(
-        ["git", "log", "-p", "--no-merges",
-         "--since", monday.isoformat() + " 00:00:00",
-         "--until", sunday.isoformat() + " 23:59:59",
-         "--", "TODO.md"],
-        cwd=ws, capture_output=True, text=True,
+        [
+            "git",
+            "log",
+            "-p",
+            "--no-merges",
+            "--since",
+            monday.isoformat() + " 00:00:00",
+            "--until",
+            sunday.isoformat() + " 23:59:59",
+            "--",
+            "TODO.md",
+        ],
+        cwd=ws,
+        capture_output=True,
+        text=True,
     ).stdout
-    changes = [l for l in raw.splitlines()
-               if (l.startswith("+") or l.startswith("-"))
-               and not l.startswith(("+++", "---"))
-               and l[1:].strip()]
+    changes = [
+        l
+        for l in raw.splitlines()
+        if (l.startswith("+") or l.startswith("-"))
+        and not l.startswith(("+++", "---"))
+        and l[1:].strip()
+    ]
     return "\n".join(changes[:200]) or "（本週 TODO.md 沒有變動）"
 
 
@@ -191,11 +216,13 @@ def call_claude(prompt):
         raise RuntimeError("缺 ANTHROPIC_API_KEY")
     req = urllib.request.Request(
         "https://api.anthropic.com/v1/messages",
-        data=json.dumps({
-            "model": CLAUDE_MODEL,
-            "max_tokens": MAX_TOKENS,
-            "messages": [{"role": "user", "content": prompt}],
-        }).encode(),
+        data=json.dumps(
+            {
+                "model": CLAUDE_MODEL,
+                "max_tokens": MAX_TOKENS,
+                "messages": [{"role": "user", "content": prompt}],
+            }
+        ).encode(),
         headers={
             "x-api-key": key,
             "anthropic-version": "2023-06-01",
@@ -219,38 +246,69 @@ def build_report_pdf(pdf_path, md_path, monday, sunday, iso):
     from reportlab.lib.styles import ParagraphStyle
     from reportlab.lib.units import mm
     from reportlab.platypus import (
-        PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle,
+        PageBreak,
+        Paragraph,
+        SimpleDocTemplate,
+        Spacer,
+        Table,
+        TableStyle,
     )
 
     NAVY = colors.HexColor("#1F4E79")
-    center = ParagraphStyle("c", fontName="NotoTC", fontSize=13, leading=20,
-                            alignment=1, textColor=colors.HexColor("#555"))
-    big = ParagraphStyle("big", fontName="NotoTC", fontSize=26, leading=38,
-                         alignment=1, textColor=NAVY)
-    period = ParagraphStyle("p", fontName="NotoTC", fontSize=15, leading=24,
-                            alignment=1, textColor=colors.HexColor("#333"))
-    note = ParagraphStyle("n", fontName="NotoTC", fontSize=8.5, leading=13,
-                          alignment=1, textColor=colors.HexColor("#999"))
+    center = ParagraphStyle(
+        "c",
+        fontName="NotoTC",
+        fontSize=13,
+        leading=20,
+        alignment=1,
+        textColor=colors.HexColor("#555"),
+    )
+    big = ParagraphStyle(
+        "big", fontName="NotoTC", fontSize=26, leading=38, alignment=1, textColor=NAVY
+    )
+    period = ParagraphStyle(
+        "p",
+        fontName="NotoTC",
+        fontSize=15,
+        leading=24,
+        alignment=1,
+        textColor=colors.HexColor("#333"),
+    )
+    note = ParagraphStyle(
+        "n",
+        fontName="NotoTC",
+        fontSize=8.5,
+        leading=13,
+        alignment=1,
+        textColor=colors.HexColor("#999"),
+    )
 
     meta = Table(
-        [["報告期別", iso],
-         ["涵蓋期間", "%s ~ %s" % (monday, sunday)],
-         ["製表日期", date.today().isoformat()],
-         ["呈報對象", "連傳正 董事長"],
-         ["製表單位", "Liam AI Agent"]],
-        colWidths=[35 * mm, 75 * mm], hAlign="CENTER",
+        [
+            ["報告期別", iso],
+            ["涵蓋期間", "%s ~ %s" % (monday, sunday)],
+            ["製表日期", date.today().isoformat()],
+            ["呈報對象", "連傳正 董事長"],
+            ["製表單位", "Liam AI Agent"],
+        ],
+        colWidths=[35 * mm, 75 * mm],
+        hAlign="CENTER",
     )
-    meta.setStyle(TableStyle([
-        ("FONTNAME", (0, 0), (-1, -1), "NotoTC"),
-        ("FONTSIZE", (0, 0), (-1, -1), 10),
-        ("TEXTCOLOR", (0, 0), (0, -1), colors.HexColor("#666")),
-        ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#F2F6FA")),
-        ("LINEBELOW", (0, 0), (-1, -2), 0.4, colors.HexColor("#D6E2EC")),
-        ("BOX", (0, 0), (-1, -1), 0.6, colors.HexColor("#D6E2EC")),
-        ("TOPPADDING", (0, 0), (-1, -1), 7),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
-        ("LEFTPADDING", (0, 0), (-1, -1), 10),
-    ]))
+    meta.setStyle(
+        TableStyle(
+            [
+                ("FONTNAME", (0, 0), (-1, -1), "NotoTC"),
+                ("FONTSIZE", (0, 0), (-1, -1), 10),
+                ("TEXTCOLOR", (0, 0), (0, -1), colors.HexColor("#666")),
+                ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#F2F6FA")),
+                ("LINEBELOW", (0, 0), (-1, -2), 0.4, colors.HexColor("#D6E2EC")),
+                ("BOX", (0, 0), (-1, -1), 0.6, colors.HexColor("#D6E2EC")),
+                ("TOPPADDING", (0, 0), (-1, -1), 7),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
+                ("LEFTPADDING", (0, 0), (-1, -1), 10),
+            ]
+        )
+    )
 
     rule = Table([[""]], colWidths=[60 * mm], rowHeights=[2], hAlign="CENTER")
     rule.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, -1), NAVY)]))
@@ -268,7 +326,9 @@ def build_report_pdf(pdf_path, md_path, monday, sunday, iso):
         meta,
         Spacer(1, 26 * mm),
         Paragraph("資料來源：每日工作日誌、程式版本紀錄、自動化排程執行紀錄", note),
-        Paragraph("本報告含客戶資訊，僅存於私人資料庫與電子郵件，未進入公開程式庫", note),
+        Paragraph(
+            "本報告含客戶資訊，僅存於私人資料庫與電子郵件，未進入公開程式庫", note
+        ),
         PageBreak(),
     ]
     story += md_to_story(md_path)
@@ -279,13 +339,20 @@ def build_report_pdf(pdf_path, md_path, monday, sunday, iso):
         canvas.setFillColor(colors.HexColor("#999"))
         if doc.page > 1:
             canvas.drawString(15 * mm, 12 * mm, "鉅鑫管理顧問 · AI 工作週報 %s" % iso)
-            canvas.drawRightString(A4[0] - 15 * mm, 12 * mm, "第 %d 頁" % (doc.page - 1))
+            canvas.drawRightString(
+                A4[0] - 15 * mm, 12 * mm, "第 %d 頁" % (doc.page - 1)
+            )
         canvas.restoreState()
 
     SimpleDocTemplate(
-        pdf_path, pagesize=A4, title="AI 工作週報 %s" % iso, author="Liam AI Agent",
-        topMargin=20 * mm, bottomMargin=22 * mm,
-        leftMargin=15 * mm, rightMargin=15 * mm,
+        pdf_path,
+        pagesize=A4,
+        title="AI 工作週報 %s" % iso,
+        author="Liam AI Agent",
+        topMargin=20 * mm,
+        bottomMargin=22 * mm,
+        leftMargin=15 * mm,
+        rightMargin=15 * mm,
     ).build(story, onFirstPage=footer, onLaterPages=footer)
     print("OK: %s" % pdf_path)
 
@@ -295,8 +362,10 @@ def build_email_html(iso, monday, sunday, body_md):
     for line in body_md.splitlines():
         s = line.rstrip()
         if s.startswith("## "):
-            html.append('<h3 style="color:#1F4E79;border-bottom:2px solid #DEEAF1;'
-                        'padding-bottom:4px;margin-top:22px">%s</h3>' % s[3:])
+            html.append(
+                '<h3 style="color:#1F4E79;border-bottom:2px solid #DEEAF1;'
+                'padding-bottom:4px;margin-top:22px">%s</h3>' % s[3:]
+            )
         elif s.startswith("|"):
             html.append(s)
         elif s.startswith("- "):
@@ -305,9 +374,11 @@ def build_email_html(iso, monday, sunday, body_md):
             html.append("<p>%s</p>" % s)
     text = "\n".join(html)
     text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
-    text = re.sub(r"`([^`]+)`",
-                  r"<code style='background:#F2F6FA;padding:1px 4px;border-radius:3px'>\1</code>",
-                  text)
+    text = re.sub(
+        r"`([^`]+)`",
+        r"<code style='background:#F2F6FA;padding:1px 4px;border-radius:3px'>\1</code>",
+        text,
+    )
     text = md_tables_to_html(text)
     return f"""<div style="font-family:-apple-system,'PingFang TC',sans-serif;max-width:720px;color:#222;line-height:1.65">
 <h2 style="color:#1F4E79;margin-bottom:4px">📋 AI 技術幕僚 · 工作週報 {iso}</h2>
@@ -333,8 +404,11 @@ def md_tables_to_html(text):
 
 
 def _table(rows):
-    cells = [[c.strip() for c in r.strip("|").split("|")] for r in rows
-             if not re.match(r"^\|[\s\-:|]+\|$", r)]
+    cells = [
+        [c.strip() for c in r.strip("|").split("|")]
+        for r in rows
+        if not re.match(r"^\|[\s\-:|]+\|$", r)
+    ]
     if not cells:
         return ""
     head = "".join('<th style="padding:6px">%s</th>' % c for c in cells[0])
@@ -342,10 +416,16 @@ def _table(rows):
     for i, row in enumerate(cells[1:]):
         bg = "#DEEAF1" if i % 2 else "#fff"
         body += '<tr style="background:%s">%s</tr>' % (
-            bg, "".join('<td style="padding:5px 7px;border:1px solid #ccc">%s</td>' % c
-                        for c in row))
-    return ('<table style="border-collapse:collapse;width:100%%;font-size:13px;margin:8px 0">'
-            '<tr style="background:#1F4E79;color:#fff">%s</tr>%s</table>' % (head, body))
+            bg,
+            "".join(
+                '<td style="padding:5px 7px;border:1px solid #ccc">%s</td>' % c
+                for c in row
+            ),
+        )
+    return (
+        '<table style="border-collapse:collapse;width:100%%;font-size:13px;margin:8px 0">'
+        '<tr style="background:#1F4E79;color:#fff">%s</tr>%s</table>' % (head, body)
+    )
 
 
 def send_mail(subject, html, pdf_path):
@@ -360,10 +440,13 @@ def send_mail(subject, html, pdf_path):
     msg.attach(MIMEText(html, "html", "utf-8"))
     with open(pdf_path, "rb") as f:
         part = MIMEApplication(f.read(), _subtype="pdf")
-    part.add_header("Content-Disposition", "attachment",
-                    filename=os.path.basename(pdf_path))
+    part.add_header(
+        "Content-Disposition", "attachment", filename=os.path.basename(pdf_path)
+    )
     msg.attach(part)
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=ssl.create_default_context()) as s:
+    with smtplib.SMTP_SSL(
+        "smtp.gmail.com", 465, context=ssl.create_default_context()
+    ) as s:
         s.login(ADDR, pw)
         s.send_message(msg)
     print("✅ 已寄出：%s" % subject)
@@ -375,9 +458,20 @@ def commit_workspace(ws, iso):
     if r.returncode == 0:
         print("workspace 無變動，略過 commit")
         return
-    subprocess.run(["git", "-c", "user.name=Liam AI Agent",
-                    "-c", "user.email=lien2fish@gmail.com",
-                    "commit", "-q", "-m", "review: 工作週報 %s" % iso], cwd=ws)
+    subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.name=Liam AI Agent",
+            "-c",
+            "user.email=lien2fish@gmail.com",
+            "commit",
+            "-q",
+            "-m",
+            "review: 工作週報 %s" % iso,
+        ],
+        cwd=ws,
+    )
     subprocess.run(["git", "push", "-q"], cwd=ws)
     print("✅ 已推送週報到 liam-workspace")
 
@@ -398,7 +492,9 @@ def main():
     print("報告期間 %s ~ %s（%s）\nworkspace: %s" % (monday, sunday, iso, ws))
 
     prompt = PROMPT.format(
-        monday=monday, sunday=sunday, iso=iso,
+        monday=monday,
+        sunday=sunday,
+        iso=iso,
         daily=read_daily(ws, monday, sunday),
         commits=read_commits(monday, sunday),
         actions=read_actions(monday, sunday),
@@ -412,7 +508,11 @@ def main():
     os.makedirs(outdir, exist_ok=True)
     md_path = os.path.join(outdir, iso + ".md")
     header = "# 工作週報 %s\n\n> 涵蓋期間 %s ~ %s ｜ 製表 %s\n\n" % (
-        iso, monday, sunday, date.today().isoformat())
+        iso,
+        monday,
+        sunday,
+        date.today().isoformat(),
+    )
     with open(md_path, "w", encoding="utf-8") as f:
         f.write(header + body + "\n")
     print("✅ Markdown：%s" % md_path)
@@ -424,8 +524,11 @@ def main():
         print("dry-run：不寄信、不 commit")
         return
 
-    send_mail("📋 AI 工作週報 %s（%s ~ %s）" % (iso, monday, sunday),
-              build_email_html(iso, monday, sunday, body), pdf_path)
+    send_mail(
+        "📋 AI 工作週報 %s（%s ~ %s）" % (iso, monday, sunday),
+        build_email_html(iso, monday, sunday, body),
+        pdf_path,
+    )
     commit_workspace(ws, iso)
 
 

@@ -50,7 +50,11 @@ def logged_sessions():
 
 
 def render(sid, when, prompts, title, tools, files):
-    lines = ["", "## %02d:%02d — %s" % (when.hour, when.minute, title or prompts[0][:30]), ""]
+    lines = [
+        "",
+        "## %02d:%02d — %s" % (when.hour, when.minute, title or prompts[0][:30]),
+        "",
+    ]
     for p in prompts:
         lines.append("- 我：" + p[:300])
     if files:
@@ -85,7 +89,10 @@ def main():
             print("跳過（無對話）：%s" % sid[:8])
             continue
         sessions.append((when, sid, prompts, title, tools, files))
-        print("解析 %s  %s  %d 則需求" % (when.strftime("%m-%d %H:%M"), sid[:8], len(prompts)))
+        print(
+            "解析 %s  %s  %d 則需求"
+            % (when.strftime("%m-%d %H:%M"), sid[:8], len(prompts))
+        )
 
     sessions.sort(key=lambda s: s[0])
     os.makedirs(DAILY_DIR, exist_ok=True)
@@ -110,8 +117,15 @@ def main():
             topic = (title or prompts[0][:30]).replace("|", "／")
             f.write(
                 "| %s | %02d:%02d | %s | %d | %d | `%s` |\n"
-                % (when.strftime("%m-%d"), when.hour, when.minute, topic,
-                   len(prompts), len(files), sid[:8])
+                % (
+                    when.strftime("%m-%d"),
+                    when.hour,
+                    when.minute,
+                    topic,
+                    len(prompts),
+                    len(files),
+                    sid[:8],
+                )
             )
 
     print("\n回填 %d 個 session，索引寫入 %s" % (len(sessions), DIGEST))
