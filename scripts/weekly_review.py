@@ -305,6 +305,9 @@ def build_email_html(iso, monday, sunday, body_md):
             html.append("<p>%s</p>" % s)
     text = "\n".join(html)
     text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
+    text = re.sub(r"`([^`]+)`",
+                  r"<code style='background:#F2F6FA;padding:1px 4px;border-radius:3px'>\1</code>",
+                  text)
     text = md_tables_to_html(text)
     return f"""<div style="font-family:-apple-system,'PingFang TC',sans-serif;max-width:720px;color:#222;line-height:1.65">
 <h2 style="color:#1F4E79;margin-bottom:4px">📋 AI 技術幕僚 · 工作週報 {iso}</h2>
