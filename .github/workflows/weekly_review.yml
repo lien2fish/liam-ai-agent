@@ -1,0 +1,45 @@
+name: AI 工作週報
+
+on:
+  schedule:
+    - cron: '50 0 * * 1'    # UTC 週一 00:50 = 台灣 週一 08:50（錯開 08:00 的營收衝刺週報）
+  workflow_dispatch:
+    inputs:
+      week:
+        description: '指定週次，例如 2026-W33（留空＝上一個完整週）'
+        required: false
+        default: ''
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0    # 週報要讀 git log，淺 clone 會抓不到
+
+      - name: Checkout private workspace
+        uses: actions/checkout@v4
+        with:
+          repository: lien2fish/liam-workspace
+          token: ${{ secrets.WORKSPACE_PAT }}
+          path: workspace
+          fetch-depth: 0    # 要讀 TODO.md 的歷史 diff
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install --quiet reportlab
+
+      - name: Build and send weekly review
+        env:
+          ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          GITHUB_TOKEN:       ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/weekly_review.py ${{ inputs.week && format('--week {0}', inputs.week) || '' }}
