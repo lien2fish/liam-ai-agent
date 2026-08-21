@@ -127,7 +127,7 @@
 | `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:00，自動 commit 報告 |
 | `life_visit_reminder.yml` | 壽險客戶固定拜訪提醒 | 每天 08:40，讀Notion算下次拜訪日，本週到期Email（**無commit，客戶個資只走Email**）|
 | `birthday_reminder.yml` | 壽險客戶生日提醒 | 每天 08:05，未來7天內生日則Email（含歲數，無commit）|
-| `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:00，超60天未回購則 Email，自動 commit 報告 |
+| `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:00，超60天未回購則 Email（**2026-08-21 起無commit，客戶個資只走Email**——原本每天 commit 報告，已累積 56 份含姓名與手機的報告在公開 repo）|
 | `weekly_revenue_sprint.yml` | 營收衝刺週報（本週壽險該接觸名單＋話術：A組未來14天生日切入、B組壽產保單健檢每週輪替6位） | 每週一 08:00，Email（**無commit，客戶個資只走Email**）|
 | `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；**Shorts 週二/五、長片週日，約隔兩天一支**） | 每天 10:00 檢查，發片日才製作上傳，**排程當天 18:00 自動轉公開** |
 | `yt_channel_report.yml` | The Unknown Hour 頻道每日表現日報（觀看/讚/留言+新留言Email） | 每天 08:20，用YT_API_KEY讀公開數據，自動commit報告 |
