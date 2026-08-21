@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>凝鉅情感，真鑫相待</title>
+<meta name="description" content="連傳正與鉅鑫管理顧問——從金融保險起家，六大領域、五個自有品牌，以及一段從龜吼漁港開始的產地故事。">
+<meta property="og:title" content="凝鉅情感，真鑫相待｜鉅鑫管理顧問">
+<meta property="og:description" content="連傳正與鉅鑫管理顧問的介紹。2009 年從金融保險起家，六大領域、五個自有品牌。">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Noto+Serif+TC:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --paper:#F6F4EF;
+  --paper-2:#EDE9E1;
+  --card:#FFFDF9;
+  --ink:#1A1D24;
+  --ink-2:#4E5560;
+  --ink-3:#87909C;
+  --rule:#DDD7CC;
+  --rule-soft:#E8E3DA;
+  --navy:#16233D;
+  --red:#C8302F;
+  --gold:#B07E1E;
+
+  --sans:"Noto Sans TC",-apple-system,"PingFang TC",sans-serif;
+  --serif:"Noto Serif TC","Songti TC",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+
+  --measure:660px;
+  --wide:1120px;
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#12151B; --paper-2:#171B23; --card:#1B2029;
+    --ink:#EDEAE4; --ink-2:#A8B0BC; --ink-3:#727C8A;
+    --rule:#2A303A; --rule-soft:#1F242D;
+    --navy:#9FB6DC; --red:#E8776F; --gold:#D9A94E;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12151B; --paper-2:#171B23; --card:#1B2029;
+  --ink:#EDEAE4; --ink-2:#A8B0BC; --ink-3:#727C8A;
+  --rule:#2A303A; --rule-soft:#1F242D;
+  --navy:#9FB6DC; --red:#E8776F; --gold:#D9A94E;
+}
+
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-weight:300;
+  font-size:17px; line-height:1.9;
+  -webkit-font-smoothing:antialiased;
+}
+
+section{padding:clamp(66px,9vw,124px) clamp(20px,5vw,54px);border-bottom:1px solid var(--rule-soft)}
+.wide{max-width:var(--wide);margin-inline:auto}
+.wide>.col{max-width:var(--measure)}
+
+h1,h2,h3{font-family:var(--sans);text-wrap:balance;margin:0}
+h2{font-size:clamp(27px,4vw,40px);font-weight:900;line-height:1.28;letter-spacing:-.01em;margin-bottom:24px}
+h3{font-size:18px;font-weight:700;line-height:1.5}
+
+.mark{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.mark::before{content:"";width:26px;height:3px;background:var(--red);flex:none}
+.mark span{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)}
+
+p{margin:0 0 18px}p:last-child{margin-bottom:0}
+strong{font-weight:700;color:var(--ink)}
+.lede{font-size:clamp(18px,2.1vw,21px);line-height:1.8;color:var(--ink-2)}
+.note{font-size:13.5px;line-height:1.75;color:var(--ink-3)}
+
+/* hero */
+.hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;background:var(--navy);border-bottom:none;position:relative}
+:root:not([data-theme="light"]) .hero,:root[data-theme="dark"] .hero{background:#0D1119}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero{background:#0D1119}}
+.hero .wide{width:100%}
+.hero-logo{width:min(230px,52vw);height:auto;margin-bottom:clamp(34px,6vw,58px)}
+.hero h1{font-family:var(--serif);font-weight:700;font-size:clamp(40px,7.6vw,86px);line-height:1.18;letter-spacing:.02em;color:#FBF8F2}
+.hero h1 em{font-style:normal;color:#E6A93C}
+.hero-role{margin-top:clamp(26px,4vw,40px);font-size:clamp(16px,1.9vw,19px);color:#B9C2D2;font-weight:300;line-height:1.9;max-width:600px}
+.hero-role b{color:#FBF8F2;font-weight:500}
+.hero-foot{margin-top:clamp(38px,6vw,64px);padding-top:20px;border-top:1px solid rgba(255,255,255,.16);display:flex;flex-wrap:wrap;gap:10px 38px;font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:#8994A8}
+.hero-foot b{color:#E6A93C;font-weight:500}
+
+/* timeline */
+.era{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:34px}
+@media(min-width:760px){.era{grid-template-columns:repeat(3,1fr)}}
+.era-cell{background:var(--card);padding:26px 24px}
+.era-y{font-family:var(--mono);font-size:26px;font-weight:500;color:var(--red);letter-spacing:-.02em}
+.era-cell h3{margin:10px 0 8px}
+.era-cell p{font-size:14px;color:var(--ink-2);line-height:1.75;margin:0}
+
+/* grid of fields */
+.fields{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:34px}
+@media(min-width:640px){.fields{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:980px){.fields{grid-template-columns:repeat(3,1fr)}}
+.field{background:var(--card);padding:24px 22px}
+.field-n{font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:.14em}
+.field h3{margin:8px 0 7px}
+.field p{font-size:13.5px;color:var(--ink-2);line-height:1.75;margin:0}
+
+/* brands */
+.brands{display:flex;flex-direction:column;gap:1px;background:var(--rule);border-block:1px solid var(--rule);margin-top:34px}
+.brand{background:var(--card);padding:24px;display:grid;gap:8px}
+@media(min-width:720px){.brand{grid-template-columns:170px 1fr;gap:26px;align-items:baseline}}
+.brand-n{font-weight:700;font-size:17px}
+.brand-n span{display:block;font-family:var(--mono);font-size:11px;font-weight:400;color:var(--ink-3);letter-spacing:.08em;margin-top:4px}
+.brand p{font-size:14.5px;color:var(--ink-2);line-height:1.78;margin:0}
+
+/* photo band */
+.band{padding:0;border:none}
+.band-grid{display:grid;gap:2px}
+@media(min-width:700px){.band-grid{grid-template-columns:repeat(3,1fr)}}
+.band-grid figure{margin:0;position:relative;overflow:hidden;background:var(--paper-2)}
+.band-grid img{display:block;width:100%;height:clamp(190px,26vw,300px);object-fit:cover}
+.band-grid figcaption{position:absolute;left:0;right:0;bottom:0;padding:22px 18px 14px;font-size:13px;color:#fff;background:linear-gradient(transparent,rgba(10,14,22,.82));letter-spacing:.02em}
+
+/* placeholder */
+.slot{border:1px dashed var(--rule);background:var(--paper-2);padding:34px 24px;text-align:center;color:var(--ink-3);font-size:13.5px;line-height:1.8}
+.slot b{display:block;color:var(--ink-2);font-weight:500;font-size:15px;margin-bottom:6px}
+
+/* charity */
+.cause{display:grid;gap:10px 26px;margin-top:32px;list-style:none}
+@media(min-width:620px){.cause{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:960px){.cause{grid-template-columns:repeat(3,1fr)}}
+.cause li{display:flex;gap:10px;font-size:14.5px;color:var(--ink-2);line-height:1.7;align-items:baseline}
+.cause li::before{content:"";width:5px;height:5px;background:var(--red);flex:none;transform:translateY(-2px)}
+
+/* partners */
+.partners{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px}
+.partners span{font-size:13.5px;color:var(--ink-2);border:1px solid var(--rule);background:var(--card);padding:7px 14px;letter-spacing:.02em}
+
+/* contact */
+.contact{background:var(--paper-2)}
+.cbox{margin-top:34px;display:grid;gap:22px 46px}
+@media(min-width:640px){.cbox{grid-template-columns:repeat(2,auto);justify-content:start}}
+.cbox dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
+.cbox dd{margin:0;font-size:15.5px}
+.cbox a{color:var(--red);text-decoration:none;border-bottom:1px solid var(--rule)}
+.cbox a:hover,.cbox a:focus-visible{border-bottom-color:var(--red)}
+
+footer{padding:28px clamp(20px,5vw,54px) 48px}
+footer p{font-family:var(--mono);font-size:11px;color:var(--ink-3);max-width:var(--wide);margin-inline:auto;line-height:1.8;letter-spacing:.04em}
+
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.rise{opacity:0;transform:translateY(16px)}
+.rise.in{opacity:1;transform:none;transition:opacity .65s cubic-bezier(.22,.61,.36,1),transform .65s cubic-bezier(.22,.61,.36,1)}
+@media(prefers-reduced-motion:reduce){.rise,.rise.in{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="wide">
+    <img class="hero-logo rise" src="assets/logo.svg" alt="鉅鑫管理顧問 Giant Satellite">
+    <h1 class="rise">凝鉅情感<br><em>真鑫相待</em></h1>
+    <p class="hero-role rise"><b>連傳正</b>　鉅鑫管理顧問有限公司<br>
+    從金融保險起家，走到漁港、餐桌與茶席。做的事看起來很散，但底下是同一件——<b>把好東西，誠實地交到需要的人手上。</b></p>
+    <div class="hero-foot rise">
+      <span>創立 <b>2009</b></span>
+      <span>擴大營運 <b>2018</b></span>
+      <span>領域 <b>6</b></span>
+      <span>自有品牌 <b>5</b></span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="mark rise"><span>About me</span></div>
+    <div class="col">
+      <h2 class="rise">先講我這個人</h2>
+      <p class="lede rise">我是連傳正。做保險出身，現在同時管五個品牌、跑漁港、接待客人、也在協會與社團裡做事。</p>
+      <p class="rise">會走到今天這樣，是因為我不太能忍受「說得好聽但東西不到位」。賣酒就得自己喝過、賣魚就得自己去漁港看，客戶問我這條魚幾月最肥，我答得出來——<strong>這是我唯一的門檻，也是我全部的本事。</strong></p>
+      <p class="rise">所以鉅鑫的東西不做低價競爭。品項少、挑得兇，但每一樣我都敢自己端上桌。</p>
+    </div>
+    <div class="slot rise" style="margin-top:34px;max-width:var(--measure)">
+      <b>個人形象照版位</b>
+      這裡預留一張你的形象照。提供檔案後我補上，版面已排好。
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="mark rise"><span>The company</span></div>
+    <div class="col">
+      <h2 class="rise">鉅鑫是怎麼長成現在這樣的</h2>
+      <p class="lede rise">不是先畫好藍圖再照著做，是一路上把客戶真正需要的東西一件一件補進來。</p>
+    </div>
+    <div class="era">
+      <div class="era-cell rise">
+        <div class="era-y">2009</div>
+        <h3>從金融保險起家</h3>
+        <p>以誠信為起點。人生每個階段的規劃，是最早也最久的本業。</p>
+      </div>
+      <div class="era-cell rise">
+        <div class="era-y">2018</div>
+        <h3>擴大規模，成立公司</h3>
+        <p>為了更緊密地連結客戶與朋友，把各項服務做大做精，鉅鑫管理顧問有限公司正式登記。</p>
+      </div>
+      <div class="era-cell rise">
+        <div class="era-y">今天</div>
+        <h3>六大領域、五個自有品牌</h3>
+        <p>從金融保險延伸到貿易、餐飲、不動產、進口代理與教育，並自營五個消費品牌。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="mark rise"><span>Six fields</span></div>
+    <div class="col">
+      <h2 class="rise">六大領域平台</h2>
+      <p class="lede rise">彼此不是各做各的——客戶在其中一個領域認識我們，通常會用到第二個。</p>
+    </div>
+    <div class="fields">
+      <div class="field rise"><div class="field-n">01</div><h3>金融保險</h3><p>國際專業顧問認證，人生各階段的完整規劃，讓你奮鬥時無後顧之憂。</p></div>
+      <div class="field rise"><div class="field-n">02</div><h3>外銷貿易</h3><p>農產與漁產外銷，打造優質的國際市場銷售通道。</p></div>
+      <div class="field rise"><div class="field-n">03</div><h3>餐飲創投</h3><p>結合龜吼觀光、兩岸四地餐飲運營經驗，以及國際調茶師與侍酒師的專業觀點。</p></div>
+      <div class="field rise"><div class="field-n">04</div><h3>不動產銷售</h3><p>以誠信為本，物件資源豐富，精準匹配買賣雙方，替你省下時間。</p></div>
+      <div class="field rise"><div class="field-n">05</div><h3>進口代理</h3><p>羽球用品、葡萄酒等商品代理，以供應鏈為國內市場引進高品質商品。</p></div>
+      <div class="field rise"><div class="field-n">06</div><h3>教育系統</h3><p>國際 NLP 神經語言學師資，因材施教；並舉辦營隊與企業實習。</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="mark rise"><span>Own brands</span></div>
+    <div class="col">
+      <h2 class="rise">五個自己做的品牌</h2>
+      <p class="lede rise">共同的規則只有一條：<strong>自己不會端上桌的，不賣。</strong></p>
+    </div>
+    <div class="brands">
+      <div class="brand rise"><div class="brand-n">鑫海產<span>SEAFOOD</span></div>
+        <p>龜吼漁港當日現撈，自家漁船撈捕、上岸真空急凍。做 VIP 現流直送、通路批發，也與龜吼在地餐廳聯名。</p></div>
+      <div class="brand rise"><div class="brand-n">鑫酒藏<span>WINE</span></div>
+        <p>把品酒變成日常、藏酒當成興趣。依酒款個性配奧地利杯型，讓每一口珍釀發揮原有的性格。</p></div>
+      <div class="brand rise"><div class="brand-n">鑫茶坊<span>TEA</span></div>
+        <p>以南投鹿谷青心烏龍為主的台灣精品茶。目標是把台灣茶的滋味送上米其林的桌。</p></div>
+      <div class="brand rise"><div class="brand-n">匠鑫私廚<span>H KITCHEN</span></div>
+        <p>內湖預約制私廚。現流海鮮、精品茶與世界酒款，配專業侍酒師與可客製的菜單，可包場。</p></div>
+      <div class="brand rise"><div class="brand-n">龜吼現流活海產<span>2026 建置中</span></div>
+        <p>把產地直接搬到餐桌前的下一步。目前籌備中。</p></div>
+    </div>
+    <p class="note rise" style="margin-top:22px">另有磊山保經的壽險與產險業務，是最早的本業，也持續在做。</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="band-grid">
+    <figure class="rise"><img src="assets/port.jpg" alt="龜吼漁港漁坊招牌" loading="lazy"><figcaption>新北市龜吼漁港</figcaption></figure>
+    <figure class="rise"><img src="assets/catch.jpg" alt="當日現撈的漁獲特寫" loading="lazy"><figcaption>當日清晨上岸的漁獲</figcaption></figure>
+    <figure class="rise"><img src="assets/market.jpg" alt="漁港魚市場現場" loading="lazy"><figcaption>魚市現場</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="mark rise"><span>Where it starts</span></div>
+    <div class="col">
+      <h2 class="rise">一切從龜吼開始</h2>
+      <p class="lede rise">和龜吼漁港的 <strong>19 艘共捕漁船</strong>長期合作，這是鑫海產能講「現流」兩個字的底氣。</p>
+      <p class="rise">凌晨的船靠岸、天亮前分魚，好的那一批不會流到市場上——那是熟客的。真空急凍在上岸那一刻就做完，鮮甜被封在裡面。這套流程沒有捷徑，只有人在現場。</p>
+      <p class="rise">從產地往回推，才有後面的私廚、批發與餐廳聯名。<strong>先有產地，才有品牌。</strong></p>
+    </div>
+    <div class="slot rise" style="margin-top:34px;max-width:var(--measure)">
+      <b>場域照版位</b>
+      內湖接待會所與三芝咖啡廳的照片，提供後我補上。
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="mark rise"><span>Giving back</span></div>
+    <div class="col">
+      <h2 class="rise">公益不是附加，是本來就在做的事</h2>
+      <p class="lede rise">「無私」是鉅鑫四大核心理念之一。這些是實際參與過的：</p>
+    </div>
+    <ul class="cause">
+      <li class="rise">2026 國際扶輪世界年會</li>
+      <li class="rise">惜食廚房</li>
+      <li class="rise">2025 德國 IDBF 龍舟世界錦標賽</li>
+      <li class="rise">根除小兒麻痺慈善音樂會</li>
+      <li class="rise">撿回珍珠計畫</li>
+      <li class="rise">自行車環島公益扶助計畫</li>
+      <li class="rise">反毒路跑</li>
+      <li class="rise">基隆 1919 陪讀計畫</li>
+      <li class="rise">陳爸的書屋創辦人紀念音樂會</li>
+      <li class="rise">匠鑫私廚公益書法募款餐會</li>
+      <li class="rise">2017 台北世大運志工</li>
+      <li class="rise">中壢國中羽球隊贊助</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="mark rise"><span>Partners</span></div>
+    <div class="col">
+      <h2 class="rise">一起做事的夥伴</h2>
+      <p class="lede rise">鉅鑫以資源整合為核心。這些是長期合作的對象：</p>
+    </div>
+    <div class="partners rise">
+      <span>星坊酒業</span><span>磊山保經</span><span>品特商業</span><span>東潮時裝</span>
+      <span>金漫</span><span>羽雁體育</span><span>Chester</span><span>banana blue</span>
+      <span>汆食</span><span>鵵咖啡</span><span>我們在海邊</span>
+    </div>
+  </div>
+</section>
+
+<section class="contact">
+  <div class="wide">
+    <div class="mark rise"><span>Get in touch</span></div>
+    <div class="col">
+      <h2 class="rise">要找我，直接打電話最快</h2>
+      <p class="lede rise">不管是想吃到好魚、想配一支對的酒、想談合作，還是想聊保險規劃——先聯絡，再看怎麼配。</p>
+    </div>
+    <dl class="cbox rise">
+      <div><dt>公司</dt><dd>鉅鑫管理顧問有限公司</dd></div>
+      <div><dt>統一編號</dt><dd style="font-family:var(--mono)">50877146</dd></div>
+      <div><dt>地址</dt><dd>114 台北市內湖區南京東路六段 461 號 1 樓</dd></div>
+      <div><dt>電話</dt><dd><a href="tel:+886226585560">(02) 2658-5560</a></dd></div>
+      <div><dt>E-mail</dt><dd><a href="mailto:giantsatellite2018@gmail.com">giantsatellite2018@gmail.com</a></dd></div>
+      <div><dt>官方網站</dt><dd><a href="https://gs-group.com.tw" target="_blank" rel="noopener">gs-group.com.tw</a></dd></div>
+      <div><dt>匠鑫私廚訂位</dt><dd><a href="tel:+886226585290">(02) 2658-5290</a></dd></div>
+    </dl>
+  </div>
+</section>
+
+<footer>
+  <p>鉅鑫管理顧問有限公司　凝鉅情感、真鑫相待　／　內容依據官方網站 gs-group.com.tw 與公司登記資料整理</p>
+</footer>
+
+<script>
+(function(){
+  var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var els=[].slice.call(document.querySelectorAll(".rise"));
+  if(reduce){els.forEach(function(e){e.classList.add("in")});return}
+  var io=new IntersectionObserver(function(en){
+    en.forEach(function(x){
+      if(!x.isIntersecting)return;
+      var sib=[].slice.call(x.target.parentNode.querySelectorAll(".rise"));
+      var i=Math.max(0,sib.indexOf(x.target));
+      setTimeout(function(){x.target.classList.add("in")},Math.min(i,7)*70);
+      io.unobserve(x.target);
+    });
+  },{rootMargin:"0px 0px -10% 0px",threshold:.1});
+  els.forEach(function(e){io.observe(e)});
+})();
+</script>
+</body>
+</html>
