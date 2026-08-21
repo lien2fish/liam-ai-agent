@@ -224,14 +224,11 @@ def make_list_poster(
 
 
 # ── 100 萬以上捐款 ──
-donors_100 = [
-    ("僑威科技", "2,500,000"),
-    ("[已移除]", "1,700,000"),
-    ("[已移除]", "1,500,000"),
-    ("[已移除]", "1,200,000"),
-    ("簡清潭", "1,100,000"),
-    ("鉅陞建設", "1,000,000"),
-]
+# 捐款名單含姓名與金額，repo 為 public，改放 config/（已 gitignore）。
+try:
+    from config.savefood_donors import donors_100, donors_50
+except ImportError:
+    raise SystemExit("⚠️ 找不到 config/savefood_donors.py，無法產出名單海報")
 
 p1 = make_list_poster(
     bg_path="/Users/lien/Desktop/未命名設計-1.jpg",
@@ -245,15 +242,6 @@ p1 = make_list_poster(
 
 
 # ── 50 萬以上捐款 ──
-donors_50 = [
-    ("王光明", "600,000"),
-    ("[已移除]", "600,000"),
-    ("邱正宏美學教育基金會", "600,000"),
-    ("謝明達", "500,000"),
-    ("國寶社會福利慈善事業基金會", "500,000"),
-    ("海悅國際", "500,000"),
-    ("白俊宇", "全區磁磚捐贈"),
-]
 
 p2 = make_list_poster(
     bg_path="/Users/lien/Desktop/191214-growth-1170x780.jpg",
