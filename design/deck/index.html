@@ -275,6 +275,16 @@ tr.total td.num { color: var(--navy); font-size: 16px; }
 .ba-after  { color: var(--ink); font-size: 14.5px; line-height: 1.65; }
 .ba-after b { color: var(--navy); font-weight: 600; }
 
+/* ---------- work samples ---------- */
+.samples { display: flex; flex-direction: column; gap: 46px; margin-top: 40px; }
+.sample figcaption { margin-top: 16px; font-size: 14px; color: var(--ink-3); line-height: 1.7; max-width: 62ch; }
+.sample figcaption b { color: var(--ink-2); font-weight: 500; }
+.sample-frame { border: 1px solid var(--rule); background: var(--surface); padding: 14px; overflow-x: auto; }
+.sample-frame img { display: block; width: 100%; min-width: 620px; height: auto; }
+.sample-split { display: grid; gap: 26px; align-items: start; }
+@media (min-width: 780px) { .sample-split { grid-template-columns: 260px 1fr; } }
+.sample-split .sample-frame img { min-width: 0; }
+
 /* ---------- steps ---------- */
 .steps { counter-reset: s; margin-top: 40px; display: flex; flex-direction: column; gap: 30px; }
 .step { display: grid; grid-template-columns: 46px 1fr; gap: 20px; align-items: start; }
@@ -425,6 +435,28 @@ footer p { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; col
         <div><div class="ba-label">原本</div><div class="ba-before">靠記性和翻名單。想到才打，通常是想不到。</div></div>
         <div><div class="ba-label">現在</div><div class="ba-after">系統每天掃一次，<b>該接觸的人主動出現在信箱裡</b>，附上切入的理由與話術。名單不進任何公開紀錄。</div></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="eyebrow rise">成果實例</div>
+    <h2 class="rise">同一支程式，四個季節</h2>
+    <p class="lede rise" style="max-width:60ch">「版面由參數驅動」聽起來像術語，直接看比較快。</p>
+    <div class="samples">
+      <figure class="sample rise">
+        <div class="sample-frame"><img src="assets/four_seasons.jpg" alt="鑫海產鮮味聚海報的春夏秋冬四個版本並排，版型相同、品項與價格不同" loading="lazy"></div>
+        <figcaption>四張海報出自<b>同一支程式</b>，差別只在四份設定檔——品項、學名、價格、當季文案。
+        換季不重排版，改設定跑一次就好；字級會隨品項數自動縮放。
+        底下的產地標語與洽詢條是共用元件，改一次四張一起變。</figcaption>
+      </figure>
+      <figure class="sample rise sample-split">
+        <div class="sample-frame"><img src="assets/video_cover.jpg" alt="甜點影片封面，畫面為肉桂捲與雙手，未拍到人臉" loading="lazy"></div>
+        <figcaption>影音產線的產出。封面與字幕由剪輯工具自動生成，
+        <b>規則寫在設定裡</b>：標題不超過限制字數、代表圖避開人臉、直式長片另外出一張橫式縮圖。
+        這些規則都是踩過坑之後才寫進去的——標題太長點閱率掉到七分之一、Shorts 設縮圖會被平台忽略。</figcaption>
+      </figure>
     </div>
   </div>
 </section>

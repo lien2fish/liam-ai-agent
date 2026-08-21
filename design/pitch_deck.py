@@ -367,6 +367,39 @@ def lines(d):
     d.footer("三條產線")
 
 
+def samples(d):
+    d.page()
+    d.eyebrow("成果實例")
+    d.title("同一支程式，四個季節", H - 116, 26)
+    d.para(
+        "「版面由參數驅動」聽起來像術語，直接看比較快。",
+        H - 146, size=10.5, color=INK3, maxw=700,
+    )
+
+    c = d.c
+    img = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "deck", "assets", "four_seasons.jpg"
+    )
+    ih = 264                      # 先由可用高度決定，再反推寬度，避免壓到說明與頁尾
+    iw = ih * 1728 / 746.0
+    ix = (W - iw) / 2
+    iy = 106
+    c.setFillColor(SURF)
+    c.rect(ix - 7, iy - 7, iw + 14, ih + 14, stroke=0, fill=1)
+    c.setStrokeColor(RULE)
+    c.setLineWidth(0.6)
+    c.rect(ix - 7, iy - 7, iw + 14, ih + 14, stroke=1, fill=0)
+    c.drawImage(img, ix, iy, width=iw, height=ih, mask="auto")
+
+    d.para(
+        "四張海報出自同一支程式，差別只在四份設定檔——品項、學名、價格、當季文案。"
+        "換季不重排版，改設定跑一次就好；字級會隨品項數自動縮放；"
+        "底下的產地標語與洽詢條是共用元件，改一次四張一起變。",
+        iy - 24, size=10, color=INK2, maxw=W - 2 * M,
+    )
+    d.footer("成果實例")
+
+
 BARS = [
     ("影音製作與上傳", 120, "60 支", 120),
     ("市場分析日報", 64, "96 份", 40),
@@ -423,11 +456,11 @@ def chart_bar(d):
     c.setFont("Sans", 7.5)
     for lab, off in [("項目", 0), ("產出", 132), ("單次分", 196), ("時數", 258)]:
         (c.drawString if off < 100 else c.drawRightString)(
-            tx + off + (62 if off else 0), top + 20, lab
+            tx + off + (62 if off else 0), top + 32, lab
         )
     c.setStrokeColor(RULE)
     c.setLineWidth(0.6)
-    c.line(tx, top + 14, W - M, top + 14)
+    c.line(tx, top + 25, W - M, top + 25)
 
     for i, (name, hours, out, per) in enumerate(BARS):
         y = top - i * (bh + gap) + 6
@@ -716,7 +749,7 @@ def main():
     )
     d.c.showPage()
 
-    for fn in (tiles, chart_step, lines, chart_bar, cost, method, limits, closing):
+    for fn in (tiles, chart_step, lines, samples, chart_bar, cost, method, limits, closing):
         fn(d)
         d.c.showPage()
 
