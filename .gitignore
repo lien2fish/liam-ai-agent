@@ -10,6 +10,8 @@ insurance/policy_data.py
 # 加此規則避免再犯。原檔備份於私人 repo liam-workspace/backup/）
 客戶名單/
 財務/
+reports/回購提醒_*.md
+reports/營收衝刺_*.md
 
 # Playwright 瀏覽器快照
 .playwright-mcp/
