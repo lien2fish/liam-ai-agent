@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一人五品牌｜鉅鑫管理顧問</title>
+<meta name="description" content="鉅鑫管理顧問十五週的營運自動化實證——做了什麼、省下多少時間、方法怎麼複製到別的事業上。">
+<meta property="og:title" content="一人五品牌｜鉅鑫管理顧問">
+<meta property="og:description" content="十五週，把重複的事交給系統。18 條雲端排程、287 小時的實證紀錄。">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>*{margin:0;padding:0}</style>
+<style>
+:root {
+  --ground:      #E9EAE5;
+  --surface:     #F4F5F1;
+  --surface-2:   #DEE0D9;
+  --ink:         #14181C;
+  --ink-2:       #4A5560;
+  --ink-3:       #7C8791;
+  --rule:        #C9CDC4;
+  --rule-soft:   #DADDD4;
+  --navy:        #1F4E79;
+  --navy-2:      #37709E;
+  --brass:       #8A6528;
+  --seal:        #A33B2A;
+  --chart-fill:  rgba(31, 78, 121, .10);
+
+  --serif: "Noto Serif TC", "Songti TC", serif;
+  --sans:  "Noto Sans TC", -apple-system, "PingFang TC", sans-serif;
+  --mono:  "IBM Plex Mono", ui-monospace, Menlo, monospace;
+
+  --measure: 680px;
+  --wide:  1080px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:     #0F1316;
+    --surface:    #171C21;
+    --surface-2:  #1F262C;
+    --ink:        #E9EBE7;
+    --ink-2:      #A4AFB8;
+    --ink-3:      #6F7B85;
+    --rule:       #293138;
+    --rule-soft:  #1E252B;
+    --navy:       #6BA6DC;
+    --navy-2:     #99C5EC;
+    --brass:      #C89C55;
+    --seal:       #D8705B;
+    --chart-fill: rgba(107, 166, 220, .16);
+  }
+}
+:root[data-theme="dark"] {
+  --ground:     #0F1316;
+  --surface:    #171C21;
+  --surface-2:  #1F262C;
+  --ink:        #E9EBE7;
+  --ink-2:      #A4AFB8;
+  --ink-3:      #6F7B85;
+  --rule:       #293138;
+  --rule-soft:  #1E252B;
+  --navy:       #6BA6DC;
+  --navy-2:     #99C5EC;
+  --brass:      #C89C55;
+  --seal:       #D8705B;
+  --chart-fill: rgba(107, 166, 220, .16);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+}
+
+section {
+  padding: clamp(72px, 11vw, 148px) clamp(20px, 5vw, 56px);
+  border-bottom: 1px solid var(--rule-soft);
+}
+.spine { max-width: var(--wide); margin-inline: auto; }
+.spine > * { max-width: var(--measure); }
+.spine > .steps { max-width: calc(var(--measure) + 66px); }
+.wide  { max-width: var(--wide);  margin-inline: auto; }
+
+/* ---------- type ---------- */
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; text-wrap: balance; margin: 0; }
+h2 {
+  font-size: clamp(28px, 4.2vw, 42px);
+  line-height: 1.3;
+  letter-spacing: .01em;
+  margin-bottom: 28px;
+}
+h3 {
+  font-size: 19px;
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+p { margin: 0 0 20px; }
+p:last-child { margin-bottom: 0; }
+strong { font-weight: 700; color: var(--ink); }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.eyebrow::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+.lede { font-size: clamp(19px, 2.2vw, 22px); line-height: 1.75; color: var(--ink-2); }
+.note { font-size: 14px; line-height: 1.7; color: var(--ink-3); }
+.note strong { color: var(--ink-2); font-weight: 500; }
+
+/* ---------- hero ---------- */
+.hero {
+  min-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+  overflow: hidden;
+}
+.hero-inner { max-width: var(--wide); margin-inline: auto; width: 100%; }
+.hero-org {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .24em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  margin-bottom: clamp(28px, 6vw, 52px);
+}
+.hero h1 {
+  font-size: clamp(52px, 11.5vw, 148px);
+  font-weight: 900;
+  line-height: .98;
+  letter-spacing: -.02em;
+  margin-bottom: clamp(24px, 4vw, 40px);
+}
+.hero h1 .thin {
+  font-family: var(--sans);
+  font-weight: 300;
+  color: var(--ink-2);
+  display: block;
+  font-size: .27em;
+  letter-spacing: .06em;
+  line-height: 1.5;
+  margin-top: .62em;
+}
+.hero-sub {
+  font-size: clamp(17px, 2vw, 20px);
+  color: var(--ink-2);
+  max-width: 560px;
+  line-height: 1.8;
+}
+.hero-meta {
+  margin-top: clamp(40px, 7vw, 72px);
+  padding-top: 22px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 44px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-3);
+  letter-spacing: .05em;
+}
+.hero-meta b { color: var(--navy); font-weight: 600; }
+
+/* ---------- stat tiles ---------- */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(178px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  margin-top: 40px;
+}
+.tile {
+  background: var(--surface);
+  padding: 28px 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tile-num {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(34px, 5vw, 46px);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--navy);
+  letter-spacing: -.02em;
+}
+.tile-num .u { font-size: .42em; font-weight: 500; color: var(--ink-2); margin-left: 4px; letter-spacing: 0; }
+.tile-label { font-size: 14px; color: var(--ink-2); line-height: 1.5; margin-top: 6px; }
+.tile-sub { font-family: var(--mono); font-size: 11px; color: var(--ink-3); letter-spacing: .06em; }
+
+/* ---------- charts ---------- */
+figure { margin: 0; }
+.fig-head { margin-bottom: 22px; }
+.fig-title { font-family: var(--sans); font-weight: 500; font-size: 16px; color: var(--ink); }
+.fig-sub { font-size: 13.5px; color: var(--ink-3); margin-top: 3px; }
+.chart-wrap { overflow-x: auto; }
+svg { display: block; max-width: 100%; }
+.axis-txt { font-family: var(--mono); font-size: 11px; fill: var(--ink-3); letter-spacing: .04em; }
+.cat-txt  { font-family: var(--sans); font-size: 13.5px; fill: var(--ink-2); font-weight: 400; }
+.val-txt  { font-family: var(--mono); font-size: 13px; fill: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.gridline { stroke: var(--rule-soft); stroke-width: 1; }
+
+.tip {
+  position: fixed;
+  pointer-events: none;
+  background: var(--ink);
+  color: var(--ground);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 7px 11px;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity .12s;
+  z-index: 50;
+  white-space: nowrap;
+  letter-spacing: .03em;
+}
+.tip.on { opacity: 1; }
+
+/* ---------- tables ---------- */
+.tbl-wrap { overflow-x: auto; margin-top: 28px; }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; min-width: 460px; }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+thead th {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 9px;
+}
+td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; color: var(--ink); font-weight: 500; }
+tbody tr:last-child td { border-bottom: none; }
+tr.total td { border-top: 1px solid var(--rule); border-bottom: none; font-weight: 700; padding-top: 14px; }
+tr.total td.num { color: var(--navy); font-size: 16px; }
+
+/* ---------- before / after ---------- */
+.lines { display: flex; flex-direction: column; gap: 1px; background: var(--rule); border-block: 1px solid var(--rule); margin-top: 36px; }
+.line { background: var(--surface); padding: 26px 24px; display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 760px) { .line { grid-template-columns: 200px 1fr 1fr; gap: 28px; align-items: start; } }
+.line-name { font-family: var(--serif); font-weight: 600; font-size: 18px; }
+.line-name span { display: block; font-family: var(--mono); font-size: 11px; font-weight: 400; letter-spacing: .1em; color: var(--ink-3); margin-top: 5px; }
+.ba-label { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+.ba-before { color: var(--ink-3); font-size: 14.5px; line-height: 1.65; }
+.ba-after  { color: var(--ink); font-size: 14.5px; line-height: 1.65; }
+.ba-after b { color: var(--navy); font-weight: 600; }
+
+/* ---------- steps ---------- */
+.steps { counter-reset: s; margin-top: 40px; display: flex; flex-direction: column; gap: 30px; }
+.step { display: grid; grid-template-columns: 46px 1fr; gap: 20px; align-items: start; }
+.step::before {
+  counter-increment: s;
+  content: counter(s, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: .04em;
+  padding-top: 4px;
+  border-top: 2px solid var(--navy);
+}
+.step p { font-size: 15.5px; color: var(--ink-2); margin: 0; line-height: 1.75; }
+
+/* ---------- limits ---------- */
+.limits { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 36px; }
+@media (min-width: 720px) { .limits { grid-template-columns: repeat(3, 1fr); } }
+.limit { background: var(--surface); padding: 26px 22px; border-top: 2px solid var(--seal); }
+.limit p { font-size: 14.5px; color: var(--ink-2); margin: 0; line-height: 1.7; }
+
+/* ---------- cost ---------- */
+.cost { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 36px; }
+@media (min-width: 700px) { .cost { grid-template-columns: 1fr 1fr; } }
+.cost-cell { background: var(--surface); padding: 34px 26px; }
+.cost-cell.alt { background: var(--surface-2); }
+.cost-k { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 14px; }
+.cost-v { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: clamp(30px, 4.4vw, 40px); font-weight: 600; line-height: 1.1; letter-spacing: -.02em; }
+.cost-cell .cost-v { color: var(--ink-2); }
+.cost-cell.alt .cost-v { color: var(--navy); }
+.cost-n { font-size: 13.5px; color: var(--ink-3); margin-top: 12px; line-height: 1.65; }
+
+/* ---------- closing ---------- */
+.close { background: var(--surface); }
+.close h2 { margin-bottom: 22px; }
+.contact {
+  margin-top: 44px;
+  padding-top: 26px;
+  border-top: 1px solid var(--rule);
+  display: grid;
+  gap: 20px 48px;
+  font-size: 14.5px;
+}
+@media (min-width: 640px) { .contact { grid-template-columns: repeat(2, auto); justify-content: start; } }
+.contact dt { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 5px; }
+.contact dd { margin: 0; color: var(--ink); }
+.contact dd a { color: var(--navy); text-decoration: none; border-bottom: 1px solid var(--rule); }
+.contact dd a:hover, .contact dd a:focus-visible { border-bottom-color: var(--navy); }
+
+footer { padding: 30px clamp(20px, 5vw, 56px) 50px; }
+footer p { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--ink-3); max-width: var(--wide); margin-inline: auto; line-height: 1.8; }
+
+:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+
+/* ---------- motion ---------- */
+.rise { opacity: 0; transform: translateY(18px); }
+.rise.in { opacity: 1; transform: none; transition: opacity .7s cubic-bezier(.22,.61,.36,1), transform .7s cubic-bezier(.22,.61,.36,1); }
+@media (prefers-reduced-motion: reduce) {
+  .rise, .rise.in { opacity: 1; transform: none; transition: none; }
+  * { animation: none !important; }
+}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-org rise">鉅鑫管理顧問有限公司</div>
+    <h1 class="rise">一人五品牌<span class="thin">十五週，把重複的事交給系統</span></h1>
+    <p class="hero-sub rise">葡萄酒、茶葉、私廚、海產、管理顧問，加上保險業務、公益與社團。一個人。這份簡報是這套營運系統的實證紀錄——做了什麼、省下多少、方法怎麼複製。</p>
+    <div class="hero-meta rise">
+      <span>期間 <b>2026.05.09 – 08.20</b></span>
+      <span>運行中系統 <b>18</b></span>
+      <span>版本紀錄 <b>1,041</b> 筆</span>
+      <span>全部可查核</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="spine">
+    <div class="eyebrow rise">現況</div>
+    <h2 class="rise">時間是唯一不能外包的東西</h2>
+    <p class="lede rise">五個品牌、一份保經業務、一個公益協會、一個社團。行程橫跨漁港、內湖接待會所、三芝咖啡廳與客戶端。</p>
+    <p class="rise">真正吃掉時間的不是決策，是<strong>那些每天都要做、但不需要判斷的事</strong>：社群要發文、市場行情要追、客戶回購要盯、保單到期要提醒、影片要剪要上傳。這些事單看都只要二三十分鐘，加起來卻是一份全職工作。</p>
+    <p class="rise">停下來一天，斷的不只是一天。社群的節奏、客戶的溫度、內容的累積，全部一起停。</p>
+  </div>
+</section>
+
+<section>
+  <div class="spine">
+    <div class="eyebrow rise">原則</div>
+    <h2 class="rise">系統做重複，人做判斷</h2>
+    <p class="lede rise">不是把工作丟給 AI，是把工作<strong>拆開</strong>：哪一段是照規則跑的，哪一段需要你當場判斷。</p>
+    <p class="rise">前者交給系統，跑在雲端，不依賴你的電腦開機、不依賴你人在哪裡。後者留給人，而且刻意保留——因為判斷錯的代價，遠高於省下的那二十分鐘。</p>
+    <p class="rise">這條線畫在哪裡，就是整套系統成敗的地方。</p>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="eyebrow rise">成果</div>
+    <h2 class="rise">十五週的累計產出</h2>
+    <p class="lede rise" style="max-width:60ch">每一個數字都對得上版本紀錄與平台後台，不是估算。</p>
+    <div class="tiles rise">
+      <div class="tile"><div class="tile-num" data-count="18">0</div><div class="tile-label">條雲端排程運行中</div><div class="tile-sub">全年無休</div></div>
+      <div class="tile"><div class="tile-num" data-count="94">0</div><div class="tile-label">天社群自動發文</div><div class="tile-sub">IG ＋ FB 同步</div></div>
+      <div class="tile"><div class="tile-num" data-count="96">0</div><div class="tile-label">份市場分析日報</div><div class="tile-sub">含 PDF</div></div>
+      <div class="tile"><div class="tile-num" data-count="84">0</div><div class="tile-label">份漁獲行情追蹤</div><div class="tile-sub">官方成交價</div></div>
+      <div class="tile"><div class="tile-num" data-count="60">0</div><div class="tile-label">支自動生成影片</div><div class="tile-sub">腳本到上傳全自動</div></div>
+      <div class="tile"><div class="tile-num" data-count="12">0</div><div class="tile-label">面大圖送印完成</div><div class="tile-sub">CMYK 直送印刷廠</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="eyebrow rise">節奏</div>
+    <h2 class="rise">系統是疊起來的，不是一次做完的</h2>
+    <p class="lede rise" style="max-width:60ch">每次只上一條，跑穩了再上下一條。中間的平台期是刻意的——那是在確認前一條真的能自己跑。</p>
+    <figure class="rise" style="margin-top:40px">
+      <div class="fig-head">
+        <div class="fig-title">運行中的自動化系統數（累計）</div>
+        <div class="fig-sub">2026 年 5 月 9 日起，每週結算一次</div>
+      </div>
+      <div class="chart-wrap"><svg id="chart-step" role="img" aria-label="折線圖：運行中的自動化系統數從 0 累積到 18 條"></svg></div>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="eyebrow rise">三條產線</div>
+    <h2 class="rise">同樣的事，換一種做法</h2>
+    <div class="lines rise">
+      <div class="line">
+        <div class="line-name">內容<span>社群與影音</span></div>
+        <div><div class="ba-label">原本</div><div class="ba-before">每天想題目、寫文案、找圖、發布。影片拍完堆在硬碟裡，剪一支要半天。</div></div>
+        <div><div class="ba-label">現在</div><div class="ba-after">文案與配圖每天早上八點自動產出並同步發布；影片剪輯有固定產線，<b>三套工具對應三種內容</b>，渲染前先過檢查再輸出。</div></div>
+      </div>
+      <div class="line">
+        <div class="line-name">設計送印<span>大圖與文宣</span></div>
+        <div><div class="ba-label">原本</div><div class="ba-before">改一次尺寸就要重排一次版，來回等設計。顏色送到印刷廠才知道對不對。</div></div>
+        <div><div class="ba-label">現在</div><div class="ba-after">版面由參數驅動，<b>改尺寸只改一個數字</b>，整面重算。CMYK 輸出規格固定，直接交印刷廠。</div></div>
+      </div>
+      <div class="line">
+        <div class="line-name">客戶維繫<span>回購與保單</span></div>
+        <div><div class="ba-label">原本</div><div class="ba-before">靠記性和翻名單。想到才打，通常是想不到。</div></div>
+        <div><div class="ba-label">現在</div><div class="ba-after">系統每天掃一次，<b>該接觸的人主動出現在信箱裡</b>，附上切入的理由與話術。名單不進任何公開紀錄。</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="eyebrow rise">效益</div>
+    <h2 class="rise">省下的時間，換算得出來</h2>
+    <p class="lede rise" style="max-width:60ch">下面是估算，不是實測。每一列的假設都寫出來，你可以自己換成你的數字。</p>
+    <figure class="rise" style="margin-top:40px">
+      <div class="fig-head">
+        <div class="fig-title">若改回人工，十五週需要投入的時數</div>
+        <div class="fig-sub">產出量 × 單次人工耗時，取保守值</div>
+      </div>
+      <div class="chart-wrap"><svg id="chart-bar" role="img" aria-label="橫條圖：五類工作若改回人工所需時數，影音製作 120 小時最高"></svg></div>
+    </figure>
+    <div class="tbl-wrap rise">
+      <table>
+        <thead><tr><th>項目</th><th>實際產出</th><th style="text-align:right">單次人工（分）</th><th style="text-align:right">累計時數（小時）</th></tr></thead>
+        <tbody>
+          <tr><td>影音製作與上傳</td><td>60 支</td><td class="num">120</td><td class="num">120</td></tr>
+          <tr><td>市場分析日報</td><td>96 份</td><td class="num">40</td><td class="num">64</td></tr>
+          <tr><td>社群每日發文</td><td>94 天</td><td class="num">30</td><td class="num">47</td></tr>
+          <tr><td>漁獲行情追蹤</td><td>84 份</td><td class="num">20</td><td class="num">28</td></tr>
+          <tr><td>客戶提醒名單</td><td>約 110 天</td><td class="num">15</td><td class="num">28</td></tr>
+          <tr class="total"><td>合計</td><td>十五週</td><td class="num">—</td><td class="num">287</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note rise" style="margin-top:20px">287 小時約等於 <strong>36 個工作天</strong>，接近一個全職人力做滿一個半月。這還沒算上「想到要做卻一直沒做」的那些事——系統跑起來之後，它們是被做完的，不是被記著的。</p>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="eyebrow rise">成本</div>
+    <h2 class="rise">兩邊不是同一個量級</h2>
+    <div class="cost rise">
+      <div class="cost-cell">
+        <div class="cost-k">若外包給人</div>
+        <div class="cost-v">NT$229,600</div>
+        <div class="cost-n">287 小時 × 行銷／設計外包時薪 NT$800。這是把上面那張表換算成錢，同樣是估算。</div>
+      </div>
+      <div class="cost-cell alt">
+        <div class="cost-k">實際工具支出</div>
+        <div class="cost-v">月費量級</div>
+        <div class="cost-n">雲端排程用公開專案的免費額度；生圖每張 US$0.005；週報每次不到 NT$2。按用量計費，沒有綁約。</div>
+      </div>
+    </div>
+    <p class="note rise" style="margin-top:20px">重點不是「便宜」，是<strong>成本結構換了一種</strong>：從「請一個人」的固定支出，變成「用多少算多少」的變動支出。事業規模變大時，前者要再請一個人，後者只是多跑幾次。</p>
+  </div>
+</section>
+
+<section>
+  <div class="spine">
+    <div class="eyebrow rise">方法</div>
+    <h2 class="rise">可以複製的五件事</h2>
+    <p class="lede rise">工具會換，這五條不會。它們是十五週裡踩出來的，每一條背後都有一次修正。</p>
+    <div class="steps">
+      <div class="step rise"><div><h3>先記錄，再自動化</h3><p>沒有紀錄就不知道時間花在哪裡。先把每天做了什麼寫下來，兩週後回頭看，重複最多的那幾件事會自己浮出來——通常和你以為的不一樣。</p></div></div>
+      <div class="step rise"><div><h3>只自動化不需要判斷的部分</h3><p>社群留言可以自動回覆，但問價格、問到貨的一律轉人工。判斷錯一次的代價，遠高於省下的那幾分鐘。這條線要畫得很清楚，而且寧可畫保守。</p></div></div>
+      <div class="step rise"><div><h3>驗收看產出，不看回應碼</h3><p>「系統回報成功」不算成功。要把實際發出去的東西抓回來比對，確認它真的長成你要的樣子。這一步省不得——省掉的話，你會在客戶告訴你之前都不知道出錯。</p></div></div>
+      <div class="step rise"><div><h3>踩到的坑要寫下來</h3><p>同一個問題不該解第二次。每次出錯就記一條：怎麼發現的、根因是什麼、以後怎麼避開。這份紀錄累積起來，比任何一支程式都值錢。</p></div></div>
+      <div class="step rise"><div><h3>跑在雲端，不要跑在你的電腦上</h3><p>系統的價值在於你不在的時候它照跑。綁在自己電腦上的自動化，只是把工作換個時間做而已。</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="eyebrow rise">界線</div>
+    <h2 class="rise">什麼情況不該自動化</h2>
+    <p class="lede rise" style="max-width:60ch">誠實講，這套做法有明確的邊界。談的時候會先確認你的事業落在哪一邊。</p>
+    <div class="limits rise">
+      <div class="limit">
+        <h3>錯了收不回來的事</h3>
+        <p>對外發布、款項、客戶個資的流向，一律先確認再動。有些平台的內容發出去之後，連系統自己都刪不掉。</p>
+      </div>
+      <div class="limit">
+        <h3>一個月不到三次的事</h3>
+        <p>建置與維護也要成本。頻率不夠高的工作，寫下標準流程比寫成程式划算。</p>
+      </div>
+      <div class="limit">
+        <h3>知識只在你腦裡的事</h3>
+        <p>哪個月份的魚最肥、怎麼分野生與養殖——這種東西 AI 產不出來，也不該讓它編。它只能幫你把它整理好、用出去。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="close">
+  <div class="spine">
+    <div class="eyebrow rise">下一步</div>
+    <h2 class="rise">同樣的方法，可以套在你的事業上</h2>
+    <p class="lede rise">這套系統是為了自己的五個品牌做的，所以每一條都經過實際營運檢驗，不是提案裡的構想。</p>
+    <p class="rise">如果你的公司也有那種「每天都要做、每次都差不多、但沒人想做」的事，多半可以用同樣的方式處理掉。從盤點開始——先看清楚時間花在哪裡，再決定要不要動手。</p>
+    <dl class="contact rise">
+      <div><dt>公司</dt><dd>鉅鑫管理顧問有限公司</dd></div>
+      <div><dt>統一編號</dt><dd style="font-family:var(--mono)">50877146</dd></div>
+      <div><dt>地址</dt><dd>台北市內湖區南京東路六段 461 號 1 樓</dd></div>
+      <div><dt>電話</dt><dd><a href="tel:+886226585560">02-2658-5560</a></dd></div>
+    </dl>
+  </div>
+</section>
+
+<footer>
+  <p>資料期間 2026.05.09 – 2026.08.20 ／ 產出數字取自版本紀錄與平台後台，時數與金額為估算並已標示假設 ／ 本簡報不含任何客戶名稱、報價或個人資料</p>
+</footer>
+
+<div class="tip" id="tip"></div>
+
+<script>
+(function () {
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var tip = document.getElementById("tip");
+
+  function showTip(e, html) {
+    tip.textContent = html;
+    tip.classList.add("on");
+    var x = e.clientX + 14, y = e.clientY - 34;
+    if (x + tip.offsetWidth > window.innerWidth - 10) x = e.clientX - tip.offsetWidth - 14;
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
+  }
+  function hideTip() { tip.classList.remove("on"); }
+
+  /* ---------- reveal on scroll ---------- */
+  var risers = [].slice.call(document.querySelectorAll(".rise"));
+  if (reduce) {
+    risers.forEach(function (el) { el.classList.add("in"); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var sibs = [].slice.call(en.target.parentNode.querySelectorAll(".rise"));
+        var i = Math.max(0, sibs.indexOf(en.target));
+        setTimeout(function () { en.target.classList.add("in"); }, Math.min(i, 6) * 85);
+        io.unobserve(en.target);
+      });
+    }, { rootMargin: "0px 0px -12% 0px", threshold: .1 });
+    risers.forEach(function (el) { io.observe(el); });
+  }
+
+  /* ---------- count-up tiles ---------- */
+  var nums = [].slice.call(document.querySelectorAll("[data-count]"));
+  function countUp(el) {
+    var target = parseInt(el.getAttribute("data-count"), 10);
+    if (reduce) { el.textContent = target; return; }
+    var t0 = null, dur = 1100;
+    function frame(t) {
+      if (!t0) t0 = t;
+      var p = Math.min(1, (t - t0) / dur);
+      var e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * e);
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  var io2 = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      countUp(en.target);
+      io2.unobserve(en.target);
+    });
+  }, { threshold: .5 });
+  nums.forEach(function (el) { io2.observe(el); });
+
+  /* ---------- helpers ---------- */
+  var NS = "http://www.w3.org/2000/svg";
+  function el(name, attrs) {
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+  function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  /* ---------- step chart: cumulative systems ---------- */
+  var STEP = [
+    ["05/09", 0], ["05/16", 2], ["05/23", 5], ["05/30", 7], ["06/06", 7],
+    ["06/13", 7], ["06/20", 9], ["06/27", 14], ["07/04", 15], ["07/11", 15],
+    ["07/18", 16], ["07/25", 16], ["08/01", 16], ["08/08", 16], ["08/15", 18]
+  ];
+
+  function drawStep() {
+    var svg = document.getElementById("chart-step");
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var W = Math.max(560, Math.min(1080, svg.parentNode.clientWidth || 900));
+    var H = 320, m = { t: 18, r: 26, b: 42, l: 40 };
+    var iw = W - m.l - m.r, ih = H - m.t - m.b, maxY = 20;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.setAttribute("width", W);
+    svg.setAttribute("height", H);
+
+    var x = function (i) { return m.l + (iw * i) / (STEP.length - 1); };
+    var y = function (v) { return m.t + ih - (ih * v) / maxY; };
+
+    [0, 5, 10, 15, 20].forEach(function (v) {
+      svg.appendChild(el("line", { x1: m.l, x2: m.l + iw, y1: y(v), y2: y(v), class: "gridline" }));
+      var t = el("text", { x: m.l - 10, y: y(v) + 4, class: "axis-txt", "text-anchor": "end" });
+      t.textContent = v;
+      svg.appendChild(t);
+    });
+
+    var dLine = "", dArea = "";
+    STEP.forEach(function (p, i) {
+      var px = x(i), py = y(p[1]);
+      if (i === 0) { dLine = "M" + px + "," + py; dArea = "M" + px + "," + y(0) + "L" + px + "," + py; }
+      else {
+        var prev = y(STEP[i - 1][1]);
+        dLine += "L" + px + "," + prev + "L" + px + "," + py;
+        dArea += "L" + px + "," + prev + "L" + px + "," + py;
+      }
+    });
+    dArea += "L" + x(STEP.length - 1) + "," + y(0) + "Z";
+
+    svg.appendChild(el("path", { d: dArea, fill: css("--chart-fill"), stroke: "none" }));
+    var line = el("path", { d: dLine, fill: "none", stroke: css("--navy"), "stroke-width": 2, "stroke-linejoin": "round" });
+    svg.appendChild(line);
+
+    if (!reduce) {
+      var len = line.getTotalLength();
+      line.style.strokeDasharray = len;
+      line.style.strokeDashoffset = len;
+      line.style.transition = "stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1)";
+      requestAnimationFrame(function () { line.style.strokeDashoffset = 0; });
+    }
+
+    var last = STEP.length - 1;
+    svg.appendChild(el("circle", { cx: x(last), cy: y(STEP[last][1]), r: 5, fill: css("--navy"), stroke: css("--surface"), "stroke-width": 2 }));
+    var lab = el("text", { x: x(last) - 8, y: y(STEP[last][1]) - 14, class: "val-txt", "text-anchor": "end" });
+    lab.textContent = "18 條";
+    svg.appendChild(lab);
+
+    [0, 3, 6, 9, 12, 14].forEach(function (i) {
+      var t = el("text", { x: x(i), y: H - 14, class: "axis-txt", "text-anchor": i === 14 ? "end" : (i === 0 ? "start" : "middle") });
+      t.textContent = STEP[i][0];
+      svg.appendChild(t);
+    });
+
+    STEP.forEach(function (p, i) {
+      var hit = el("rect", { x: x(i) - iw / (STEP.length * 2), y: m.t, width: iw / STEP.length, height: ih, fill: "transparent" });
+      hit.addEventListener("mousemove", function (e) { showTip(e, p[0] + "　" + p[1] + " 條"); });
+      hit.addEventListener("mouseleave", hideTip);
+      svg.appendChild(hit);
+    });
+  }
+
+  /* ---------- bar chart: hours if manual ---------- */
+  var BARS = [
+    ["影音製作與上傳", 120], ["市場分析日報", 64], ["社群每日發文", 47],
+    ["漁獲行情追蹤", 28], ["客戶提醒名單", 28]
+  ];
+
+  function roundedRight(x0, y0, w, h, r) {
+    r = Math.min(r, w, h / 2);
+    return "M" + x0 + "," + y0 +
+      "H" + (x0 + w - r) + "a" + r + "," + r + " 0 0 1 " + r + "," + r +
+      "V" + (y0 + h - r) + "a" + r + "," + r + " 0 0 1 " + (-r) + "," + r +
+      "H" + x0 + "Z";
+  }
+
+  function drawBars() {
+    var svg = document.getElementById("chart-bar");
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var wide = (svg.parentNode.clientWidth || 900) > 620;
+    var W = Math.max(480, Math.min(1080, svg.parentNode.clientWidth || 900));
+    var m = { t: 8, r: 62, b: 30, l: wide ? 132 : 108 };
+    var bh = 30, gap = 16;
+    var ih = BARS.length * bh + (BARS.length - 1) * gap;
+    var H = ih + m.t + m.b;
+    var iw = W - m.l - m.r, maxV = 130;
+
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.setAttribute("width", W);
+    svg.setAttribute("height", H);
+
+    [0, 40, 80, 120].forEach(function (v) {
+      var gx = m.l + (iw * v) / maxV;
+      svg.appendChild(el("line", { x1: gx, x2: gx, y1: m.t, y2: m.t + ih, class: "gridline" }));
+      var t = el("text", { x: gx, y: H - 10, class: "axis-txt", "text-anchor": "middle" });
+      t.textContent = v;
+      svg.appendChild(t);
+    });
+    var unit = el("text", { x: m.l + iw + 6, y: H - 10, class: "axis-txt", "text-anchor": "start" });
+    unit.textContent = "小時";
+    svg.appendChild(unit);
+
+    BARS.forEach(function (b, i) {
+      var by = m.t + i * (bh + gap);
+      var full = (iw * b[1]) / maxV;
+
+      var name = el("text", { x: m.l - 14, y: by + bh / 2 + 5, class: "cat-txt", "text-anchor": "end" });
+      name.textContent = b[0];
+      svg.appendChild(name);
+
+      var path = el("path", { d: roundedRight(m.l, by, Math.max(4, full), bh, 4), fill: css("--navy") });
+      svg.appendChild(path);
+
+      if (!reduce) {
+        path.style.transformOrigin = m.l + "px " + by + "px";
+        path.style.transform = "scaleX(0)";
+        path.style.transition = "transform .85s cubic-bezier(.22,.61,.36,1) " + (i * 90) + "ms";
+        requestAnimationFrame(function () { path.style.transform = "scaleX(1)"; });
+      }
+
+      var v = el("text", { x: m.l + full + 10, y: by + bh / 2 + 5, class: "val-txt" });
+      v.textContent = b[1];
+      svg.appendChild(v);
+
+      var hit = el("rect", { x: m.l, y: by, width: iw, height: bh, fill: "transparent" });
+      hit.addEventListener("mousemove", function (e) { showTip(e, b[0] + "　" + b[1] + " 小時"); });
+      hit.addEventListener("mouseleave", hideTip);
+      svg.appendChild(hit);
+    });
+  }
+
+  var drawn = { step: false, bar: false };
+  var io3 = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      if (en.target.id === "chart-step" && !drawn.step) { drawn.step = true; drawStep(); }
+      if (en.target.id === "chart-bar" && !drawn.bar) { drawn.bar = true; drawBars(); }
+    });
+  }, { threshold: .18 });
+  io3.observe(document.getElementById("chart-step"));
+  io3.observe(document.getElementById("chart-bar"));
+
+  var rt;
+  window.addEventListener("resize", function () {
+    clearTimeout(rt);
+    rt = setTimeout(function () {
+      if (drawn.step) drawStep();
+      if (drawn.bar) drawBars();
+    }, 180);
+  });
+
+  var mq = window.matchMedia("(prefers-color-scheme: dark)");
+  (mq.addEventListener ? mq.addEventListener.bind(mq, "change") : mq.addListener.bind(mq))(function () {
+    if (drawn.step) drawStep();
+    if (drawn.bar) drawBars();
+  });
+})();
+</script>
+</body>
+</html>
