@@ -69,6 +69,16 @@ python3 .claude/skills/safe-commit/check_staged.py
 
 ## 已知地雷
 
+- 🔴 **`git ls-files`／`git diff --name-only`／`git log --name-only` 預設會把中文檔名
+  輸出成八進位跳脫**（`reports/回購提醒_x.md` → `reports/\345\233\236...`）。
+  拿去 `open()` 會開不到檔、拿去 `grep` 中文會永遠 0 命中，而且**兩者都不報錯**。
+  **2026-08-21 一天之內因此誤判三次**：誤以為歷史已清乾淨、誤以為已 force push、
+  全庫掃描靜默跳過所有中文檔名的檔案（漏掉 57 份含客戶個資的報告）。
+  **任何用 git 列檔名的指令，一律加 `-c core.quotepath=false`。**
+- **只靠「值的樣式」會漏。** 客戶名單的電話被 Excel 吃掉開頭的 0 變 9 碼，手機正則抓不到；
+  只有姓名沒電話的 Markdown 報告，48 份全部漏掉。
+  **要同時看：欄位標題、人名表格結構、值的樣式。**
+
 - **`.gitignore` 不會讓已追蹤的檔案消失。** 加規則只擋新檔；既有的要 `git rm`。
 - **`git rm` 不會清掉歷史。** 刪掉只是擋隨手瀏覽，任何人仍能從舊 commit 撈回。
   真的要清必須 `git filter-repo` ＋ force push（見下方流程）。

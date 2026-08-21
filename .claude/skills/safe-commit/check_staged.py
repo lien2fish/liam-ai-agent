@@ -67,8 +67,11 @@ SKIP_EXT = (".png", ".jpg", ".jpeg", ".mp4", ".mov", ".wav", ".pdf", ".ttf", ".t
 
 
 def staged_files():
+    # ⚠️ core.quotepath=false 不能省：預設會把中文檔名輸出成八進位跳脫，
+    # 檔案開不起來又不會報錯，中文檔名的檔案會被靜默跳過（踩過三次）。
     out = subprocess.run(
-        ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR"],
+        ["git", "-c", "core.quotepath=false",
+         "diff", "--cached", "--name-only", "--diff-filter=ACMR"],
         capture_output=True,
         text=True,
     ).stdout
@@ -111,6 +114,12 @@ def scan(path):
     for pat, why in CONTENT_BLOCK:
         if re.search(pat, text):
             errs.append(why)
+
+    # Markdown／文字報告裡的人名表格——48 份含客戶姓名的報告當初就是這樣漏掉的
+    if re.search(r"\|\s*(客戶|姓名|名稱|社友|會員)\s*\|", text):
+        rows = len(re.findall(r"(?m)^\|\s*[一-\u9fff]{2,6}[^|]{0,8}\s*\|", text))
+        if rows:
+            errs.append("含人名表格（%d 列）" % rows)
     for pat, why in CONTENT_WARN:
         if re.search(pat, text):
             warns.append(why)
