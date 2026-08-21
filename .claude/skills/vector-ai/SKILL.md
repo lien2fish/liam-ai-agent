@@ -22,7 +22,7 @@ description: 點陣圖轉 Illustrator 可編輯向量 .ai（tools/image_to_vecto
 - **原稿字型＝`Hiragino Sans GB.ttc` index 3**（非專案慣用的 STHeiti）。反推法：拿同批已有該字的牌當標準答案比對 IoU（拿同字在另一面牌上比對）→ Hiragino 0.88~0.98、PingFang 0.55、STHeiti 0.41
 - **排版反解**：每字置中於等距格子，advance **416.5**、中心 x=**1334**、字級 **460**、anchor=`mm`、姓名行基準 y=**1420**（重建原三字姓名 IoU 0.94）。2~4 字自動居中。**非統一 baseline 排版**，用 pen 反推會得到不一致的 y，別走那條路
 - ⚠️**.ai 與 TIFF 字型必然不同**：Hiragino 是 PostScript/CFF，**reportlab 載不進去**（同 PingFang 地雷），故 43 張 .ai 一律 STHeiti Medium＋`setTextRenderMode(2)` 描邊 fake-bold 模擬。新牌沿用以**與另外 42 張整齊**（理監事樹整面牆一起看）。**同一批只交同一種格式**給印刷廠
-- `tools/image_to_vector_ai.py` 加**第4參數 filter**只跑指定 job：`... . 向量ai檔案 /tmp/hexqa [已移除]`，不必為一張重產 43 張
+- `tools/image_to_vector_ai.py` 加**第4參數 filter**只跑指定 job：`... . 向量ai檔案 /tmp/hexqa <姓名>`，不必為一張重產 43 張
 - 驗證 .ai 用 PyMuPDF 比對同批既有檔：頁面尺寸/嵌入影像數(應0=真向量)/字型/CMYK填色須逐項相符
 
 > 首次應用：惜食第七屆理監事六邊形牌 43 張全數轉檔（`…/惜食廚房輸出/第七屆理監事樹調整/向量ai檔案/`）。詳見 memory `feedback_raster_to_vector_ai.md`
