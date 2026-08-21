@@ -28,10 +28,6 @@ jobs:
           REPURCHASE_DAYS:     '60'
         run: python crm_unified/repurchase_reminder.py
 
-      - name: Commit report
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add reports/回購提醒_*.md
-          git diff --staged --quiet || git commit -m "自動更新回購提醒報告 $(date +%F)"
-          git push
+      # ⚠️ 刻意不 commit 報告。報告含客戶姓名與手機，repo 為 public。
+      # 與 life_visit_reminder／birthday_reminder／weekly_revenue_sprint 一致：客戶個資只走 Email。
+      # （2026-08-21 修：原本每天自動 commit，已累積 56 份含個資的報告在公開 repo。）
