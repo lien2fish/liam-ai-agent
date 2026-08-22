@@ -1,12 +1,18 @@
 /**
- * Liam 手機助理 — Telegram Bot on Cloudflare Worker
+ * Liam 手機助理 — LINE Bot on Cloudflare Worker
  *
  * 兩個入口：
- *   POST /tg      Telegram webhook（你傳訊息／語音進來）
+ *   POST /line    LINE webhook（你傳訊息／語音進來）
  *   POST /notify  自動化推播（GitHub Actions 呼叫，帶 Bearer NOTIFY_TOKEN）
  *
  * 能做：記待辦、存筆記到知識庫、查客戶、查庫存、查銷售紀錄、語音轉文字。
  * 不能做：跑腳本、剪片、改本機檔案——那些走 claude.ai/code。
+ *
+ * ⚠️ LINE 的兩個計費／時效規則決定了這支程式的結構：
+ *   1. reply 訊息「不計」免費額度，push 訊息「計」。所以對話一律走 reply，
+ *      只有 /notify 與逾時 fallback 才用 push。額度＝輕用量方案 200 則／月。
+ *   2. replyToken 一分鐘失效且只能用一次。因此同一次事件的所有回覆必須
+ *      合併成「一次請求、最多 5 個 message object」，不能像 Telegram 那樣連發。
  */
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
@@ -37,17 +43,29 @@ const WORKFLOWS = {
 
 // 這些會對外發布，發出去收不回來（IG 限動 API 刪不掉）
 const PUBLISHES = new Set(["IG發文", "限動預告", "IG留言回覆", "YouTube影片"]);
-const MAX_TG = 4000;
+const LINE_API = "https://api.line.me/v2/bot";
+const LINE_DATA_API = "https://api-data.line.me/v2/bot";
+
+// LINE 單則文字上限 5,000 字，抓 4,500 保守；一次請求最多 5 個 message object。
+const MAX_LINE = 4500;
+const MAX_OBJECTS = 5;
+
+// replyToken 官方是 60 秒失效，留 10 秒安全邊際；超過就改走 push（會花額度）。
+const REPLY_WINDOW_MS = 50000;
+
+// LINE Console 按「Verify」時送的假 token，要略過不處理。
+const VERIFY_TOKEN = "00000000000000000000000000000000";
+
 const HISTORY_TURNS = 8;
 
-const SYSTEM = `你是 Lien（連傳正／鉅鑫管理顧問）的手機助理，透過 Telegram 對話。
+const SYSTEM = `你是 Lien（連傳正／鉅鑫管理顧問）的手機助理，透過 LINE 對話。
 
 Lien 的事業：鑫酒藏（葡萄酒）、鑫茶坊（茶葉）、鑫海產（龜吼現流海鮮）、匠鑫私廚，
 另有磊山保經壽險/產險業務。品牌核心價值「鉅鑫只提供最高品質」。
 
 回覆規則：
 - 一律繁體中文，**簡短**。這是手機聊天視窗，不是報告——通常 3 行以內講完。
-- 不要用 Markdown 表格（Telegram 不會渲染）。多筆資料用「・」條列。
+- 不要用 Markdown 表格（LINE 不會渲染）。多筆資料用「・」條列。
 - 金額寫成 12,500 這種帶千分位的形式。
 - 查不到資料就直說查不到，不要猜。
 
@@ -176,40 +194,142 @@ const TOOLS = [
   },
 ];
 
-// ---------- Telegram ----------
+// ---------- LINE ----------
 
-async function tgSend(env, text) {
+// ⚠️ 安全邊界：這支 bot 能查客戶姓名、電話、消費紀錄。
+// 底下兩個驗證是唯一擋住外人的東西，一律「預設拒絕」——
+// 設定沒填、header 沒帶、格式不對，全部回 false，不要寫成「比對不到才擋」。
+
+function timingSafeEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+// X-Line-Signature = base64( HMAC-SHA256( 原始 request body, Channel secret ) )
+// 必須用「原始字串」算，不能先 JSON.parse 再 stringify——序列化差一個空白就對不起來。
+async function verifySignature(env, rawBody, signature) {
+  if (!env.LINE_CHANNEL_SECRET || !signature) return false;
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(env.LINE_CHANNEL_SECRET),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const mac = await crypto.subtle.sign("HMAC", key, enc.encode(rawBody));
+  const expected = btoa(String.fromCharCode(...new Uint8Array(mac)));
+  return timingSafeEqual(expected, signature);
+}
+
+// 只有 Lien 本人能用。LINE 官方帳號誰都能加好友，沒有這道就等於把 CRM 打開給所有人。
+function isOwner(env, event) {
+  const allowed = String(env.LINE_USER_ID || "");
+  const sender = String(event?.source?.userId || "");
+  if (!allowed || !sender) return false;
+  if (allowed.startsWith("PUT_")) return false;
+  return timingSafeEqual(allowed, sender);
+}
+
+// 把任意段落攤平成 LINE message object；超過 5 個就截斷，不要靜默丟掉。
+function toMessages(parts) {
   const chunks = [];
-  for (let i = 0; i < text.length; i += MAX_TG) chunks.push(text.slice(i, i + MAX_TG));
-  for (const chunk of chunks) {
-    await fetch(`https://api.telegram.org/bot${env.TG_BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ chat_id: env.TG_CHAT_ID, text: chunk, disable_web_page_preview: true }),
+  for (const part of parts) {
+    const t = String(part == null ? "" : part).trim();
+    if (!t) continue;
+    for (let i = 0; i < t.length; i += MAX_LINE) chunks.push(t.slice(i, i + MAX_LINE));
+  }
+  if (chunks.length > MAX_OBJECTS) {
+    chunks.length = MAX_OBJECTS;
+    const tail = chunks[MAX_OBJECTS - 1].slice(0, MAX_LINE - 20);
+    chunks[MAX_OBJECTS - 1] = tail + "\n\n⋯（內容過長已截斷）";
+  }
+  return chunks.map((text) => ({ type: "text", text }));
+}
+
+async function lineCall(env, path, payload) {
+  const r = await fetch(`${LINE_API}${path}`, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${env.LINE_ACCESS_TOKEN}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+  return r;
+}
+
+// 免費、不計額度。
+async function lineReply(env, replyToken, messages) {
+  const r = await lineCall(env, "/message/reply", { replyToken, messages });
+  return r.ok;
+}
+
+// ⚠️ 計入免費額度（輕用量 200 則／月）。只在 /notify 與 reply 逾時 fallback 用。
+async function linePush(env, messages) {
+  const r = await lineCall(env, "/message/push", { to: env.LINE_USER_ID, messages });
+  if (!r.ok) throw new Error(`LINE push ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  return true;
+}
+
+// 每個事件配一個發送器：優先用免費的 reply，token 過期或已用掉才退回 push。
+function makeResponder(env, replyToken) {
+  const born = Date.now();
+  let spent = false;
+  return async function send(...parts) {
+    const messages = toMessages(parts);
+    if (!messages.length) return;
+    const usable = replyToken && !spent && Date.now() - born < REPLY_WINDOW_MS;
+    if (usable) {
+      spent = true;
+      if (await lineReply(env, replyToken, messages)) return;
+      // reply 失敗（多半是 token 已逾時）就往下走 push，不要讓訊息消失
+    }
+    await linePush(env, messages);
+  };
+}
+
+// 輸入中動畫。純視覺，失敗不影響功能。
+// TODO 端點名稱實作時翻一次官方 reference 確認（chat/loading/start 與 message/loading 兩種寫法都查得到）。
+async function lineLoading(env) {
+  try {
+    await lineCall(env, "/chat/loading/start", {
+      chatId: env.LINE_USER_ID,
+      loadingSeconds: 30,
     });
+  } catch (e) {
+    // 沒有動畫而已，吞掉
   }
 }
 
-async function tgTyping(env) {
-  await fetch(`https://api.telegram.org/bot${env.TG_BOT_TOKEN}/sendChatAction`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ chat_id: env.TG_CHAT_ID, action: "typing" }),
-  });
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// LINE 的媒體要跟 api-data.line.me 拿，而且大檔可能先回 202 表示還在準備。
+async function fetchAudio(env, messageId) {
+  const url = `${LINE_DATA_API}/message/${messageId}/content`;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const r = await fetch(url, {
+      headers: { authorization: `Bearer ${env.LINE_ACCESS_TOKEN}` },
+    });
+    if (r.status === 202) {
+      await sleep(1000 * (attempt + 1));
+      continue;
+    }
+    if (!r.ok) throw new Error(`取語音失敗 ${r.status}`);
+    return await r.blob();
+  }
+  throw new Error("語音檔準備逾時，再傳一次試試");
 }
 
-async function transcribe(env, fileId) {
-  const info = await fetch(
-    `https://api.telegram.org/bot${env.TG_BOT_TOKEN}/getFile?file_id=${fileId}`
-  ).then((r) => r.json());
-  if (!info.ok) throw new Error("getFile 失敗");
-
-  const audio = await fetch(
-    `https://api.telegram.org/file/bot${env.TG_BOT_TOKEN}/${info.result.file_path}`
-  ).then((r) => r.blob());
+async function transcribe(env, messageId) {
+  const audio = await fetchAudio(env, messageId);
 
   const form = new FormData();
-  form.append("file", audio, "voice.ogg");
+  // LINE 的語音是 m4a，不是 Telegram 的 ogg。
+  form.append("file", audio, "voice.m4a");
   form.append("model", "whisper-1");
   form.append("language", "zh");
   form.append("prompt", "繁體中文。可能出現的詞：龜吼、現流、鑫海產、鑫酒藏、鑫茶坊、匠鑫私廚、鉅鑫。");
@@ -542,70 +662,92 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/notify" && request.method === "POST") {
-      if (request.headers.get("authorization") !== `Bearer ${env.NOTIFY_TOKEN}`) {
+      if (!env.NOTIFY_TOKEN) return new Response("unconfigured", { status: 503 });
+      const auth = request.headers.get("authorization") || "";
+      if (!timingSafeEqual(auth, `Bearer ${env.NOTIFY_TOKEN}`)) {
         return new Response("unauthorized", { status: 401 });
       }
       const { text } = await request.json();
-      await tgSend(env, String(text || "").slice(0, MAX_TG));
+      // ⚠️ push 計入免費額度（輕用量 200 則／月），推播要克制。
+      await linePush(env, toMessages([text]));
       return new Response("ok");
     }
 
-    if (url.pathname === "/tg" && request.method === "POST") {
-      if (request.headers.get("x-telegram-bot-api-secret-token") !== env.TG_WEBHOOK_SECRET) {
-        return new Response("forbidden", { status: 403 });
+    if (url.pathname === "/line" && request.method === "POST") {
+      // 簽章一定要用原始字串驗，所以先 text() 再自己 parse。
+      const raw = await request.text();
+      const ok = await verifySignature(env, raw, request.headers.get("x-line-signature"));
+      if (!ok) return new Response("forbidden", { status: 403 });
+
+      let body;
+      try {
+        body = JSON.parse(raw);
+      } catch (e) {
+        return new Response("bad request", { status: 400 });
       }
 
-      const update = await request.json();
-      const msg = update.message || update.edited_message;
-      if (!msg) return new Response("ok");
+      for (const event of body.events || []) {
+        if (event.type !== "message") continue;
+        if (event.replyToken === VERIFY_TOKEN) continue; // Console 的 Verify 測試
+        if (!isOwner(env, event)) continue; // 別人傳訊息一律靜默忽略
+        ctx.waitUntil(handle(env, event));
+      }
 
-      // 只有 Lien 本人能用
-      if (String(msg.chat.id) !== String(env.TG_CHAT_ID)) return new Response("ok");
-
-      ctx.waitUntil(handle(env, msg));
+      // LINE 要求盡快回 200，實際工作在 waitUntil 裡跑。
       return new Response("ok");
     }
 
-    return new Response("Liam TG bot", { status: 200 });
+    return new Response("Liam LINE bot", { status: 200 });
   },
 };
 
-async function handle(env, msg) {
+async function handle(env, event) {
+  const send = makeResponder(env, event.replyToken);
   try {
-    await tgTyping(env);
+    const msg = event.message || {};
 
-    let text = msg.text || msg.caption || "";
-    if (msg.voice || msg.audio) {
-      const heard = await transcribe(env, (msg.voice || msg.audio).file_id);
-      await tgSend(env, `🎙 聽到：${heard}`);
+    // 逐字稿與答案要合併成同一次 reply（token 只能用一次）。
+    // 動畫先開著，讓他知道有在跑，這比先回一則「聽到」省一則額度。
+    let heard = null;
+    let text = "";
+
+    if (msg.type === "audio") {
+      await lineLoading(env);
+      heard = await transcribe(env, msg.id);
       text = heard;
+    } else if (msg.type === "text") {
+      text = msg.text || "";
+    } else {
+      return; // 圖片、貼圖、位置等暫不處理
     }
+
     if (!text.trim()) return;
 
     if (text.trim() === "/start" || text.trim() === "/help") {
-      await tgSend(env, HELP);
+      await send(HELP);
       return;
     }
 
     // 斜線指令直接查，不花 AI 的錢
     const cmd = parseCommand(text);
     if (cmd) {
-      if (cmd.error) {
-        await tgSend(env, cmd.error);
-        return;
-      }
-      const out = await runTool(env, cmd.tool, cmd.input);
-      await tgSend(env, out);
+      await send(heard && `🎙 聽到：${heard}`, cmd.error || (await runTool(env, cmd.tool, cmd.input)));
       return;
     }
+
+    if (!heard) await lineLoading(env);
 
     const history = await loadHistory(env);
     const messages = [...history, { role: "user", content: text }];
     const reply = await think(env, messages);
 
-    await tgSend(env, reply || "（沒有回覆內容）");
+    await send(heard && `🎙 聽到：${heard}`, reply || "（沒有回覆內容）");
     await saveHistory(env, [...messages, { role: "assistant", content: reply }]);
   } catch (e) {
-    await tgSend(env, `⚠️ 出錯了：${e.message}`);
+    try {
+      await send(`⚠️ 出錯了：${e.message}`);
+    } catch (_) {
+      // 連錯誤訊息都送不出去就算了，不要讓 waitUntil 掛掉
+    }
   }
 }
