@@ -136,6 +136,28 @@ strong{font-weight:700;color:var(--ink)}
 .partners{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px}
 .partners span{font-size:13.5px;color:var(--ink-2);border:1px solid var(--rule);background:var(--card);padding:7px 14px;letter-spacing:.02em}
 
+/* ---------- venue ---------- */
+.venue{display:grid;gap:24px;margin-top:34px}
+@media(min-width:860px){.venue{grid-template-columns:1.05fr .95fr;align-items:start}}
+.venue-hero{margin:0}
+.venue-hero img{display:block;width:100%;height:auto;border:1px solid var(--rule)}
+.venue-hero figcaption{margin-top:10px;font-size:13px;color:var(--ink-3)}
+.venue-side{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.venue-side figure{margin:0}
+.venue-side img{display:block;width:100%;height:clamp(120px,15vw,168px);object-fit:cover;border:1px solid var(--rule)}
+.venue-side figcaption{margin-top:7px;font-size:11.5px;color:var(--ink-3);line-height:1.5}
+.spec{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:18px}
+@media(min-width:520px){.spec{grid-template-columns:repeat(2,1fr)}}
+.spec div{background:var(--card);padding:16px 18px}
+.spec dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
+.spec dd{margin:0;font-size:14px;color:var(--ink);line-height:1.65}
+.creds{list-style:none;margin-top:26px;display:grid;gap:12px}
+.creds li{display:flex;gap:12px;font-size:14.5px;color:var(--ink-2);line-height:1.7;align-items:baseline}
+.creds li::before{content:"";width:6px;height:6px;background:var(--gold);flex:none;transform:translateY(-2px);border-radius:50%}
+.creds b{color:var(--ink);font-weight:700}
+.quote{border-left:3px solid var(--red);padding:4px 0 4px 18px;margin-top:26px;font-size:15px;color:var(--ink-2);line-height:1.8}
+.quote cite{display:block;margin-top:8px;font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--ink-3);letter-spacing:.06em}
+
 /* contact */
 .contact{background:var(--paper-2)}
 .cbox{margin-top:34px;display:grid;gap:22px 46px}
@@ -246,8 +268,8 @@ footer p{font-family:var(--mono);font-size:11px;color:var(--ink-3);max-width:var
         <p>把品酒變成日常、藏酒當成興趣。依酒款個性配奧地利杯型，讓每一口珍釀發揮原有的性格。</p></div>
       <div class="brand rise"><div class="brand-n">鑫茶坊<span>TEA</span></div>
         <p>以南投鹿谷青心烏龍為主的台灣精品茶。目標是把台灣茶的滋味送上米其林的桌。</p></div>
-      <div class="brand rise"><div class="brand-n">匠鑫私廚<span>H KITCHEN</span></div>
-        <p>內湖預約制私廚。現流海鮮、精品茶與世界酒款，配專業侍酒師與可客製的菜單，可包場。</p></div>
+      <div class="brand rise"><div class="brand-n">匠鑫聚<span>原「匠鑫私廚」</span></div>
+        <p>內湖預約制私廚與接待會所。現流海鮮、精品茶與世界酒款，配專業侍酒師與可客製的菜單，可包場。詳見下一節。</p></div>
       <div class="brand rise"><div class="brand-n">龜吼現流活海產<span>2026 建置中</span></div>
         <p>把產地直接搬到餐桌前的下一步。目前籌備中。</p></div>
     </div>
@@ -275,6 +297,54 @@ footer p{font-family:var(--mono);font-size:11px;color:var(--ink-3);max-width:var
     <div class="slot rise" style="margin-top:34px;max-width:var(--measure)">
       <b>場域照版位</b>
       內湖接待會所與三芝咖啡廳的照片，提供後我補上。
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="mark rise"><span>The house</span></div>
+    <div class="col">
+      <h2 class="rise">內湖接待會所：匠鑫聚</h2>
+      <p class="lede rise">和公司同一個地址。談生意、宴客、辦品酒會，都在這裡——<strong>把人請到自己的場子，話才好講。</strong></p>
+      <p class="rise">預約制。菜是當天從龜吼上來的，酒是自己藏的，茶是自己選的。不接散客不是擺架子，是因為現流海鮮備料要看當天的船。</p>
+    </div>
+
+    <div class="venue">
+      <figure class="venue-hero rise">
+        <img src="assets/venue_space.jpg" alt="匠鑫聚室內空間，挑高並以中式圓桌配置" loading="lazy">
+        <figcaption>挑高寬敞的中式圓桌配置，可辦餐會、品酒會與各式活動。</figcaption>
+      </figure>
+      <div>
+        <div class="venue-side rise">
+          <figure><img src="assets/venue_crab.jpg" alt="避風塘花蟹" loading="lazy"><figcaption>龜吼現流花蟹</figcaption></figure>
+          <figure><img src="assets/venue_dish.jpg" alt="魚子醬前菜" loading="lazy"><figcaption>前菜精選</figcaption></figure>
+          <figure><img src="assets/venue_riedel.jpg" alt="2026 RIEDEL 認證餐廳" loading="lazy"><figcaption>RIEDEL 認證</figcaption></figure>
+        </div>
+        <dl class="spec rise">
+          <div><dt>座位上限</dt><dd>中式圓桌 30 人<br>（10／14／16 人桌）</dd></div>
+          <div><dt>包場時段</dt><dd>午 11:30–14:30<br>晚 18:30–21:30</dd></div>
+          <div><dt>非包場</dt><dd>私房菜 4–8 人<br>家庭餐宴或同事聚餐</dd></div>
+          <div><dt>設備加購</dt><dd>100 吋投影布幕<br>投影機／麥克風／音響</dd></div>
+        </dl>
+        <p class="note rise" style="margin-top:14px">每月 20 日開放次月包場預訂。訂位 (02) 2658-5290。</p>
+      </div>
+    </div>
+
+    <div class="col" style="margin-top:44px">
+      <h3 class="rise" style="margin-bottom:6px">來過這裡的人</h3>
+      <ul class="creds">
+        <li class="rise"><span><b>2026 RIEDEL 認證餐廳</b>——葡萄酒服務的識別標章，全台認證名單之一。</span></li>
+        <li class="rise"><span><b>Christian Moueix 賢伉儷親臨</b>——Pétrus 與 Dominus 背後的傳奇人物。</span></li>
+        <li class="rise"><span><b>Tim Mondavi 來訪</b>——Robert Mondavi 之子、Continuum 創辦人。我們用台灣小吃、台式手路菜與當日直送海味款待，珍珠奶茶壓軸。</span></li>
+        <li class="rise"><span><b>台灣第一位香檳大師萊特</b>——合作品酒會、品杯會與微醺餐宴多場。</span></li>
+        <li class="rise"><span><b>工商時報報導</b>——「內湖隱世私廚」。</span></li>
+        <li class="rise"><span><b>星坊酒業總經理須弘道推薦</b>——龜吼直送的現流海鮮私廚料理。</span></li>
+      </ul>
+      <blockquote class="quote rise">
+        「老闆幾乎每天自己出海捕魚，帶回餐廳急速冷凍以確保食材上的新鮮跟鎖住最天然的海鮮風味。」
+        <cite>— Leona Yang，Google 評論</cite>
+      </blockquote>
     </div>
   </div>
 </section>
@@ -332,7 +402,7 @@ footer p{font-family:var(--mono);font-size:11px;color:var(--ink-3);max-width:var
       <div><dt>電話</dt><dd><a href="tel:+886226585560">(02) 2658-5560</a></dd></div>
       <div><dt>E-mail</dt><dd><a href="mailto:giantsatellite2018@gmail.com">giantsatellite2018@gmail.com</a></dd></div>
       <div><dt>官方網站</dt><dd><a href="https://gs-group.com.tw" target="_blank" rel="noopener">gs-group.com.tw</a></dd></div>
-      <div><dt>匠鑫私廚訂位</dt><dd><a href="tel:+886226585290">(02) 2658-5290</a></dd></div>
+      <div><dt>匠鑫聚訂位</dt><dd><a href="tel:+886226585290">(02) 2658-5290</a></dd></div>
     </dl>
   </div>
 </section>
