@@ -138,7 +138,7 @@
 ### GitHub Secrets 總覽
 | Secret | 用途 |
 |--------|------|
-| `ANTHROPIC_API_KEY` | Claude API Key。2026-06-26 新增，Console 已儲值（**預付制、非訂閱**，與 Claude Code 訂閱是兩筆帳）。四處在用：IG 發文文案＋畫圖 prompt（`instagram/generate_post.py`，**Sonnet 5**）、YouTube 影片腳本（`youtube_auto/generate_script.py`，**Sonnet 5**）、AI 工作週報（`scripts/weekly_review.py`，**Sonnet 5**，每週一次約 6K token）、Telegram 手機助理（Haiku 4.5）。模型常數 `CLAUDE_MODEL` 在各腳本頂端。⚠️ **Sonnet 5 起 `content[0]` 可能是 thinking block**，解析回應一律遍歷找 `type == "text"` |
+| `ANTHROPIC_API_KEY` | Claude API Key。2026-06-26 新增，Console 已儲值（**預付制、非訂閱**，與 Claude Code 訂閱是兩筆帳）。四處在用：IG 發文文案＋畫圖 prompt（`instagram/generate_post.py`，**Sonnet 5**）、YouTube 影片腳本（`youtube_auto/generate_script.py`，**Sonnet 5**）、AI 工作週報（`scripts/weekly_review.py`，**Sonnet 5**，每週一次約 6K token）。手機助理（Haiku 4.5）已寫好但**未接通、不計費**。模型常數 `CLAUDE_MODEL` 在各腳本頂端。⚠️ **Sonnet 5 起 `content[0]` 可能是 thinking block**，解析回應一律遍歷找 `type == "text"` |
 | `GEMINI_KEY` | Gemini AI Key（claude-workspace-495009，**2.5-flash** 模型）。**注意：實為免費額度，未開通Cloud Billing**（2026-06-23實測證實，`2.5-flash`限20次/天、`2.5-pro`免費額度0），所有共用此Key的自動化共用同一日額度池，理論上會互搶額度 |
 | `OPENAI_API_KEY` | OpenAI 生圖（IG 插圖＋YouTube 場景圖），`gpt-image-1-mini`。2026-08-06 設定，預付制需儲值。本機備份於 `config/.openai_key` |
 | `HF_TOKEN` | （已停用）Hugging Face FLUX→Pollinations→OpenAI，兩任前身皆因免費額度取消而汰換 |
@@ -158,25 +158,37 @@
 
 ---
 
-## Telegram 手機助理（2026-08-19 建立）
+## 手機助理（骨架保留，待改接 LINE）
 
-人在外面時的輕量入口，Cloudflare Worker + Telegram Webhook + Claude API。
-**部署步驟、成本、能做／不能做的界線全在 `telegram_bot/README.md`。**
+⚠️ **Telegram 帳號無法使用，這套從未接通、目前沒有在跑，也沒有產生費用。**
+`telegram_bot/` 底下的程式**刻意保留、不是死碼**——通道層日後要換成 LINE，
+其餘（斜線指令、語音轉文字、Notion／GitHub 寫入、知識庫路徑）都能沿用。
+
+盤點自動化資產時**不要把它算進運行中的清單**；也不要把「用它錄音存知識庫」
+當成可執行的建議——現在的替代做法是 iPhone 語音備忘錄錄下來，
+再走 `meetings/audio_to_minutes.py` 那條 Gemini 轉錄的路。
+
+下表是**已完成但未啟用**的設計，換 LINE 時照著搬：
 
 | 項目 | 說明 |
 |------|------|
 | 程式 | `telegram_bot/worker.js`（單檔，raw fetch，無 npm 依賴，同 `travel_worker` 風格）|
 | 推播 | `telegram_bot/notify.py` — 任何腳本 `from telegram_bot.notify import notify` 即可用；**未設環境變數時靜默跳過**，不會弄壞既有流程 |
 | 能做 | 記待辦、口述存知識庫（含語音轉文字）、查客戶／銷售／庫存、接收自動化推播 |
-| **兩種模式** | **斜線指令**（`/客戶` `/買` `/庫存` `/待辦` `/筆記`，含 `/c /s /i /t /n` 簡寫）直達 Notion／GitHub，**零 API 成本**；**自然語言與語音**才走 Claude。日常九成操作免費，月費從 NT$150 降到約 **NT$10** |
+| **兩種模式** | **斜線指令**（`/客戶` `/買` `/庫存` `/待辦` `/筆記`，含 `/c /s /i /t /n` 簡寫）直達 Notion／GitHub，**零 API 成本**；**自然語言與語音**才走 Claude。日常九成操作免費，**估**月費約 NT$10（未實際跑過，非實測值）|
 | 不做 | 跑腳本、剪片、送印、**建訂單**（要同步四個系統，手機打錯字沒得檢查）|
-| 白名單 | 只認 `TG_CHAT_ID` 一個 chat，其他人傳訊息一律忽略 |
+| 白名單 | 只認 `TG_CHAT_ID` 一個 chat，其他人傳訊息一律忽略（改 LINE 後改認 LINE user ID）|
 | 知識庫 | 寫進私人 repo `liam-workspace/knowledge/{seafood,wine,tea,business,misc}/` |
 
-⚠️ **模型**：`wrangler.toml` 的 `MODEL` ＝ `claude-haiku-4-5`（估 NT$120~180/月，每天 30 則）。
+⚠️ **模型**（未啟用，數字皆為估算）：`wrangler.toml` 的 `MODEL` ＝ `claude-haiku-4-5`。
 每則固定輸入 1,683 token（工具定義 1,179＋system 504）。**換模型只改那一行**——
 `effort` 參數由 `worker.js` 的 `EFFORT_OK` 正則自動開關（Haiku 4.5／Sonnet 4.5 收到 effort 會 400）。
 知識筆記整理品質變差就升 `claude-sonnet-5`，判斷訊號見 README。
+
+**接 LINE 時要換掉的部分**：Webhook 簽章驗證（LINE 用 `X-Line-Signature` HMAC-SHA256）、
+回覆端點（`replyToken` 一次性、逾時要改用 push）、白名單改認 LINE user ID。
+其餘商業邏輯不動。LINE 官方帳號還多一個 Telegram 給不了的可能——
+**能直接對客戶開放**，變成訂單與詢問的入口，不只是私人助理。
 
 ---
 
