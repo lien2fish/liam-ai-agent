@@ -121,10 +121,6 @@ strong{font-weight:700;color:var(--ink)}
 .band-grid img{display:block;width:100%;height:clamp(190px,26vw,300px);object-fit:cover}
 .band-grid figcaption{position:absolute;left:0;right:0;bottom:0;padding:22px 18px 14px;font-size:13px;color:#fff;background:linear-gradient(transparent,rgba(10,14,22,.82));letter-spacing:.02em}
 
-/* placeholder */
-.slot{border:1px dashed var(--rule);background:var(--paper-2);padding:34px 24px;text-align:center;color:var(--ink-3);font-size:13.5px;line-height:1.8}
-.slot b{display:block;color:var(--ink-2);font-weight:500;font-size:15px;margin-bottom:6px}
-
 /* charity */
 .cause{display:grid;gap:10px 26px;margin-top:32px;list-style:none}
 @media(min-width:620px){.cause{grid-template-columns:repeat(2,1fr)}}
@@ -133,7 +129,11 @@ strong{font-weight:700;color:var(--ink)}
 .cause li::before{content:"";width:5px;height:5px;background:var(--red);flex:none;transform:translateY(-2px)}
 
 /* partners */
-.partners{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px}
+.partners-key{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:30px}
+@media(min-width:820px){.partners-key{grid-template-columns:repeat(3,1fr)}}
+.partners-key div{background:var(--card);padding:20px 20px;font-size:13.5px;color:var(--ink-2);line-height:1.75}
+.partners-key b{display:block;color:var(--ink);font-weight:700;font-size:15px;margin-bottom:6px}
+.partners{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .partners span{font-size:13.5px;color:var(--ink-2);border:1px solid var(--rule);background:var(--card);padding:7px 14px;letter-spacing:.02em}
 
 /* ---------- venue ---------- */
@@ -155,6 +155,11 @@ strong{font-weight:700;color:var(--ink)}
 .creds li{display:flex;gap:12px;font-size:14.5px;color:var(--ink-2);line-height:1.7;align-items:baseline}
 .creds li::before{content:"";width:6px;height:6px;background:var(--gold);flex:none;transform:translateY(-2px);border-radius:50%}
 .creds b{color:var(--ink);font-weight:700}
+.creds-wrap{display:grid;gap:30px}
+@media(min-width:880px){.creds-wrap{grid-template-columns:296px 1fr;gap:44px;align-items:start}}
+.clip{margin:0}
+.clip img{display:block;width:100%;height:auto;border:1px solid var(--rule);background:#fff}
+.clip figcaption{margin-top:9px;font-size:12px;color:var(--ink-3);letter-spacing:.02em}
 .quote{border-left:3px solid var(--red);padding:4px 0 4px 18px;margin-top:26px;font-size:15px;color:var(--ink-2);line-height:1.8}
 .quote cite{display:block;margin-top:8px;font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--ink-3);letter-spacing:.06em}
 
@@ -201,10 +206,6 @@ footer p{font-family:var(--mono);font-size:11px;color:var(--ink-3);max-width:var
       <p class="lede rise">我是連傳正。做保險出身，現在同時管五個品牌、跑漁港、接待客人、也在協會與社團裡做事。</p>
       <p class="rise">會走到今天這樣，是因為我不太能忍受「說得好聽但東西不到位」。賣酒就得自己喝過、賣魚就得自己去漁港看，客戶問我這條魚幾月最肥，我答得出來——<strong>這是我唯一的門檻，也是我全部的本事。</strong></p>
       <p class="rise">所以鉅鑫的東西不做低價競爭。品項少、挑得兇，但每一樣我都敢自己端上桌。</p>
-    </div>
-    <div class="slot rise" style="margin-top:34px;max-width:var(--measure)">
-      <b>個人形象照版位</b>
-      這裡預留一張你的形象照。提供檔案後我補上，版面已排好。
     </div>
   </div>
 </section>
@@ -294,10 +295,6 @@ footer p{font-family:var(--mono);font-size:11px;color:var(--ink-3);max-width:var
       <p class="rise">凌晨的船靠岸、天亮前分魚，好的那一批不會流到市場上——那是熟客的。真空急凍在上岸那一刻就做完，鮮甜被封在裡面。船是自己的，加上跟共捕船的長期關係，才有這個順位。</p>
       <p class="rise">從產地往回推，才有後面的私廚、批發與餐廳聯名。<strong>先有產地，才有品牌。</strong></p>
     </div>
-    <div class="slot rise" style="margin-top:34px;max-width:var(--measure)">
-      <b>場域照版位</b>
-      內湖接待會所與三芝咖啡廳的照片，提供後我補上。
-    </div>
   </div>
 </section>
 
@@ -331,7 +328,12 @@ footer p{font-family:var(--mono);font-size:11px;color:var(--ink-3);max-width:var
       </div>
     </div>
 
-    <div class="col" style="margin-top:44px">
+    <div class="creds-wrap" style="margin-top:46px">
+      <figure class="clip rise">
+        <img src="assets/venue_moueix.jpg" alt="工商時報報導：傳奇，一輩子能遇到幾次——Christian Moueix 賢伉儷親臨匠鑫" loading="lazy">
+        <figcaption>Christian Moueix 賢伉儷親臨</figcaption>
+      </figure>
+      <div>
       <h3 class="rise" style="margin-bottom:6px">來過這裡的人</h3>
       <ul class="creds">
         <li class="rise"><span><b>2026 RIEDEL 認證餐廳</b>——葡萄酒服務的識別標章，全台認證名單之一。</span></li>
@@ -345,6 +347,7 @@ footer p{font-family:var(--mono);font-size:11px;color:var(--ink-3);max-width:var
         「超好吃😋 食材新鮮美味，服務超級棒！」
         <cite>— Yun Chen，Google 評論</cite>
       </blockquote>
+      </div>
     </div>
   </div>
 </section>
@@ -380,10 +383,14 @@ footer p{font-family:var(--mono);font-size:11px;color:var(--ink-3);max-width:var
       <h2 class="rise">一起做事的夥伴</h2>
       <p class="lede rise">鉅鑫以資源整合為核心。這些是長期合作的對象：</p>
     </div>
+    <div class="partners-key rise">
+      <div><b>星坊酒業</b>葡萄酒代理。總經理須弘道推薦匠鑫龜吼直送的現流海鮮。</div>
+      <div><b>磊山保經</b>壽險與產險。鉅鑫最早的本業，至今仍在做。</div>
+      <div><b>我們在海邊</b>三芝北海岸海景咖啡廳，後厝漁港旁，預約制。曾為投資標的，現為合作夥伴。</div>
+    </div>
     <div class="partners rise">
-      <span>星坊酒業</span><span>磊山保經</span><span>品特商業</span><span>東潮時裝</span>
-      <span>金漫</span><span>羽雁體育</span><span>Chester</span><span>banana blue</span>
-      <span>汆食</span><span>鵵咖啡</span><span>我們在海邊</span>
+      <span>品特商業</span><span>東潮時裝</span><span>金漫</span><span>羽雁體育</span>
+      <span>Chester</span><span>banana blue</span><span>汆食</span><span>鵵咖啡</span>
     </div>
   </div>
 </section>
