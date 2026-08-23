@@ -700,7 +700,14 @@ export default {
       for (const event of body.events || []) {
         if (event.type !== "message") continue;
         if (event.replyToken === VERIFY_TOKEN) continue; // Console 的 Verify 測試
-        if (!isOwner(env, event)) continue; // 別人傳訊息一律靜默忽略
+        if (!isOwner(env, event)) {
+          // 設定階段的輔助：白名單還沒填之前，把來訪者的 user ID 印出來方便你抄
+          // （wrangler tail 看得到）。一旦填好，就不再記錄任何人的 ID。
+          if (!env.LINE_USER_ID || String(env.LINE_USER_ID).startsWith("PUT_")) {
+            console.log("白名單未設定，收到 userId:", event?.source?.userId || "(無)");
+          }
+          continue; // 別人傳訊息一律靜默忽略
+        }
         ctx.waitUntil(handle(env, event));
       }
 
