@@ -5,14 +5,12 @@ compatibility_date = "2026-08-18"
 # 對話記憶（最近幾輪，TTL 1 小時）。用 `wrangler kv namespace create CHAT` 產生後貼回 id。
 [[kv_namespaces]]
 binding = "CHAT"
-id = "PUT_KV_ID_HERE"
+id = "ea20117389c24e38b9f1512582733966"
 
 [vars]
-# ⚠️ 安全邊界：只認這個 LINE user ID，別人傳訊息一律忽略。
-# 官方帳號誰都能加好友，這道沒設好等於把客戶資料打開給所有人。
-# 取得方式：先部署，自己傳一則訊息，從 wrangler tail 的 log 撈 event.source.userId（U 開頭 32 碼）。
-# 保持 PUT_ 開頭時程式會擋掉所有人（fail closed），填錯不會誤放行。
-LINE_USER_ID = "PUT_YOUR_LINE_USER_ID_HERE"
+# ⚠️ LINE_USER_ID 不寫在這裡——這個 repo 是公開的，user ID 是綁在本人身上的識別碼。
+# 改用 wrangler secret put LINE_USER_ID（見下方清單）。
+# 沒設定時程式會擋掉所有人（fail closed），不會誤放行。
 
 # 換模型只改這一行。成本與能力差異見 README。
 # effort 參數由 worker.js 依模型自動開關，換模型不必改別的地方。
@@ -30,6 +28,7 @@ INV_SEAFOOD_DB = "3abf4149-a6aa-8111-b29a-d92909d6962c"
 #   OPENAI_API_KEY        語音轉文字（Whisper）
 #   NOTION_TOKEN          查客戶／銷售／庫存
 #   GITHUB_PAT            寫 liam-workspace 的 TODO 與知識庫（需 repo scope）
+#   LINE_USER_ID          ⚠️ 白名單，只有這個人能用（Console → Basic settings → Your user ID）
 #   LINE_CHANNEL_SECRET   驗 webhook 簽章（LINE Developers Console → Basic settings）
 #   LINE_ACCESS_TOKEN     發訊息用的 long-lived channel access token（Messaging API 分頁）
 #   NOTIFY_TOKEN          GitHub Actions 推播用，自己隨便產一串

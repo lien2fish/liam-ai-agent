@@ -158,37 +158,46 @@
 
 ---
 
-## 手機助理（骨架保留，待改接 LINE）
+## 手機助理（LINE，2026-08-24 上線）
 
-⚠️ **Telegram 帳號無法使用，這套從未接通、目前沒有在跑，也沒有產生費用。**
-`telegram_bot/` 底下的程式**刻意保留、不是死碼**——通道層日後要換成 LINE，
-其餘（斜線指令、語音轉文字、Notion／GitHub 寫入、知識庫路徑）都能沿用。
+✅ **已接通並實測可用。** Cloudflare Worker `liam-assistant`
+（`https://liam-assistant.lien2fish.workers.dev`），LINE 官方帳號「Liam 助理」，
+白名單只認 Lien 一個 LINE user ID。前身是 Telegram 版，帳號無法使用而改接 LINE；
+資料夾名稱仍是 `telegram_bot/`（改名會動到既有 import）。
 
-盤點自動化資產時**不要把它算進運行中的清單**；也不要把「用它錄音存知識庫」
-當成可執行的建議——現在的替代做法是 iPhone 語音備忘錄錄下來，
-再走 `meetings/audio_to_minutes.py` 那條 Gemini 轉錄的路。
+**部署與維運全部在 `telegram_bot/README.md`**，要改設定、換金鑰、排查問題時看那份。
 
-下表是**已完成但未啟用**的設計，換 LINE 時照著搬：
+⚠️ **`wrangler secret put` 不能在 Claude Code 的對話框裡跑。**
+那裡沒有互動終端機，互動提示讀到空值也照樣印「✨ Success」，
+結果是 secret 存成**空字串**而毫無徵兆（2026-08-24 因此卡了三輪）。
+一律開 Terminal.app 跑；或非互動地用 `printf '%s' "$(tr -d '\r\n' < 檔案)" | npx wrangler secret put NAME`。
+
+⚠️ **LINE 額度**：reply（對話回覆）不計額度、無上限；push（`/notify` 推播）
+計入輕用量方案的 **200 則／月**。推播只接失敗警報與需要決策的事。
 
 | 項目 | 說明 |
 |------|------|
 | 程式 | `telegram_bot/worker.js`（單檔，raw fetch，無 npm 依賴，同 `travel_worker` 風格）|
+| 指令 | `/客戶 /買 /庫存 /待辦 /筆記 /跑`（簡寫 `/c /s /i /t /n /r`）|
+| ⛔ 保護 | **`/跑` 不接受會對外發布的四個任務**（IG發文／IG留言回覆／限動預告／YouTube影片）——斜線指令不經過 AI、沒有確認步驟。要發走自然語言或電腦 |
 | 推播 | `telegram_bot/notify.py` — 任何腳本 `from telegram_bot.notify import notify` 即可用；**未設環境變數時靜默跳過**，不會弄壞既有流程 |
 | 能做 | 記待辦、口述存知識庫（含語音轉文字）、查客戶／銷售／庫存、接收自動化推播 |
-| **兩種模式** | **斜線指令**（`/客戶` `/買` `/庫存` `/待辦` `/筆記`，含 `/c /s /i /t /n` 簡寫）直達 Notion／GitHub，**零 API 成本**；**自然語言與語音**才走 Claude。日常九成操作免費，**估**月費約 NT$10（未實際跑過，非實測值）|
+| **兩種模式** | **斜線指令**（`/客戶` `/買` `/庫存` `/待辦` `/筆記`，含 `/c /s /i /t /n` 簡寫）直達 Notion／GitHub，**零 API 成本**；**自然語言與語音**才走 Claude。日常九成操作免費，**估**月費約 NT$10（2026-08-24 上線，尚未累積實際帳單）|
 | 不做 | 跑腳本、剪片、送印、**建訂單**（要同步四個系統，手機打錯字沒得檢查）|
-| 白名單 | 只認 `TG_CHAT_ID` 一個 chat，其他人傳訊息一律忽略（改 LINE 後改認 LINE user ID）|
+| 白名單 | 只認 `LINE_USER_ID`，其他人傳訊息一律靜默忽略。**兩道驗證皆 fail closed**（簽章＋user ID），26 項邊界測試涵蓋 |
 | 知識庫 | 寫進私人 repo `liam-workspace/knowledge/{seafood,wine,tea,business,misc}/` |
 
-⚠️ **模型**（未啟用，數字皆為估算）：`wrangler.toml` 的 `MODEL` ＝ `claude-haiku-4-5`。
+⚠️ **模型**（成本為估算，尚未累積實際帳單）：`wrangler.toml` 的 `MODEL` ＝ `claude-haiku-4-5`。
 每則固定輸入 1,683 token（工具定義 1,179＋system 504）。**換模型只改那一行**——
 `effort` 參數由 `worker.js` 的 `EFFORT_OK` 正則自動開關（Haiku 4.5／Sonnet 4.5 收到 effort 會 400）。
 知識筆記整理品質變差就升 `claude-sonnet-5`，判斷訊號見 README。
 
-**接 LINE 時要換掉的部分**：Webhook 簽章驗證（LINE 用 `X-Line-Signature` HMAC-SHA256）、
-回覆端點（`replyToken` 一次性、逾時要改用 push）、白名單改認 LINE user ID。
-其餘商業邏輯不動。LINE 官方帳號還多一個 Telegram 給不了的可能——
-**能直接對客戶開放**，變成訂單與詢問的入口，不只是私人助理。
+**三個庫存 DB 的欄位名互不相同**（鑫酒藏無「單位」、鑫海產叫「數量單位」、
+價格分別是進價／零售價／進價），`worker.js` 的 `INV_FIELDS` 各給一組對照。
+**不要假設三個品牌欄位一樣**——2026-08-24 就是這樣讓 `/庫存` 印出一片空白。
+
+**日後可考慮**：LINE 官方帳號能直接對客戶開放，變成訂單與詢問的入口。
+但那要獨立的 prompt 與工具集，**不可與私人助理共用同一條路徑**（工具查得到客戶資料）。
 
 ---
 
