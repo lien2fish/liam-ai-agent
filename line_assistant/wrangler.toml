@@ -23,7 +23,8 @@ id = "ea20117389c24e38b9f1512582733966"
 # effort 參數由 worker.js 依模型自動開關，換模型不必改別的地方。
 MODEL = "claude-haiku-4-5"
 
-# Notion 資料庫（與 crm_unified/config.json、inventory_config.json 同步）
+# Notion 資料庫 ID。變數名稱要跟 profile.js 裡 crm.*.db 與 inventory[].db 對得上。
+# 沒有 Notion 就整段刪掉，profile.js 的 crm 設 null、inventory 設 []，功能會自動關閉。
 CUSTOMER_DB = "38bf4149-a6aa-816e-9850-f3dfbbb925ec"
 SALES_DB = "38bf4149-a6aa-81db-9b89-c47410857a2c"
 INV_WINE_DB = "3abf4149-a6aa-8104-8d98-fe75f7f367a5"
@@ -36,6 +37,11 @@ INV_SEAFOOD_DB = "3abf4149-a6aa-8111-b29a-d92909d6962c"
 #   NOTION_TOKEN          查客戶／銷售／庫存
 #   GITHUB_PAT            寫 liam-workspace 的 TODO 與知識庫（需 repo scope）
 #   LINE_USER_ID          ⚠️ 白名單，只有這個人能用（Console → Basic settings → Your user ID）
+#
+# ⚠️ wrangler secret put 一定要在真正的終端機跑。在沒有互動 TTY 的環境
+#    （例如 Claude Code 的對話框）它會讀到空值、存成空字串，然後照樣印
+#    「✨ Success」。非互動要灌就用：
+#      printf '%s' "$(tr -d '\r\n' < 金鑰檔)" | npx wrangler secret put NAME
 #   LINE_CHANNEL_SECRET   驗 webhook 簽章（LINE Developers Console → Basic settings）
 #   LINE_ACCESS_TOKEN     發訊息用的 long-lived channel access token（Messaging API 分頁）
 #   NOTIFY_TOKEN          GitHub Actions 推播用，自己隨便產一串
