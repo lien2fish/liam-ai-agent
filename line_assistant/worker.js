@@ -1,5 +1,8 @@
 /**
- * Liam 手機助理 — LINE Bot on Cloudflare Worker
+ * LINE 手機助理 — Cloudflare Worker
+ *
+ * 這支檔案不含任何商業資訊。身分、品牌、資料庫欄位、自動化任務全部
+ * 從 profile.js 讀——導入新使用者只改那一個檔，程式碼一行不動。
  *
  * 兩個入口：
  *   POST /line    LINE webhook（你傳訊息／語音進來）
@@ -15,34 +18,27 @@
  *      合併成「一次請求、最多 5 個 message object」，不能像 Telegram 那樣連發。
  */
 
+import PROFILE from "./profile.js";
+
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const NOTION_URL = "https://api.notion.com/v1";
 const NOTION_VERSION = "2022-06-28";
-const WORKSPACE_REPO = "lien2fish/liam-workspace";
-const AGENT_REPO = "lien2fish/liam-ai-agent";
+const GH = PROFILE.github || {};
+const WORKSPACE_REPO = GH.workspaceRepo || null;
+const AGENT_REPO = GH.agentRepo || null;
+const TODO_PATH = GH.todoPath || "TODO.md";
+const KNOWLEDGE_DIR = GH.knowledgeDir || "knowledge";
 
-// 中文任務名 → workflow 檔名。17 個全部支援 workflow_dispatch。
-const WORKFLOWS = {
-  市場日報: "market_daily.yml",
-  漁獲行情: "seafood_prices.yml",
-  保單到期: "policy_expiry_check.yml",
-  回購提醒: "repurchase_reminder.yml",
-  生日提醒: "birthday_reminder.yml",
-  壽險拜訪: "life_visit_reminder.yml",
-  扶輪生日: "rotary_birthday_reminder.yml",
-  營收週報: "weekly_revenue_sprint.yml",
-  YouTube留言: "yt_comment_monitor.yml",
-  頻道日報: "yt_channel_report.yml",
-  Gmail清理: "gmail_automation.yml",
-  月報: "notion_monthly_report.yml",
-  IG發文: "daily_post.yml",
-  限動預告: "ig_story_teaser.yml",
-  IG留言回覆: "ig_comment_reply.yml",
-  YouTube影片: "yt_auto_post.yml",
-};
+// 沒設定的區塊就關掉對應功能，工具清單與指令表都會跟著少。
+const HAS_NOTES = Boolean(WORKSPACE_REPO);
+const HAS_ACTIONS = Boolean(AGENT_REPO) && Object.keys(PROFILE.workflows || {}).length > 0;
+const HAS_CRM = Boolean(PROFILE.crm);
+const HAS_INVENTORY = (PROFILE.inventory || []).length > 0;
 
-// 這些會對外發布，發出去收不回來（IG 限動 API 刪不掉）
-const PUBLISHES = new Set(["IG發文", "限動預告", "IG留言回覆", "YouTube影片"]);
+const WORKFLOWS = PROFILE.workflows || {};
+
+// 會對外發布、收不回來的任務。不接受斜線指令。
+const PUBLISHES = new Set(PROFILE.publishes || []);
 const LINE_API = "https://api.line.me/v2/bot";
 const LINE_DATA_API = "https://api-data.line.me/v2/bot";
 
@@ -58,168 +54,147 @@ const VERIFY_TOKEN = "00000000000000000000000000000000";
 
 const HISTORY_TURNS = 8;
 
-const SYSTEM = `你是 Lien（連傳正／鉅鑫管理顧問）的手機助理，透過 LINE 對話。
+const SYSTEM = [
+  PROFILE.owner?.intro,
+  PROFILE.business,
+  PROFILE.tone ? `回覆規則：\n${PROFILE.tone}` : "",
+  PROFILE.context,
+]
+  .filter(Boolean)
+  .join("\n\n");
 
-Lien 的事業：鑫酒藏（葡萄酒）、鑫茶坊（茶葉）、鑫海產（龜吼現流海鮮）、匠鑫私廚，
-另有磊山保經壽險/產險業務。品牌核心價值「鉅鑫只提供最高品質」。
+const HELP = [
+  "🆓 打指令＝直接查資料庫，不花錢",
+  "",
+  HAS_CRM && "/客戶 王先生      查客戶（也可打 /c）",
+  HAS_CRM && "/買 王先生        查他買過什麼（/s）",
+  HAS_INVENTORY && `/庫存 關鍵字      查庫存（/i，留空列全部）`,
+  HAS_NOTES && `/待辦 內容        記進 ${TODO_PATH}（/t）`,
+  HAS_NOTES && "/筆記 內容        原樣存進知識庫，不整理（/n）",
+  HAS_ACTIONS && "/查 自動化        看排程任務有沒有掛（/k）",
+  HAS_ACTIONS && "/跑 任務名        立刻跑一次（/r）",
+  "",
+  "💰 講人話或傳語音＝走 AI",
+  "",
+  "需要判斷的事、自由問法，還有語音訊息",
+  "（會轉文字＋整理分類存進知識庫），都走這條。",
+  HAS_NOTES && "",
+  HAS_NOTES && "🎙 按住麥克風講十分鐘是這個 bot 最有價值的用法——",
+  HAS_NOTES && "那些知識只在你腦裡。",
+]
+  .filter((x) => x !== false && x !== undefined)
+  .join("\n");
 
-回覆規則：
-- 一律繁體中文，**簡短**。這是手機聊天視窗，不是報告——通常 3 行以內講完。
-- 不要用 Markdown 表格（LINE 不會渲染）。多筆資料用「・」條列。
-- 金額寫成 12,500 這種帶千分位的形式。
-- 查不到資料就直說查不到，不要猜。
+const BRANDS = (PROFILE.inventory || []).map((x) => x.brand);
+const CATEGORIES = Object.keys(PROFILE.knowledgeCategories || { misc: "其他" });
+const CATEGORY_HINT = Object.entries(PROFILE.knowledgeCategories || {})
+  .map(([k, v]) => `${k} ${v}`)
+  .join("／");
 
-他常在漁港、餐廳、客戶端用手機打字，句子會很短、可能有錯字，用常識判斷他的意思。
-他丟一句想法過來通常是要你記下來（add_todo 或 save_note），不是要你分析。
-語音訊息轉出來的逐字稿可能有辨識錯誤，海鮮或酒的專有名詞要用常識修正。
-
-存到知識庫（save_note）的時機：他在講產地知識、辨別方法、處理手法、經營心得
-——這些是他腦裡才有的東西，要留下來。純粹的待辦事項用 add_todo。`;
-
-const HELP = `🆓 打指令＝直接查資料庫，不花錢
-
-/客戶 王先生      查客戶（也可打 /c）
-/買 王先生        查他買過什麼（/s）
-/庫存 白蝦        查三品牌庫存（/i，留空列全部）
-/待辦 下週三報價   記進 TODO.md（/t）
-/筆記 內容        原樣存進知識庫，不整理（/n）
-/查 自動化        看 17 個排程任務有沒有掛（/k）
-
-💰 講人話或傳語音＝走 AI，每次約 0.2 元
-
-「王先生上次買什麼」這種自由問法、需要判斷的事，
-還有語音訊息（會轉文字＋整理分類存進知識庫），都走這條。
-
-🎙 在漁港挑魚時按住麥克風講十分鐘，
-是這個 bot 最有價值的用法——那些知識只在你腦裡。
-
-剪片、送印、建訂單、改程式：到 claude.ai/code。`;
-
+// 工具清單依設定組出來——沒設定的區塊不會出現在 Claude 眼前，
+// 它就不會提議做不到的事，也省下每則訊息的固定 token。
 const TOOLS = [
-  {
+  HAS_NOTES && {
     name: "add_todo",
-    description: "把一件待辦事項加進 liam-workspace 的 TODO.md。用於「記得要…」「提醒我…」這類明確的行動項目。",
+    description: `把一件待辦事項加進 ${TODO_PATH}。用於「記得要…」「提醒我…」這類明確的行動項目。`,
     input_schema: {
       type: "object",
-      properties: {
-        text: { type: "string", description: "待辦內容，一句話寫清楚要做什麼" },
-      },
+      properties: { text: { type: "string", description: "待辦內容，一句話寫清楚要做什麼" } },
       required: ["text"],
     },
   },
-  {
+  HAS_NOTES && {
     name: "save_note",
     description:
-      "把一段知識或想法存進 liam-workspace 的知識庫。用於 Lien 口述的產地知識、海鮮辨別方法、經營心得、客戶互動觀察——這些只存在他腦裡、值得長期留存的內容。",
+      "把一段知識或想法存進知識庫。用於口述的專業知識、判斷方法、處理手法、經營心得——這些只存在他腦裡、值得長期留存的內容。",
     input_schema: {
       type: "object",
       properties: {
-        category: {
-          type: "string",
-          enum: ["seafood", "wine", "tea", "business", "misc"],
-          description: "分類：seafood 海鮮知識／wine 葡萄酒／tea 茶葉／business 經營與客戶／misc 其他",
-        },
+        category: { type: "string", enum: CATEGORIES, description: `分類：${CATEGORY_HINT}` },
         title: { type: "string", description: "短標題，5-15 字" },
-        content: { type: "string", description: "整理過的內容。保留他講的所有具體細節與數字，不要精簡掉。" },
+        content: {
+          type: "string",
+          description: "整理過的內容。保留他講的所有具體細節與數字，不要精簡掉。",
+        },
       },
       required: ["category", "title", "content"],
     },
   },
-  {
+  HAS_CRM && {
     name: "query_customer",
-    description: "在全品牌客戶總表查客戶。可查到品牌、電話、會員等級、累計消費、最後購買日、偏好品項。",
+    description: `在客戶總表查客戶。可查到 ${(PROFILE.crm.customer.fields || []).join("、")}。`,
     input_schema: {
       type: "object",
       properties: { name: { type: "string", description: "客戶姓名或公司名，可只給部分字" } },
       required: ["name"],
     },
   },
-  {
+  HAS_CRM && {
     name: "query_sales",
-    description: "查某位客戶買過什麼。回傳該客戶的銷售紀錄（日期、品項、數量、金額），最近的排前面。",
+    description: "查某位客戶買過什麼。回傳該客戶的銷售紀錄，最近的排前面。",
     input_schema: {
       type: "object",
       properties: { customer: { type: "string", description: "客戶名稱" } },
       required: ["customer"],
     },
   },
-  {
+  HAS_ACTIONS && {
     name: "run_workflow",
     description:
-      "觸發 GitHub Actions 自動化任務，讓它現在就跑一次（平常是排程自動跑）。用於「重跑一次市場日報」「現在幫我發 IG」這類要求。標示⚠️的會對外發布內容，執行前務必先問清楚 Lien 是不是真的要發。",
+      "觸發 GitHub Actions 自動化任務，讓它現在就跑一次（平常是排程自動跑）。標示⚠️的會對外發布內容，執行前務必先問清楚是不是真的要發。",
     input_schema: {
       type: "object",
       properties: {
         task: {
           type: "string",
-          enum: [
-            "市場日報",
-            "漁獲行情",
-            "保單到期",
-            "回購提醒",
-            "生日提醒",
-            "壽險拜訪",
-            "扶輪生日",
-            "營收週報",
-            "YouTube留言",
-            "頻道日報",
-            "Gmail清理",
-            "月報",
-            "IG發文",
-            "限動預告",
-            "IG留言回覆",
-            "YouTube影片",
-          ],
-          description:
-            "要跑哪個任務。⚠️會對外發布的：IG發文（發限時動態）、限動預告（發限時動態）、IG留言回覆（公開回覆留言）、YouTube影片（產片並排程發布）",
+          enum: Object.keys(WORKFLOWS),
+          description: `要跑哪個任務。⚠️ 會對外發布、收不回來的：${[...PUBLISHES].join("、") || "（無）"}`,
         },
       },
       required: ["task"],
     },
   },
-  {
+  HAS_ACTIONS && {
     name: "check_workflows",
     description:
-      "查 GitHub Actions 自動化任務目前的健康狀況，回報哪些失敗、哪些正常、哪些還沒跑過。用於「自動化有沒有掛」「昨天的報告有跑嗎」「保單提醒還正常嗎」這類問題。純唯讀，不會觸發任何任務。",
+      "查 GitHub Actions 自動化任務目前的健康狀況，回報哪些失敗、哪些正常、哪些還沒跑過。用於「自動化有沒有掛」「昨天的報告有跑嗎」這類問題。純唯讀，不會觸發任何任務。",
     input_schema: {
       type: "object",
       properties: {
         filter: {
           type: "string",
-          description: "留空或填「自動化」查全部；填單一任務名稱（如 IG發文）則只查那一個",
+          description: "留空或填「自動化」查全部；填單一任務名稱則只查那一個",
         },
       },
       required: [],
     },
   },
-  {
+  HAS_INVENTORY && {
     name: "query_inventory",
-    description: "查三品牌庫存（鑫酒藏／鑫茶坊／鑫海產）。回傳品項、數量、單價。",
+    description: `查庫存（${BRANDS.join("／")}）。回傳品項、數量、價格。`,
     input_schema: {
       type: "object",
       properties: {
         keyword: { type: "string", description: "品項關鍵字。留空則列出全部。" },
         brand: {
           type: "string",
-          enum: ["鑫酒藏", "鑫茶坊", "鑫海產", "全部"],
+          enum: [...BRANDS, "全部"],
           description: "要查哪個品牌的庫存，預設全部",
         },
       },
       required: ["keyword"],
     },
   },
-];
+].filter(Boolean);
 
-// 三個庫存 DB 的欄位名稱互不相同，各給一組對照。
-// 價格欄位刻意保留原本的欄位名一起顯示，免得把進價看成售價。
-const INV_FIELDS = {
-  鑫酒藏: { qty: "庫存數量", unit: null, price: "進價", tag: "分類" },
-  鑫茶坊: { qty: "庫存數量", unit: "單位", price: "零售價", tag: "產地" },
-  鑫海產: { qty: "庫存數量", unit: "數量單位", price: "進價", tag: "產品種類" },
-};
+// 每個品牌的 Notion 欄位名稱很可能不一樣，由 profile 各給一組對照。
+// 價格刻意連欄位名一起顯示，免得把進價看成售價。
+const INV_FIELDS = Object.fromEntries(
+  (PROFILE.inventory || []).map((x) => [x.brand, x])
+);
 
 function invRow(props, map) {
-  const name = plain(props["品名"]);
+  const name = plain(props[map.name || "品名"]);
   if (!name) return "";
   const qty = plain(props[map.qty]);
   const unit = map.unit ? plain(props[map.unit]) : "";
@@ -261,7 +236,7 @@ async function verifySignature(env, rawBody, signature) {
   return timingSafeEqual(expected, signature);
 }
 
-// 只有 Lien 本人能用。LINE 官方帳號誰都能加好友，沒有這道就等於把 CRM 打開給所有人。
+// 只有擁有者本人能用。LINE 官方帳號誰都能加好友，沒有這道就等於把 CRM 打開給所有人。
 function isOwner(env, event) {
   const allowed = String(env.LINE_USER_ID || "");
   const sender = String(event?.source?.userId || "");
@@ -368,7 +343,8 @@ async function transcribe(env, messageId) {
   form.append("file", audio, "voice.m4a");
   form.append("model", "whisper-1");
   form.append("language", "zh");
-  form.append("prompt", "繁體中文。可能出現的詞：龜吼、現流、鑫海產、鑫酒藏、鑫茶坊、匠鑫私廚、鉅鑫。");
+  const vocab = (PROFILE.vocabulary || []).join("、");
+  form.append("prompt", vocab ? `繁體中文。可能出現的詞：${vocab}。` : "繁體中文。");
 
   const r = await fetch("https://api.openai.com/v1/audio/transcriptions", {
     method: "POST",
@@ -491,15 +467,15 @@ function today() {
 
 async function runTool(env, name, input) {
   if (name === "add_todo") {
-    const file = (await ghGet(env, "TODO.md")) || { sha: null, text: "# TODO\n" };
+    const file = (await ghGet(env, TODO_PATH)) || { sha: null, text: "# TODO\n" };
     const line = `- [ ] ${input.text}　（${today()} 手機記錄）\n`;
-    await ghPut(env, "TODO.md", file.text.trimEnd() + "\n" + line, `todo: ${input.text.slice(0, 40)}`, file.sha);
-    return "已加進 TODO.md";
+    await ghPut(env, TODO_PATH, file.text.trimEnd() + "\n" + line, `todo: ${input.text.slice(0, 40)}`, file.sha);
+    return `已加進 ${TODO_PATH}`;
   }
 
   if (name === "save_note") {
     const slug = today();
-    const path = `knowledge/${input.category}/${slug}.md`;
+    const path = `${KNOWLEDGE_DIR}/${input.category}/${slug}.md`;
     const existing = await ghGet(env, path);
     const block = `\n## ${input.title}\n\n${input.content}\n`;
     const text = existing ? existing.text.trimEnd() + "\n" + block : `# ${input.category} ${slug}\n${block}`;
@@ -616,39 +592,37 @@ async function runTool(env, name, input) {
   }
 
   if (name === "query_customer") {
-    const rows = await notionQuery(env, env.CUSTOMER_DB, {
-      property: "客戶姓名",
+    const cfg = PROFILE.crm.customer;
+    const rows = await notionQuery(env, env[cfg.db], {
+      property: cfg.titleField,
       title: { contains: input.name },
     });
     if (!rows.length) return `找不到「${input.name}」`;
     return rows
       .slice(0, 8)
-      .map((p) =>
-        row(p.properties, ["客戶姓名", "品牌", "聯絡電話", "會員等級", "累計消費", "最後購買日", "偏好品項"])
-      )
+      .map((p) => row(p.properties, cfg.fields))
       .join("\n");
   }
 
   if (name === "query_sales") {
+    const cfg = PROFILE.crm.sales;
     const rows = await notionQuery(
       env,
-      env.SALES_DB,
-      { property: "客戶名稱", rich_text: { contains: input.customer } },
-      [{ property: "出貨日期", direction: "descending" }]
+      env[cfg.db],
+      { property: cfg.matchField, rich_text: { contains: input.customer } },
+      [{ property: cfg.sortField, direction: "descending" }]
     );
     if (!rows.length) return `「${input.customer}」沒有銷售紀錄`;
     return rows
       .slice(0, 12)
-      .map((p) => row(p.properties, ["出貨日期", "品牌", "品項", "數量", "金額"]))
+      .map((p) => row(p.properties, cfg.fields))
       .join("\n");
   }
 
   if (name === "query_inventory") {
-    const dbs = {
-      鑫酒藏: env.INV_WINE_DB,
-      鑫茶坊: env.INV_TEA_DB,
-      鑫海產: env.INV_SEAFOOD_DB,
-    };
+    const dbs = Object.fromEntries(
+      (PROFILE.inventory || []).map((x) => [x.brand, env[x.db]])
+    );
     const targets =
       input.brand && input.brand !== "全部" ? { [input.brand]: dbs[input.brand] } : dbs;
 
@@ -682,14 +656,14 @@ async function runTool(env, name, input) {
 // 願意打指令就跳過那一步。記不住指令時照樣可以講人話，只是那次會走 Claude。
 
 const COMMANDS = [
-  { keys: ["/todo", "/待辦", "/t"], tool: "add_todo", arg: "text", need: true },
-  { keys: ["/客戶", "/c"], tool: "query_customer", arg: "name", need: true },
-  { keys: ["/買", "/銷售", "/s"], tool: "query_sales", arg: "customer", need: true },
-  { keys: ["/庫存", "/i"], tool: "query_inventory", arg: "keyword", need: false },
-  { keys: ["/note", "/筆記", "/n"], tool: "save_note", arg: null, need: true },
-  { keys: ["/跑", "/run", "/r"], tool: "run_workflow", arg: "task", need: true },
-  { keys: ["/查", "/check", "/k"], tool: "check_workflows", arg: "filter", need: false },
-];
+  HAS_NOTES && { keys: ["/todo", "/待辦", "/t"], tool: "add_todo", arg: "text", need: true },
+  HAS_CRM && { keys: ["/客戶", "/c"], tool: "query_customer", arg: "name", need: true },
+  HAS_CRM && { keys: ["/買", "/銷售", "/s"], tool: "query_sales", arg: "customer", need: true },
+  HAS_INVENTORY && { keys: ["/庫存", "/i"], tool: "query_inventory", arg: "keyword", need: false },
+  HAS_NOTES && { keys: ["/note", "/筆記", "/n"], tool: "save_note", arg: null, need: true },
+  HAS_ACTIONS && { keys: ["/跑", "/run", "/r"], tool: "run_workflow", arg: "task", need: true },
+  HAS_ACTIONS && { keys: ["/查", "/check", "/k"], tool: "check_workflows", arg: "filter", need: false },
+].filter(Boolean);
 
 function parseCommand(text) {
   const trimmed = text.trim();
