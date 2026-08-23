@@ -2,6 +2,10 @@ name = "liam-assistant"
 main = "worker.js"
 compatibility_date = "2026-08-18"
 
+# LINE webhook 指向 .workers.dev 網址，明確鎖住不要靠 Cloudflare 的預設值——
+# 預設哪天改掉，網址會直接消失，而 LINE 只會顯示 webhook 失敗、不說原因。
+workers_dev = true
+
 # 只保留正式網址當入口，不額外開預覽網址（簽章擋得住，但沒必要多開一個門）。
 preview_urls = false
 
