@@ -194,6 +194,26 @@ const TOOLS = [
   },
 ];
 
+// 三個庫存 DB 的欄位名稱互不相同，各給一組對照。
+// 價格欄位刻意保留原本的欄位名一起顯示，免得把進價看成售價。
+const INV_FIELDS = {
+  鑫酒藏: { qty: "庫存數量", unit: null, price: "進價", tag: "分類" },
+  鑫茶坊: { qty: "庫存數量", unit: "單位", price: "零售價", tag: "產地" },
+  鑫海產: { qty: "庫存數量", unit: "數量單位", price: "進價", tag: "產品種類" },
+};
+
+function invRow(props, map) {
+  const name = plain(props["品名"]);
+  if (!name) return "";
+  const qty = plain(props[map.qty]);
+  const unit = map.unit ? plain(props[map.unit]) : "";
+  const price = map.price ? plain(props[map.price]) : "";
+  const parts = [name];
+  parts.push(qty ? qty + (unit ? " " + unit : "") : "缺貨");
+  if (price) parts.push(`${map.price} ${price}`);
+  return parts.join("　");
+}
+
 // ---------- LINE ----------
 
 // ⚠️ 安全邊界：這支 bot 能查客戶姓名、電話、消費紀錄。
@@ -525,20 +545,25 @@ async function runTool(env, name, input) {
     const targets =
       input.brand && input.brand !== "全部" ? { [input.brand]: dbs[input.brand] } : dbs;
 
+    const LIMIT = 15;
     const out = [];
     for (const [brand, db] of Object.entries(targets)) {
       if (!db) continue;
+      const map = INV_FIELDS[brand];
+      if (!map) continue;
       const rows = await notionQuery(env, db, null);
       const hit = rows.filter((p) => {
         if (!input.keyword) return true;
         return JSON.stringify(p.properties).includes(input.keyword);
       });
-      if (hit.length) {
-        out.push(`【${brand}】`);
-        out.push(...hit.slice(0, 15).map((p) => row(p.properties, ["品項", "數量", "單位", "單價", "金額"])));
-      }
+      if (!hit.length) continue;
+
+      const shown = hit.slice(0, LIMIT).map((p) => invRow(p.properties, map)).filter(Boolean);
+      out.push(hit.length > LIMIT ? `【${brand}】共 ${hit.length} 筆，顯示前 ${LIMIT}` : `【${brand}】${hit.length} 筆`);
+      out.push(...shown);
+      out.push("");
     }
-    return out.length ? out.join("\n") : `庫存查不到「${input.keyword}」`;
+    return out.length ? out.join("\n").trim() : `庫存查不到「${input.keyword || ""}」`;
   }
 
   return `未知工具 ${name}`;

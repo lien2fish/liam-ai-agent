@@ -74,7 +74,7 @@ npx wrangler kv namespace create CHAT
 
 把印出的 `id` 貼進 `wrangler.toml` 的 `[[kv_namespaces]]`。
 
-### 4. 設定七個 secret
+### 4. 設定八個 secret
 
 ```bash
 cd telegram_bot
@@ -82,6 +82,7 @@ npx wrangler secret put ANTHROPIC_API_KEY    # 與 GitHub Secret 同一組
 npx wrangler secret put OPENAI_API_KEY       # 語音轉文字用，本機備份在 config/.openai_key
 npx wrangler secret put NOTION_TOKEN         # ~/.config/notion_token
 npx wrangler secret put GITHUB_PAT           # 需 repo scope
+npx wrangler secret put LINE_USER_ID         # 步驟 1，Basic settings → Your user ID
 npx wrangler secret put LINE_CHANNEL_SECRET  # 步驟 1，Basic settings
 npx wrangler secret put LINE_ACCESS_TOKEN    # 步驟 1，Messaging API 分頁
 npx wrangler secret put NOTIFY_TOKEN         # 自己產一串：openssl rand -hex 16
@@ -113,19 +114,18 @@ https://liam-assistant.<你的子網域>.workers.dev/line
 
 再確認 **Use webhook** 是開啟的。
 
-### 7. 填入你的 user ID
+### 7. 確認白名單已設定
 
-用步驟 1 從 Basic settings 抄的 **Your user ID**，貼進 `wrangler.toml`：
+`LINE_USER_ID` 在步驟 4 就用 `wrangler secret put` 設好了。
 
-```toml
-LINE_USER_ID = "U1234567890abcdef1234567890abcdef"
-```
+> ⚠️ **不要把 user ID 寫進 `wrangler.toml`。** 這個 repo 是公開的，
+> user ID 是綁在你本人身上的識別碼。走 secret 不會進版控。
 
-> 抄不到的話：用手機加官方帳號好友（Messaging API 分頁有 QR code），傳一則訊息，
-> 同時跑 `npx wrangler tail`。白名單還沒設定時，程式會把收到的 userId 印出來給你抄。
-> **一旦白名單填好，就不再記錄任何人的 ID。**
+抄不到 user ID 的話：用手機加官方帳號好友（Messaging API 分頁有 QR code），傳一則訊息，
+同時跑 `npx wrangler tail`。白名單還沒設定時，程式會把收到的 userId 印出來給你抄。
+**一旦設定好，就不再記錄任何人的 ID。**
 
-然後重新部署：
+設好 secret 後重新部署：
 
 ```bash
 npx wrangler deploy
