@@ -2,6 +2,9 @@ name = "liam-assistant"
 main = "worker.js"
 compatibility_date = "2026-08-18"
 
+# 只保留正式網址當入口，不額外開預覽網址（簽章擋得住，但沒必要多開一個門）。
+preview_urls = false
+
 # 對話記憶（最近幾輪，TTL 1 小時）。用 `wrangler kv namespace create CHAT` 產生後貼回 id。
 [[kv_namespaces]]
 binding = "CHAT"
