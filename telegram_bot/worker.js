@@ -566,6 +566,17 @@ function parseCommand(text) {
         const rest = trimmed.slice(key.length).trim();
         if (cmd.need && !rest) return { error: `${key} 後面要接內容` };
 
+        // ⚠️ 斜線指令直接執行、不經過 AI，所以沒有任何確認步驟。
+        // 會對外發布的任務一律擋在這裡：IG 限動發出去 API 刪不掉，
+        // 手機誤觸或選單點錯的代價收不回來。要發就走自然語言（Claude 會先問）或用電腦。
+        if (cmd.tool === "run_workflow" && PUBLISHES.has(rest)) {
+          return {
+            error:
+              `「${rest}」會對外發布，不接受斜線指令。\n` +
+              `要發請用講的（我會先跟你確認），或到電腦上跑。`,
+          };
+        }
+
         if (cmd.tool === "save_note") {
           // 原樣存進 misc，不做整理——要整理過的筆記就講人話或傳語音（走 AI）
           return {
