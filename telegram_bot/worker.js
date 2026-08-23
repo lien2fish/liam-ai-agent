@@ -83,6 +83,7 @@ const HELP = `🆓 打指令＝直接查資料庫，不花錢
 /庫存 白蝦        查三品牌庫存（/i，留空列全部）
 /待辦 下週三報價   記進 TODO.md（/t）
 /筆記 內容        原樣存進知識庫，不整理（/n）
+/查 自動化        看 17 個排程任務有沒有掛（/k）
 
 💰 講人話或傳語音＝走 AI，每次約 0.2 元
 
@@ -174,6 +175,21 @@ const TOOLS = [
         },
       },
       required: ["task"],
+    },
+  },
+  {
+    name: "check_workflows",
+    description:
+      "查 GitHub Actions 自動化任務目前的健康狀況，回報哪些失敗、哪些正常、哪些還沒跑過。用於「自動化有沒有掛」「昨天的報告有跑嗎」「保單提醒還正常嗎」這類問題。純唯讀，不會觸發任何任務。",
+    input_schema: {
+      type: "object",
+      properties: {
+        filter: {
+          type: "string",
+          description: "留空或填「自動化」查全部；填單一任務名稱（如 IG發文）則只查那一個",
+        },
+      },
+      required: [],
     },
   },
   {
@@ -406,6 +422,12 @@ function plain(prop) {
   }
 }
 
+function twTime(iso) {
+  const d = new Date(new Date(iso).getTime() + 8 * 3600 * 1000);
+  const p = (n) => String(n).padStart(2, "0");
+  return `${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`;
+}
+
 function row(props, fields) {
   return fields
     .map((f) => {
@@ -508,6 +530,91 @@ async function runTool(env, name, input) {
     return `${warn}已觸發「${input.task}」，通常 1~5 分鐘跑完。\nhttps://github.com/${AGENT_REPO}/actions/workflows/${file}`;
   }
 
+  if (name === "check_workflows") {
+    const filter = String(input.filter || "").trim();
+    const wanted =
+      !filter || filter === "自動化" || filter === "全部"
+        ? Object.entries(WORKFLOWS)
+        : Object.entries(WORKFLOWS).filter(([task]) => task.includes(filter));
+
+    if (!wanted.length) {
+      return `不認得任務「${filter}」，可查的有：${Object.keys(WORKFLOWS).join("、")}`;
+    }
+
+    // 每個 workflow 各查最近 5 次。不能只抓「全 repo 最近 100 次」——
+    // IG留言回覆每 5 分鐘跑一次，會把其他任務全部擠出視窗。
+    const results = await Promise.all(
+      wanted.map(async ([task, file]) => {
+        try {
+          const r = await fetch(
+            `https://api.github.com/repos/${AGENT_REPO}/actions/workflows/${file}/runs?per_page=5`,
+            {
+              headers: {
+                authorization: `Bearer ${env.GITHUB_PAT}`,
+                accept: "application/vnd.github+json",
+                "user-agent": "liam-line-bot",
+              },
+            }
+          );
+          if (!r.ok) return { task, error: `API ${r.status}` };
+          const runs = (await r.json()).workflow_runs || [];
+          return { task, runs };
+        } catch (e) {
+          return { task, error: e.message };
+        }
+      })
+    );
+
+    const bad = [];
+    const flaky = [];
+    const running = [];
+    const never = [];
+    const errored = [];
+    let ok = 0;
+
+    for (const { task, runs, error } of results) {
+      if (error) {
+        errored.push(`・${task}　查詢失敗（${error}）`);
+        continue;
+      }
+      if (!runs.length) {
+        never.push(`・${task}　從未執行`);
+        continue;
+      }
+      const last = runs[0];
+      if (last.status !== "completed") {
+        running.push(`・${task}　執行中（${twTime(last.created_at)}）`);
+        continue;
+      }
+      if (last.conclusion === "success") {
+        // 最後一次成功不代表健康——月報就曾經 5 次裡失敗 3 次卻顯示正常。
+        const fails = runs.filter((x) => x.conclusion === "failure").length;
+        if (fails) {
+          flaky.push(`・${task}　最近 ${runs.length} 次有 ${fails} 次失敗（最後一次成功 ${twTime(last.created_at)}）`);
+        } else {
+          ok++;
+        }
+        continue;
+      }
+      const streak = runs.filter((x) => x.conclusion === last.conclusion).length;
+      const note = streak > 1 ? `，最近 ${runs.length} 次有 ${streak} 次` : "";
+      bad.push(`・${task}　${last.conclusion === "failure" ? "失敗" : last.conclusion}　${twTime(last.created_at)}${note}`);
+    }
+
+    const out = [];
+    if (bad.length) out.push("❌ 有問題", ...bad);
+    if (flaky.length) out.push("⚠️ 不穩定", ...flaky);
+    if (running.length) out.push("⏳ 執行中", ...running);
+    if (never.length) out.push("⚪️ 沒跑過", ...never);
+    if (errored.length) out.push("⚠️ 查不到", ...errored);
+    if (!bad.length && !flaky.length && !running.length && !never.length && !errored.length) {
+      out.push(`✅ ${ok} 個任務全部正常`);
+    } else if (ok) {
+      out.push("", `✅ 其餘 ${ok} 個正常`);
+    }
+    return out.join("\n");
+  }
+
   if (name === "query_customer") {
     const rows = await notionQuery(env, env.CUSTOMER_DB, {
       property: "客戶姓名",
@@ -581,6 +688,7 @@ const COMMANDS = [
   { keys: ["/庫存", "/i"], tool: "query_inventory", arg: "keyword", need: false },
   { keys: ["/note", "/筆記", "/n"], tool: "save_note", arg: null, need: true },
   { keys: ["/跑", "/run", "/r"], tool: "run_workflow", arg: "task", need: true },
+  { keys: ["/查", "/check", "/k"], tool: "check_workflows", arg: "filter", need: false },
 ];
 
 function parseCommand(text) {
