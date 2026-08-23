@@ -1,6 +1,9 @@
-# Liam 手機助理（LINE × Cloudflare Worker）
+# LINE 手機助理（Cloudflare Worker）
 
-人在漁港、餐廳、客戶端時的輕量入口。**不取代 claude.ai/code**——剪片、送印、改程式那些還是要用電腦。
+**一人專用的 LINE 助理**：查自己的資料庫、記待辦、口述存知識庫、看自動化有沒有掛。
+跑在 Cloudflare Worker 上，無伺服器、無月費、單檔無依賴。
+
+人在外面時的輕量入口，不取代電腦——剪片、送印、改程式那些還是要用電腦。
 
 | 能做 | 不能做 |
 |------|--------|
@@ -10,8 +13,15 @@
 | 觸發 12 個查詢類 GitHub Actions | 用指令觸發**會對外發布**的任務（見下方） |
 | 接收 GitHub Actions 的即時推播 | |
 
-> 前身是 Telegram 版，因帳號無法使用改接 LINE。資料夾名稱仍是 `telegram_bot/`
-> （改名會動到既有 import），內容已全部是 LINE。
+## 設定與程式分離
+
+`worker.js` **不含任何商業資訊**。身分、品牌、資料庫欄位、自動化任務全部從
+`profile.js` 讀。要導入新使用者只要複製 `profile.example.js` 改成 `profile.js`，
+程式碼一行不動。
+
+**沒設定的區塊會自動關掉對應功能**——沒有 Notion 就不會出現查客戶的指令，
+沒有 GitHub Actions 就不會出現 `/跑` 和 `/查`，連 Claude 的工具清單裡都不會有，
+所以它不會提議做不到的事，也省下每則訊息的固定 token。
 
 ---
 
@@ -36,12 +46,12 @@
 
 到 [LINE Developers Console](https://developers.line.biz/console/)：
 
-1. 建 **Provider**（隨便取，例：`Jusin`）
+1. 建 **Provider**（隨便取，通常是公司名）
 2. 建 **Messaging API channel**——這會同時產生一個 LINE 官方帳號
-3. 帳號名稱取**內部用的**，例如「Liam 助理」
+3. 帳號名稱取**內部用的**
 
-> ⚠️ **不要取品牌名。** 叫「鑫海產」會讓客戶誤以為是客服帳號跑來下單，
-> 而它只認你一個人、不會回應任何人。品牌客服帳號日後另外開，兩者互不影響。
+> ⚠️ **不要取品牌名。** 取品牌名會讓誤加的人以為是客服帳號跑來下單，
+> 而它只認你一個人、不會回應任何人。對外的客服帳號請另外開，兩者互不影響。
 
 從 console 抄三樣東西：
 
@@ -65,48 +75,65 @@
 > 就算被加好友也沒關係——程式只認你的 user ID，其他人傳訊息會被靜默忽略，
 > 連錯誤訊息都不會回。關閉搜尋只是少一層打擾。
 
-### 3. 建 KV（存 1 小時對話記憶）
+### 3. 改設定檔
 
 ```bash
-cd telegram_bot
+cp profile.example.js profile.js
+```
+
+打開 `profile.js`，填你的身分、事業描述、資料庫欄位、自動化任務。
+每個區塊都有註解說明；用不到的留空即可。
+
+### 4. 建 KV（存 1 小時對話記憶）
+
+```bash
+cd line_assistant
 npx wrangler kv namespace create CHAT
 ```
 
 把印出的 `id` 貼進 `wrangler.toml` 的 `[[kv_namespaces]]`。
 
-### 4. 設定八個 secret
+### 5. 設定八個 secret
 
 ```bash
-cd telegram_bot
-npx wrangler secret put ANTHROPIC_API_KEY    # 與 GitHub Secret 同一組
-npx wrangler secret put OPENAI_API_KEY       # 語音轉文字用，本機備份在 config/.openai_key
-npx wrangler secret put NOTION_TOKEN         # ~/.config/notion_token
-npx wrangler secret put GITHUB_PAT           # 需 repo scope
+cd line_assistant
+npx wrangler secret put ANTHROPIC_API_KEY    # Claude 對話
+npx wrangler secret put OPENAI_API_KEY       # 語音轉文字（Whisper）
+npx wrangler secret put NOTION_TOKEN         # 查資料庫，沒用到 Notion 可略過
+npx wrangler secret put GITHUB_PAT           # 需 repo scope，沒用到可略過
 npx wrangler secret put LINE_USER_ID         # 步驟 1，Basic settings → Your user ID
 npx wrangler secret put LINE_CHANNEL_SECRET  # 步驟 1，Basic settings
 npx wrangler secret put LINE_ACCESS_TOKEN    # 步驟 1，Messaging API 分頁
 npx wrangler secret put NOTIFY_TOKEN         # 自己產一串：openssl rand -hex 16
 ```
 
-> ⚠️ **這個 repo 是公開的。** 以上一律走 `wrangler secret put`，不要寫進任何檔案。
+> ⚠️ **一律走 `wrangler secret put`，不要寫進任何檔案。**
+>
+> ⚠️ **一定要在真正的終端機跑。** 在沒有互動 TTY 的環境（例如 AI 助理的對話框）
+> 提示會讀到空值、存成**空字串**，然後照樣印「✨ Success」——毫無徵兆。
+> 非互動要灌就用管線：
+> ```bash
+> printf '%s' "$(tr -d '\r\n' < 金鑰檔)" | npx wrangler secret put NAME
+> ```
+> 本機金鑰檔通常有換行結尾，不先 `tr -d` 會讓金鑰失效。
 
-### 5. 第一次部署
+### 6. 第一次部署
 
 ```bash
 npx wrangler deploy
 ```
 
-記下網址（形如 `https://liam-assistant.lien2fish.workers.dev`）。
+記下網址（形如 `https://<worker名稱>.<你的子網域>.workers.dev`）。
 
 此時 `LINE_USER_ID` 還是佔位符，程式會**擋掉所有人**（包含你自己）——這是刻意的，
 確保在白名單設好之前，沒有任何人能碰到客戶資料。
 
-### 6. 掛 webhook
+### 7. 掛 webhook
 
 回 LINE Developers Console → Messaging API 分頁 → Webhook URL 填：
 
 ```
-https://liam-assistant.<你的子網域>.workers.dev/line
+https://<worker名稱>.<你的子網域>.workers.dev/line
 ```
 
 **注意結尾是 `/line`。** 填好按 **Verify**，要回 Success。
@@ -114,9 +141,9 @@ https://liam-assistant.<你的子網域>.workers.dev/line
 
 再確認 **Use webhook** 是開啟的。
 
-### 7. 確認白名單已設定
+### 8. 確認白名單已設定
 
-`LINE_USER_ID` 在步驟 4 就用 `wrangler secret put` 設好了。
+`LINE_USER_ID` 在步驟 5 就用 `wrangler secret put` 設好了。
 
 > ⚠️ **不要把 user ID 寫進 `wrangler.toml`。** 這個 repo 是公開的，
 > user ID 是綁在你本人身上的識別碼。走 secret 不會進版控。
@@ -131,7 +158,7 @@ https://liam-assistant.<你的子網域>.workers.dev/line
 npx wrangler deploy
 ```
 
-### 8. 測試
+### 9. 測試
 
 用手機**加官方帳號好友**（沒加就沒有聊天視窗），然後：
 
@@ -143,7 +170,7 @@ npx wrangler deploy
 | 傳一段語音 | 先亮輸入中動畫，然後回逐字稿＋回應 |
 | 打 `/跑 IG發文` | **被擋下**，告訴你這個不能用指令跑 |
 
-### 9.（選用）打開自動化推播
+### 10.（選用）打開自動化推播
 
 把 Worker 網址與 `NOTIFY_TOKEN` 加進 GitHub Secrets（`LINE_NOTIFY_URL`、`LINE_NOTIFY_TOKEN`），
 然後在 workflow 的 step 裡：
@@ -154,7 +181,7 @@ env:
   LINE_NOTIFY_TOKEN: ${{ secrets.LINE_NOTIFY_TOKEN }}
 ```
 
-腳本裡 `from telegram_bot.notify import notify` 後直接呼叫。**沒設環境變數就靜默跳過**，
+腳本裡 `from line_assistant.notify import notify` 後直接呼叫。**沒設環境變數就靜默跳過**，
 所以可以先加進腳本、之後再開通，不會弄壞既有流程。
 
 > ⚠️ **推播計入 200 則／月的免費額度**（約每天 6 則）。
@@ -174,11 +201,11 @@ env:
 |------|------|--------|
 | `/客戶 王先生` | `/c` | 查客戶：品牌、電話、等級、累計消費、最後購買日 |
 | `/買 王先生` | `/s` | 查他買過什麼（日期／品項／數量／金額，最近的在前） |
-| `/庫存 白蝦` | `/i` | 查三品牌庫存（留空列全部） |
-| `/待辦 下週三給張董報價` | `/t` | 寫進 `TODO.md` |
+| `/庫存 關鍵字` | `/i` | 查庫存（留空列全部）|
+| `/待辦 內容` | `/t` | 寫進 `TODO.md` |
 | `/筆記 內容` | `/n` | **原樣**存進 `knowledge/misc/`，不整理不分類 |
 | `/跑 市場日報` | `/r` | 立刻跑一次 GitHub Actions 任務 |
-| `/查 自動化` | `/k` | 看 16 個排程任務有沒有掛（純唯讀，不觸發）|
+| `/查 自動化` | `/k` | 看排程任務有沒有掛（純唯讀，不觸發）|
 
 ### ⛔ `/跑` 不接受會對外發布的任務
 
@@ -204,7 +231,7 @@ env:
 | ⚪️ 沒跑過 | 從未執行 |
 
 「不穩定」是刻意加的：只看最後一次的話，時好時壞的任務會顯示成正常。
-實際上 `月報` 就是最近 5 次失敗 3 次卻因為最後一次成功而被歸類為健康。
+實際上 實務上就遇過某個月報最近 5 次失敗 3 次，卻因最後一次成功而被歸類為健康。
 
 **主動問比推播划算**：問它走 reply（不計額度、無上限），推播走 push
 （計入 200 則／月）。想知道才問，不會變成雜訊。
@@ -218,8 +245,10 @@ env:
 `/筆記` 和語音的差別就在**整理**：前者原樣丟進去，後者會判斷這是海鮮還是酒、
 抓出標題、把口語贅字修掉、修正專有名詞。要留給未來用的知識，值得那 0.2 元。
 
-**在漁港挑魚時按住麥克風講十分鐘，是這個 bot 最有價值的用法。**
-那些知識只在你腦裡，卡著漁船遊戲的圖鑑、IG 文案深度、影片的差異化。
+**按住麥克風講十分鐘，是這個 bot 最有價值的用法。**
+你這行的判斷方法、經驗法則、產地知識——那些只在你腦裡，打字打不出來，
+但用講的十分鐘就有了。`profile.js` 的 `vocabulary` 填上你這行的專有名詞，
+辨識率差很多。
 
 記不住指令沒關係，講人話一樣通，只是那次會走 AI。`/help` 隨時看清單。
 
@@ -245,13 +274,13 @@ LINE 官方帳號輕用量方案月費 0 元，且**對話回覆不計額度**�
 
 語音轉文字另計，OpenAI Whisper 約 $0.006/分鐘（每月 30 分鐘 ≈ NT$6）。
 Cloudflare Workers AI 也有免費的 Whisper（每天 10,000 neurons 額度內），
-但 OpenAI 那版可以用 `prompt` 參數餵「龜吼／現流／鑫海產」這些詞彙提高辨識率，
-海鮮專有名詞差很多，暫時維持 OpenAI。
+但 OpenAI 那版可以用 `prompt` 參數餵行業專有名詞提高辨識率，差很多，
+所以預設用 OpenAI。
 
 ### 什麼時候該升級
 
 Haiku 對「查客戶」「記待辦」這種明確指令綽綽有餘。**會露餡的是 `save_note`**——
-把漁港錄的口語逐字稿整理成有結構的知識筆記，需要判斷什麼是重點、什麼是贅字、
+把口述的逐字稿整理成有結構的知識筆記，需要判斷什麼是重點、什麼是贅字、
 專有名詞怎麼修正。看到這些訊號就換 `claude-sonnet-5`：
 
 - 存進 `knowledge/` 的筆記像逐字稿沒整理過，或漏掉你講的關鍵數字
@@ -285,7 +314,7 @@ Haiku 對「查客戶」「記待辦」這種明確指令綽綽有餘。**會露
 
 - **對話記憶只留 1 小時、最近 8 輪**，且只留純文字。隔天問「昨天那個」他不會記得——
   要長期留的東西他會存進知識庫。
-- **知識庫寫進私人 repo `liam-workspace`**，不會進公開的 liam-ai-agent。
+- **知識庫寫進 `profile.js` 指定的 repo，務必用私人 repo**——那裡會累積你的商業知識。
 - **不做建訂單**：訂單要同步 Numbers、兩個 Notion DB、統一總表四個地方，
   手機上打錯字沒得檢查。訂單還是在電腦上跑 `notion_crm/add_order.py`。
 - Worker 收到 LINE 訊息會立刻回 200 再背景處理（`ctx.waitUntil`），

@@ -163,9 +163,14 @@
 ✅ **已接通並實測可用。** Cloudflare Worker `liam-assistant`
 （`https://liam-assistant.lien2fish.workers.dev`），LINE 官方帳號「Liam 助理」，
 白名單只認 Lien 一個 LINE user ID。前身是 Telegram 版，帳號無法使用而改接 LINE；
-資料夾名稱仍是 `telegram_bot/`（改名會動到既有 import）。
+資料夾 `line_assistant/`（原 `telegram_bot/`，2026-08-24 改名，實測沒有任何腳本 import 它）。
 
-**部署與維運全部在 `telegram_bot/README.md`**，要改設定、換金鑰、排查問題時看那份。
+**部署與維運在 `line_assistant/README.md`**，導入客戶的流程與定價在 `line_assistant/導入手冊.md`。
+
+⚠️ **程式碼不含商業資訊。** 身分、品牌、Notion 欄位、workflow 清單全部在
+`line_assistant/profile.js`（範本＝`profile.example.js`）。要改助理的語氣、加減功能、
+換欄位對照，**改 profile.js，不要改 worker.js**。沒設定的區塊會自動關掉對應的
+工具與指令。
 
 ⚠️ **`wrangler secret put` 不能在 Claude Code 的對話框裡跑。**
 那裡沒有互動終端機，互動提示讀到空值也照樣印「✨ Success」，
@@ -177,11 +182,11 @@
 
 | 項目 | 說明 |
 |------|------|
-| 程式 | `telegram_bot/worker.js`（單檔，raw fetch，無 npm 依賴，同 `travel_worker` 風格）|
+| 程式 | `line_assistant/worker.js`（單檔，raw fetch，無 npm 依賴，同 `travel_worker` 風格）|
 | 指令 | `/客戶 /買 /庫存 /待辦 /筆記 /跑 /查`（簡寫 `/c /s /i /t /n /r /k`）|
 | `/查` | 查 16 個排程任務健康度，純唯讀。含「**不穩定**」分類——只看最後一次的話，時好時壞的任務會顯示成正常（月報最近 5 次失敗 3 次就是這樣被漏掉的）|
 | ⛔ 保護 | **`/跑` 不接受會對外發布的四個任務**（IG發文／IG留言回覆／限動預告／YouTube影片）——斜線指令不經過 AI、沒有確認步驟。要發走自然語言或電腦 |
-| 推播 | `telegram_bot/notify.py` — 任何腳本 `from telegram_bot.notify import notify` 即可用；**未設環境變數時靜默跳過**，不會弄壞既有流程 |
+| 推播 | `line_assistant/notify.py` — 任何腳本 `from line_assistant.notify import notify` 即可用；**未設環境變數時靜默跳過**，不會弄壞既有流程 |
 | 能做 | 記待辦、口述存知識庫（含語音轉文字）、查客戶／銷售／庫存、接收自動化推播 |
 | **兩種模式** | **斜線指令**（`/客戶` `/買` `/庫存` `/待辦` `/筆記`，含 `/c /s /i /t /n` 簡寫）直達 Notion／GitHub，**零 API 成本**；**自然語言與語音**才走 Claude。日常九成操作免費，**估**月費約 NT$10（2026-08-24 上線，尚未累積實際帳單）|
 | 不做 | 跑腳本、剪片、送印、**建訂單**（要同步四個系統，手機打錯字沒得檢查）|
