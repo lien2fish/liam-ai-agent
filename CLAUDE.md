@@ -207,6 +207,29 @@
 
 ---
 
+## 對外發布的 Plugin（2026-08-25 建立）
+
+獨立 repo **`lien2fish/lien-plugins`**（🌐 公開，MIT），四個 Claude Code plugin：
+`line-assistant`／`print-cmyk`／`reel`／`safe-commit`。
+本機 clone 在 `~/lien-plugins/`。
+
+```
+/plugin marketplace add lien2fish/lien-plugins
+```
+
+⚠️ **plugin 版是去識別化過的通用版本，跟 `.claude/skills/` 的原版是兩份東西。**
+
+| | `.claude/skills/`（本機） | `lien-plugins`（公開） |
+|---|---|---|
+| 內容 | 特定檔名、路徑、客戶資訊——留著才有用 | 只有通用 know-how |
+| `safe-commit` | 詳載本專案的外洩事故 | **改寫成不指名的案例**（無 repo 名／公司名／日期）|
+| `print-cmyk` | 惜食廚房各面牆、志工表單網址 | 拿掉全部特定資訊 |
+
+**改動要同步時，判斷該進哪一份**：特定細節進本機、通用教訓進 plugin。
+散布前一律重跑一次去識別化檢查——`safe-commit` 那份直接散布等於自己公告公司外洩過客戶資料。
+
+---
+
 ## 跨裝置存取（電腦＋手機 Claude Code，2026-07-06 建立）
 
 雙 repo 架構，讓手機也能讀改任務/記憶/待辦：
