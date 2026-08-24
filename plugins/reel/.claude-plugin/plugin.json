@@ -1,7 +1,0 @@
-{
-  "name": "reel",
-  "description": "短影音／長影音剪輯產線的工程地雷：封面卡串接導致的上傳失敗、Whisper 幻覺與校對、字幕安全寬度、素材被雲端同步靜默回收。",
-  "version": "1.0.0",
-  "author": { "name": "Lien" },
-  "license": "MIT"
-}

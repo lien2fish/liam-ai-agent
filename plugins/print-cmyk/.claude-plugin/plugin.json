@@ -1,7 +1,0 @@
-{
-  "name": "print-cmyk",
-  "description": "大圖／防水布／異形看板的 CMYK 送印產線：輸出格式選擇、色彩驗證、出血裁切安全線、異形幾何，以及會讓整批印壞的已知陷阱。",
-  "version": "1.0.0",
-  "author": { "name": "Lien" },
-  "license": "MIT"
-}
