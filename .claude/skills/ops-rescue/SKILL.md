@@ -46,6 +46,43 @@ gh workflow run <檔名>.yml        # 重跑
 | YouTube 上傳「查得到但卡 processing、時長 `P0D`」 | 上傳中斷的半成品 | **不是成功。** 驗收條件是 `processingStatus == succeeded`。刪掉重傳 | ⚠️ |
 | YouTube 403 quota | 三頻道共用配額，一天最多 6 支 | 等重置（**太平洋午夜＝台灣下午 3 點**） | ✅ 等 |
 | 剪片相關失敗、磁碟爆掉 | 暫存不自清（曾累積 23.7GB） | 只發生在本機，Actions 不受影響 | — |
+| `git push` 回 **HTTP 400** ＋ `send-pack: unexpected disconnect` | 改動量大，超過 git 預設的 HTTP 緩衝區 | **不是網路壞掉、不是權限問題，重試一樣會失敗。** 見下方「大包推送」 | ⚠️ 要開終端機 |
+
+---
+
+## git push 回 HTTP 400（大包推送）
+
+**症狀**
+```
+error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400
+send-pack: unexpected disconnect while reading sideband packet
+fatal: the remote end hung up unexpectedly
+```
+有時後面還會跟一句 `Everything up-to-date`，很容易誤判成「已經推過了」——**沒有，遠端完全沒動。**
+
+**原因**：git 預設的 HTTP 緩衝區太小，一次要傳的量超過就會被截斷。
+不是網路問題、不是權限問題，**重試幾次都一樣**。
+
+**處置**（2026-08-25 已在所有 repo 設好，理論上不會再遇到）
+```bash
+git config http.postBuffer 524288000   # 500MB
+git config http.version HTTP/1.1       # HTTP/2 在某些網路下也會觸發
+git push
+```
+
+**若仍失敗，分段推**——把歷史拆成幾包送：
+```bash
+MID=$(git rev-list --reverse HEAD | sed -n '500p')
+git push --force origin ${MID}:refs/heads/main   # 先推一半
+git push --force origin main                     # 再推其餘
+```
+分段期間遠端會停在中間的 commit，**全部跑完才算完成，中途不要停**。
+
+**已設定的 repo**：`Liam AI agent`（主工作區，`work/2`~`work/5` 因共用 config 自動涵蓋）、
+`liam-workspace`。**新 clone 的 repo 要重設**——這是 repo 層級設定，不會跟著帳號走。
+
+**踩過的場合**：2026-08-21 公開 repo 歷史改寫後的 force push（123MB）、
+2026-08-25 私人 repo 推備份與 PDF。兩次都是這個原因。
 
 ---
 
