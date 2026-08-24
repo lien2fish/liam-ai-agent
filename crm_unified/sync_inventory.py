@@ -14,7 +14,7 @@ import urllib.error
 import urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from parse_inventory import SRC, TAEL_TO_CATTY, parse
+from parse_inventory import SRC, TAEL_TO_CATTY, WINE_SRC, parse
 
 CONFIG = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "inventory_config.json"
@@ -109,10 +109,17 @@ SCHEMAS = {
             "分類": {"select": {}},
             "國家": {"select": {}},
             "酒莊": {"rich_text": {}},
+            "酒種": {"select": {}},
             "品種": {"rich_text": {}},
             "庫存數量": {"number": {"format": "number"}},
+            "匠鑫私廚": {"number": {"format": "number"}},
+            "綠塔": {"number": {"format": "number"}},
             "進價": {"number": {"format": "number"}},
             "庫存成本": {"number": {"format": "number"}},
+            "進貨總值": {"number": {"format": "number"}},
+            "產品定價": {"number": {"format": "number"}},
+            "批發價": {"number": {"format": "number"}},
+            "零售價": {"number": {"format": "number"}},
             "備註": {"rich_text": {}},
         },
     },
@@ -190,10 +197,17 @@ def to_props(brand, item):
             "分類": sel(item["分類"]),
             "國家": sel(item["國家"]),
             "酒莊": text(item["酒莊"]),
+            "酒種": sel(item["酒種"]),
             "品種": text(item["品種"]),
             "庫存數量": num(item["庫存數量"]),
+            "匠鑫私廚": num(item["匠鑫私廚"]),
+            "綠塔": num(item["綠塔"]),
             "進價": num(item["進價"]),
             "庫存成本": num(item["庫存成本"]),
+            "進貨總值": num(item["進貨總值"]),
+            "產品定價": num(item["產品定價"]),
+            "批發價": num(item["批發價"]),
+            "零售價": num(item["零售價"]),
             "備註": text(item["備註"]),
         }
     unit_cost = None
@@ -378,7 +392,7 @@ def write_summary(parent, data, src_path):
     wine = data["鑫酒藏"]
     tea = data["鑫茶坊"]
     sea = data["鑫海產"]
-    wine_cost = sum(i["庫存成本"] for i in wine)
+    wine_cost = sum(i["庫存成本"] or 0 for i in wine)
     tea_cost = sum(i["庫存成本"] or 0 for i in tea)
     sea_stock = [i for i in sea if (i["庫存數量"] or 0) > 0]
     sea_costs = [
@@ -395,7 +409,10 @@ def write_summary(parent, data, src_path):
         ),
         heading("庫存成本總覽"),
         bullet(
-            f"🍷 鑫酒藏：{len(wine)} 款 / {sum(i['庫存數量'] for i in wine)} 瓶 ─ NT$ {wine_cost:,.0f}"
+            f"🍷 鑫酒藏：{len(wine)} 款 / 鑫酒藏 {sum(i['庫存數量'] for i in wine)} 瓶"
+            f"（匠鑫私廚 {sum(i['匠鑫私廚'] for i in wine)}、綠塔 {sum(i['綠塔'] for i in wine)}）"
+            f" ─ NT$ {wine_cost:,.0f}"
+            f"（{sum(1 for i in wine if not i['進價'])} 款未填進貨價未計入）"
         ),
         bullet(
             f"🍵 鑫茶坊：{len(tea)} 項 ─ NT$ {tea_cost:,.0f}（{len(tea_missing)} 項無進價資料未計入）"
@@ -426,7 +443,8 @@ def write_summary(parent, data, src_path):
 
 def main():
     path = sys.argv[1] if len(sys.argv) > 1 else SRC
-    data = parse(path)
+    wine_path = sys.argv[2] if len(sys.argv) > 2 else WINE_SRC
+    data = parse(path, wine_path)
     cfg = load_config()
     parent = ensure_parent(cfg)
     print(f"父頁面 {parent}")
