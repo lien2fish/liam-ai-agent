@@ -7,6 +7,7 @@
 |---|---|
 | 線上網址 | https://gs-intro.pages.dev |
 | 部署 | Cloudflare Pages，專案名 `gs-intro` |
+| 16:9 PDF | `design/intro_deck.py` → `~/liam-workspace/reviews/凝鉅情感真鑫相待_介紹簡報.pdf`（11 頁）|
 | 更新 | `npx wrangler pages deploy design/intro --project-name=gs-intro --branch=main --commit-dirty=true` |
 
 ## 內容來源
