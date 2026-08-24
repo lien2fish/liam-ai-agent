@@ -133,6 +133,19 @@ def parse_wine(ws):
             }
         )
 
+    # 同一支酒在總表被登錄兩次（上方暫存區＋下方國別區），保留後出現的正式登錄
+    unique = {}
+    for item in items:
+        unique[(item["酒莊"], item["品名"], item["酒種"], item["品種"])] = item
+    dropped = [i for i in items if i is not unique.get((i["酒莊"], i["品名"], i["酒種"], i["品種"]))]
+    if dropped:
+        print(
+            "鑫酒藏總表重複登錄，已略過："
+            + "、".join(f"第{i['來源列']}列 {i['品名']}" for i in dropped),
+            file=sys.stderr,
+        )
+    items = list(unique.values())
+
     def regroup():
         groups = {}
         for item in items:
