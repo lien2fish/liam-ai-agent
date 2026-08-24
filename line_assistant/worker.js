@@ -34,6 +34,10 @@ const HAS_NOTES = Boolean(WORKSPACE_REPO);
 const HAS_ACTIONS = Boolean(AGENT_REPO) && Object.keys(PROFILE.workflows || {}).length > 0;
 const HAS_CRM = Boolean(PROFILE.crm);
 const HAS_INVENTORY = (PROFILE.inventory || []).length > 0;
+// 寫入庫存預設關閉。範本保持唯讀——手機上改數字沒有復原鍵。
+const CAN_WRITE_INVENTORY = HAS_INVENTORY && PROFILE.inventoryWrite === true;
+const MAX_INV_UPDATE = 50;
+const PENDING_TTL = 600;
 
 const WORKFLOWS = PROFILE.workflows || {};
 
@@ -68,11 +72,12 @@ const HELP = [
   "",
   HAS_CRM && "/客戶 王先生      查客戶（也可打 /c）",
   HAS_CRM && "/買 王先生        查他買過什麼（/s）",
-  HAS_INVENTORY && `/庫存 關鍵字      查庫存（/i，留空列全部）`,
+  HAS_INVENTORY && `/庫存 關鍵字      查庫存（/i）。打品牌名列出該品牌全部`,
   HAS_NOTES && `/待辦 內容        記進 ${TODO_PATH}（/t）`,
   HAS_NOTES && "/筆記 內容        原樣存進知識庫，不整理（/n）",
   HAS_ACTIONS && "/查 自動化        看排程任務有沒有掛（/k）",
   HAS_ACTIONS && "/跑 任務名        立刻跑一次（/r）",
+  CAN_WRITE_INVENTORY && "/改庫存           貼一份表更新數量（/u，先看差異再確認）",
   "",
   "💰 講人話或傳語音＝走 AI",
   "",
@@ -169,9 +174,27 @@ const TOOLS = [
       required: [],
     },
   },
+  CAN_WRITE_INVENTORY && {
+    name: "preview_inventory_update",
+    description:
+      "使用者貼了一份庫存表要更新數量時用這個。它會比對現況並回一份「要改什麼」的差異清單，但**不會真的寫入**——使用者確認後才會套用。永遠先用這個，絕對不要跳過預覽直接寫。",
+    input_schema: {
+      type: "object",
+      properties: {
+        text: { type: "string", description: "使用者貼的整份庫存表原文，一行一個品項" },
+      },
+      required: ["text"],
+    },
+  },
+  CAN_WRITE_INVENTORY && {
+    name: "confirm_inventory_update",
+    description:
+      "把上一步預覽過的庫存變更真的寫進資料庫。只有在使用者明確表示確認之後才能呼叫。使用者沒說確認就不要用。",
+    input_schema: { type: "object", properties: {}, required: [] },
+  },
   HAS_INVENTORY && {
     name: "query_inventory",
-    description: `查庫存（${BRANDS.join("／")}）。回傳品項、數量、價格。`,
+    description: `查庫存（${BRANDS.join("／")}）。指定 brand 會列出該品牌全部品項；keyword 則跨品牌搜尋。回傳品項、數量、價格。`,
     input_schema: {
       type: "object",
       properties: {
@@ -201,8 +224,108 @@ function invRow(props, map) {
   const price = map.price ? plain(props[map.price]) : "";
   const parts = [name];
   parts.push(qty ? qty + (unit ? " " + unit : "") : "缺貨");
-  if (price) parts.push(`${map.price} ${price}`);
+  // 欄位名可能很醜（進貨價_斤），priceLabel 讓畫面顯示統一的說法。
+  if (price) parts.push(`${map.priceLabel || map.price} ${price}`);
   return parts.join("　");
+}
+
+// ── 貼庫存表：解析 → 比對 → 差異預覽 → 確認才寫 ────────────────
+//
+// 「手機打錯字沒得檢查」的解法是那張差異清單：按下確認之前，
+// 你就看得到它把你的字理解成什麼。所以絕不直接寫入。
+
+// 每行取最後一個數字當數量，前面當品名。「白蝦 8 斤」「2兩烏魚子 5」都吃得下。
+function parseInventoryLine(line) {
+  const t = String(line || "").trim();
+  if (!t) return null;
+  const nums = [...t.matchAll(/[0-9]+(?:\.[0-9]+)?/g)];
+  if (!nums.length) return null;
+  const last = nums[nums.length - 1];
+  const name = t.slice(0, last.index).replace(/[\s:：,，=＝\-–]+$/, "").trim();
+  const tail = t.slice(last.index + last[0].length).trim();
+  // 數字後面只容許短單位。整句話裡剛好有數字的不算一筆。
+  if (!name || tail.length > 4) return null;
+  return { name, qty: Number(last[0]) };
+}
+
+function parseInventoryText(text) {
+  const lines = String(text || "").split(/[\n\r]+/);
+  const items = [];
+  const skipped = [];
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) continue;
+    const parsed = parseInventoryLine(t);
+    if (parsed) items.push(parsed);
+    else skipped.push(t);
+  }
+  return { items, skipped };
+}
+
+// 只做精確比對，不猜。「白蝦」對不到「活白蝦」就報告，不要自作聰明改錯品項。
+async function buildInventoryDiff(env, items) {
+  const index = new Map(); // 品名 → [{brand, pageId, qtyField, current}]
+  for (const cfg of PROFILE.inventory || []) {
+    const db = env[cfg.db];
+    if (!db) continue;
+    const rows = await notionQueryAll(env, db, null);
+    for (const row of rows) {
+      const name = plain(row.properties[cfg.name || "品名"]).trim();
+      if (!name) continue;
+      const prop = row.properties[cfg.qty];
+      const current = prop && prop.type === "number" ? prop.number : null;
+      if (!index.has(name)) index.set(name, []);
+      index.get(name).push({ brand: cfg.brand, pageId: row.id, qtyField: cfg.qty, current });
+    }
+  }
+
+  const changes = [];
+  const same = [];
+  const missing = [];
+  const ambiguous = [];
+
+  for (const item of items) {
+    const hits = index.get(item.name);
+    if (!hits || !hits.length) {
+      missing.push(item.name);
+      continue;
+    }
+    if (hits.length > 1) {
+      ambiguous.push(`${item.name}（${hits.map((h) => h.brand).join("、")}都有）`);
+      continue;
+    }
+    const hit = hits[0];
+    if (hit.current === item.qty) {
+      same.push(item.name);
+      continue;
+    }
+    changes.push({
+      name: item.name,
+      brand: hit.brand,
+      pageId: hit.pageId,
+      qtyField: hit.qtyField,
+      from: hit.current,
+      to: item.qty,
+    });
+  }
+  return { changes, same, missing, ambiguous };
+}
+
+function renderInventoryDiff(diff, skipped) {
+  const out = [];
+  if (diff.changes.length) {
+    out.push(`要改 ${diff.changes.length} 筆：`);
+    for (const c of diff.changes) {
+      out.push(`・${c.name}　${c.from == null ? "（空白）" : c.from} → ${c.to}`);
+    }
+  }
+  if (diff.same.length) out.push("", `數字沒變 ${diff.same.length} 筆，略過`);
+  if (diff.missing.length) out.push("", `⚠️ 找不到這些品項（不會動）：`, ...diff.missing.map((x) => `・${x}`));
+  if (diff.ambiguous.length) out.push("", `⚠️ 品名重複、無法判斷（不會動）：`, ...diff.ambiguous.map((x) => `・${x}`));
+  if (skipped && skipped.length) out.push("", `⚠️ 看不懂這幾行：`, ...skipped.slice(0, 5).map((x) => `・${x}`));
+  out.push("");
+  out.push(diff.changes.length ? "確認無誤就回覆　/確認" : "沒有要改的東西。");
+  return out.join("\n");
 }
 
 // ---------- LINE ----------
@@ -357,11 +480,11 @@ async function transcribe(env, messageId) {
 
 // ---------- Notion ----------
 
-async function notionQuery(env, dbId, filter, sorts) {
+async function notionQuery(env, dbId, filter, sorts, pageSize = 25) {
   const body = {};
   if (filter) body.filter = filter;
   if (sorts) body.sorts = sorts;
-  body.page_size = 25;
+  body.page_size = pageSize;
 
   const r = await fetch(`${NOTION_URL}/databases/${dbId}/query`, {
     method: "POST",
@@ -374,6 +497,48 @@ async function notionQuery(env, dbId, filter, sorts) {
   });
   if (!r.ok) throw new Error(`Notion ${r.status}: ${(await r.text()).slice(0, 300)}`);
   return (await r.json()).results;
+}
+
+// Notion 一次最多回 100 筆。庫存動輒上百筆，只抓第一頁會靜默漏掉後面的——
+// 查出來少一半不會報錯，比對品名時更會大量誤判成「找不到」。
+async function notionQueryAll(env, dbId, filter, sorts, max = 500) {
+  const out = [];
+  let cursor;
+  for (let page = 0; page < 10; page++) {
+    const body = { page_size: 100 };
+    if (filter) body.filter = filter;
+    if (sorts) body.sorts = sorts;
+    if (cursor) body.start_cursor = cursor;
+
+    const r = await fetch(`${NOTION_URL}/databases/${dbId}/query`, {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${env.NOTION_TOKEN}`,
+        "notion-version": NOTION_VERSION,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    if (!r.ok) throw new Error(`Notion ${r.status}: ${(await r.text()).slice(0, 300)}`);
+    const data = await r.json();
+    out.push(...data.results);
+    if (!data.has_more || out.length >= max) break;
+    cursor = data.next_cursor;
+  }
+  return out;
+}
+
+async function notionSetNumber(env, pageId, field, value) {
+  const r = await fetch(`${NOTION_URL}/pages/${pageId}`, {
+    method: "PATCH",
+    headers: {
+      authorization: `Bearer ${env.NOTION_TOKEN}`,
+      "notion-version": NOTION_VERSION,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ properties: { [field]: { number: value } } }),
+  });
+  if (!r.ok) throw new Error(`Notion PATCH ${r.status}: ${(await r.text()).slice(0, 200)}`);
 }
 
 function plain(prop) {
@@ -506,6 +671,47 @@ async function runTool(env, name, input) {
     return `${warn}已觸發「${input.task}」，通常 1~5 分鐘跑完。\nhttps://github.com/${AGENT_REPO}/actions/workflows/${file}`;
   }
 
+  if (name === "preview_inventory_update") {
+    const { items, skipped } = parseInventoryText(input.text);
+    if (!items.length) {
+      return "看不懂這份表。一行一個品項，例如：\n白蝦 8\n干貝 15";
+    }
+    if (items.length > MAX_INV_UPDATE) {
+      return `一次最多 ${MAX_INV_UPDATE} 筆，你給了 ${items.length} 筆。分批貼。`;
+    }
+    const diff = await buildInventoryDiff(env, items);
+    if (diff.changes.length && env.CHAT) {
+      await env.CHAT.put("pending_inv", JSON.stringify(diff.changes), {
+        expirationTtl: PENDING_TTL,
+      });
+    }
+    return renderInventoryDiff(diff, skipped);
+  }
+
+  if (name === "confirm_inventory_update") {
+    if (!env.CHAT) return "沒有 KV，無法暫存待確認的變更。";
+    const raw = await env.CHAT.get("pending_inv");
+    if (!raw) return "沒有待確認的變更（或已超過 10 分鐘失效）。請重新貼一次庫存表。";
+
+    const changes = JSON.parse(raw);
+    // 先刪再寫：就算中途失敗也不會因為重複確認而改第二次。
+    await env.CHAT.delete("pending_inv");
+
+    const done = [];
+    const failed = [];
+    for (const c of changes) {
+      try {
+        await notionSetNumber(env, c.pageId, c.qtyField, c.to);
+        done.push(`・${c.name}　${c.from == null ? "（空白）" : c.from} → ${c.to}`);
+      } catch (e) {
+        failed.push(`・${c.name}　失敗：${e.message.slice(0, 60)}`);
+      }
+    }
+    const out = [`已更新 ${done.length} 筆`, ...done];
+    if (failed.length) out.push("", `❌ ${failed.length} 筆沒改到`, ...failed);
+    return out.join("\n");
+  }
+
   if (name === "check_workflows") {
     const filter = String(input.filter || "").trim();
     const wanted =
@@ -623,19 +829,39 @@ async function runTool(env, name, input) {
     const dbs = Object.fromEntries(
       (PROFILE.inventory || []).map((x) => [x.brand, env[x.db]])
     );
-    const targets =
-      input.brand && input.brand !== "全部" ? { [input.brand]: dbs[input.brand] } : dbs;
 
-    const LIMIT = 15;
+    // 斜線指令只吃得下一個參數，所以「/i 鑫茶坊」會把品牌名當關鍵字送進來。
+    // 開頭剛好是品牌名就當成指定品牌，剩下的才是關鍵字。
+    let keyword = String(input.keyword || "").trim();
+    let brand = input.brand;
+    for (const b of Object.keys(dbs)) {
+      if (keyword === b) {
+        brand = b;
+        keyword = "";
+        break;
+      }
+      if (keyword.startsWith(b + " ")) {
+        brand = b;
+        keyword = keyword.slice(b.length).trim();
+        break;
+      }
+    }
+
+    const targets = brand && brand !== "全部" ? { [brand]: dbs[brand] } : dbs;
+
+    // 實測整個品牌全列出來也不到 2,000 字，LINE 一則裝得下（上限 4,500）。
+    // 指定品牌就全給；關鍵字搜出來的通常沒幾筆；只有「全部列出」才需要收斂。
+    const singleBrand = Boolean(brand && brand !== "全部");
+    const LIMIT = singleBrand ? 200 : keyword ? 50 : 20;
     const out = [];
     for (const [brand, db] of Object.entries(targets)) {
       if (!db) continue;
       const map = INV_FIELDS[brand];
       if (!map) continue;
-      const rows = await notionQuery(env, db, null);
+      const rows = await notionQueryAll(env, db, null);
       const hit = rows.filter((p) => {
-        if (!input.keyword) return true;
-        return JSON.stringify(p.properties).includes(input.keyword);
+        if (!keyword) return true;
+        return JSON.stringify(p.properties).includes(keyword);
       });
       if (!hit.length) continue;
 
@@ -644,7 +870,7 @@ async function runTool(env, name, input) {
       out.push(...shown);
       out.push("");
     }
-    return out.length ? out.join("\n").trim() : `庫存查不到「${input.keyword || ""}」`;
+    return out.length ? out.join("\n").trim() : `庫存查不到「${keyword || brand || ""}」`;
   }
 
   return `未知工具 ${name}`;
@@ -663,13 +889,30 @@ const COMMANDS = [
   HAS_NOTES && { keys: ["/note", "/筆記", "/n"], tool: "save_note", arg: null, need: true },
   HAS_ACTIONS && { keys: ["/跑", "/run", "/r"], tool: "run_workflow", arg: "task", need: true },
   HAS_ACTIONS && { keys: ["/查", "/check", "/k"], tool: "check_workflows", arg: "filter", need: false },
+  CAN_WRITE_INVENTORY && {
+    keys: ["/改庫存", "/u"],
+    tool: "preview_inventory_update",
+    arg: "text",
+    need: true,
+    multiline: true,
+  },
+  CAN_WRITE_INVENTORY && {
+    keys: ["/確認"],
+    tool: "confirm_inventory_update",
+    arg: null,
+    need: false,
+    confirm: true,
+  },
 ].filter(Boolean);
 
 function parseCommand(text) {
   const trimmed = text.trim();
   for (const cmd of COMMANDS) {
     for (const key of cmd.keys) {
-      if (trimmed === key || trimmed.startsWith(key + " ")) {
+      // 換行也算分隔，否則多行的 /改庫存 貼進來會被當成不認得的指令。
+      const sep = trimmed.length > key.length ? trimmed[key.length] : "";
+      if (trimmed === key || (trimmed.startsWith(key) && /\s/.test(sep))) {
+        // 只削頭尾空白，行內換行要留著。
         const rest = trimmed.slice(key.length).trim();
         if (cmd.need && !rest) return { error: `${key} 後面要接內容` };
 
@@ -691,7 +934,8 @@ function parseCommand(text) {
             input: { category: "misc", title: rest.slice(0, 15), content: rest },
           };
         }
-        return { tool: cmd.tool, input: { [cmd.arg]: rest } };
+        // arg 為 null 的指令（例如 /確認）不吃參數。
+        return { tool: cmd.tool, input: cmd.arg ? { [cmd.arg]: rest } : {} };
       }
     }
   }

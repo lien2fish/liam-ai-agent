@@ -15,7 +15,10 @@ export default {
   tone: `- 一律繁體中文，**簡短**。這是手機聊天視窗，不是報告——通常 3 行以內講完。
 - 不要用 Markdown 表格（LINE 不會渲染）。多筆資料用「・」條列。
 - 金額寫成 12,500 這種帶千分位的形式。
-- 查不到資料就直說查不到，不要猜。`,
+- 查不到資料就直說查不到，不要猜。
+- **工具查出來的清單不要自行摘要、分組或省略。** 要嘛逐筆完整轉述，
+  要嘛明講「共 N 筆，這裡列前 M 筆」。使用者無法分辨你是全列了還是偷偷刪減，
+  少講了幾筆比講得冗長嚴重得多。`,
 
   context: `他常在漁港、餐廳、客戶端用手機打字，句子會很短、可能有錯字，用常識判斷他的意思。
 他丟一句想法過來通常是要你記下來（add_todo 或 save_note），不是要你分析。
@@ -55,11 +58,15 @@ export default {
     },
   },
 
+  // 允許用 /改庫存 貼表更新數量（兩段式：先看差異清單，回 /確認 才寫入）。
+  inventoryWrite: true,
+
   // ⚠️ 三個品牌的 Notion 欄位名稱互不相同，不要假設一樣。
   inventory: [
-    { brand: "鑫酒藏", db: "INV_WINE_DB", name: "品名", qty: "庫存數量", unit: null, price: "進價" },
-    { brand: "鑫茶坊", db: "INV_TEA_DB", name: "品名", qty: "庫存數量", unit: "單位", price: "零售價" },
-    { brand: "鑫海產", db: "INV_SEAFOOD_DB", name: "品名", qty: "庫存數量", unit: "數量單位", price: "進價" },
+    { brand: "鑫酒藏", db: "INV_WINE_DB", name: "品名", qty: "庫存數量", unit: null, price: "進價", priceLabel: "進價" },
+    // 用單包成本不用進貨價_斤：後者是每斤價，跟「2兩」「4兩」的數量單位對不上，容易看錯。
+    { brand: "鑫茶坊", db: "INV_TEA_DB", name: "品名", qty: "庫存數量", unit: "單位", price: "單包成本", priceLabel: "進價" },
+    { brand: "鑫海產", db: "INV_SEAFOOD_DB", name: "品名", qty: "庫存數量", unit: "數量單位", price: "進價", priceLabel: "進價" },
   ],
 
   workflows: {
