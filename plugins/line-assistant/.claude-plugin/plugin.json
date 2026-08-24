@@ -1,0 +1,7 @@
+{
+  "name": "line-assistant",
+  "description": "部署一個只有自己能用的 LINE AI 助理：Cloudflare Worker 範本連結、設定流程，以及兩道非設不可的防護機制。",
+  "version": "1.0.0",
+  "author": { "name": "Lien" },
+  "license": "MIT"
+}

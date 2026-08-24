@@ -1,0 +1,10 @@
+{
+  "name": "lien-plugins",
+  "owner": { "name": "Lien" },
+  "plugins": [
+    { "name": "line-assistant", "source": "./line-assistant" },
+    { "name": "print-cmyk", "source": "./print-cmyk" },
+    { "name": "reel", "source": "./reel" },
+    { "name": "safe-commit", "source": "./safe-commit" }
+  ]
+}
