@@ -1,0 +1,7 @@
+{
+  "name": "safe-commit",
+  "description": "commit／push 前的敏感資料檢查：判斷敏感等級、實查目的地公開程度、掃描暫存區，以及萬一外洩的完整止血流程。",
+  "version": "1.0.0",
+  "author": { "name": "Lien" },
+  "license": "MIT"
+}
