@@ -60,15 +60,29 @@ description: IG + FB 每日自動發文、IG 留言自動回覆、IG 限動 Reel
 ### 注意事項
 - Meta Webhook 機制限制多（新版 Use Cases 架構無法用 `subscribed_apps`），改用輪詢
 - Cloudflare Worker（`ig-auto-reply.lien2fish.workers.dev`）已部署但未使用，可保留或刪除
-- IG Token 有**兩個獨立的期限，不要只看 `expires_at`**：
-  | 欄位 | 現況 | 意義 |
+- IG Token 有**三種死法，不要只盯 `expires_at`**：
+  | 欄位／狀況 | 現況 | 意義 |
   |------|------|------|
-  | `expires_at` | `0`＝永不過期 | token 字串本身不會失效 |
-  | `data_access_expires_at` | **2026-11-13**（2026-08-15 更新） | **到期後 API 會開始拒絕存取資料** |
+  | `expires_at` | **2026-10-24**（2026-08-25 換發） | token 字串本身失效 |
+  | `data_access_expires_at` | **2026-11-23**（2026-08-25 重新授權 +90 天） | 到期後 API 拒絕存取資料 |
+  | session 被作廢 | **無預警，隨時** | 改 FB 密碼或 Meta 安全性重設就會發生 |
+
+  ⚠️ **「`expires_at`＝0 永不過期」已被推翻（2026-08-25）。**
+  先前紀錄說 token 本身永不過期，但這次 `fb_exchange_token` 換出來的長效 token
+  是 **60 天期**（`expires_in` 5183910 秒，到期 2026-10-24）。
+  **不要再假設 token 永不過期**——`expires_at` 比 `data_access_expires_at` 早一個月，
+  它才是先炸的那個。每次換發都用 `debug_token` 讀出實際值寫回 config，不要憑印象。
 
   ⚠️ **`fb_exchange_token` 換發不會重置 `data_access_expires_at`**——換出來的新 token
-  到期日跟舊的完全一樣（2026-08-15 實測）。這個日期**只有使用者真的走一次授權對話框才會 +90 天**。
-  所以「永不過期」是真的，但不代表不用管。
+  到期日跟舊的完全一樣（2026-08-15 實測）。這個日期**只有使用者真的走一次授權對話框才會 +90 天**
+  （2026-08-25 走完對話框，確實從 11-13 推到 11-23，＝授權當天 +90 天）。
+
+  ⚠️ **session 被作廢（`OAuthException` code 190 / subcode 460）跟到期無關**，
+  訊息是「The session has been invalidated because the user changed their password
+  or Facebook has changed the session for security reasons」。
+  **`fb_exchange_token` 救不回來，一定要走完整授權對話框。**
+  2026-08-25 就是這樣：三套 IG 系統在到期日還有兩個多月時同時掛掉。
+
   更新流程見下方〈IG Token 更新步驟〉，兩個地方都要改：
   `config/instagram_config.json` 與 GitHub Secret `IG_TOKEN`
 
@@ -98,8 +112,9 @@ description: IG + FB 每日自動發文、IG 留言自動回覆、IG 限動 Reel
 | 隱私政策頁 | https://lien2fish.github.io/liam-ai-agent/privacy.html |
 
 ### 重要到期日
-- **IG Token：token 本身永不過期，但「資料存取權」2026-11-13 到期**（2026-08-15 重新授權後 +90 天）。
-  屆時走上方〈IG Token 更新步驟〉再跑一次即可
+- **IG Token：`expires_at` 2026-10-24 先到期**，「資料存取權」2026-11-23 才到期
+  （2026-08-25 重新授權後 +90 天）。**以早的那個為準，10 月中就該重跑一次**上方〈IG Token 更新步驟〉。
+  ⚠️ 也可能在到期前就因 session 被作廢而提前掛掉（見上方 190/460）
 - **FB Page Token：永不過期**（無需更新）
 - 更新 Token 方式：用 `nacl.public.SealedBox` 直接寫入 GitHub Secret（系統 PyNaCl 1.6.2 已支援）
 - **GitHub PAT（舊）：2026-08-15 到期** — 已廢棄，改用新 PAT
