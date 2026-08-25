@@ -86,6 +86,10 @@ description: IG + FB 每日自動發文、IG 留言自動回覆、IG 限動 Reel
   更新流程見下方〈IG Token 更新步驟〉，兩個地方都要改：
   `config/instagram_config.json` 與 GitHub Secret `IG_TOKEN`
 
+> ✅ **不用自己記日期**：`token_expiry_check.yml` 每天 08:45 問 `debug_token` 實際狀態，
+> 提前 30 天起分批提醒（Email＋LINE），token 失效或缺權限當天就 🔴。
+> 腳本 `scripts/token_expiry_check.py`，**不寫死到期日**，換發後不用改程式。
+
 ### IG Token 更新步驟（2026-08-15 實跑驗證）
 
 1. Safari 開 `https://developers.facebook.com/tools/explorer/1310018353798687/`

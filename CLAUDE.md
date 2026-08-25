@@ -133,6 +133,7 @@
 | `yt_channel_report.yml` | The Unknown Hour 頻道每日表現日報（觀看/讚/留言+新留言Email） | 每天 08:20，用YT_API_KEY讀公開數據，自動commit報告 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 | `rotary_birthday_reminder.yml` | 中城網路扶輪社社友生日提醒（剛好前14天Email一次；資料=私人repo `liam-workspace/rotary/中城網路社友通訊錄.json` 71位，用`WORKSPACE_PAT` checkout，**個資不進公開repo、無commit**） | 每天 08:10 |
+| `token_expiry_check.yml` | **IG／FB Token 到期與失效檢查**（不寫死日期，每天問 `debug_token` 實際狀態；剩 30/21/14/10/7/5/3/2/1 天時提醒，失效或缺權限則 🔴 並讓 run 變紅）。**Email＋LINE 雙通道** | 每天 08:45 |
 | `weekly_review.yml` | **AI 工作週報**（上週做了什麼＋可精進＋自動化健康＋下期建議，Email 附正式 PDF）。資料＝私人repo `daily/` 工作日誌＋公開repo git log＋Actions runs API＋`TODO.md` diff；**報告只進私人repo `liam-workspace/reviews/`，不進公開repo** | 每週一 08:50（錯開 08:00 營收週報）|
 
 ### GitHub Secrets 總覽
@@ -154,6 +155,8 @@
 | `YT_CHANNEL_ID` | YouTube 頻道 ID（連老闆-產地到餐桌）|
 | `YT_OAUTH_CLIENT_ID` / `YT_OAUTH_CLIENT_SECRET` / `YT_OAUTH_REFRESH_TOKEN` | The Unknown Hour 自動上傳 OAuth（scope youtube.upload，同意畫面已發Production不過期）2026-06-29設 |
 | `GMAIL_APP_PASSWORD` | Gmail App 密碼，供 YouTube 留言通知＋頻道日報＋回購提醒寄信用 |
+| `LINE_NOTIFY_URL` | liam-assistant Worker 網址，供 `line_assistant/notify.py` 推 LINE（2026-08-25 新增）|
+| `LINE_NOTIFY_TOKEN` | 與 Worker secret `NOTIFY_TOKEN` 同值。**2026-08-25 輪替過一次**（舊值沒留存，當時無人使用）|
 | `WORKSPACE_PAT` | 存取私人 repo `liam-workspace` 的 PAT（＝本機 liam-workspace remote 內同一組，永不過期），供扶輪社生日提醒 checkout 個資 |
 
 ---
@@ -186,7 +189,7 @@
 | 指令 | `/客戶 /買 /庫存 /待辦 /筆記 /跑 /查`（簡寫 `/c /s /i /t /n /r /k`）|
 | `/查` | 查 16 個排程任務健康度，純唯讀。含「**不穩定**」分類——只看最後一次的話，時好時壞的任務會顯示成正常（月報最近 5 次失敗 3 次就是這樣被漏掉的）|
 | ⛔ 保護 | **`/跑` 不接受會對外發布的四個任務**（IG發文／IG留言回覆／限動預告／YouTube影片）——斜線指令不經過 AI、沒有確認步驟。要發走自然語言或電腦 |
-| 推播 | `line_assistant/notify.py` — 任何腳本 `from line_assistant.notify import notify` 即可用；**未設環境變數時靜默跳過**，不會弄壞既有流程 |
+| 推播 | `line_assistant/notify.py` — 任何腳本 `from line_assistant.notify import notify` 即可用；**未設環境變數時靜默跳過**，不會弄壞既有流程。⚠️ **2026-08-25 修**：原本用 urllib 預設 User-Agent，**被 Cloudflare 回 403 擋掉**，而 `silent_fail` 會把它吞掉——等於推播從來沒送出去過也不會有人發現。已改送 `User-Agent: liam-notify/1`。⚠️ `/notify` 連打會被限流（回 500／連線中斷），測試要隔開 |
 | 能做 | 記待辦、口述存知識庫（含語音轉文字）、查客戶／銷售／庫存、接收自動化推播 |
 | **兩種模式** | **斜線指令**（`/客戶` `/買` `/庫存` `/待辦` `/筆記`，含 `/c /s /i /t /n` 簡寫）直達 Notion／GitHub，**零 API 成本**；**自然語言與語音**才走 Claude。日常九成操作免費，**估**月費約 NT$10（2026-08-24 上線，尚未累積實際帳單）|
 | 不做 | 跑腳本、剪片、送印、**建訂單**（要同步四個系統，手機打錯字沒得檢查）|
