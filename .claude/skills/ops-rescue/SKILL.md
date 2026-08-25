@@ -172,7 +172,7 @@ git push --force origin main                     # 再推其餘
 | **IG Token 本身（`expires_at`）** | **2026-10-24** | 三個 IG 系統同時掛。⚠️ **2026-08-25 推翻舊紀錄**：長效 token 不是永不過期，是 60 天 |
 | **IG Token 資料存取權** | **2026-11-23** | 同上。⚠️ `fb_exchange_token` 換發**不會**重置這個日期，必須走使用者授權對話框 |
 | **IG session**（無到期日） | 隨時 | 改 FB 密碼就會被作廢，見症狀表 190/460。**2026-08-25 發生過一次** |
-| FB Page Token | 永不過期 | — |
+| FB Page Token | `expires_at`＝0 | **但會隨 user session 被作廢一起死**（2026-08-25 發生過）。重簽＝用 user token 打 `GET /{page-id}?fields=access_token` |
 | GitHub PAT（新） | 永不過期 | — |
 | Gemini 免費額度 | 每天重置（台北 15:00） | 429 |
 | YouTube API 配額 | 每天重置（台北 15:00） | 403 |
