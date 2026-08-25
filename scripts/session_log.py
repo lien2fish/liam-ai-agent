@@ -6,6 +6,7 @@
 """
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import datetime
@@ -22,6 +23,26 @@ NOISE_PREFIX = (
     "Base directory for this skill:",  # Skill 載入的內容
     "The following skills are available",
 )
+
+
+# 使用者有時會把金鑰直接貼進對話（2026-08-25 就發生過，IG 短效 token）。
+# 那則訊息會原樣寫進日誌並 push 上 repo——私人 repo 也不該留這種東西。
+SECRETS = [
+    (re.compile(r"EAA[A-Za-z0-9]{20,}"), "〔已遮蔽：Meta token〕"),
+    (re.compile(r"sk-[A-Za-z0-9_-]{20,}"), "〔已遮蔽：OpenAI／Anthropic 金鑰〕"),
+    (re.compile(r"gh[pousr]_[A-Za-z0-9]{20,}"), "〔已遮蔽：GitHub token〕"),
+    (re.compile(r"AIza[A-Za-z0-9_-]{30,}"), "〔已遮蔽：Google 金鑰〕"),
+    (re.compile(r"xox[baprs]-[A-Za-z0-9-]{10,}"), "〔已遮蔽：Slack token〕"),
+    # 32 字以上的純 hex——涵蓋自產的隨機 token（也會吃掉完整 commit SHA，
+    # 但寧可日誌少一個 SHA，也不要漏掉一把金鑰）
+    (re.compile(r"\b[A-Fa-f0-9]{32,}\b"), "〔已遮蔽：長 hex 字串〕"),
+]
+
+
+def redact(text):
+    for pat, mask in SECRETS:
+        text = pat.sub(mask, text)
+    return text
 
 
 def parse(path):
@@ -43,7 +64,7 @@ def parse(path):
                 and c.strip()
                 and not c.lstrip().startswith(NOISE_PREFIX)
             ):
-                text = " ".join(c.split())
+                text = redact(" ".join(c.split()))
                 if text not in prompts:
                     prompts.append(text)
         elif t == "assistant":
