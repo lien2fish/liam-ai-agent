@@ -38,6 +38,9 @@ def notify(text, silent_fail=True):
         headers={
             "Content-Type": "application/json",
             "Authorization": "Bearer " + token,
+            # ⚠️ 不能用 urllib 預設的 User-Agent——Cloudflare 會回 403 擋掉，
+            # 而 silent_fail 會把它吞成「沒送出」，你不會知道推播根本沒發生。
+            "User-Agent": "liam-notify/1",
         },
         method="POST",
     )

@@ -1,0 +1,22 @@
+name: Token 到期提醒
+
+on:
+  schedule:
+    - cron: '45 0 * * *'   # 台灣 08:45
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 檢查 IG／FB Token
+        env:
+          IG_TOKEN:           ${{ secrets.IG_TOKEN }}
+          IG_ID:              ${{ secrets.IG_ID }}
+          FB_PAGE_TOKEN:      ${{ secrets.FB_PAGE_TOKEN }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          LINE_NOTIFY_URL:    ${{ secrets.LINE_NOTIFY_URL }}
+          LINE_NOTIFY_TOKEN:  ${{ secrets.LINE_NOTIFY_TOKEN }}
+        run: python3 scripts/token_expiry_check.py

@@ -64,6 +64,7 @@ gh workflow run <檔名>.yml        # 重跑
 | Gmail `invalid_grant` | refresh token 被撤銷／改密碼 | 重新授權（見 `gmail-ops` skill）。⚠️ 2026-07-12 已發 Production，**不再是每 7 天過期那個老問題** | ❌ 要開瀏覽器 |
 | YouTube 上傳「查得到但卡 processing、時長 `P0D`」 | 上傳中斷的半成品 | **不是成功。** 驗收條件是 `processingStatus == succeeded`。刪掉重傳 | ⚠️ |
 | YouTube 403 quota | 三頻道共用配額，一天最多 6 支 | 等重置（**太平洋午夜＝台灣下午 3 點**） | ✅ 等 |
+| **LINE 推播該來卻沒來** | `notify.py` 的 User-Agent 被 Cloudflare 回 403，而 `silent_fail=True` 會把它吞掉 | 確認有送 `User-Agent: liam-notify/1`（2026-08-25 已修）。⚠️ `/notify` 連打會被限流，測試要隔開 | ✅ |
 | 剪片相關失敗、磁碟爆掉 | 暫存不自清（曾累積 23.7GB） | 只發生在本機，Actions 不受影響 | — |
 | `git push` 回 **HTTP 400** ＋ `send-pack: unexpected disconnect` | 改動量大，超過 git 預設的 HTTP 緩衝區 | **不是網路壞掉、不是權限問題，重試一樣會失敗。** 見下方「大包推送」 | ⚠️ 要開終端機 |
 
@@ -133,6 +134,7 @@ git push --force origin main                     # 再推其餘
 | 08:00 | IG+FB 發文、Gmail 清理＋新聞、保單到期 | Gmail✓ 保單✓ |
 | 08:05 / 08:10 / 08:40 | 生日提醒／扶輪生日／壽險拜訪 | — |
 | 08:20 / 08:30 | YT 頻道日報／YT 留言通知 | ✓ |
+| 08:45 | **Token 到期提醒**（IG／FB，Email＋LINE） | — |
 | 09:00 / 09:30 | 回購提醒／漁獲行情 | ✓ |
 | 10:00 | YouTube 自動影片（**只在週二、五、日製作**） | — |
 | 12:00 | 市場日報 | ✓ |
@@ -160,6 +162,10 @@ git push --force origin main                     # 再推其餘
 ---
 
 ## 到期日（會準時炸的東西）
+
+> ✅ **2026-08-25 起有 `token_expiry_check.yml` 每天 08:45 自動盯**，
+> 剩 30/21/14/10/7/5/3/2/1 天會 Email＋LINE 提醒，失效當天 run 直接變紅。
+> 下表留著當背景知識，但**不需要靠人記日期了**。
 
 | 項目 | 到期 | 症狀 |
 |---|---|---|
