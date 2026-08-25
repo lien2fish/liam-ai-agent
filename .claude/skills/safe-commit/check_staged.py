@@ -21,14 +21,25 @@ PATH_BLOCK = [
     (r"名單.*\.(csv|xlsx|numbers)$", "名單類資料檔"),
     (r"資產負債|balance_sheet", "財務報表"),
     (r"policy_data|保單", "保單資料"),
-    (r"credential|token|secret|\.key$|\.pem$", "憑證或金鑰"),
+    (r"\.key$|\.pem$", "憑證檔"),
     (r"身分證|identity", "身分證相關"),
 ]
 
 # 執行日誌會逐條列出往來的銀行與平台名稱，比想像中洩漏更多
 PATH_WARN = [
     (r"_log\.txt$|(^|/)log[s]?/", "執行日誌——常夾帶往來機構名稱"),
+    # ⚠️ 檔名含這些字不代表裡面有金鑰——處理金鑰的「程式」也會這樣命名
+    # （2026-08-25：token_expiry_check.py 被誤判成憑證檔）。
+    # 只有內容真的出現不透明長字串時才升級成 ❌，見 scan()。
+    (r"credential|token|secret", "檔名像憑證——確認裡面是程式還是金鑰本身"),
 ]
+
+# 不透明長字串：連續 24 字以上的 base64/hex 字元，且大小寫數字混雜。
+# 單獨看誤判率高，所以只在「檔名像憑證」時才拿來當升級條件。
+OPAQUE_LITERAL = re.compile(
+    r"""['"=:\s](?=[A-Za-z0-9_+/=-]{24,}['"\s]?)"""
+    r"""(?=[^'"\s]*[a-z])(?=[^'"\s]*[A-Z0-9])[A-Za-z0-9_+/=-]{24,}"""
+)
 
 # 內容樣式
 CONTENT_BLOCK = [
@@ -115,11 +126,25 @@ def scan(path):
         if re.search(pat, text):
             errs.append(why)
 
-    # Markdown／文字報告裡的人名表格——48 份含客戶姓名的報告當初就是這樣漏掉的
-    if re.search(r"\|\s*(客戶|姓名|名稱|社友|會員)\s*\|", text):
-        rows = len(re.findall(r"(?m)^\|\s*[一-\u9fff]{2,6}[^|]{0,8}\s*\|", text))
-        if rows:
-            errs.append("含人名表格（%d 列）" % rows)
+    if re.search(r"credential|token|secret", path, re.I) and OPAQUE_LITERAL.search(text):
+        errs.append("檔名像憑證，且內容有不透明長字串——很可能是金鑰本身")
+
+    # Markdown／文字報告裡的人名表格——48 份含客戶姓名的報告當初就是這樣漏掉的。
+    # ⚠️ 2026-08-25 收斂：舊版只要表頭有「名稱」就中，而文件表格幾乎都有這個字，
+    # 列數正則又把「排程」「腳本」這種詞算成人名，誤報到會訓練人忽略這支檢查。
+    # 現在要「人名欄」與「個資／財務欄」同時出現才判 ❌；只有人名欄降為 ⚠️。
+    person_col = re.search(r"\|\s*(客戶|客戶姓名|姓名|社友|會員|收件人)\s*\|", text)
+    pii_col = re.search(
+        r"\|\s*(電話|手機|行動電話|地址|生日|出生|身分證|Email|e-mail|信箱|"
+        r"金額|消費|訂購|保單|投保|統一?編號)[^|]{0,6}\|",
+        text, re.I,
+    )
+    if person_col:
+        rows = len(re.findall(r"(?m)^\|\s*[一-\u9fff]{2,4}\s*\|", text))
+        if pii_col and rows:
+            errs.append("含人名＋個資的資料表（%d 列）" % rows)
+        elif rows:
+            warns.append("有疑似人名欄的表格（%d 列）——確認是文件還是名單" % rows)
     for pat, why in CONTENT_WARN:
         if re.search(pat, text):
             warns.append(why)
