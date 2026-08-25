@@ -1,10 +1,8 @@
 name: IG 留言自動回覆
 
 on:
-  # 2026-08-25 暫停：IG token 被 Meta 作廢（OAuthException 190/460），
-  # 排程每次都失敗並寄信。重新授權完成後把下面兩行取消註解。
-  # schedule:
-  #   - cron: '*/5 * * * *'   # 每 5 分鐘
+  schedule:
+    - cron: '*/5 * * * *'   # 每 5 分鐘
   workflow_dispatch:         # 允許手動觸發
 
 jobs:
