@@ -90,7 +90,22 @@ description: IG + FB 每日自動發文、IG 留言自動回覆、IG 限動 Reel
 > 提前 30 天起分批提醒（Email＋LINE），token 失效或缺權限當天就 🔴。
 > 腳本 `scripts/token_expiry_check.py`，**不寫死到期日**，換發後不用改程式。
 
-### IG Token 更新步驟（2026-08-15 實跑驗證）
+### IG Token 更新步驟
+
+**首選：在 Terminal.app 跑 `python3 scripts/ig_reauth.py`**（2026-08-25 建立）
+
+短效 token 用隱藏輸入貼進去——**不回顯、不進 shell history、不留暫存檔、不經過對話框**。
+腳本會一次做完：換長效 → 驗六項權限 → 驗 `data_access_expires_at` 有往後推 →
+實際打一次 API → 重簽 FB Page token → 備份並寫回 config → 更新兩個 GitHub Secret。
+全程不印任何金鑰的值；到期日沒往後推會停下來問（那代表沒真的走完授權對話框）。
+
+⚠️ **不要在 Claude Code 對話框裡跑**——沒有互動終端機，`getpass` 讀不到東西，
+腳本會直接拒絕執行。**也不要請使用者把 token 貼進對話**（2026-08-25 我這樣做過，
+等於讓金鑰在 transcript 裡多留一份）。
+
+下面是手動步驟，腳本壞掉時當備援：
+
+#### 手動步驟（2026-08-15 實跑驗證）
 
 1. Safari 開 `https://developers.facebook.com/tools/explorer/1310018353798687/`
 2. User Token → Permissions 勾滿六項：`instagram_basic` / `instagram_content_publish` /
