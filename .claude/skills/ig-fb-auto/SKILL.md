@@ -119,7 +119,10 @@ description: IG + FB 每日自動發文、IG 留言自動回覆、IG 限動 Reel
 - **IG Token：`expires_at` 2026-10-24 先到期**，「資料存取權」2026-11-23 才到期
   （2026-08-25 重新授權後 +90 天）。**以早的那個為準，10 月中就該重跑一次**上方〈IG Token 更新步驟〉。
   ⚠️ 也可能在到期前就因 session 被作廢而提前掛掉（見上方 190/460）
-- **FB Page Token：永不過期**（無需更新）
+- **FB Page Token：`expires_at`＝0，但不等於不會失效**——2026-08-25 隨 user session
+  被作廢一起死（同 190/460）。重簽很快：拿新的 user token 打 `GET /{page-id}?fields=access_token`。
+  ⚠️ 目前**沒有腳本真的用到它**（FB 跨發走 IG 的 `cross_post_ids`），所以它死掉不會有功能症狀，
+  只有 `token_expiry_check` 會抓到
 - 更新 Token 方式：用 `nacl.public.SealedBox` 直接寫入 GitHub Secret（系統 PyNaCl 1.6.2 已支援）
 - **GitHub PAT（舊）：2026-08-15 到期** — 已廢棄，改用新 PAT
 - **GitHub PAT（新）：永不過期**，含 `repo` + `workflow` scope，存在 `~/.git-credentials`

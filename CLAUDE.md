@@ -145,7 +145,7 @@
 | `HF_TOKEN` | （已停用）Hugging Face FLUX→Pollinations→OpenAI，兩任前身皆因免費額度取消而汰換 |
 | `IG_TOKEN` | Instagram Graph API（到期 2026-07-16）|
 | `IG_ID` | Instagram 帳號 ID |
-| `FB_PAGE_TOKEN` | Facebook Page Token（永不過期）|
+| `FB_PAGE_TOKEN` | Facebook Page Token（`expires_at`＝0，但**「永不過期」不等於不會失效**——2026-08-25 隨 user session 被作廢一起死掉。用 user token 打 `GET /{page-id}?fields=access_token` 重簽即可。⚠️ 目前**沒有任何腳本真的用到它**，FB 跨發走 IG 的 `cross_post_ids`）|
 | `FB_PAGE_ID` | Facebook Page ID |
 | `GMAIL_CLIENT_ID` | Gmail OAuth |
 | `GMAIL_CLIENT_SECRET` | Gmail OAuth |
