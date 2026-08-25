@@ -65,6 +65,27 @@ python3 .claude/skills/safe-commit/check_staged.py
 
 沒有 ❌ 才 commit。有 ❌ 就停下來問，不要自己判斷「應該還好」。
 
+⚠️ **判 ❌ 不可以只回一句「應該是誤判」就過。** 要逐檔看過，
+並用「真正的秘密值」去比對 staged diff 佐證：
+
+```python
+diff = subprocess.run(["git", "diff", "--cached"], capture_output=True, text=True).stdout
+for name, value in 實際的金鑰們.items():
+    print(name, "❌ 外洩" if value and value in diff else "✅ 未出現")
+```
+
+樣式比對抓不到的（值被 Excel 改過、未知格式的金鑰），值比對抓得到。
+
+**2026-08-25 收斂過兩條誤報來源**（誤報多會訓練人反射性忽略這支檢查）：
+
+| 規則 | 舊行為 | 現在 |
+|---|---|---|
+| 檔名含 `credential`／`token`／`secret` | 一律 ❌ | ⚠️；**內容真的有不透明長字串才升 ❌**（處理金鑰的程式也會這樣命名）|
+| 人名表格 | 表頭有「名稱」就 ❌，且把「排程」「腳本」算成人名 | 要**人名欄＋個資／財務欄同時出現**才 ❌；只有人名欄降 ⚠️；「名稱」不再列為人名欄 |
+
+`.key`／`.pem` 仍是無條件 ❌。九個對照案例實測過：回購提醒、社友通訊錄、
+未知格式金鑰檔都照樣擋下，純程式與文件表格不再誤報。
+
 ---
 
 ## 已知地雷
