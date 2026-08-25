@@ -17,6 +17,24 @@ gh run list --workflow=<檔名>.yml --limit 5
 gh run view <run-id> --log-failed
 ```
 
+⚠️ **本機沒有 `gh` CLI。** 但 repo 是公開的，**Actions API 不帶金鑰就讀得到**：
+
+```bash
+R=lien2fish/liam-ai-agent
+curl -s "https://api.github.com/repos/$R/actions/workflows/<檔名>.yml/runs?per_page=30"   # 每次執行的成敗與時間
+curl -s "https://api.github.com/repos/$R/actions/runs/<run-id>/jobs"                      # 停在哪一個 step
+curl -s "https://api.github.com/repos/$R/check-runs/<job-id>/annotations"                 # 只給得到 exit code
+curl -s "https://api.github.com/repos/$R/actions/runs?per_page=100"                       # 全部任務一次掃，最快看出是單一系統還是全面失效
+```
+
+⚠️ **只有 log 下載要 admin 權限**（回 403 `Must have admin rights`），拿不到 traceback。
+所以判斷根因常常得**在本機拿同一把金鑰重現一次**——2026-08-25 就是這樣直接打 Graph API
+拿到 `OAuthException 190/460`，比讀 log 還快。
+
+⚠️ **讀 `~/.git-credentials` 的 PAT 再打 api.github.com 會被權限守門擋下**
+（「讀憑證檔→送網路」的形狀會被判定成外洩風險）。公開讀取一律用上面的免金鑰寫法；
+真的要寫入（例如更新 Secret）再讓使用者當場核准。
+
 ⚠️ **GitHub 排程常誤點 1.5~4 小時**（平台限制，非設定錯誤），高頻的 `ig_comment_reply` 最明顯。
 **還沒到就急著修，會改壞沒壞的東西。** 先看「上一次成功是什麼時候」。
 
@@ -40,7 +58,8 @@ gh workflow run <檔名>.yml        # 重跑
 | Gemini 503 UNAVAILABLE | 伺服器過載，暫時性 | 間隔 10~15 秒重試幾次會好。**跟 429 是不同問題，別搞混** | ✅ |
 | OpenAI 生圖 4xx | 額度沒了／內容政策 | 去 Console 儲值。**4xx 不重試**（腳本已設計成直接中止） | ⚠️ 要開 Console |
 | 生圖過半失敗 → `raise` 中止 | 生圖服務整體異常 | 這是**刻意的保護**（2026-08-05 曾產出整支同一張底圖的假成功影片）。等服務恢復再重跑 | ✅ |
-| IG／FB 回 `OAuthException` | IG Token 的**資料存取權**到期 | 走完整重新授權流程（見 `ig-fb-auto` skill） | ❌ **手機做不到** |
+| IG／FB 回 `OAuthException` **190 / subcode 460** | **session 被作廢**（改 FB 密碼或 Meta 安全性重設），**跟到期日無關、隨時會發生** | 走完整重新授權（見 `ig-fb-auto` skill）。⚠️ `fb_exchange_token` 換發救不回來 | ❌ **手機做不到** |
+| IG／FB 回 `OAuthException`（其他） | IG Token 的**資料存取權**到期 | 走完整重新授權流程（見 `ig-fb-auto` skill） | ❌ **手機做不到** |
 | Notion 404／400 | DB ID 錯或頁面被封存 | 對照各 skill 裡的 DB ID | ✅ |
 | Gmail `invalid_grant` | refresh token 被撤銷／改密碼 | 重新授權（見 `gmail-ops` skill）。⚠️ 2026-07-12 已發 Production，**不再是每 7 天過期那個老問題** | ❌ 要開瀏覽器 |
 | YouTube 上傳「查得到但卡 processing、時長 `P0D`」 | 上傳中斷的半成品 | **不是成功。** 驗收條件是 `processingStatus == succeeded`。刪掉重傳 | ⚠️ |
@@ -144,7 +163,9 @@ git push --force origin main                     # 再推其餘
 
 | 項目 | 到期 | 症狀 |
 |---|---|---|
-| **IG Token 資料存取權** | **2026-11-13** | 三個 IG 系統同時 `OAuthException`。⚠️ `fb_exchange_token` 換發**不會**重置這個日期，必須走使用者授權對話框 |
+| **IG Token 本身（`expires_at`）** | **2026-10-24** | 三個 IG 系統同時掛。⚠️ **2026-08-25 推翻舊紀錄**：長效 token 不是永不過期，是 60 天 |
+| **IG Token 資料存取權** | **2026-11-23** | 同上。⚠️ `fb_exchange_token` 換發**不會**重置這個日期，必須走使用者授權對話框 |
+| **IG session**（無到期日） | 隨時 | 改 FB 密碼就會被作廢，見症狀表 190/460。**2026-08-25 發生過一次** |
 | FB Page Token | 永不過期 | — |
 | GitHub PAT（新） | 永不過期 | — |
 | Gemini 免費額度 | 每天重置（台北 15:00） | 429 |
