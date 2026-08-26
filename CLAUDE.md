@@ -159,7 +159,7 @@
 | `GMAIL_APP_PASSWORD` | Gmail App 密碼，供 YouTube 留言通知＋頻道日報＋回購提醒寄信用 |
 | `LINE_NOTIFY_URL` | liam-assistant Worker 網址，供 `line_assistant/notify.py` 推 LINE（2026-08-25 新增）|
 | `LINE_NOTIFY_TOKEN` | 與 Worker secret `NOTIFY_TOKEN` 同值。**2026-08-25 輪替過一次**（舊值沒留存，當時無人使用）|
-| `WORKSPACE_PAT` | 存取私人 repo `liam-workspace` 的 PAT（＝本機 liam-workspace remote 內同一組，永不過期），供扶輪社生日提醒 checkout 個資 |
+| `WORKSPACE_PAT` | 存取私人 repo `liam-workspace` 的 PAT（＝本機 liam-workspace remote 內同一組，永不過期）。兩個用途：扶輪社生日提醒 checkout 個資、YouTube 自動影片 checkout 授權配樂（`assets/bgm/`，音檔不進公開 repo）|
 
 ---
 

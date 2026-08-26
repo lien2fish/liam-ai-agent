@@ -61,9 +61,15 @@ MASCOT_SCENE = (
     "directly toward the viewer as if about to reveal a secret, cinematic, dramatic "
     "moonlight, atmospheric, photoreal, highly detailed"
 )
-# 背景音樂（療癒墊音）；可用 YT_BGM 指定，預設 youtube_auto/bgm.mp3
+# 背景音樂；可用 YT_BGM 指定，預設 youtube_auto/bgm.mp3（自製合成版）
+# 雲端用的是私人 repo 裡的授權配樂，萬一那次 checkout 沒成功，
+# 寧可降級用內建 BGM 也不要讓整支影片死在 ffmpeg 找不到檔案
 _bgm_default = os.path.join(BASE, "bgm.mp3")
-BGM = os.environ.get("YT_BGM") or (_bgm_default if os.path.exists(_bgm_default) else "")
+_bgm_env = os.environ.get("YT_BGM")
+if _bgm_env and not os.path.exists(_bgm_env):
+    print(f"[warn] YT_BGM 指定的 {_bgm_env} 不存在，改用內建 BGM", flush=True)
+    _bgm_env = ""
+BGM = _bgm_env or (_bgm_default if os.path.exists(_bgm_default) else "")
 # 改用 OpenAI 生圖；Pollinations 於 2026-08 改付費制且 flux 下架，402 被包成 500 難以辨識
 OPENAI_IMG_URL = "https://api.openai.com/v1/images/generations"
 OPENAI_IMG_MODEL = os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-1-mini")
