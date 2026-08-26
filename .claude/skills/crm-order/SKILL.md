@@ -1,6 +1,6 @@
 ---
 name: crm-order
-description: 三品牌 CRM 與訂單建檔：全品牌統一 Notion 總表、鑫酒藏／鑫海產／鑫茶坊客戶與銷售 DB、訂單三同步、回購提醒、名片數位化。含所有 Notion DB ID 與欄位規格。要建訂單、查客戶、改 CRM 時載入。
+description: 三品牌 CRM 與訂單建檔：全品牌統一 Notion 總表、鑫酒藏／鑫海產／鑫茶坊客戶與銷售 DB、三個庫存 DB、訂單三同步、回購提醒、名片數位化。含所有 Notion DB ID 與欄位規格，以及 **Notion API 與 xlsx 處理的已知地雷**。要建訂單、查客戶、改 CRM、動庫存、或用程式讀寫任何 .xlsx 進出 Notion 時載入。
 ---
 
 ## 全品牌統一 CRM ＋回購提醒系統（2026-06-26 建立）
@@ -81,3 +81,58 @@ description: 三品牌 CRM 與訂單建檔：全品牌統一 Notion 總表、鑫
 - Token讀取：`~/.config/notion_token`
 
 ---
+
+
+---
+
+## ⚠️ 用程式改 xlsx 的地雷
+
+**預設不要用程式改使用者的 xlsx。** 需要調整的差異放在**解析階段**處理
+（鑫酒藏的重複登錄就是改成在 `parse_wine` 裡去重，原檔完全不動）。
+
+**openpyxl 存檔會把整個活頁簿的公式快取值清空，而且不報錯：**
+
+| 載入方式 | 存檔後果 |
+|---|---|
+| `load_workbook(p)` | 保留公式字串，**但快取值全沒了**——之後 `data_only=True` 讀取全回 `None` |
+| `load_workbook(p, data_only=True)` | 相反：**公式被替換成死值** |
+
+**兩種都會破壞原檔，沒有第三種選項。**
+
+`delete_rows()` 更糟：**openpyxl 不調整公式的儲存格參照**。刪掉第 10–14 列後，
+`M18 '=O18*70%'` 變成 `M13 '=O18*70%'`——位置移了、參照沒移。
+**絕不用 `delete_rows`／`insert_rows` 動有公式的表。**
+
+2026-08-25 實際災情：鑫酒藏三項進貨價消失（庫存成本 807,586 → 656,716）；
+**前一天改鑫海產分頁時連帶洗掉鑫茶坊 8 項零售價**——不同分頁也會被波及，
+因為 save 是整本重寫。當下還誤判成「Notion 原本就跟 xlsx 有落差」。
+
+非改不可時，**先掃一次公式格**：
+
+```python
+wf = load_workbook(p); wd = load_workbook(p, data_only=True)
+[(c.coordinate, c.value, wd[s][c.coordinate].value)
+ for s in wf.sheetnames for r in wf[s].iter_rows() for c in r
+ if isinstance(c.value, str) and c.value.startswith("=")]
+```
+
+有公式就換做法。**改動前備份是唯一救命索**——那兩次都是靠備份比對才發現與還原。
+
+---
+
+## ⚠️ Notion API 的地雷
+
+- 🔴 **不要假設不同 DB 的欄位一樣。** 三個庫存 DB 欄位名互不相同——
+  鑫酒藏無「單位」、鑫海產叫「數量單位」，價格分別是進價／零售價／進價；
+  鑫茶坊的 `進貨價_斤` 是**每斤價**，跟「2兩」「4兩」的數量單位對不上，要改讀 `單包成本`。
+  2026-08-24 就是這樣讓 LINE 助理的 `/庫存` 印出一片空白。
+- 🔴 **查詢預設只回第一頁。** 沒處理分頁就會靜默少資料，不會報錯。
+- 🔴 **DB 建在頁面下時是該頁的 `child_database` 區塊。** 清空頁面重寫彙總時若一併
+  archive，等於**把三個資料庫丟進垃圾桶**。`write_summary` 必須跳過 `child_database`。
+- **schema 加新欄位時既有 DB 不會自動長出來**，PATCH 頁面會 400
+  `is not a property that exists`。要先 GET 現有 schema、把缺的欄位 PATCH 進 `/databases/{id}`。
+- 建 DB 一律用舊版 `POST /v1/databases` + `Notion-Version: 2022-06-28`。
+- **SQL 模式有工作區用量上限**（2026-08-25 實測用完）；**view 模式沒有額度限制**，
+  但一次最多 100 列要自己翻頁，且**空值欄位會整個省略**。
+- ⚠️ **三個庫存 DB 是「型錄＋庫存」混在一起**：酒藏 236 筆只有 72 筆真有庫存，
+  海產 72 筆是「可調貨」不是缺貨。**算庫存金額前先確認你在算哪一種。**
