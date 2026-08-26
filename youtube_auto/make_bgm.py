@@ -63,7 +63,7 @@ MELODY = [
 LEVEL = {
     "pad": 0.30,
     "bass": 0.42,
-    "melody": 0.26,
+    "melody": 0.0,  # 2026-08-27 Lien：鐘琴主旋律太尖，拿掉。要回來調 0.2 上下並降八度
     "kick": 0.30,
     "clap": 0.10,
     "shaker": 0.045,
@@ -192,7 +192,6 @@ def build():
     pad = np.zeros(N)
     bass = np.zeros(N)
     mel = np.zeros(N)
-
 
     bar = 0
     for name, span in PROG:
