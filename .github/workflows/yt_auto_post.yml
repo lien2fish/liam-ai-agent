@@ -1,10 +1,8 @@
 name: YouTube 每日自動影片
 
 on:
-  # ⛔ 2026-08-26 Lien 指示暫停 The Unknown Hour 全部發文。
-  #    恢復時把下面兩行取消註解即可。
-  # schedule:
-  #   - cron: '0 2 * * *'    # UTC 02:00 = 台灣 10:00 製作影片；當天 18:00 自動轉公開
+  schedule:
+    - cron: '0 2 * * *'    # UTC 02:00 = 台灣 10:00 製作影片；當天 18:00 自動轉公開
   workflow_dispatch:
 
 jobs:
