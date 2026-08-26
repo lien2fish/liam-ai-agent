@@ -41,7 +41,8 @@ jobs:
           YT_OAUTH_REFRESH_TOKEN:  ${{ secrets.YT_OAUTH_REFRESH_TOKEN }}
           YT_PRIVACY:              'private'
           YT_PUBLISH_HOUR:         '18'        # 台灣時間18:00自動轉公開（排程發布）
-          # Shorts 每天發；長片(週二/五/日)當天追加一支。可設 YT_FORMAT=long/short 覆寫只產一支
+          # 實際排程在 make_and_upload.py：SHORT_WEEKDAYS={1,4} 週二、五；LONG_WEEKDAYS={6} 週日。
+          # 可設 YT_FORMAT=long/short 覆寫只產一支
           GITHUB_TOKEN:            ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPO:             ${{ github.repository }}
         run: python youtube_auto/make_and_upload.py
