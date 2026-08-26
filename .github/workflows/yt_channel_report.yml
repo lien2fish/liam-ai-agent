@@ -1,8 +1,10 @@
 name: YouTube 頻道每日表現日報
 
 on:
-  schedule:
-    - cron: '20 0 * * *'    # UTC 00:20 = 台灣 08:20
+  # ⛔ 2026-08-26 Lien 指示暫停。The Unknown Hour 已停止發片，日報失去意義。
+  #    恢復發片時把下面兩行一併取消註解。
+  # schedule:
+  #   - cron: '20 0 * * *'    # UTC 00:20 = 台灣 08:20
   workflow_dispatch:
 
 jobs:
