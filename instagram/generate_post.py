@@ -2,6 +2,7 @@
 """每日 Instagram 海鮮小知識自動發文腳本"""
 
 import json, os, requests, base64, io, time, platform
+from collections import OrderedDict
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
@@ -139,24 +140,41 @@ def build_knowledge_prompt(exclude_seafood=None):
         "選【海鮮知識】類別時優先從主力選題。"
     )
 
-    exclude_note = ""
-    if exclude_seafood:
-        exclude_note = f'\n\n⚠️ 以下「主題/角度」組合近期已發過，本次嚴禁使用（主題相同但角度不同則可以）：{", ".join(exclude_seafood)}'
+    # 冷卻中的主題（最近 14 天發過的，連同任何角度整個擋掉）
+    cooling = []
+    for item in (exclude_seafood or [])[:TOPIC_COOLDOWN_DAYS]:
+        t = item.split("/")[0]
+        if t not in cooling:
+            cooling.append(t)
 
-    # 主題冷卻：同一主題 14 天內不得再次出現，避免像先前花枝、飛魚隔一天就重複
     cooldown_note = ""
-    if exclude_seafood:
-        recent_topics = []
-        for item in exclude_seafood[:TOPIC_COOLDOWN_DAYS]:
-            t = item.split("/")[0]
-            if t not in recent_topics:
-                recent_topics.append(t)
-        if recent_topics:
-            cooldown_note = (
-                f"\n\n🚫 以下主題在最近 {TOPIC_COOLDOWN_DAYS} 天內已經發過，"
-                f"**本次連同任何角度一律不可使用**（這是硬性規定，不是偏好）："
-                f"{'、'.join(recent_topics)}"
-            )
+    if cooling:
+        cooldown_note = (
+            f"\n\n🚫 以下主題在最近 {TOPIC_COOLDOWN_DAYS} 天內已經發過，"
+            f"**本次連同任何角度一律不可使用**（這是硬性規定，不是偏好）："
+            f"{'、'.join(cooling)}"
+        )
+
+    # 一年內的已用組合。依主題分組並略過冷卻中的主題——
+    # 那些主題已被上面整個擋掉，再列它們用過哪些角度是純冗餘。
+    # 逐筆平列在滿載 365 筆時約 3,650 字元，這樣寫約 1,300，且不損失任何資訊。
+    used = OrderedDict()
+    cooling_set = set(cooling)
+    for item in exclude_seafood or []:
+        topic, _, angle = item.partition("/")
+        if topic in cooling_set:
+            continue
+        used.setdefault(topic, [])
+        if angle and angle not in used[topic]:
+            used[topic].append(angle)
+
+    exclude_note = ""
+    if used:
+        pairs = "；".join(f"{t}：{'、'.join(a)}" for t, a in used.items())
+        exclude_note = (
+            "\n\n⚠️ 以下主題的這些角度一年內已發過，本次不可重複相同組合"
+            f"（同一主題換沒用過的角度則可以）：{pairs}"
+        )
 
     return f"""你是台灣海洋達人。生成一則台灣讀者有興趣的知識，JSON格式：
 {{
