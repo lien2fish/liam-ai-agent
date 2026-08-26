@@ -2,6 +2,7 @@
 """每日 Instagram 海鮮小知識自動發文腳本"""
 
 import json, os, requests, base64, io, time, platform
+import sys
 from collections import OrderedDict
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
@@ -381,6 +382,39 @@ def knowledge_via_gemini(prompt):
     raise RuntimeError("所有 Gemini 模型均失敗")
 
 
+def _fallback_reason(err):
+    """把例外翻成「你該做什麼」，而不是只丟原始錯誤。"""
+    t = str(err)
+    if "401" in t or "authentication" in t.lower():
+        return "金鑰失效——到 platform.claude.com 建新的，再跑 scripts/set_secret.py"
+    if "credit" in t.lower() or "billing" in t.lower():
+        return "餘額不足——到 platform.claude.com 儲值"
+    if "429" in t or "rate" in t.lower():
+        return "被限流，通常隔天自己會好"
+    if "529" in t or "overloaded" in t.lower() or "500" in t:
+        return "Claude 服務暫時異常，通常自己會好"
+    return t[:120]
+
+
+def notify_fallback(err):
+    """降級到 Gemini 時推一則 LINE。
+
+    ⚠️ 這個 fallback 原本完全靜默——不開天窗，但代價是你只會覺得
+    「最近文案怪怪的」卻找不到原因。2026-08-26 補上通知。
+    """
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from line_assistant.notify import notify
+
+        notify(
+            "⚠️ 今天的 IG 文案是 Gemini 產的，不是 Claude\n"
+            f"原因：{_fallback_reason(err)}\n\n"
+            "貼文照常發出，但品質會比平常差。"
+        )
+    except Exception as e:  # 通知失敗絕不能連累發文
+        print(f"[notify] 推播失敗（不影響發文）：{e}", flush=True)
+
+
 def generate_knowledge(exclude_seafood=None):
     """今日知識生成：Claude 為主，Gemini 為 fallback"""
     prompt = build_knowledge_prompt(exclude_seafood)
@@ -389,6 +423,10 @@ def generate_knowledge(exclude_seafood=None):
             return knowledge_via_claude(prompt)
         except Exception as e:
             print(f"[Claude] 失敗，改用 Gemini fallback：{e}", flush=True)
+            notify_fallback(e)
+    else:
+        print("[Claude] 沒有設定 ANTHROPIC_API_KEY，直接用 Gemini", flush=True)
+        notify_fallback("ANTHROPIC_API_KEY 沒有設定")
     return knowledge_via_gemini(prompt)
 
 
