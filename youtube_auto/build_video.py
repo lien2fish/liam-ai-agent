@@ -585,22 +585,21 @@ def build_video(script, out_path, workdir=None):
         capture_output=True,
     )
 
-    print("[4/4] 合成旁白(空靈殘響) + BGM + 燒錄字幕 → 最終 MP4...", flush=True)
+    print("[4/4] 合成旁白 + BGM + 燒錄字幕 → 最終 MP4...", flush=True)
     ass_esc = ass.replace("\\", "/").replace(":", "\\:")
     inputs = ["-i", silent, "-i", voice_mp3]
-    # 旁白加殘響做空靈感
     ms = int(INTRO_DUR * 1000)  # 旁白延後到開場卡之後
     filt = [
         f"[0:v]subtitles='{ass_esc}'[v]",
         # 旁白後製：留住低頻(原本 highpass 90 把男聲的基頻切掉了)、補胸腔、
-        # 去掉合成語音特有的刺耳齒音，壓縮讓語氣穩住，最後才給空間殘響
+        # 去掉合成語音特有的刺耳齒音，壓縮讓語氣穩住。
+        # 不加任何殘響——要的是一個人就在你旁邊講話，不是在洞穴裡
         f"[1:a]adelay={ms}|{ms},highpass=f=55,"
         "equalizer=f=105:t=q:w=1.1:g=3.5,"
         "equalizer=f=240:t=q:w=1.2:g=-1.5,"
         "equalizer=f=2900:t=q:w=1.3:g=-2.5,"
         "acompressor=threshold=0.08:ratio=3:attack=12:release=220,"
-        "alimiter=limit=0.95,"
-        "aecho=0.85:0.9:70|120:0.3|0.18[va]",
+        "alimiter=limit=0.95[va]",
     ]
     if BGM:
         inputs += ["-stream_loop", "-1", "-i", BGM]
