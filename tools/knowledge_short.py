@@ -16,6 +16,7 @@
 """
 
 import math
+import pathlib
 import random
 import subprocess
 import sys
@@ -166,7 +167,125 @@ SCRIPTS = {
             (4.0, "end", ["看不到魚鰾的魚", "就不容易被找到"]),
         ],
     },
+    "vessel-02": {
+        "title": "這片光，其實是漁船",
+        "sources": "NASA VIIRS 可偵測、南大西洋離岸 300-500km 光之城、2020 全球 251,000 船日"
+        "（NASA Earth Observatory／Global Fishing Watch）",
+        "scenes": [
+            (
+                3.4,
+                "photo",
+                ["這片光", "其實是漁船"],
+                {
+                    "file": "squid_lights.png",
+                    "z0": 1.35,
+                    "z1": 1.28,
+                    "dim": 0.62,
+                    "big": True,
+                },
+            ),
+            (
+                4.2,
+                "photo",
+                ["這是從太空", "拍下來的"],
+                {"file": "squid_lights.png", "z0": 1.26, "z1": 1.14, "dim": 0.5},
+            ),
+            (
+                4.6,
+                "photo",
+                ["南大西洋", "離岸三百公里的海面"],
+                {"file": "squid_lights.png", "z0": 1.12, "z1": 1.00, "dim": 0.42},
+            ),
+            (
+                4.2,
+                "photo",
+                ["會出現一座", "光之城"],
+                {"file": "squid_lights.png", "z0": 1.00, "z1": 1.06, "dim": 0.38},
+            ),
+            (4.4, "stat", ["那是魷釣船", "用強光把魷魚誘到表層"]),
+            (5.0, "end", ["龜吼的棒受網也用集魚燈", "同樣的原理", "不同的規模"]),
+        ],
+    },
 }
+
+
+ASSETS = pathlib.Path(__file__).resolve().parent / "assets/knowledge"
+
+# 背景圖的生成 prompt。tools/assets 不進版控（既有的 .gitignore 決定），
+# 所以把 prompt 留在這裡，換機器時 --gen-image 就能重建。
+# gpt-image-1-mini，1024x1536，一張約 US$0.005。
+IMAGE_PROMPTS = {
+    "squid_lights.png": (
+        "Aerial night view from very high altitude looking down at a dark ocean. A dense cluster "
+        "of intensely bright white-blue fishing vessel lights glows on the black water, like a "
+        "city floating in the middle of nowhere. Light bloom and haze over the sea surface, "
+        "faint cloud wisps. Deep navy and black palette with brilliant cyan-white light. "
+        "Photoreal satellite imagery aesthetic, vertical composition. "
+        "No text, no labels, no watermark, no land."
+    ),
+}
+
+
+def gen_image(name):
+    """重建背景圖。需要 config/.openai_key。"""
+    import base64, json, urllib.request
+
+    if name not in IMAGE_PROMPTS:
+        raise SystemExit(f"❌ 沒有 {name} 的 prompt")
+    root = pathlib.Path(__file__).resolve().parent.parent
+    key = (root / "config/.openai_key").read_text().strip()
+    body = json.dumps(
+        {
+            "model": "gpt-image-1-mini",
+            "prompt": IMAGE_PROMPTS[name],
+            "size": "1024x1536",
+            "quality": "medium",
+            "n": 1,
+        }
+    ).encode()
+    req = urllib.request.Request(
+        "https://api.openai.com/v1/images/generations",
+        data=body,
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=180) as r:
+        d = json.loads(r.read())
+    ASSETS.mkdir(parents=True, exist_ok=True)
+    (ASSETS / name).write_bytes(base64.b64decode(d["data"][0]["b64_json"]))
+    print(f"✅ 已生成 {ASSETS / name}（約 US$0.005）")
+
+
+_photo_cache = {}
+
+
+def photo_backdrop(name, zoom, dim=0.55):
+    """把 3D 生成圖鋪滿 9:16 當背景。zoom 用來做緩慢推拉（Ken Burns）。
+
+    圖只在第一次載入時解碼並快取——每格重新開檔會慢到不能用。
+    dim 是壓暗係數，字要壓在上面就得夠暗。
+    """
+    key = (name, round(zoom, 3), dim)
+    if key in _photo_cache:
+        return _photo_cache[key].copy()
+    path = ASSETS / name
+    if not path.exists():
+        raise SystemExit(
+            f"❌ 找不到背景圖 {path}\n"
+            f"   tools/assets 不進版控，clone 後要自己生一次：\n"
+            f"   python3 tools/knowledge_short.py --gen-image {name}"
+        )
+    src = Image.open(path).convert("RGB")
+    sw, sh = src.size
+    scale = max(W / sw, H / sh) * zoom
+    im = src.resize((int(sw * scale), int(sh * scale)), Image.LANCZOS)
+    left, top = (im.width - W) // 2, (im.height - H) // 2
+    im = im.crop((left, top, left + W, top + H))
+    im = Image.eval(im, lambda v: int(v * dim))
+    if len(_photo_cache) > 24:
+        _photo_cache.clear()
+    _photo_cache[key] = im
+    return im.copy()
 
 
 def draw_fish(d, cx, cy, w, h, color, bladder=None):
@@ -222,10 +341,19 @@ def tuna_slab(d, cx, cy, w, h, brown_ratio):
 
 def render_frame(bg, scene, p, seed):
     """p = 該段內的進度 0~1。"""
-    img = bg.copy()
-    d = ImageDraw.Draw(img)
     mode, lines = scene[1], scene[2]
     cx = W // 2
+    photo = scene[3] if len(scene) > 3 else None
+    if photo:
+        # 緩慢推近，讓靜態圖有呼吸感
+        img = photo_backdrop(
+            photo["file"],
+            photo["z0"] + (photo["z1"] - photo["z0"]) * p,
+            photo.get("dim", 0.55),
+        )
+    else:
+        img = bg.copy()
+    d = ImageDraw.Draw(img)
 
     if mode == "hook":
         # 這一格就是 Shorts 的縮圖，所以只有大字＋一條強調線，不放圖表
@@ -347,18 +475,32 @@ def render_frame(bg, scene, p, seed):
             pts.append((cx - 280 + 560 * u, 1040 - 300 * math.sin(math.pi * u)))
         n = max(2, int(len(pts) * min(p * 1.4, 1.0)))
         d.line(pts[:n], fill=GOLD, width=7)
-    elif mode == "end":
+    elif mode == "stat":
+        f_big = font(150)
+        w = d.textbbox((0, 0), "251,000", font=f_big)[2]
+        t = ease(min(p * 2.2, 1.0))
+        d.text(
+            ((W - w) // 2, 760),
+            "251,000",
+            font=f_big,
+            fill=tuple(int(c * (0.3 + 0.7 * t)) for c in GOLD),
+        )
+        center_text(d, 950, "2020 年全球魷釣船的作業「船日」", font(36), DIM)
+    elif mode in ("end", "photo"):
         pass
 
     # 字卡
-    if mode == "hook":
+    is_hook = mode == "hook" or bool(photo and photo.get("big"))
+    if is_hook:
         f = font(92)
         for i, line in enumerate(lines):
             t = ease((p - i * 0.18) * 3.0)
             if t <= 0:
                 continue
             shade = tuple(int(c * (0.35 + 0.65 * t)) for c in INK)
-            center_text(d, 820 + i * 132, line, f, shade)
+            # 有圖片背景時字往下讓，別壓在畫面主體上（那一格就是縮圖）
+            y0 = 1210 if photo else 820
+            center_text(d, y0 + i * 132, line, f, shade)
     else:
         f = font(72)
         for i, line in enumerate(lines):
@@ -369,7 +511,7 @@ def render_frame(bg, scene, p, seed):
             shade = tuple(int(c * (0.35 + 0.65 * t)) for c in col)
             center_text(d, 1240 + i * 104, line, f, shade)
 
-    if mode != "hook":
+    if not is_hook:
         center_text(d, 300, "海鮮冷知識", font(38), GOLD)
     center_text(d, H - 130, "連老闆 ・ 產地到餐桌", font(34), DIM)
     return img
@@ -383,6 +525,9 @@ def main():
             total = sum(s[0] for s in v["scenes"])
             print(f"  {k:14s} {total:4.1f}s  {v['title']}")
             print(f"                 依據：{v['sources']}")
+        return
+    if args[0] == "--gen-image":
+        gen_image(args[1] if len(args) > 1 else "")
         return
     slug = args[0]
     if slug not in SCRIPTS:
