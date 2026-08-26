@@ -236,7 +236,10 @@ def build_captions(segs, texts, ass_path):
         if not raw:
             continue
         cjk = _is_cjk(raw)
-        line_max = 14 if cjk else 7
+        if cjk:
+            line_max = 12 if H > W else 14
+        else:
+            line_max = 6 if H > W else 7
         cap_max = line_max * 2
         units = list(raw) if cjk else raw.split()
         per = seg["dur"] / max(1, len(units))
@@ -250,9 +253,9 @@ def build_captions(segs, texts, ass_path):
 
     # 字幕位置/字級依比例調整：直式字大、置於下三分之一；橫式字略小、貼近底部
     if H > W:  # 9:16
-        fsize, marginv = 60, 500
+        fsize, marginv = 72, 500
     else:  # 16:9
-        fsize, marginv = 54, 70
+        fsize, marginv = 66, 70
     header = (
         f"[Script Info]\nScriptType: v4.00+\nPlayResX: {W}\nPlayResY: {H}\n\n"
         "[V4+ Styles]\n"
