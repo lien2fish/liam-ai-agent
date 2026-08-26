@@ -33,6 +33,7 @@ DIM = (128, 152, 172)
 GOLD = (214, 168, 92)
 COLD = (122, 190, 226)
 WARN = (206, 106, 74)
+DARK_INK = (14, 26, 38)  # 壓在白色遮罩上的字色
 
 
 def font(size):
@@ -182,25 +183,44 @@ SCRIPTS = {
                     "z1": 1.28,
                     "dim": 0.62,
                     "big": True,
+                    "veil": {"mode": "grad", "alpha": 0.9, "y0": 980},
                 },
             ),
             (
                 4.2,
                 "photo",
                 ["這是從太空", "拍下來的"],
-                {"file": "squid_lights.png", "z0": 1.26, "z1": 1.14, "dim": 0.5},
+                {
+                    "file": "squid_lights.png",
+                    "z0": 1.26,
+                    "z1": 1.14,
+                    "dim": 0.5,
+                    "veil": {"mode": "grad", "alpha": 0.9, "y0": 980},
+                },
             ),
             (
                 4.6,
                 "photo",
                 ["南大西洋", "離岸三百公里的海面"],
-                {"file": "squid_lights.png", "z0": 1.12, "z1": 1.00, "dim": 0.42},
+                {
+                    "file": "squid_lights.png",
+                    "z0": 1.12,
+                    "z1": 1.00,
+                    "dim": 0.42,
+                    "veil": {"mode": "grad", "alpha": 0.9, "y0": 980},
+                },
             ),
             (
                 4.2,
                 "photo",
                 ["會出現一座", "光之城"],
-                {"file": "squid_lights.png", "z0": 1.00, "z1": 1.06, "dim": 0.38},
+                {
+                    "file": "squid_lights.png",
+                    "z0": 1.00,
+                    "z1": 1.06,
+                    "dim": 0.38,
+                    "veil": {"mode": "grad", "alpha": 0.9, "y0": 980},
+                },
             ),
             (4.4, "stat", ["那是魷釣船", "用強光把魷魚誘到表層"]),
             (5.0, "end", ["龜吼的棒受網也用集魚燈", "同樣的原理", "不同的規模"]),
@@ -257,6 +277,37 @@ def gen_image(name):
 
 
 _photo_cache = {}
+
+
+def apply_veil(im, veil):
+    """白色半透明遮罩。full＝整張洗白；band＝只在字的區域鋪霧面橫帶。
+
+    底圖偏亮或雜訊多時遮罩才划算；黑底上的單一亮點用了反而洗掉張力。
+    """
+    if not veil:
+        return im
+    a = veil.get("alpha", 0.3)
+    white = Image.new("RGB", im.size, (255, 255, 255))
+    if veil.get("mode") == "full":
+        return Image.blend(im, white, a)
+    if veil.get("mode") == "grad":
+        # 由下往上的深色漸層：字清楚，但不破壞暗底的張力
+        y0 = veil.get("y0", 900)
+        dark = Image.new("RGB", im.size, veil.get("color", (6, 14, 22)))
+        mask = Image.new("L", im.size, 0)
+        px = mask.load()
+        span = max(H - y0, 1)
+        for y in range(y0, H):
+            v = int(255 * a * ((y - y0) / span) ** 1.4)
+            for x in range(0, W, 8):  # 每列同值，取樣畫就好
+                for xx in range(x, min(x + 8, W)):
+                    px[xx, y] = v
+        return Image.composite(dark, im, mask)
+    y0, y1 = veil.get("y0", 1120), veil.get("y1", 1520)
+    strip = Image.blend(im.crop((0, y0, W, y1)), white.crop((0, y0, W, y1)), a)
+    im = im.copy()
+    im.paste(strip, (0, y0))
+    return im
 
 
 def photo_backdrop(name, zoom, dim=0.55):
@@ -351,6 +402,7 @@ def render_frame(bg, scene, p, seed):
             photo["z0"] + (photo["z1"] - photo["z0"]) * p,
             photo.get("dim", 0.55),
         )
+        img = apply_veil(img, photo.get("veil"))
     else:
         img = bg.copy()
     d = ImageDraw.Draw(img)
@@ -497,7 +549,13 @@ def render_frame(bg, scene, p, seed):
             t = ease((p - i * 0.18) * 3.0)
             if t <= 0:
                 continue
-            shade = tuple(int(c * (0.35 + 0.65 * t)) for c in INK)
+            v = photo.get("veil") if photo else None
+            base = DARK_INK if (v and v.get("mode") in ("full", "band")) else INK
+            shade = (
+                tuple(int(255 + (c - 255) * t) for c in base)
+                if base is DARK_INK
+                else tuple(int(c * (0.35 + 0.65 * t)) for c in base)
+            )
             # 有圖片背景時字往下讓，別壓在畫面主體上（那一格就是縮圖）
             y0 = 1210 if photo else 820
             center_text(d, y0 + i * 132, line, f, shade)
