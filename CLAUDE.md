@@ -132,7 +132,7 @@
 | `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:00，超60天未回購則 Email（**2026-08-21 起無commit，客戶個資只走Email**——原本每天 commit 報告，已累積 56 份含姓名與手機的報告在公開 repo）|
 | `weekly_revenue_sprint.yml` | 營收衝刺週報（本週壽險該接觸名單＋話術：A組未來14天生日切入、B組壽產保單健檢每週輪替6位） | 每週一 08:00，Email（**無commit，客戶個資只走Email**）|
 | `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；Shorts 週二/五、長片週日）| ⛔ **2026-08-26 起暫停**（Lien 指示）。schedule 已註解，保留手動觸發；恢復＝取消註解兩行。當時已上傳待公開的影片維持原排程照常公開 |
-| `yt_channel_report.yml` | The Unknown Hour 頻道每日表現日報（觀看/讚/留言+新留言Email） | 每天 08:20，用YT_API_KEY讀公開數據，自動commit報告 |
+| `yt_channel_report.yml` | The Unknown Hour 頻道每日表現日報 | ⛔ **2026-08-26 起暫停**（隨發片一起停，日報失去意義）。恢復發片時兩個一起開 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 | `rotary_birthday_reminder.yml` | 中城網路扶輪社社友生日提醒（剛好前14天Email一次；資料=私人repo `liam-workspace/rotary/中城網路社友通訊錄.json` 71位，用`WORKSPACE_PAT` checkout，**個資不進公開repo、無commit**） | 每天 08:10 |
 | `token_expiry_check.yml` | **IG／FB Token 到期與失效檢查**（不寫死日期，每天問 `debug_token` 實際狀態；剩 30/21/14/10/7/5/3/2/1 天時提醒，失效或缺權限則 🔴 並讓 run 變紅）。**Email＋LINE 雙通道** | 每天 08:45 |
