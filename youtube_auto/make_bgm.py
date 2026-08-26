@@ -2,11 +2,11 @@
 
     python3 youtube_auto/make_bgm.py [輸出檔]     # 預設 youtube_auto/bgm.mp3
 
-慢速流行編制：D 小調四和弦進行 ＋ 貝斯 ＋ 鐘琴主旋律 ＋ 鼓組（kick／clap／shaker）。
+慢速流行編制：D 小調四和弦進行 ＋ 貝斯 ＋ 長笛主旋律 ＋ 鼓組（kick／clap／shaker）。
 BPM 75、16 小節一輪，整首 51.2 秒可無縫循環——build_video 是 -stream_loop -1 無限
 循環播放，接縫會被聽出來，所以殘響用循環位移、所有事件的尾巴都繞回開頭。
 
-主旋律刻意放在 1000Hz 以上的鐘琴音域：旁白佔 100-3000Hz，旋律壓在同一區會糊掉人聲。
+主旋律走長笛的中低音域（約 290-700Hz）：鐘琴那版太尖，長笛諧波少、音色圓。
 
 要調整改下面的參數區：BPM、PROG（和弦進行）、MELODY（主旋律）、LEVEL（各層音量）。
 """
@@ -36,7 +36,9 @@ CHORDS = {
 }
 BASS = {"Dm": ("D", 1), "Bb": ("Bb", 1), "F": ("F", 1), "C": ("C", 2)}
 
-# 主旋律：(第幾拍起, 幾拍長, 音名, 第幾八度)。八度 5-6＝鐘琴音域，讓開人聲
+# 主旋律：(第幾拍起, 幾拍長, 音名, 第幾八度)
+# MELODY_OCTAVE 整體移調——長笛在原本的八度 5-6 會很亮，降一階落在中低音域比較溫暖
+MELODY_OCTAVE = -1
 MELODY = [
     (0, 3, "A", 5),
     (3, 1, "D", 6),
@@ -63,7 +65,7 @@ MELODY = [
 LEVEL = {
     "pad": 0.30,
     "bass": 0.42,
-    "melody": 0.0,  # 2026-08-27 Lien：鐘琴主旋律太尖，拿掉。要回來調 0.2 上下並降八度
+    "melody": 0.18,  # 2026-08-27 鐘琴太尖，換成低一個八度的長笛
     "kick": 0.30,
     "clap": 0.10,
     "shaker": 0.045,
@@ -138,6 +140,24 @@ def pad_voice(freq, dur):
         + 0.35 * np.sin(2 * np.pi * freq * 2 * t)
     )
     return sig * _env(n, 0.55, 0.5, 0.72, 0.9)
+
+
+def flute_voice(freq, dur):
+    """長笛：基頻幾乎是純音、諧波少而弱，加上漸入的顫音與一層氣聲
+
+    氣聲是長笛聽起來像長笛的關鍵，但量一大就變沙，所以壓得很低、
+    而且只在吹起那一下明顯一點。
+    """
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    vib_in = np.minimum(t / 0.35, 1.0)  # 起音是直音，顫音才漸漸進來
+    vib = 1 + 0.006 * vib_in * np.sin(2 * np.pi * 5.2 * t)
+    ph = 2 * np.pi * freq * np.cumsum(vib) / SR
+    body = np.sin(ph) + 0.10 * np.sin(2 * ph) + 0.035 * np.sin(3 * ph)
+    rng = np.random.default_rng(int(freq) % 9973)
+    breath = np.convolve(rng.uniform(-1, 1, n), np.hanning(9), mode="same")
+    breath *= 0.05 * (1 + 0.6 * np.exp(-t * 12))
+    return (body + breath) * _env(n, 0.085, 0.14, 0.86, 0.28)
 
 
 def kick():
@@ -221,16 +241,7 @@ def build():
     for beat_i, beats, note, octv in MELODY:
         place(
             mel,
-            tone(
-                hz(note, octv),
-                beats * BEAT * 0.95,
-                [(1, 1.0), (2, 0.30), (3, 0.12)],
-                0.02,
-                0.35,
-                0.45,
-                0.45,
-                vibrato=0.0016,
-            ),
+            flute_voice(hz(note, octv + MELODY_OCTAVE), beats * BEAT * 0.95),
             beat_i * BEAT,
         )
 
