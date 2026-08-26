@@ -20,7 +20,8 @@ VOICE = os.environ.get(
     "YT_VOICE",
     "zh-TW-YunJheNeural" if NARRATION_LANG == "zh" else "en-US-GuyNeural",
 )  # 沉穩男聲（神秘/史詩感）
-RATE = os.environ.get("YT_RATE", "-3%")  # 略慢增添份量
+RATE = os.environ.get("YT_RATE", "-7%")  # 放慢，唸快就是 AI 感的主要來源之一
+PITCH = os.environ.get("YT_PITCH", "-14Hz")  # 壓低音高，配合後製 EQ 做出胸腔厚度
 # 中文字幕字型：macOS 用黑體-繁，Linux(GitHub Actions) 用 Noto CJK
 CJK_FONT = "Heiti TC" if platform.system() == "Darwin" else "Noto Sans CJK TC"
 INTRO_DUR = 3.0 if W < H else 4.5  # Shorts(直式)開場卡短一點，長片長一點
@@ -133,7 +134,7 @@ def _placeholder_image(path):
 async def _synth_one(text, mp3_path):
     import edge_tts
 
-    comm = edge_tts.Communicate(text, VOICE, rate=RATE)
+    comm = edge_tts.Communicate(text, VOICE, rate=RATE, pitch=PITCH)
     with open(mp3_path, "wb") as f:
         async for chunk in comm.stream():
             if chunk["type"] == "audio":
@@ -591,7 +592,15 @@ def build_video(script, out_path, workdir=None):
     ms = int(INTRO_DUR * 1000)  # 旁白延後到開場卡之後
     filt = [
         f"[0:v]subtitles='{ass_esc}'[v]",
-        f"[1:a]adelay={ms}|{ms},aecho=0.8:0.85:60|110:0.35|0.22,highpass=f=90[va]",
+        # 旁白後製：留住低頻(原本 highpass 90 把男聲的基頻切掉了)、補胸腔、
+        # 去掉合成語音特有的刺耳齒音，壓縮讓語氣穩住，最後才給空間殘響
+        f"[1:a]adelay={ms}|{ms},highpass=f=55,"
+        "equalizer=f=105:t=q:w=1.1:g=3.5,"
+        "equalizer=f=240:t=q:w=1.2:g=-1.5,"
+        "equalizer=f=2900:t=q:w=1.3:g=-2.5,"
+        "acompressor=threshold=0.08:ratio=3:attack=12:release=220,"
+        "alimiter=limit=0.95,"
+        "aecho=0.85:0.9:70|120:0.3|0.18[va]",
     ]
     if BGM:
         inputs += ["-stream_loop", "-1", "-i", BGM]
