@@ -64,6 +64,11 @@ def main():
     ap.add_argument("name", nargs="?", help="Secret 名稱")
     ap.add_argument("--file", help="從檔案讀值（去掉前後空白與換行）")
     ap.add_argument("--list", action="store_true", help="列出現有 secret")
+    ap.add_argument(
+        "--local",
+        help="同時寫入本機檔案（例如 config/.anthropic_key）。"
+        "GitHub Secret 唯寫讀不回來，本機與雲端一旦不同步就救不回，所以一次寫兩邊。",
+    )
     args = ap.parse_args()
 
     token = pat()
@@ -111,9 +116,19 @@ def main():
         die(f"更新失敗（HTTP {st}）：{resp}")
 
     st, info = api(f"actions/secrets/{args.name}", token)
-    print(f"✅ {args.name} 已{'新建' if st == 201 else '更新'}（長度 {len(value)}）")
+    print(f"✅ {args.name} 已更新到 GitHub（長度 {len(value)}）")
     if st == 200:
         print(f"   updated_at = {info.get('updated_at')}")
+
+    if args.local:
+        lp = pathlib.Path(args.local)
+        if lp.exists():
+            bak = lp.with_name(lp.name + ".bak")
+            bak.write_text(lp.read_text())
+            print(f"   舊的本機檔已備份到 {bak}")
+        lp.write_text(value)
+        lp.chmod(0o600)
+        print(f"✅ 同一個值也寫進本機 {lp}")
 
 
 if __name__ == "__main__":
