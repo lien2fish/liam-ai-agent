@@ -390,7 +390,7 @@ def tuna_slab(d, cx, cy, w, h, brown_ratio):
     )
 
 
-def render_frame(bg, scene, p, seed):
+def render_frame(bg, scene, p, seed, insert=False):
     """p = 該段內的進度 0~1。"""
     mode, lines = scene[1], scene[2]
     cx = W // 2
@@ -541,6 +541,17 @@ def render_frame(bg, scene, p, seed):
     elif mode in ("end", "photo"):
         pass
 
+    if insert:
+        # 插入段：只留圖解本身。字卡與品牌標記交給主影片，
+        # 疊在口播上會跟旁白搶注意力。
+        # 字卡拿掉後下半部會空一大塊，圖整體往下移讓它垂直置中。
+        shift = 0 if photo else INSERT_SHIFT
+        if shift:
+            out = bg.copy()
+            out.paste(img.crop((0, 0, W, H - shift)), (0, shift))
+            return out
+        return img
+
     # 字卡
     is_hook = mode == "hook" or bool(photo and photo.get("big"))
     if is_hook:
@@ -575,6 +586,84 @@ def render_frame(bg, scene, p, seed):
     return img
 
 
+def export_inserts(slug, outdir):
+    """把每一拍的圖解單獨輸出成可插入口播影片的短片段。
+
+    連老闆頻道的識別度在「人在現場講」，所以純動畫不獨立成片——
+    這些是拿來插進口播裡當示意圖用的（像新聞的插入動畫）。
+    規格對齊 reel_maker 成品，才能直接接進剪輯。
+    """
+    script = SCRIPTS[slug]
+    out = pathlib.Path(outdir)
+    out.mkdir(parents=True, exist_ok=True)
+    bg = background()
+    made = []
+    for i, scene in enumerate(script["scenes"], 1):
+        mode = scene[1]
+        if mode in ("hook", "end"):
+            # hook 與 end 只有字卡沒有圖解，抽掉字之後是空畫面
+            continue
+        path = out / f"{slug}_{i:02d}_{mode}.mp4"
+        frames = int(scene[0] * FPS)
+        ff = subprocess.Popen(
+            [
+                "ffmpeg",
+                "-y",
+                "-f",
+                "rawvideo",
+                "-pix_fmt",
+                "rgb24",
+                "-s",
+                f"{W}x{H}",
+                "-r",
+                str(FPS),
+                "-i",
+                "-",
+                "-f",
+                "lavfi",
+                "-i",
+                "anullsrc=r=48000:cl=stereo",
+                "-shortest",
+                "-c:v",
+                "libx264",
+                "-preset",
+                "medium",
+                "-crf",
+                "20",
+                "-pix_fmt",
+                "yuv420p",
+                "-profile:v",
+                "high",
+                "-level",
+                "4.0",
+                "-c:a",
+                "aac",
+                "-ar",
+                "48000",
+                "-ac",
+                "2",
+                "-movflags",
+                "+faststart",
+                str(path),
+            ],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        for f in range(frames):
+            ff.stdin.write(
+                render_frame(
+                    bg, scene, f / max(frames - 1, 1), i * 1000 + f, insert=True
+                ).tobytes()
+            )
+        ff.stdin.close()
+        ff.wait()
+        made.append((path.name, scene[0], " / ".join(scene[2])))
+    print(f"\n✅ {script['title']} → {out}/")
+    for name, dur, said in made:
+        print(f"   {name:34s} {dur:4.1f}s   旁白可講：{said}")
+
+
 def main():
     args = [a for a in sys.argv[1:]]
     if not args or args[0] in ("--list", "-l"):
@@ -583,6 +672,11 @@ def main():
             total = sum(s[0] for s in v["scenes"])
             print(f"  {k:14s} {total:4.1f}s  {v['title']}")
             print(f"                 依據：{v['sources']}")
+        return
+    if args[0] == "--insert":
+        if len(args) < 2 or args[1] not in SCRIPTS:
+            raise SystemExit("用法：--insert <主題代號> [輸出資料夾]（--list 看清單）")
+        export_inserts(args[1], args[2] if len(args) > 2 else "inserts")
         return
     if args[0] == "--gen-image":
         gen_image(args[1] if len(args) > 1 else "")
