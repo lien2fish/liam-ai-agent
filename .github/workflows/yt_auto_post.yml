@@ -16,6 +16,15 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      # 配樂放私人 repo：YouTube 音樂庫的授權涵蓋「用在自己的影片裡」，
+      # 不包含把音檔當獨立檔案散布，所以不能放公開 repo
+      - name: Checkout private assets
+        uses: actions/checkout@v4
+        with:
+          repository: lien2fish/liam-workspace
+          token: ${{ secrets.WORKSPACE_PAT }}
+          path: workspace
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -39,6 +48,7 @@ jobs:
           YT_OAUTH_CLIENT_ID:      ${{ secrets.YT_OAUTH_CLIENT_ID }}
           YT_OAUTH_CLIENT_SECRET:  ${{ secrets.YT_OAUTH_CLIENT_SECRET }}
           YT_OAUTH_REFRESH_TOKEN:  ${{ secrets.YT_OAUTH_REFRESH_TOKEN }}
+          YT_BGM:                  workspace/assets/bgm/night_music.mp3
           YT_PRIVACY:              'private'
           YT_PUBLISH_HOUR:         '18'        # 台灣時間18:00自動轉公開（排程發布）
           # 實際排程在 make_and_upload.py：SHORT_WEEKDAYS={1,4} 週二、五；LONG_WEEKDAYS={6} 週日。
