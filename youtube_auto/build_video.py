@@ -14,7 +14,12 @@ REPO = os.path.dirname(BASE)
 ASPECT = os.environ.get("YT_ASPECT", "16:9")
 W, H = (1080, 1920) if ASPECT == "9:16" else (1920, 1080)
 FPS = 30
-VOICE = os.environ.get("YT_VOICE", "en-US-GuyNeural")  # 沉穩男聲（神秘/史詩感）
+# 旁白語言：zh＝繁中（2026-08-26 起的預設，試繁中市場）、en＝英文
+NARRATION_LANG = os.environ.get("YT_NARRATION_LANG", "zh")
+VOICE = os.environ.get(
+    "YT_VOICE",
+    "zh-TW-YunJheNeural" if NARRATION_LANG == "zh" else "en-US-GuyNeural",
+)  # 沉穩男聲（神秘/史詩感）
 RATE = os.environ.get("YT_RATE", "-3%")  # 略慢增添份量
 # 中文字幕字型：macOS 用黑體-繁，Linux(GitHub Actions) 用 Noto CJK
 CJK_FONT = "Heiti TC" if platform.system() == "Darwin" else "Noto Sans CJK TC"
@@ -342,13 +347,18 @@ def make_title_card(bg_path, title, intro_zh, out_png):
     )
     d = ImageDraw.Draw(base)
 
-    tfont = _title_font(108)
-    tlines = _wrap_pil(d, title.upper(), tfont, W - 140, cjk=False)
     cp, ci = _cjk_font_path()
+    title_cjk = _is_cjk(title)
+    if title_cjk:  # 中文標題得用 CJK 字型，英文字型畫出來是一排豆腐
+        tfont, tlines = _fit_title(d, title, W - 140, 2, True, (96, 88, 80, 72))
+    else:
+        tfont = _title_font(108)
+        tlines = _wrap_pil(d, title.upper(), tfont, W - 140, cjk=False)
     ifont = ImageFont.truetype(cp, 54, index=ci)
     ilines = _wrap_pil(d, intro_zh, ifont, W - 180, cjk=True)
 
-    th = len(tlines) * 132
+    lh_t = int(tfont.size * 1.22)
+    th = len(tlines) * lh_t
     ih = len(ilines) * 78
     total = th + 70 + ih
     cy = (H - total) // 2
@@ -357,7 +367,7 @@ def make_title_card(bg_path, title, intro_zh, out_png):
         for off in ((-3, -3), (3, 3), (-3, 3), (3, -3)):
             d.text(((W - w) / 2 + off[0], cy + off[1]), ln, font=tfont, fill=(0, 0, 0))
         d.text(((W - w) / 2, cy), ln, font=tfont, fill=(245, 240, 225))
-        cy += 132
+        cy += lh_t
     d.line(
         [(W / 2 - 110, cy + 18), (W / 2 + 110, cy + 18)], fill=(212, 175, 90), width=3
     )
@@ -400,8 +410,42 @@ def title_card_clip(png, dur, out):
     )
 
 
+def _balance_lines(draw, text, font, max_w):
+    """中文標題斷兩行時取長度接近的切點，避免第二行只掉一個字"""
+    if draw.textlength(text, font=font) <= max_w:
+        return [text]
+    n = len(text)
+    best = None
+    for i in range(max(1, int(n * 0.35)), min(n, int(n * 0.65)) + 1):
+        a, b = text[:i], text[i:]
+        wa, wb = draw.textlength(a, font=font), draw.textlength(b, font=font)
+        if max(wa, wb) <= max_w and (best is None or abs(wa - wb) < best[0]):
+            best = (abs(wa - wb), [a, b])
+    return best[1] if best else _wrap_pil(draw, text, font, max_w, cjk=True)
+
+
+def _fit_title(draw, text, max_w, max_lines, cjk, sizes):
+    """從大字級往下試，找到能塞進 max_lines 行的最大字級"""
+    cp, ci = _cjk_font_path()
+    f = lines = None
+    for s in sizes:
+        f = ImageFont.truetype(cp, s, index=ci) if cjk else _title_font(s)
+        lines = (
+            _balance_lines(draw, text, f, max_w)
+            if cjk
+            else _wrap_pil(draw, text, f, max_w, cjk)
+        )
+        if len(lines) <= max_lines:
+            return f, lines
+    return f, lines[:max_lines]
+
+
 def make_thumbnail(bg_path, title, out_png):
-    """長片自訂縮圖 1280×720：場景圖 + 底部漸層 + 大標題（左下，金色重點條）"""
+    """長片自訂縮圖 1280×720：場景圖 + 暗角 + 頻道標記 + 左下大標題
+
+    縮圖在 feed 裡只有一瞬間，所以：字要大、行要少、對比要夠。
+    標題最多 2 行、字級自動縮到塞得下為止。
+    """
     TW, TH = 1280, 720
     base = Image.open(bg_path).convert("RGB")
     bw, bh = base.size
@@ -409,22 +453,42 @@ def make_thumbnail(bg_path, title, out_png):
     base = base.resize((int(bw * r), int(bh * r)), Image.LANCZOS)
     x, y = (base.width - TW) // 2, (base.height - TH) // 2
     base = base.crop((x, y, x + TW, y + TH))
+
+    # 暗角：把視線收進畫面中央，也讓四角的文字浮起來
+    vig = Image.new("L", (TW, TH), 0)
+    ImageDraw.Draw(vig).ellipse(
+        [-TW * 0.22, -TH * 0.30, TW * 1.22, TH * 1.30], fill=255
+    )
+    base = Image.composite(base, Image.new("RGB", (TW, TH), (2, 4, 10)), vig)
+
+    # 底部漸層：標題區壓暗，白字才咬得住
     grad = Image.new("L", (TW, TH), 0)
     gd = ImageDraw.Draw(grad)
     for i in range(TH):
-        gd.line([(0, i), (TW, i)], fill=int(220 * max(0, (i - TH * 0.3) / (TH * 0.7))))
+        gd.line(
+            [(0, i), (TW, i)], fill=int(238 * max(0, (i - TH * 0.34) / (TH * 0.66)))
+        )
     base = Image.composite(Image.new("RGB", (TW, TH), (3, 5, 14)), base, grad)
+
     d = ImageDraw.Draw(base)
-    f = _title_font(86)
-    lines = _wrap_pil(d, title.upper(), f, TW - 120, cjk=False)
-    lh = 100
-    cy = TH - 70 - len(lines) * lh
-    d.rectangle([60, cy - 26, 150, cy - 14], fill=(212, 175, 90))
+    cjk = _is_cjk(title)
+    txt = title if cjk else title.upper()
+    sizes = (96, 88, 80, 72, 64) if cjk else (104, 94, 86, 78, 70)
+    f, lines = _fit_title(d, txt, TW - 130, 2, cjk, sizes)
+    lh = int(f.size * 1.16)
+
+    cy = TH - 68 - len(lines) * lh
+    d.rectangle([62, cy - 30, 168, cy - 16], fill=(212, 175, 90))
     for ln in lines:
-        for off in ((-3, -3), (3, 3), (-3, 3), (3, -3), (0, 4)):
-            d.text((60 + off[0], cy + off[1]), ln, font=f, fill=(0, 0, 0))
-        d.text((60, cy), ln, font=f, fill=(245, 240, 225))
+        for off in ((-3, -3), (3, 3), (-3, 3), (3, -3), (0, 4), (4, 0)):
+            d.text((62 + off[0], cy + off[1]), ln, font=f, fill=(0, 0, 0))
+        d.text((62, cy), ln, font=f, fill=(247, 243, 232))
         cy += lh
+
+    # 左上頻道標記：讓同頻道的縮圖在 feed 裡認得出是一套
+    mf = _title_font(30)
+    d.line([(62, 66), (110, 66)], fill=(212, 175, 90), width=3)
+    d.text((124, 52), "THE UNKNOWN HOUR", font=mf, fill=(212, 175, 90))
     base.save(out_png)
 
 
@@ -432,14 +496,20 @@ def build_video(script, out_path, workdir=None):
     tmp = workdir or tempfile.mkdtemp(prefix="ytshort_")
     scenes = script["scenes"]
     sents = script.get("sentences") or []
-    en_list = [s["en"] for s in sents] if sents else [script.get("narration", "")]
+    en_list = (
+        [s.get("en", "") for s in sents] if sents else [script.get("narration", "")]
+    )
     zh_list = script.get("subtitles_zh") or [s.get("zh", "") for s in sents] or en_list
+    if NARRATION_LANG == "zh":
+        speak_list = zh_list
+    else:
+        speak_list = en_list if any(en_list) else zh_list
 
     print(f"[1/4] 逐句配音 edge-tts（{VOICE}）...", flush=True)
     voice_mp3 = os.path.join(tmp, "voice.mp3")
-    segs = synth_sentences(en_list, voice_mp3, tmp)
+    segs = synth_sentences(speak_list, voice_mp3, tmp)
     audio_dur = get_duration(voice_mp3)
-    print(f"   旁白 {audio_dur:.1f}s、{len(en_list)} 句、中文字幕對齊", flush=True)
+    print(f"   旁白 {audio_dur:.1f}s、{len(speak_list)} 句、字幕對齊", flush=True)
 
     print(
         f"[2/4] 生成 {len(scenes)} 張場景插圖 + 吉祥物結尾（{OPENAI_IMG_MODEL}）...",
@@ -566,7 +636,13 @@ def build_video(script, out_path, workdir=None):
     if W > H:
         try:
             thumb = os.path.join(tmp, "thumb.png")
-            make_thumbnail(imgs[len(scenes) // 2], script.get("title", ""), thumb)
+            # 封面短句優先：封面在 feed 裡只有一瞬間，整句標題塞不進眼睛
+            cover = (
+                script.get("cover_zh")
+                or script.get("cover_en")
+                or script.get("title", "")
+            )
+            make_thumbnail(imgs[len(scenes) // 2], cover, thumb)
             print(f"   縮圖完成：{thumb}", flush=True)
         except Exception as e:
             print(f"   縮圖略過：{e}", flush=True)

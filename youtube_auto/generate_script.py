@@ -14,6 +14,9 @@ ANGLE_KEEP = 6
 
 CLAUDE_MODEL = "claude-sonnet-5"
 
+# 旁白語言：zh＝繁中（2026-08-26 起的預設）、en＝英文。與 build_video 同一個環境變數
+NARRATION_LANG = os.environ.get("YT_NARRATION_LANG", "zh")
+
 # 每支影片隨機挑一個敘事框架，讓結構不重複、且必須帶編輯觀點——
 # YouTube 2026 inauthentic content 政策點名「量產樣板＋逐字朗讀」，靠這個脫離該形態。
 ANGLES = [
@@ -132,22 +135,36 @@ def save_recent(recent, new_topic):
 
 
 def build_prompt(recent, mode="long", angle=None):
+    zh = NARRATION_LANG == "zh"
     if mode == "short":
-        dur, n_sent, words, n_scene = (
-            "punchy 45-55 second Short",
-            "6-8 sentences",
-            "~75-110 English words",
-            "4 to 6",
-        )
+        dur, n_sent, n_scene = ("punchy 45-55 second Short", "6-8 sentences", "4 to 6")
+        words = "約 200-240 個中文字" if zh else "~75-110 English words"
         struct = "First sentence = an instant gripping hook; build ONE single fascinating mystery fast; last sentence = a haunting open question. Keep it tight and punchy."
     else:
-        dur, n_sent, words, n_scene = (
-            "2-3 minute video",
-            "18-24 sentences",
-            "~290-380 English words",
-            "10 to 14",
-        )
+        dur, n_sent, n_scene = ("2-3 minute video", "18-24 sentences", "10 to 14")
+        words = "約 640-750 個中文字" if zh else "~290-380 English words"
         struct = "First sentence = a gripping hook that sparks curiosity; the middle builds the mystery with fascinating facts and unanswered questions; the last sentence leaves the viewer with a haunting open question or sense of wonder."
+    if zh:
+        title_spec = '"title": "繁體中文標題，14-22 字。必須具體點出這支片真正的那一個發現或矛盾，不要抽象名詞堆疊；可以留懸念，但不准誇大或編造（禁用「震驚」「你不知道的」「史上最」這類套路）"'
+        intro_spec = '"intro_zh": "開場卡上的一句話，18-32 字。必須把標題再往前推一步，不可以只是換句話重講 title"'
+        cover_spec = '"cover_zh": "封面上的短句，4-8 個字，一眼就讀完的鉤子（像「地圖畫錯了嗎」），不是把標題縮寫"'
+        sent_spec = '"sentences": [{"zh": "一句用來唸出來的繁體中文旁白（口語、精煉、留神秘感；不要翻譯腔、不要書面語）"}]'
+        desc_spec = (
+            '"description": "2-3 句繁體中文影片說明，結尾接 4-6 個繁體中文 hashtag"'
+        )
+        tags_spec = (
+            '"tags": ["8-12 個繁體中文搜尋關鍵字，專有名詞可保留英文，不要 # 符號"]'
+        )
+        lang_note = f'The "sentences" array is the spoken narration in TRADITIONAL CHINESE ({n_sent}, {words}). It is BOTH the voiceover and the on-screen subtitle, so every sentence must sound natural read aloud. {struct} NO stage directions, NO emojis. Write the title, intro_zh, sentences, description and tags ALL in Traditional Chinese; keep "topic" and "scenes" in English.'
+    else:
+        title_spec = '"title": "intriguing, curiosity-driven English title under 60 characters (evokes wonder, not clickbait lies) — shown on the opening title card"'
+        intro_spec = '"intro_zh": "一句吸引人的繁體中文開場白，點出這支影片要探討的謎團是什麼（約 18-32 字，勾起好奇，顯示在開場標題卡）"'
+        cover_spec = '"cover_en": "3-5 word phrase for the thumbnail — readable at a glance, not an abbreviated title"'
+        sent_spec = '"sentences": [{"en": "one spoken English sentence", "zh": "對應的繁體中文（口語、精煉、保留神秘感）"}]'
+        desc_spec = '"description": "2-3 sentence YouTube description followed by 4-6 relevant hashtags"'
+        tags_spec = '"tags": ["8-12 lowercase search tags, no # symbol"]'
+        lang_note = f'The "sentences" array is the spoken narration split sentence by sentence ({n_sent}, {words} total). {struct} Each item pairs the English sentence ("en", for voiceover) with its Traditional Chinese translation ("zh", for on-screen subtitles). NO stage directions, NO emojis.'
+
     avoid = ""
     if recent:
         avoid = (
@@ -166,16 +183,17 @@ The title, the hook and the closing line must all follow from this angle."""
 Generate ONE {dur}. Output ONLY a JSON object, no markdown, no commentary:
 {{
   "topic": "short unique kebab-case slug for de-duplication, e.g. dark-matter or gobekli-tepe",
-  "title": "intriguing, curiosity-driven English title under 60 characters (evokes wonder, not clickbait lies) — shown on the opening title card",
+  {title_spec},
   "thesis": "one English sentence stating the original argument this specific video makes — a claim you are asserting, NOT a topic label. Bad: 'The mystery of dark matter.' Good: 'Dark matter's best evidence is not what it explains, but what it fails to.'",
-  "intro_zh": "一句吸引人的繁體中文開場白，點出這支影片要探討的謎團是什麼（約 18-32 字，勾起好奇，顯示在開場標題卡）",
-  "sentences": [{{"en": "one spoken English sentence", "zh": "對應的繁體中文（口語、精煉、保留神秘感）"}}],
+  {intro_spec},
+  {cover_spec},
+  {sent_spec},
   "scenes": ["{n_scene} cinematic image-generation prompts in English, one per beat. Epic, awe-inspiring, atmospheric scenes (deep space nebulae, black holes, ancient stone ruins, lost pyramids, mysterious artefacts, vast cosmic vistas). Photoreal, dramatic lighting, cinematic."],
-  "description": "2-3 sentence YouTube description followed by 4-6 relevant hashtags",
-  "tags": ["8-12 lowercase search tags, no # symbol"]
+  {desc_spec},
+  {tags_spec}
 }}
 
-The "sentences" array is the spoken narration split sentence by sentence ({n_sent}, {words} total). {struct} Each item pairs the English sentence ("en", for voiceover) with its Traditional Chinese translation ("zh", for on-screen subtitles). NO stage directions, NO emojis.
+{lang_note}
 
 Pick genuinely fascinating themes: unsolved cosmic mysteries (dark matter, black holes, the edge of the universe, the Fermi paradox, what came before the Big Bang) and ancient civilisation enigmas (Göbekli Tepe, lost cities, unexplained megaliths, vanished peoples, undeciphered scripts). Be factual; where unproven, frame it honestly as an open mystery that invites wonder.{angle_block}
 
