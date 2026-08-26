@@ -124,6 +124,86 @@ SEASONAL_LOCAL = {
 #    牡蠣／蛤蜊／九孔（皆養殖，九孔在貢寮）。
 PENDING_CONFIRM = ["烏魚", "土魠魚", "牡蠣", "蛤蜊", "九孔"]
 
+# 四大類各自的角度，用來從歷史紀錄反推某則屬於哪一類
+CATEGORY_ANGLES = {
+    "海鮮知識": [
+        "外觀辨別",
+        "食用知識",
+        "生態習性",
+        "台灣特色",
+        "處理與保存",
+        "料理法",
+        "選購技巧",
+        "常見誤解",
+        "名稱由來",
+        "相似魚種比較",
+        "產季與時機",
+        "冷知識趣聞",
+    ],
+    "捕魚知識": ["漁法介紹", "捕魚時機", "漁港文化", "漁民智慧"],
+    "漁船知識": ["船種介紹", "漁具設備", "出海作業", "飲食文化"],
+    "冷鏈知識": ["冷凍原理", "破除迷思"],
+}
+
+# 大類輪替表：模型自己不會平衡（舊版 89% 都落在海鮮知識），所以由程式指定。
+# 17 天一循環，比例貼近各類題材池大小（海鮮 8／捕魚 4／漁船 4／冷鏈 1），
+# 且海鮮知識不會連續兩天出現。
+CATEGORY_ROTATION = [
+    "海鮮知識",
+    "捕魚知識",
+    "海鮮知識",
+    "漁船知識",
+    "海鮮知識",
+    "捕魚知識",
+    "海鮮知識",
+    "漁船知識",
+    "海鮮知識",
+    "冷鏈知識",
+    "海鮮知識",
+    "捕魚知識",
+    "海鮮知識",
+    "漁船知識",
+    "海鮮知識",
+    "捕魚知識",
+    "漁船知識",
+]
+
+# 物種群組：主題名不同但觀眾看起來是同一種東西。
+# 花蟹/三點蟹/石蟳 連三天就是連三天螃蟹，所以以「群組」而非「主題」做連續管制。
+SPECIES_GROUPS = {
+    "蟹類": ["花蟹", "三點蟹", "石蟳", "旭蟹", "萬里蟹", "螃蟹", "蟹膏蟹", "帝王蟹"],
+    "頭足類": ["小卷", "透抽", "花枝", "軟絲", "章魚", "鎖管", "魷魚"],
+    "蝦類": ["草蝦", "白蝦", "九節蝦", "螳螂蝦", "龍蝦", "蝦子"],
+    "貝類": ["牡蠣", "文蛤", "蛤蜊", "九孔", "鮑魚", "蚵仔", "海膽", "海參"],
+    "白身魚": [
+        "白帶魚",
+        "黃雞魚",
+        "赤鯮",
+        "石斑魚",
+        "鱸魚",
+        "比目魚",
+        "鱈魚",
+        "午仔魚",
+    ],
+    "洄游大型魚": ["鮪魚", "黑鮪魚", "旗魚", "劍旗魚", "鬼頭刀", "紅甘", "海鱺"],
+    "青背魚": [
+        "鯖魚",
+        "竹筴魚",
+        "正鰹",
+        "煙仔魚",
+        "秋刀魚",
+        "沙丁魚",
+        "飛魚",
+        "土魠魚",
+        "馬鮫魚",
+        "烏魚",
+    ],
+}
+SPECIES_GROUP_OF = {n: g for g, names in SPECIES_GROUPS.items() for n in names}
+
+# 連續幾則之內不得出現同一個物種群組
+GROUP_COOLDOWN = 3
+
 # 同一主題幾天內不重複。舊版只擋「主題+角度」組合，
 # 導致花枝、飛魚相隔 1 天就再次出現。
 TOPIC_COOLDOWN_DAYS = 14
@@ -167,6 +247,33 @@ def build_knowledge_prompt(exclude_seafood=None):
         used.setdefault(topic, [])
         if angle and angle not in used[topic]:
             used[topic].append(angle)
+
+    # 今日大類由程式指定，不交給模型自己平衡
+    day_index = datetime.now().timetuple().tm_yday
+    today_category = CATEGORY_ROTATION[day_index % len(CATEGORY_ROTATION)]
+    category_note = (
+        f"\n\n🎯 **本次指定類別：【{today_category}】**（由排程輪替決定，用來讓四大類平均穿插）。"
+        f"角度只能從該類的清單裡選。"
+        f"若該類主題全部在冷卻中或組合已用完，才可改選其他類，"
+        f"並優先挑選最近較少出現的類別。"
+    )
+
+    # 物種群組連續管制：主題名不同但同類的（花蟹/三點蟹/石蟳）不可連著出現
+    recent_groups = []
+    for item in (exclude_seafood or [])[:GROUP_COOLDOWN]:
+        g = SPECIES_GROUP_OF.get(item.split("/")[0])
+        if g and g not in recent_groups:
+            recent_groups.append(g)
+
+    group_note = ""
+    if recent_groups:
+        examples = "；".join(
+            f"{g}（{'、'.join(SPECIES_GROUPS[g][:6])}…）" for g in recent_groups
+        )
+        group_note = (
+            f"\n\n🚫 最近 {GROUP_COOLDOWN} 則已出現過這些**物種群組**，本次一律不可再選：{examples}。"
+            f"理由：主題名字不同但觀眾看起來是同一種東西，連著發會顯得題材貧乏。"
+        )
 
     exclude_note = ""
     if used:
@@ -222,7 +329,7 @@ def build_knowledge_prompt(exclude_seafood=None):
   3. **不可給保存期限**。要講就講「取決於溫度、包裝方式與魚的脂肪含量」。
   4. 可以講「安全與品質是兩件事」：全程 −18°C 以下幾乎無限期安全，但風味會持續劣化。
 
-注意：若涉及潮汐、海流、洋流等自然現象，必須結合漁民作業或捕魚技術來說明，不可單純介紹自然現象本身。{season_note}{exclude_note}{cooldown_note}
+注意：若涉及潮汐、海流、洋流等自然現象，必須結合漁民作業或捕魚技術來說明，不可單純介紹自然現象本身。{season_note}{category_note}{group_note}{exclude_note}{cooldown_note}
 
 只輸出 JSON 物件本身，不要加任何說明文字、註解或 markdown 程式碼框。"""
 
