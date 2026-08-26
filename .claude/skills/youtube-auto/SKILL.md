@@ -29,7 +29,15 @@ description: 全自動 AI 影片頻道：The Unknown Hour（宇宙／古文明�
 | `SETUP.md` | 一次性人工設定步驟（建頻道/OAuth/Secrets） |
 
 ### 排程與發布
+⛔ **2026-08-26 起全部暫停發文**（Lien 指示）。`yt_auto_post.yml` 的 schedule 已註解，
+保留 `workflow_dispatch`；要恢復就把那兩行取消註解。**下面是暫停前的運作方式，恢復時照這個看。**
+
 `.github/workflows/yt_auto_post.yml`，每天 10:00 台灣（UTC 02:00）**製作並上傳**影片，用 YouTube 排程發布（`status.publishAt`）設**當天 18:00 台灣自動轉公開**。
+
+⚠️ 暫停排程**不影響已上傳且排定稍後公開的影片**，它們照樣會到點公開。
+要一併攔下必須到 YouTube Studio「內容 → 已排程」手動改。
+⚠️ 上傳用的 OAuth scope 只有 `youtube.upload`，**讀不了頻道清單**（列出已排程影片會回 403），
+所以這件事沒辦法用程式查，只能開 Studio。
 - 控制：workflow env `YT_PUBLISH_HOUR='18'`（台灣整點，有設＝排程發布、影片先 private 屆時自動公開；不設則用 `YT_PRIVACY`）
 - `make_and_upload.scheduled_publish_at()` 算 publishAt；`upload.upload(publish_at=...)` 帶入。**頻道＝Finn's Why**（2026-06-29 已完成 OAuth＋3個 Secret＋測試上傳確認）
 
