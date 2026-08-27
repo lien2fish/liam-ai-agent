@@ -2,7 +2,7 @@ name: YouTube 頻道每日表現日報
 
 on:
   schedule:
-    - cron: '20 0 * * *'    # UTC 00:20 = 台灣 08:20
+    - cron: '33 0 * * *'   # UTC 00:33 = 台灣 08:33（避開整點壅塞）
   workflow_dispatch:
 
 jobs:

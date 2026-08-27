@@ -2,7 +2,7 @@ name: YouTube Shorts 留言通知
 
 on:
   schedule:
-    - cron: '30 0 * * *'   # 台灣 08:30
+    - cron: '37 0 * * *'   # 台灣 08:37（避開整點壅塞）
   workflow_dispatch:
 
 jobs:

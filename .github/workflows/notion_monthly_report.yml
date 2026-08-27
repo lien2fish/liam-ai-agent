@@ -2,7 +2,7 @@ name: Notion 月報（每月 1 日）
 
 on:
   schedule:
-    - cron: '0 0 1 * *'    # UTC 00:00 = 台灣 08:00，每月 1 日
+    - cron: '57 0 1 * *'   # UTC 00:57 = 台灣 08:57，每月 1 日（避開整點壅塞）
   workflow_dispatch:        # 允許手動觸發
 
 jobs:

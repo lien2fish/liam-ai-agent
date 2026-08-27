@@ -1,0 +1,27 @@
+name: 排程巡邏（沒跑就補）
+
+on:
+  schedule:
+    - cron: '19 0-6 * * *'   # UTC 00:19~06:19 = 台灣 08:19~14:19 每小時一次
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  patrol:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 檢查今天該跑的有沒有跑
+        env:
+          # workflow_dispatch 與 repository_dispatch 是「GITHUB_TOKEN 觸發的事件
+          # 不會產生新 run」這條規則的明文例外，所以內建 token 加 actions:write 就夠，
+          # 不需要另外放一把 PAT 進來。
+          GH_TOKEN:           ${{ github.token }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          LINE_NOTIFY_URL:    ${{ secrets.LINE_NOTIFY_URL }}
+          LINE_NOTIFY_TOKEN:  ${{ secrets.LINE_NOTIFY_TOKEN }}
+        run: python3 scripts/schedule_watchdog.py
