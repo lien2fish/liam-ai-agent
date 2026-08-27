@@ -140,8 +140,10 @@ description: IG + FB 每日自動發文、IG 留言自動回覆、IG 限動 Reel
   只有 `token_expiry_check` 會抓到
 - 更新 Token 方式：用 `nacl.public.SealedBox` 直接寫入 GitHub Secret（系統 PyNaCl 1.6.2 已支援）
 - **GitHub PAT（舊）：2026-08-15 到期** — 已廢棄，改用新 PAT
-- **GitHub PAT（新）：永不過期**，含 `repo` + `workflow` scope，存在 `~/.git-credentials`
+- **GitHub PAT（新）：永不過期**，含 `repo` + `workflow` scope。**同時存在 keychain 與
+  `~/.git-credentials`**（`credential.helper` 設了 `osxkeychain` ＋ `store` 兩個）。
   （**不是** remote URL，remote 已改回乾淨的 https）
+  ⚠️ 缺 `read:org`，`gh auth login` 會拒收——`~/bin/gh` 是注入 `GH_TOKEN` 的 wrapper，見 CLAUDE.md
 
 ### 注意事項
 - Repo 維持 **public**（config/ 已 gitignore，無憑證外洩風險）
