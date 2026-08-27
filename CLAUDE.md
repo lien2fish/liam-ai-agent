@@ -26,10 +26,9 @@
 | firecrawl | `firecrawl-mcp` | 抓取任何網頁內容，API Key 已設定於環境變數 |
 | filesystem | `@modelcontextprotocol/server-filesystem` | 存取 Desktop / Documents / Downloads |
 | playwright | `@playwright/mcp` | 控制 Chromium 瀏覽器 |
-| google-workspace | `@presto-ai/google-workspace-mcp` | Gmail、Calendar、Drive、Sheets 等，首次使用需 OAuth 登入 |
 | notion-mcp | Notion MCP | 搜尋、新增頁面等 Notion 操作 |
 
-- OAuth 憑證存放：`~/.config/google-workspace-mcp/credentials.json`
+- ⛔ **google-workspace MCP 已於 2026-08-27 移除**：`@presto-ai/google-workspace-mcp` 借用 Gemini CLI 的 Workspace OAuth client，token 從未寫入本機，導致每次開 session 都跳一次授權頁（scope 含 gmail.modify、drive 全權）。Gmail／行事曆改走 GitHub Actions 自己的 Secret 與 Claude 內建連接器，不要重裝
 - 查看 MCP 狀態：`/mcp`
 
 ## 已授權工具權限（settings.json allow 清單）
@@ -39,7 +38,6 @@
 |------|-------------|
 | filesystem | write_file |
 | playwright | navigate、screenshot、snapshot、click、type、press_key、evaluate、resize、close |
-| google-workspace | gmail_search、gmail_get、calendar_list、calendar_listEvents、sheets_getRange、people_getMe、time_getCurrentDate |
 | firecrawl | map、scrape、crawl、agent、agent_status |
 | notion-mcp | post-search、get-self、post-page |
 
@@ -104,9 +102,9 @@
 
 | 平台 | 類型 | 排程 | 狀態 |
 |------|------|------|------|
-| IG + FB | 每日發文 | 每天 08:00 | ✅ 運行中 |
+| IG + FB | 每日發文 | 每天 08:07 | ✅ 運行中 |
 | IG | 留言自動回覆 | 每 5 分鐘 | ✅ 運行中 |
-| YouTube | Shorts 留言通知（不回覆） | 每天 08:30 | ✅ 運行中 |
+| YouTube | Shorts 留言通知（不回覆） | 每天 08:37 | ✅ 運行中 |
 | YouTube | 手動上傳＋排定發布（連老闆／泥馬的真心話） | 手動觸發 | ✅ 見下方 |
 | TikTok | — | — | 手動，不自動化 |
 
@@ -116,27 +114,30 @@
 
 所有雲端自動化任務均透過 GitHub Actions 執行，不依賴本機開機。
 
+⚠️ **所有 cron 都刻意避開整點與 :00/:15/:30/:45**（2026-08-27 調整）。UTC 整點是全球最壅塞的時刻，GitHub 官方明說 schedule 在高負載時會延遲、甚至**整次跳過**（2026-08-27 就有 11 支完全沒觸發）。改動 cron 時**不要挪回整點**。
+
 | Workflow 檔案 | 任務 | 排程 |
 |--------------|------|------|
-| `daily_post.yml` | IG+FB 每日發文 | 每天 08:00 |
+| `daily_post.yml` | IG+FB 每日發文 | 每天 08:07 |
 | `ig_comment_reply.yml` | IG 留言自動回覆 | 每 5 分鐘（**實測常delay 1.5~4小時，GitHub高頻排程平台限制，非設定錯誤**） |
-| `ig_story_teaser.yml` | IG 限動 Reels 預告（從已發布 Reels 剪 3 秒＋「Reels完整版～」，30 天不重複） | 每天 18:05（接 Reels 18:00） |
-| `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:00，自動 commit 報告 |
-| `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:00（**2026-07-02 修**：CRM 於 06-26 整併後，`notion_crm/monthly_report.py` 原引用不存在的 `DB["sales"]` 且欄位名對不上，已改讀「全品牌銷售紀錄」統一DB `38bf4149-a6aa-81db-9b89-c47410857a2c`，欄位＝金額/出貨日期/客戶名稱）|
+| `ig_story_teaser.yml` | IG 限動 Reels 預告（從已發布 Reels 剪 3 秒＋「Reels完整版～」，30 天不重複） | 每天 18:08（接 Reels 18:00） |
+| `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:13，自動 commit 報告 |
+| `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:57（**2026-07-02 修**：CRM 於 06-26 整併後，`notion_crm/monthly_report.py` 原引用不存在的 `DB["sales"]` 且欄位名對不上，已改讀「全品牌銷售紀錄」統一DB `38bf4149-a6aa-81db-9b89-c47410857a2c`，欄位＝金額/出貨日期/客戶名稱）|
 | `market_daily.yml` | 每日股市全面分析報告 | 每天 **12:00**（台灣），自動 commit 報告 |
-| `seafood_prices.yml` | 漁獲市場行情追蹤 | 每天 09:30 |
-| `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:30 |
-| `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:00，自動 commit 報告 |
-| `life_visit_reminder.yml` | 壽險客戶固定拜訪提醒 | 每天 08:40，讀Notion算下次拜訪日，本週到期Email（**無commit，客戶個資只走Email**）|
-| `birthday_reminder.yml` | 壽險客戶生日提醒 | 每天 08:05，未來7天內生日則Email（含歲數，無commit）|
-| `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:00，超60天未回購則 Email（**2026-08-21 起無commit，客戶個資只走Email**——原本每天 commit 報告，已累積 56 份含姓名與手機的報告在公開 repo）|
-| `weekly_revenue_sprint.yml` | 營收衝刺週報（本週壽險該接觸名單＋話術：A組未來14天生日切入、B組壽產保單健檢每週輪替6位） | 每週一 08:00，Email（**無commit，客戶個資只走Email**）|
-| `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；Shorts 週二/五、長片週日）| 每天 10:00（**2026-08-26 當日暫停半天後即恢復**，Lien 指示）|
-| `yt_channel_report.yml` | The Unknown Hour 頻道每日表現日報 | 每天 08:20（隨發片一起恢復，2026-08-26）|
+| `seafood_prices.yml` | 漁獲市場行情追蹤 | 每天 09:37 |
+| `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:37 |
+| `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:17，自動 commit 報告 |
+| `life_visit_reminder.yml` | 壽險客戶固定拜訪提醒 | 每天 08:43，讀Notion算下次拜訪日，本週到期Email（**無commit，客戶個資只走Email**）|
+| `birthday_reminder.yml` | 壽險客戶生日提醒 | 每天 08:23，未來7天內生日則Email（含歲數，無commit）|
+| `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:07，超60天未回購則 Email（**2026-08-21 起無commit，客戶個資只走Email**——原本每天 commit 報告，已累積 56 份含姓名與手機的報告在公開 repo）|
+| `weekly_revenue_sprint.yml` | 營收衝刺週報（本週壽險該接觸名單＋話術：A組未來14天生日切入、B組壽產保單健檢每週輪替6位） | 每週一 08:03，Email（**無commit，客戶個資只走Email**）|
+| `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；Shorts 週二/五、長片週日）| 每天 10:07（**2026-08-26 當日暫停半天後即恢復**，Lien 指示）|
+| `yt_channel_report.yml` | The Unknown Hour 頻道每日表現日報 | 每天 08:33（隨發片一起恢復，2026-08-26）|
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
-| `rotary_birthday_reminder.yml` | 中城網路扶輪社社友生日提醒（剛好前14天Email一次；資料=私人repo `liam-workspace/rotary/中城網路社友通訊錄.json` 71位，用`WORKSPACE_PAT` checkout，**個資不進公開repo、無commit**） | 每天 08:10 |
-| `token_expiry_check.yml` | **IG／FB Token 到期與失效檢查**（不寫死日期，每天問 `debug_token` 實際狀態；剩 30/21/14/10/7/5/3/2/1 天時提醒，失效或缺權限則 🔴 並讓 run 變紅）。**Email＋LINE 雙通道** | 每天 08:45 |
-| `weekly_review.yml` | **AI 工作週報**（上週做了什麼＋可精進＋自動化健康＋下期建議，Email 附正式 PDF）。資料＝私人repo `daily/` 工作日誌＋公開repo git log＋Actions runs API＋`TODO.md` diff；**報告只進私人repo `liam-workspace/reviews/`，不進公開repo** | 每週一 08:50（錯開 08:00 營收週報）|
+| `rotary_birthday_reminder.yml` | 中城網路扶輪社社友生日提醒（剛好前14天Email一次；資料=私人repo `liam-workspace/rotary/中城網路社友通訊錄.json` 71位，用`WORKSPACE_PAT` checkout，**個資不進公開repo、無commit**） | 每天 08:27 |
+| `token_expiry_check.yml` | **IG／FB Token 到期與失效檢查**（不寫死日期，每天問 `debug_token` 實際狀態；剩 30/21/14/10/7/5/3/2/1 天時提醒，失效或缺權限則 🔴 並讓 run 變紅）。**Email＋LINE 雙通道** | 每天 08:47 |
+| `weekly_review.yml` | **AI 工作週報**（上週做了什麼＋可精進＋自動化健康＋下期建議，Email 附正式 PDF）。資料＝私人repo `daily/` 工作日誌＋公開repo git log＋Actions runs API＋`TODO.md` diff；**報告只進私人repo `liam-workspace/reviews/`，不進公開repo** | 每週一 08:53（錯開 08:03 營收週報）|
+| `schedule_watchdog.yml` | **排程巡邏**（GitHub 的 schedule 會誤點、負載高時整次跳過。檢查今天該跑的有沒有跑，超過 2 小時寬限仍沒跑就自動 `workflow_dispatch` 補觸發，並回頭確認真的多出一次 run 才算成功）。⛔ **`daily_post`／`ig_story_teaser`／`yt_auto_post` 只通知不補跑**——自動補跑等於自動對外發布，發出去 API 刪不掉。時間表直接讀各 workflow 的 cron，改排程不用同步兩邊 | 台灣 08:19~14:19 每小時一次 |
 
 ### GitHub Secrets 總覽
 | Secret | 用途 |

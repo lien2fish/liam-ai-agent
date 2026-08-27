@@ -2,7 +2,7 @@ name: YouTube 每日自動影片
 
 on:
   schedule:
-    - cron: '0 2 * * *'    # UTC 02:00 = 台灣 10:00 製作影片；當天 18:00 自動轉公開
+    - cron: '7 2 * * *'   # UTC 02:07 = 台灣 10:07 製作影片；當天 18:00 自動轉公開
   workflow_dispatch:
 
 jobs:
