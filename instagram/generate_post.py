@@ -459,6 +459,40 @@ def notify_fallback(err):
         print(f"[notify] 推播失敗（不影響發文）：{e}", flush=True)
 
 
+def notify_no_illustration(err):
+    """插圖生成失敗、改用 logo 頂替時推一則 LINE。
+
+    ⚠️ 2026-08-28 補：原本 generate_illustration 失敗會直接往上拋，
+    整條發文就斷了——文案那段明明有 Gemini fallback，插圖這段卻沒有，
+    等於 OpenAI 一斷天窗就開。不開天窗優先，但一定要讓人知道。
+    """
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from line_assistant.notify import notify
+
+        notify(
+            "⚠️ 今天的 IG 貼文沒有插圖，出的是純文字版面\n"
+            f"原因：{_fallback_reason(err)}\n\n"
+            "貼文照常發出。要補正常版：重跑 daily_post，或手動換圖重發。"
+        )
+    except Exception as e:  # 通知失敗絕不能連累發文
+        print(f"[notify] 推播失敗（不影響發文）：{e}", flush=True)
+
+
+def illustration_or_none(illustration_prompt):
+    """插圖生成失敗就出純文字版面——寧可樸素，也不要斷掉每日不缺席的節奏。
+
+    ⚠️ 不要拿 LOGO 頂替：logo.png 是深色底，而合成時的去背只吃掉接近白的像素，
+    結果會是一塊黑方塊壓在米色卡紙上，還蓋住模板的標題（2026-08-28 實際試過）。
+    """
+    try:
+        return generate_illustration(illustration_prompt)
+    except Exception as e:
+        print(f"⚠️ 插圖生成失敗，改出純文字版面：{e}", flush=True)
+        notify_no_illustration(e)
+        return None
+
+
 def generate_knowledge(exclude_seafood=None):
     """今日知識生成：Claude 為主，Gemini 為 fallback"""
     prompt = build_knowledge_prompt(exclude_seafood)
@@ -489,7 +523,9 @@ def generate_illustration(illustration_prompt):
         "n": 1,
     }
     last = None
-    for attempt in range(6):
+    # 3 次而非 6 次：每次 timeout 180 秒＋遞增等待，6 次最壞約 20 分鐘，
+    # 會超過 workflow 的 timeout-minutes 而被砍在半路——重試等於白設。
+    for attempt in range(3):
         try:
             r = requests.post(
                 "https://api.openai.com/v1/images/generations",
@@ -570,26 +606,41 @@ def compose_image(knowledge, illustration):
     est_text_h = len(est_lines) * int(100 * 1.55)
 
     TOTAL_AVAIL = CARD_BOTTOM - ILLUS_Y - GAP - HEADER_H  # 插圖+文字總可用高度
-    ILLUS_SIZE = min(1600, max(900, TOTAL_AVAIL - est_text_h))
-
-    # 插圖：去白背景 → 自動裁切主體 → 填滿插圖區域
-    arr = np.array(illustration.convert("RGBA"), dtype=np.float32)
-    r, g, b = arr[:, :, 0], arr[:, :, 1], arr[:, :, 2]
-    arr[:, :, 3] = np.where(
-        (r > 228) & (g > 228) & (b > 228) & (np.abs(r - g) < 25), 0, arr[:, :, 3]
+    ILLUS_SIZE = (
+        0 if illustration is None else min(1600, max(900, TOTAL_AVAIL - est_text_h))
     )
-    illus = Image.fromarray(arr.astype(np.uint8))
-    bbox = illus.getbbox()
-    if bbox:
-        illus = illus.crop(bbox)
-    ratio = min(ILLUS_SIZE / illus.width, ILLUS_SIZE / illus.height)
-    new_w, new_h = int(illus.width * ratio), int(illus.height * ratio)
-    illus = illus.resize((new_w, new_h), Image.LANCZOS)
-    base.paste(illus, ((W - new_w) // 2, ILLUS_Y + (ILLUS_SIZE - new_h) // 2), illus)
+
+    # 插圖：去白背景 → 自動裁切主體 → 填滿插圖區域（沒有插圖就整段跳過）
+    if illustration is not None:
+        arr = np.array(illustration.convert("RGBA"), dtype=np.float32)
+        r, g, b = arr[:, :, 0], arr[:, :, 1], arr[:, :, 2]
+        arr[:, :, 3] = np.where(
+            (r > 228) & (g > 228) & (b > 228) & (np.abs(r - g) < 25), 0, arr[:, :, 3]
+        )
+        illus = Image.fromarray(arr.astype(np.uint8))
+        bbox = illus.getbbox()
+        if bbox:
+            illus = illus.crop(bbox)
+        ratio = min(ILLUS_SIZE / illus.width, ILLUS_SIZE / illus.height)
+        new_w, new_h = int(illus.width * ratio), int(illus.height * ratio)
+        illus = illus.resize((new_w, new_h), Image.LANCZOS)
+        base.paste(
+            illus, ((W - new_w) // 2, ILLUS_Y + (ILLUS_SIZE - new_h) // 2), illus
+        )
 
     # 分隔線 + 日期標題
     today = datetime.now().strftime("%Y.%m.%d")
     LINE_Y = ILLUS_Y + ILLUS_SIZE + GAP
+
+    # 內文先排版——字型與行數決定整組的高度，置中才算得出來
+    font_body, lines, line_h = fit_body_font(
+        draw, knowledge["content"], MAX_W, CARD_BOTTOM - (LINE_Y + HEADER_H), FONT
+    )
+    if illustration is None:
+        # 純文字版面文字通常填不滿，整組垂直置中，免得下半張開天窗
+        block_h = HEADER_H + len(lines) * line_h
+        LINE_Y += max(0, (CARD_BOTTOM - LINE_Y - block_h) // 2)
+
     draw.line([(CARD_L, LINE_Y), (CARD_R, LINE_Y)], fill=GOLD, width=4)
     draw.text(
         (CARD_L, LINE_Y + 60),
@@ -605,12 +656,8 @@ def compose_image(knowledge, illustration):
     )
     draw.line([(CARD_L, LINE_Y + 268), (CARD_R, LINE_Y + 268)], fill=GOLD, width=3)
 
-    # 內文：自動選最大可容納字型
-    TEXT_START = LINE_Y + 335
-    TEXT_AVAIL = 3100 - TEXT_START
-    font_body, lines, line_h = fit_body_font(
-        draw, knowledge["content"], MAX_W, TEXT_AVAIL, FONT
-    )
+    # 內文
+    TEXT_START = LINE_Y + HEADER_H
     for i, line in enumerate(lines):
         draw.text(
             (CARD_L, TEXT_START + i * line_h), line, font=font_body, fill=DARK_BLUE
@@ -731,7 +778,7 @@ if __name__ == "__main__":
     log(f"主題：{topic_angle} ─ {knowledge['title_zh']}")
 
     log("生成水彩插圖...")
-    illustration = generate_illustration(knowledge["illustration_prompt"])
+    illustration = illustration_or_none(knowledge["illustration_prompt"])
     log("插圖完成")
 
     log("合成圖片...")
