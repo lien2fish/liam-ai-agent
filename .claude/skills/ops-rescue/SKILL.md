@@ -17,7 +17,10 @@ gh run list --workflow=<檔名>.yml --limit 5
 gh run view <run-id> --log-failed
 ```
 
-⚠️ **本機沒有 `gh` CLI。** 但 repo 是公開的，**Actions API 不帶金鑰就讀得到**：
+✅ **本機已裝 `gh` CLI**（2026-08-27，`~/bin/gh` wrapper → `~/bin/gh-bin` v2.98.0，
+不經 Homebrew）。**這是唯一讀得到失敗 traceback 的路**，見下方。
+
+手機端（claude.ai/code）沒有 gh，或想免金鑰快掃時，repo 是公開的，**Actions API 不帶金鑰也讀得到**：
 
 ```bash
 R=lien2fish/liam-ai-agent
@@ -27,13 +30,18 @@ curl -s "https://api.github.com/repos/$R/check-runs/<job-id>/annotations"       
 curl -s "https://api.github.com/repos/$R/actions/runs?per_page=100"                       # 全部任務一次掃，最快看出是單一系統還是全面失效
 ```
 
-⚠️ **只有 log 下載要 admin 權限**（回 403 `Must have admin rights`），拿不到 traceback。
-所以判斷根因常常得**在本機拿同一把金鑰重現一次**——2026-08-25 就是這樣直接打 Graph API
-拿到 `OAuthException 190/460`，比讀 log 還快。
+⚠️ **免金鑰讀不到 log**（`/logs` 回 403 `Must have admin rights`），只拿得到 exit code。
+**帶認證才有 traceback**——2026-08-27 實測同一個 run：免金鑰 403、帶 PAT 302。
+所以根因判斷一律用 `gh run view <run-id> --log-failed`，不要再走「本機拿同一把金鑰重現一次」。
+（Secrets 在 log 裡已被 GitHub 遮成 `***`。）
 
-⚠️ **讀 `~/.git-credentials` 的 PAT 再打 api.github.com 會被權限守門擋下**
-（「讀憑證檔→送網路」的形狀會被判定成外洩風險）。公開讀取一律用上面的免金鑰寫法；
-真的要寫入（例如更新 Secret）再讓使用者當場核准。
+⚠️ **`gh` 的認證走 wrapper 從 keychain 現取，不是 `gh auth login`。**
+既有 PAT 只有 `repo`／`workflow` 兩個 scope，缺 `gh auth login` 硬性要求的 `read:org`，
+故改注入 `GH_TOKEN`（gh 對環境變數不做 scope 檢查）。`gh auth status` 會抱怨缺 `read:org`，
+**那是正常的、不用修**——個人 repo 用不到組織相關指令。
+
+⚠️ **手機端（claude.ai/code）沒有 gh**，仍受限於上面的免金鑰寫法，讀不到 traceback。
+需要 log 才判得出根因的狀況，得等回到電腦。
 
 ⚠️ **GitHub 排程常誤點 1.5~4 小時**（平台限制，非設定錯誤），高頻的 `ig_comment_reply` 最明顯。
 **還沒到就急著修，會改壞沒壞的東西。** 先看「上一次成功是什麼時候」。
@@ -45,6 +53,9 @@ curl -s "https://api.github.com/repos/$R/actions/runs?per_page=100"             
 ```bash
 gh workflow run <檔名>.yml        # 重跑
 ```
+
+⛔ **`daily_post`／`ig_story_teaser`／`ig_comment_reply`／`yt_auto_post` 不可自行 `gh workflow run`**，
+一律先問——觸發等於自動對外發布，IG 發出去 API 刪不掉。與 `schedule_watchdog` 的保護一致。
 
 ---
 
