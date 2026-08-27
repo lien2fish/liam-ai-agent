@@ -24,9 +24,44 @@ python3 scripts/set_secret.py NAME --file value.txt  # 從檔案讀
 ⚠️ **在 Claude Code 對話框裡跑隱藏輸入會失敗**（沒有互動終端機），
 腳本會明講失敗。要嘛 `--file`，要嘛去 Terminal.app。
 
-⚠️ **讀 `~/.git-credentials` 的 PAT 再打 api.github.com 有時會被權限守門擋下**
-（「讀憑證檔→送網路」的形狀會被判定成外洩風險）。**那是對的，不要繞過**——
+### GitHub PAT 只在 keychain（2026-08-27 起）
+
+**不要再去讀 `~/.git-credentials`，那個檔已經刪了。** 原本 `credential.helper` 在本專案
+repo 的 local config 多掛了一個 `store`，等於把一把**永不過期、含 `workflow` scope**
+（＝能改 Actions＝能讀所有 Secrets）的 PAT 以明文長期放在磁碟上，還會被備份帶走。
+
+現在統一走 keychain：
+
+```python
+out = subprocess.run(
+    ["git", "credential", "fill"],
+    input="protocol=https\nhost=github.com\n\n",
+    capture_output=True, text=True,
+    env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
+).stdout
+m = re.search(r"^password=(.+)$", out, re.M)
+```
+
+`GIT_TERMINAL_PROMPT=0` 是必要的——**背景／非互動情境下寧可快速失敗，不要卡在提示等輸入。**
+已改的三支：`scripts/set_secret.py`、`scripts/ig_reauth.py`、`instagram/story_teaser.py`
+（後者在 Actions 內仍優先用 `GITHUB_TOKEN`）。新寫的腳本要取 PAT 一律照這個寫法。
+
+⚠️ **取 PAT 再打 api.github.com 有時會被權限守門擋下**
+（「讀憑證→送網路」的形狀會被判定成外洩風險）。**那是對的，不要繞過**——
 請使用者當場核准，或請他自己在終端機跑。
+
+### 🖥 換機檢查清單（M5 Air）
+
+keychain 不像檔案會被 rsync 帶走，**換機時這把 PAT 是會掉的**：
+
+| 情況 | 要做什麼 |
+|---|---|
+| 走 Migration Assistant | 鑰匙圈會一起搬，通常什麼都不用做。到了先跑 `git push --dry-run` 驗一次 |
+| 乾淨安裝 | 舊機先 `security find-internet-password -s github.com -w` 取出（**只在 Terminal.app 做，不要在 Claude Code 對話框**），或直接去 GitHub 產一把新的 |
+| 新機第一次 push | git 會跳一次鑰匙圈授權，**要在有螢幕的情況下操作**；背景任務（SessionEnd 日誌推送）不會幫你跳窗 |
+| 裝回 `gh` | 見專案 CLAUDE.md 技術環境；`~/bin/gh` wrapper 與 `~/bin/gh-bin` 都要複製，wrapper 不需改 |
+
+⛔ **不要為了省事把 `store` 加回來。**
 
 ---
 
@@ -63,7 +98,7 @@ python3 scripts/set_secret.py NAME --file value.txt  # 從檔案讀
 | Gemini 免費額度 | 每天重置（台北 15:00）| 429 `RESOURCE_EXHAUSTED` |
 | YouTube API 配額 | 每天重置（台北 15:00）| 403，三頻道共用一天 6 支 |
 | Gmail OAuth | 已發 Production，不再 7 天過期 | `invalid_grant` 才是真的被撤銷 |
-| GitHub PAT | 永不過期 | — |
+| GitHub PAT | 永不過期 | 只存在 keychain（2026-08-27 起，明文檔已刪）。**換機會掉**，見上方檢查清單 |
 
 **IG／FB 重新授權**：在 Terminal.app 跑 `python3 scripts/ig_reauth.py`，
 細節見 `ig-fb-auto` skill。

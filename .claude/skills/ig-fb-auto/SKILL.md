@@ -115,7 +115,7 @@ description: IG + FB 每日自動發文、IG 留言自動回覆、IG 限動 Reel
    `GET /v19.0/oauth/access_token?grant_type=fb_exchange_token&client_id=<app_id>&client_secret=<app_secret>&fb_exchange_token=<短效>`
 5. `debug_token` 驗證 **`data_access_expires_at` 確實往後推了**（這是唯一的驗收條件）
 6. 寫回 `config/instagram_config.json`（先備份）＋ 用 PyNaCl `SealedBox` 更新 Secret `IG_TOKEN`
-   - GitHub PAT 在 `~/.git-credentials`（**不在** remote URL，remote 是乾淨的 https）
+   - GitHub PAT 只在 **keychain**（2026-08-27 起明文檔已刪；**不在** remote URL，remote 是乾淨的 https）
 
 > 這組 token 由三套系統共用：限動預告、IG 留言自動回覆（每 5 分鐘）、IG+FB 每日發文（每天 08:00）。過期會一起掛掉。
 - `gemini-3.5-flash` 不設 `thinkingBudget: 0` 會導致回覆只輸出幾個字（MAX_TOKENS 截斷）
@@ -140,9 +140,10 @@ description: IG + FB 每日自動發文、IG 留言自動回覆、IG 限動 Reel
   只有 `token_expiry_check` 會抓到
 - 更新 Token 方式：用 `nacl.public.SealedBox` 直接寫入 GitHub Secret（系統 PyNaCl 1.6.2 已支援）
 - **GitHub PAT（舊）：2026-08-15 到期** — 已廢棄，改用新 PAT
-- **GitHub PAT（新）：永不過期**，含 `repo` + `workflow` scope。**同時存在 keychain 與
-  `~/.git-credentials`**（`credential.helper` 設了 `osxkeychain` ＋ `store` 兩個）。
+- **GitHub PAT（新）：永不過期**，含 `repo` + `workflow` scope，**只存在 macOS keychain**
+  （2026-08-27 移除 local 的 `store` helper 並刪掉 `~/.git-credentials` 明文檔）。
   （**不是** remote URL，remote 已改回乾淨的 https）
+  ⚠️ 取用一律 `git credential fill`，寫法見 `secrets-ops` skill
   ⚠️ 缺 `read:org`，`gh auth login` 會拒收——`~/bin/gh` 是注入 `GH_TOKEN` 的 wrapper，見 CLAUDE.md
 
 ### 注意事項
