@@ -2,7 +2,7 @@ name: 扶輪社友生日提醒
 
 on:
   schedule:
-    - cron: '10 0 * * *'    # UTC 00:10 = 台灣 08:10
+    - cron: '27 0 * * *'   # UTC 00:27 = 台灣 08:27（避開整點壅塞）
   workflow_dispatch:
 
 jobs:

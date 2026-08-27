@@ -2,7 +2,7 @@ name: 漁獲行情每日追蹤
 
 on:
   schedule:
-    - cron: '30 1 * * *'   # 台灣 09:30（避開 IG/YT 08:00 高峰）
+    - cron: '37 1 * * *'   # 台灣 09:37（避開整點壅塞）
   workflow_dispatch:
 
 jobs:

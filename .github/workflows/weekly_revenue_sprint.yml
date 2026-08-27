@@ -2,7 +2,7 @@ name: 營收衝刺週報
 
 on:
   schedule:
-    - cron: '0 0 * * 1'    # UTC 週一 00:00 = 台灣 週一 08:00
+    - cron: '3 0 * * 1'   # UTC 週一 00:03 = 台灣 週一 08:03（避開整點壅塞）
   workflow_dispatch:
 
 jobs:

@@ -2,7 +2,7 @@ name: 壽險客戶固定拜訪提醒
 
 on:
   schedule:
-    - cron: '40 0 * * *'    # UTC 00:40 = 台灣 08:40
+    - cron: '43 0 * * *'   # UTC 00:43 = 台灣 08:43（避開整點壅塞）
   workflow_dispatch:
 
 jobs:

@@ -2,7 +2,7 @@ name: AI 工作週報
 
 on:
   schedule:
-    - cron: '50 0 * * 1'    # UTC 週一 00:50 = 台灣 週一 08:50（錯開 08:00 的營收衝刺週報）
+    - cron: '53 0 * * 1'   # UTC 週一 00:53 = 台灣 週一 08:53（錯開營收週報）
   workflow_dispatch:
     inputs:
       week:

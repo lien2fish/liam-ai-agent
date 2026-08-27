@@ -2,7 +2,7 @@ name: Gmail 自動化（清理 + 新聞摘要）
 
 on:
   schedule:
-    - cron: '0 0 * * *'    # UTC 00:00 = 台灣 08:00
+    - cron: '13 0 * * *'   # UTC 00:13 = 台灣 08:13（避開整點壅塞）
   workflow_dispatch:        # 允許手動觸發
 
 jobs:
