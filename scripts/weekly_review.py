@@ -70,6 +70,30 @@ def read_daily(ws, monday, sunday):
     return "\n\n".join(out) or "（本週沒有工作日誌）"
 
 
+def daily_gap_warning(ws, monday, sunday, commits):
+    """日誌寫在本機、推送在 SessionEnd 背景靜默執行，失敗不會有人發現。
+
+    而「本週沒有工作日誌」跟「本週真的沒開過 session」在報告裡長得一模一樣。
+    有人為 commit 卻整週一篇日誌都沒有，就是沒推上來，不是沒做事。
+
+    只在「整週全缺」時警告，不看零星缺天——手機端（claude.ai/code）沒有 SessionEnd
+    hook，從手機做事本來就會產生「有 commit、沒日誌」的單日缺口，逐日判會一直誤報。
+    憑證失效的特徵本來就是整週全掉（壞了會一直壞到修好），最多延一週才發現。
+    """
+    d, present = monday, 0
+    while d <= sunday:
+        if os.path.exists(os.path.join(ws, "daily", d.isoformat() + ".md")):
+            present += 1
+        d += timedelta(days=1)
+    if present or commits.startswith("（"):
+        return ""
+    return (
+        "⚠️ **工作日誌一篇都沒有，但本期有人為 commit** —— 很可能是沒推上來，"
+        "不是沒做事。SessionEnd 的背景推送失敗一律靜默，請在電腦端跑 "
+        "`~/liam-workspace/sync_workspace.sh push` 後重跑本期週報。\n\n"
+    )
+
+
 def read_commits(monday, sunday):
     raw = subprocess.run(
         [
@@ -491,12 +515,17 @@ def main():
     monday, sunday, iso = week_range(args.week)
     print("報告期間 %s ~ %s（%s）\nworkspace: %s" % (monday, sunday, iso, ws))
 
+    commits = read_commits(monday, sunday)
+    gap_warning = daily_gap_warning(ws, monday, sunday, commits)
+    if gap_warning:
+        print("⚠️ 偵測到工作日誌缺口，已在報告標註")
+
     prompt = PROMPT.format(
         monday=monday,
         sunday=sunday,
         iso=iso,
-        daily=read_daily(ws, monday, sunday),
-        commits=read_commits(monday, sunday),
+        daily=gap_warning + read_daily(ws, monday, sunday),
+        commits=commits,
         actions=read_actions(monday, sunday),
         todo=read_todo_diff(ws, monday, sunday),
     )
@@ -507,11 +536,12 @@ def main():
     outdir = os.path.join(ws, "reviews")
     os.makedirs(outdir, exist_ok=True)
     md_path = os.path.join(outdir, iso + ".md")
-    header = "# 工作週報 %s\n\n> 涵蓋期間 %s ~ %s ｜ 製表 %s\n\n" % (
+    header = "# 工作週報 %s\n\n> 涵蓋期間 %s ~ %s ｜ 製表 %s\n\n%s" % (
         iso,
         monday,
         sunday,
         date.today().isoformat(),
+        gap_warning,
     )
     with open(md_path, "w", encoding="utf-8") as f:
         f.write(header + body + "\n")
