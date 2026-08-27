@@ -2,13 +2,13 @@ name: 每日海鮮限時動態
 
 on:
   schedule:
-    - cron: '7 0 * * *'   # UTC 00:07 = 台灣 08:07（避開整點壅塞）
+    - cron: '37 0 * * *'   # UTC 00:37 = 台灣 08:37（避開整點與 :00/:15/:30/:45）
   workflow_dispatch:        # 手動觸發（測試用）
 
 jobs:
   post:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15   # 生圖重試 3 次最壞約 9 分，加上安裝步驟會逼近 10 分
     permissions:
       contents: write
 
