@@ -19,6 +19,12 @@
 - **啟動指令**：`cc`（alias，自動進入此目錄並啟動 Claude Code with NO_FLICKER）
 - **設定檔**：`~/.bashrc`（PATH + aliases）、`~/.bash_profile`（引入 .bashrc）
 - **Node.js**：v24.15.0，透過 nvm 安裝（`~/.nvm`）
+- **`gh` CLI**：v2.98.0，2026-08-27 裝於 `~/bin/`（**不經 Homebrew**，macOS 12 已不被 brew 支援）。
+  `~/bin/gh` 是 wrapper，執行時從 keychain 取 PAT 注入 `GH_TOKEN`；本體是 `~/bin/gh-bin`。
+  ⚠️ **`gh auth status` 會警告缺 `read:org`，那是正常的不用修**——PAT 只有 `repo`+`workflow`，
+  而 `gh auth login` 硬性要求 `read:org`，所以刻意不走 gh 自己的認證儲存。
+  ⚠️ 讀 Actions 失敗 traceback **只有 gh 做得到**（免金鑰 API 讀 log 回 403），詳見 `ops-rescue` skill。
+  ⛔ 不可用 `gh workflow run` 觸發 `daily_post`／`ig_story_teaser`／`ig_comment_reply`／`yt_auto_post`。
 
 ## MCP 工具（已安裝，scope: user）
 | 工具 | 套件 | 說明 |
