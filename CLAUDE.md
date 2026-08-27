@@ -137,7 +137,7 @@
 | `rotary_birthday_reminder.yml` | 中城網路扶輪社社友生日提醒（剛好前14天Email一次；資料=私人repo `liam-workspace/rotary/中城網路社友通訊錄.json` 71位，用`WORKSPACE_PAT` checkout，**個資不進公開repo、無commit**） | 每天 08:27 |
 | `token_expiry_check.yml` | **IG／FB Token 到期與失效檢查**（不寫死日期，每天問 `debug_token` 實際狀態；剩 30/21/14/10/7/5/3/2/1 天時提醒，失效或缺權限則 🔴 並讓 run 變紅）。**Email＋LINE 雙通道** | 每天 08:47 |
 | `weekly_review.yml` | **AI 工作週報**（上週做了什麼＋可精進＋自動化健康＋下期建議，Email 附正式 PDF）。資料＝私人repo `daily/` 工作日誌＋公開repo git log＋Actions runs API＋`TODO.md` diff；**報告只進私人repo `liam-workspace/reviews/`，不進公開repo** | 每週一 08:53（錯開 08:03 營收週報）|
-| `schedule_watchdog.yml` | **排程巡邏**（GitHub 的 schedule 會誤點、負載高時整次跳過。檢查今天該跑的有沒有跑，超過 2 小時寬限仍沒跑就自動 `workflow_dispatch` 補觸發，並回頭確認真的多出一次 run 才算成功）。⛔ **`daily_post`／`ig_story_teaser`／`yt_auto_post` 只通知不補跑**——自動補跑等於自動對外發布，發出去 API 刪不掉。時間表直接讀各 workflow 的 cron，改排程不用同步兩邊 | 台灣 08:19~14:19 每小時一次 |
+| `schedule_watchdog.yml` | **排程巡邏**（GitHub 的 schedule 會誤點、負載高時整次跳過。檢查今天該跑的有沒有跑，超過 2 小時寬限仍沒跑就自動 `workflow_dispatch` 補觸發，並回頭確認真的多出一次 run 才算成功）。⛔ **`daily_post`／`ig_story_teaser`／`yt_auto_post` 只通知不補跑**——自動補跑等於自動對外發布，發出去 API 刪不掉。時間表直接讀各 workflow 的 cron，改排程不用同步兩邊 | 台灣 08:19~14:19 每小時一次，另加 20:19（限動預告排 18:08，寬限後要 20:08 才判得出來）|
 
 ### GitHub Secrets 總覽
 | Secret | 用途 |
