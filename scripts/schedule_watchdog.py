@@ -61,6 +61,7 @@ TASKS = [
     ("seafood_prices.yml", "漁獲行情", True),
     ("yt_auto_post.yml", "YouTube 自動影片", False),
     ("market_daily.yml", "每日股市分析", True),
+    ("ig_story_teaser.yml", "IG 限動 Reels 預告", False),
 ]
 
 
