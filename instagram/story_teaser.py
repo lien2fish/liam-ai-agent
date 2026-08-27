@@ -206,17 +206,23 @@ def cut(src, out_mp4, tmp):
 
 
 def _pat():
-    """Actions 用 GITHUB_TOKEN，本機 fallback ~/.git-credentials（不在 remote URL）。"""
+    """Actions 用 GITHUB_TOKEN，本機 fallback git credential helper（keychain）。"""
     pat = os.environ.get("GITHUB_TOKEN")
     if pat:
         return pat
-    import pathlib, re
+    import re
 
-    for line in (pathlib.Path.home() / ".git-credentials").read_text().splitlines():
-        m = re.match(r"https://([^:@]+):([^@]+)@github\.com", line)
-        if m:
-            return m.group(2)
-    raise SystemExit("❌ 找不到 GitHub token")
+    out = subprocess.run(
+        ["git", "credential", "fill"],
+        input="protocol=https\nhost=github.com\n\n",
+        capture_output=True,
+        text=True,
+        env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
+    ).stdout
+    m = re.search(r"^password=(.+)$", out, re.M)
+    if m:
+        return m.group(1)
+    raise SystemExit("❌ git credential 取不到 GitHub token")
 
 
 def gh_upload(local, path):
