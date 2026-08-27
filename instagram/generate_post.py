@@ -575,8 +575,20 @@ def fit_body_font(draw, content, max_w, avail_h, font_path):
     return font, wrap_text(draw, content, font, max_w), 93
 
 
-def compose_image(knowledge, illustration):
-    """PIL 合成最終貼文圖片"""
+def compose_image(
+    knowledge,
+    illustration,
+    illus_alpha=255,
+    show_header=True,
+    max_lines=None,
+    stats=None,
+):
+    """PIL 合成最終貼文圖片。
+
+    後三個參數只給影片版逐格取用（`card_video.py`）——**版面永遠用完整內容計算**，
+    它們只決定「這一格畫到哪」，所以每一格都跟最終靜態圖對得上。
+    預設值等同原本行為，靜態圖走的是同一條路。
+    """
     base = Image.open(TEMPLATE).convert("RGBA")
     W, H = base.size  # 2700 x 3375
 
@@ -624,6 +636,10 @@ def compose_image(knowledge, illustration):
         ratio = min(ILLUS_SIZE / illus.width, ILLUS_SIZE / illus.height)
         new_w, new_h = int(illus.width * ratio), int(illus.height * ratio)
         illus = illus.resize((new_w, new_h), Image.LANCZOS)
+        if illus_alpha < 255:
+            illus.putalpha(
+                illus.getchannel("A").point(lambda v: v * illus_alpha // 255)
+            )
         base.paste(
             illus, ((W - new_w) // 2, ILLUS_Y + (ILLUS_SIZE - new_h) // 2), illus
         )
@@ -636,29 +652,32 @@ def compose_image(knowledge, illustration):
     font_body, lines, line_h = fit_body_font(
         draw, knowledge["content"], MAX_W, CARD_BOTTOM - (LINE_Y + HEADER_H), FONT
     )
+    if stats is not None:
+        stats["lines"] = len(lines)  # 影片版要靠行數排節奏，不另外重算一次排版
     if illustration is None:
         # 純文字版面文字通常填不滿，整組垂直置中，免得下半張開天窗
         block_h = HEADER_H + len(lines) * line_h
         LINE_Y += max(0, (CARD_BOTTOM - LINE_Y - block_h) // 2)
 
-    draw.line([(CARD_L, LINE_Y), (CARD_R, LINE_Y)], fill=GOLD, width=4)
-    draw.text(
-        (CARD_L, LINE_Y + 60),
-        f"{today}　|　{knowledge['title_zh']}",
-        font=font_date,
-        fill=DARK_BLUE,
-    )
-    draw.text(
-        (CARD_L, LINE_Y + 178),
-        f"（{knowledge['title_en']}）",
-        font=font_en,
-        fill=(130, 110, 80),
-    )
-    draw.line([(CARD_L, LINE_Y + 268), (CARD_R, LINE_Y + 268)], fill=GOLD, width=3)
+    if show_header:
+        draw.line([(CARD_L, LINE_Y), (CARD_R, LINE_Y)], fill=GOLD, width=4)
+        draw.text(
+            (CARD_L, LINE_Y + 60),
+            f"{today}　|　{knowledge['title_zh']}",
+            font=font_date,
+            fill=DARK_BLUE,
+        )
+        draw.text(
+            (CARD_L, LINE_Y + 178),
+            f"（{knowledge['title_en']}）",
+            font=font_en,
+            fill=(130, 110, 80),
+        )
+        draw.line([(CARD_L, LINE_Y + 268), (CARD_R, LINE_Y + 268)], fill=GOLD, width=3)
 
     # 內文
     TEXT_START = LINE_Y + HEADER_H
-    for i, line in enumerate(lines):
+    for i, line in enumerate(lines if max_lines is None else lines[:max_lines]):
         draw.text(
             (CARD_L, TEXT_START + i * line_h), line, font=font_body, fill=DARK_BLUE
         )
