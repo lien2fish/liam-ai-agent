@@ -6,7 +6,7 @@
     python3 scripts/set_secret.py IG_TOKEN --file p.txt # 從檔案讀
     python3 scripts/set_secret.py --list                # 列出現有 secret 名稱與更新時間
 
-PAT 從 ~/.git-credentials 取，不印出來。值永遠不會出現在輸出或 shell history 裡。
+PAT 從 git credential helper（keychain）取，不印出來。值永遠不會出現在輸出或 shell history 裡。
 
 ⚠️ 在 Claude Code 對話框裡跑隱藏輸入會失敗（沒有互動終端機），
    請改用 --file，或到 Terminal.app 跑。這跟 wrangler secret put 是同一種坑，

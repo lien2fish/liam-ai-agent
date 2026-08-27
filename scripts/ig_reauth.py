@@ -183,14 +183,16 @@ def main():
     print(f"   ✅ 已寫回，備份：{backup.name}")
 
     print("\n→ 更新 GitHub Secrets…")
-    cred = pathlib.Path.home() / ".git-credentials"
-    m = (
-        re.search(r"https://[^:]+:([^@]+)@github\.com", cred.read_text())
-        if cred.exists()
-        else None
-    )
+    cred_out = subprocess.run(
+        ["git", "credential", "fill"],
+        input="protocol=https\nhost=github.com\n\n",
+        capture_output=True,
+        text=True,
+        env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
+    ).stdout
+    m = re.search(r"^password=(.+)$", cred_out, re.M)
     if not m:
-        print("   ⚠️ 找不到 GitHub PAT，Secrets 請自行更新")
+        print("   ⚠️ git credential 取不到 GitHub PAT，Secrets 請自行更新")
     else:
         github_secret("IG_TOKEN", long_tok, m.group(1))
         if page_tok:
