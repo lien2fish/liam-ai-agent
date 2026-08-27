@@ -17,8 +17,10 @@ import argparse
 import base64
 import getpass
 import json
+import os
 import pathlib
 import re
+import subprocess
 import sys
 import urllib.error
 import urllib.request
@@ -32,12 +34,17 @@ def die(msg):
 
 
 def pat():
-    cred = pathlib.Path.home() / ".git-credentials"
-    if not cred.exists():
-        die("找不到 ~/.git-credentials")
-    m = re.search(r"https://[^:]+:([^@]+)@github\.com", cred.read_text())
+    """從 git credential helper（keychain）取 PAT。值不落地、不回顯。"""
+    out = subprocess.run(
+        ["git", "credential", "fill"],
+        input="protocol=https\nhost=github.com\n\n",
+        capture_output=True,
+        text=True,
+        env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
+    ).stdout
+    m = re.search(r"^password=(.+)$", out, re.M)
     if not m:
-        die("~/.git-credentials 裡沒有 github.com 的憑證")
+        die("git credential 取不到 github.com 憑證——keychain 是否已解鎖？")
     return m.group(1)
 
 
