@@ -26,7 +26,8 @@ crons = [
 #                 Actions 寫入權限（classic 的 repo scope 就夠；
 #                 建議改用 fine-grained、只給這一個 repo 的 Actions: read and write，
 #                 爆炸半徑最小）
-#   NOTIFY_URL    liam-assistant 的 /notify 網址（失敗時推 LINE）
+#   NOTIFY_URL    liam-assistant 的基底網址（程式會自己接 /notify），
+#                 與 GitHub Secret 的 LINE_NOTIFY_URL 同值
 #   NOTIFY_TOKEN  與 liam-assistant 的 NOTIFY_TOKEN 同值
 #
 # ⚠️ wrangler secret put 一定要在真正的終端機跑。在沒有互動 TTY 的環境
