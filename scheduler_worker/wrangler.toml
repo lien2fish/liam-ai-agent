@@ -1,0 +1,35 @@
+name = "liam-scheduler"
+main = "worker.js"
+compatibility_date = "2026-08-18"
+
+# 這支只有 cron 在用，fetch 只是拿來檢查對照表。不需要對外網址。
+workers_dev = true
+preview_urls = false
+
+# ⚠️ 全部是 UTC。台灣時間 = UTC + 8。
+#    每一個時間點都要在 worker.js 的 SCHEDULE 裡有對應的 key，
+#    對不到就什麼都不會做（也不會報錯），改時間務必兩邊一起改。
+#
+#    00:17→台灣 08:17 產險保單    00:23→08:23 壽險生日    00:27→08:27 扶輪生日
+#    00:37→台灣 08:37 IG 發文     00:43→08:43 壽險拜訪    01:07→09:07 回購提醒
+#    02:30→台灣 10:30 回頭稽核上面六支有沒有真的跑
+[triggers]
+crons = [
+  "17,23,27,37,43 0 * * *",
+  "7 1 * * *",
+  "30 2 * * *",
+]
+
+# 金鑰不寫在這裡（這個 repo 是公開的），一律 wrangler secret put：
+#
+#   GITHUB_PAT    觸發 workflow 用。需要對 lien2fish/liam-ai-agent 的
+#                 Actions 寫入權限（classic 的 repo scope 就夠；
+#                 建議改用 fine-grained、只給這一個 repo 的 Actions: read and write，
+#                 爆炸半徑最小）
+#   NOTIFY_URL    liam-assistant 的 /notify 網址（失敗時推 LINE）
+#   NOTIFY_TOKEN  與 liam-assistant 的 NOTIFY_TOKEN 同值
+#
+# ⚠️ wrangler secret put 一定要在真正的終端機跑。在沒有互動 TTY 的環境
+#    （例如 Claude Code 的對話框）它會讀到空值、存成空字串，然後照樣印
+#    「✨ Success」——2026-08-24 因此卡了三輪。非互動要灌就用：
+#      printf '%s' "$(tr -d '\r\n' < 金鑰檔)" | npx wrangler secret put NAME
