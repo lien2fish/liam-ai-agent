@@ -7,6 +7,7 @@ on:
 jobs:
   list-tasks:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: 列出所有待執行任務
         env:
