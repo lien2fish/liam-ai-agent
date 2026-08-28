@@ -33,6 +33,19 @@ RATE = os.environ.get("IG_VOICE_RATE", "+8%")
 # 教辨別卻配錯插圖比沒有插圖更糟，而且直接踩到產地真實性紅線。
 # 這些角度一律退回靜態圖，不出影片。
 BLOCKED_ANGLES = {"相似魚種比較", "外觀辨別", "選購技巧"}
+# 分類擋不住的，再看內容有沒有這些字
+BLOCKED_WORDS = {
+    "誤認",
+    "混用",
+    "分辨",
+    "辨別",
+    "區別",
+    "怎麼分",
+    "相似",
+    "誤把",
+    "搞混",
+    "區分",
+}
 
 CREAM = (243, 238, 226)
 INK = (45, 65, 105)
@@ -157,8 +170,8 @@ async def _speak_all(text, path):
         async for ch in comm.stream():
             if ch["type"] == "audio":
                 fh.write(ch["data"])
-            elif ch["type"] == "WordBoundary":
-                marks.append((ch["offset"] / 1e7, ch.get("text", "")))
+            elif ch["type"] in ("SentenceBoundary", "WordBoundary"):
+                marks.append((ch["type"], ch["offset"] / 1e7, ch.get("text", "")))
     if os.path.getsize(path) < 800:
         raise RuntimeError("edge-tts 回傳空音檔")
     return marks
@@ -179,30 +192,39 @@ def _bare(t):
     return re.sub(r"[^\w]", "", t)
 
 
-def sentence_starts(sents, marks):
-    """用 word boundary 把每一句對到時間軸上的起點。"""
-    acc, idx = [], 0
-    for t, txt in marks:
-        acc.append((idx, t))
-        idx += len(_bare(txt))
-    starts, pos = [], 0
-    for x in sents:
-        t = next((tt for i, tt in acc if i >= pos), acc[-1][1] if acc else 0.0)
-        starts.append(t)
-        pos += len(_bare(x))
-    return starts
+def sentence_starts(sents, marks, total):
+    """把每一句對到時間軸上的起點。
 
+    edge-tts 7.x 吐的是 SentenceBoundary（直接給每句的 offset），舊版才是
+    WordBoundary。⚠️ 2026-08-28 踩過：只認 WordBoundary 的話會拿到 0 個標記，
+    每句起點全變 0.0，第一句字幕就從頭掛到尾——而且不會報錯。
+    所以三層都要有：句級 → 字級 → 按字數比例分配。
+    """
+    sb = [(t, txt) for typ, t, txt in marks if typ == "SentenceBoundary"]
+    if len(sb) == len(sents):
+        return [t for t, _ in sb]
 
-def dur(path):
-    """用 ffmpeg 讀時長——這台只裝了 ffmpeg，沒有 ffprobe。"""
-    err = subprocess.run(
-        ["ffmpeg", "-hide_banner", "-i", path], capture_output=True, text=True
-    ).stderr
-    m = re.search(r"Duration: (\d+):(\d+):(\d+\.\d+)", err)
-    if not m:
-        raise RuntimeError("讀不出時長：" + path)
-    h, mi, se = m.groups()
-    return int(h) * 3600 + int(mi) * 60 + float(se)
+    wb = [(t, txt) for typ, t, txt in marks if typ == "WordBoundary"]
+    if wb:
+        acc, idx = [], 0
+        for t, txt in wb:
+            acc.append((idx, t))
+            idx += len(_bare(txt))
+        starts, pos = [], 0
+        for x in sents:
+            starts.append(next((tt for i, tt in acc if i >= pos), acc[-1][0]))
+            pos += len(_bare(x))
+        return starts
+
+    # 最後手段：按字數比例分。不精準，但至少字幕會跟著往前走。
+    print("  ⚠️ 沒有任何時間標記，字幕改用字數比例分配（會不夠準）", flush=True)
+    lens = [max(1, len(_bare(x))) for x in sents]
+    tot = sum(lens)
+    out, acc = [], 0
+    for L in lens:
+        out.append(total * acc / tot)
+        acc += L
+    return out
 
 
 def build(knowledge, illustration, out_path, tmp=None, keep=False):
@@ -222,9 +244,9 @@ def build(knowledge, illustration, out_path, tmp=None, keep=False):
     # ① 整段一次配音，再用 word boundary 把每句對回時間軸
     voice = os.path.join(tmp, "voice.mp3")
     marks = speak_all("".join(sents), voice)
-    starts = sentence_starts(sents, marks)
     total = dur(voice)
-    print(f"  旁白 {total:.1f}s（word boundary {len(marks)} 個）", flush=True)
+    starts = sentence_starts(sents, marks, total)
+    print(f"  旁白 {total:.1f}s（時間標記 {len(marks)} 個）", flush=True)
     for i, (x, t0) in enumerate(zip(sents, starts)):
         print(f"    [{i+1}] {t0:5.1f}s  {x[:18]}", flush=True)
     assert starts == sorted(starts), "句子起點沒有遞增，時間軸對錯了"
@@ -351,7 +373,11 @@ def main():
     print(f"  {k['title_zh']}｜{k.get('category')}", flush=True)
 
     angle = k.get("category", "")
-    if angle in BLOCKED_ANGLES:
+    text = k.get("title_zh", "") + k.get("content", "")
+    # ⚠️ 只看分類擋不住。2026-08-28 出過「紅甘的身分謎團／常見誤解」——分類不在名單裡，
+    #    內容卻整篇在講紅甘與油甘怎麼分，正是最需要正確插圖的那種題目。
+    hit = [w for w in BLOCKED_WORDS if w in text]
+    if angle in BLOCKED_ANGLES or hit:
         print(
             f"⛔ 今日角度「{angle}」屬辨別型，不出影片——AI 插圖分不出相似魚種的\n"
             f"   外型差異，教辨別卻配錯圖比沒有圖更糟。今天改用靜態圖即可。",
