@@ -2,7 +2,7 @@ name: YouTube Shorts 留言通知
 
 on:
   schedule:
-    - cron: '37 0 * * *'   # 台灣 08:37（避開整點壅塞）
+    - cron: '39 0 * * *'   # UTC 00:39 = 台灣 08:39（原 08:37，與 daily_post 撞點後讓位）
   workflow_dispatch:
 
 jobs:
