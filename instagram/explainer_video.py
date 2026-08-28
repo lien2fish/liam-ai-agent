@@ -17,6 +17,7 @@
 import asyncio
 import math
 import os
+import platform
 import re
 import subprocess
 import sys
@@ -53,7 +54,21 @@ GOLD = (176, 148, 96)
 MUTED = (130, 112, 84)
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-FONT = "/System/Library/Fonts/STHeiti Medium.ttc"
+# 字型：macOS 用 PingFang，Linux（GitHub Actions）用 Noto CJK。
+# ⚠️ 不要寫死 macOS 路徑——雲端是 Linux，那個檔不存在，影片這條路會每天直接爆掉。
+# 邏輯與 generate_post 相同，但刻意各自持有：互相 import 會在 __main__ 情境下
+# 載進第二份 generate_post，反而更難查。
+if platform.system() == "Darwin":
+    FONT, FONT_IDX = "/System/Library/Fonts/PingFang.ttc", 3
+else:
+    _fc = subprocess.run(
+        ["fc-list", ":lang=zh", "--format=%{file}\n"], capture_output=True, text=True
+    )
+    _noto = [l.strip() for l in _fc.stdout.splitlines() if "Noto" in l and "CJK" in l]
+    FONT = (
+        _noto[0] if _noto else "/usr/share/fonts/opentype/noto/NotoSansCJK-Medium.ttc"
+    )
+    FONT_IDX = 3 if FONT.endswith(".ttc") else 0
 
 PAD = 96  # 左右安全邊
 ILLUS_TOP, ILLUS_H = 330, 980  # 插圖區
@@ -61,7 +76,7 @@ CAP_TOP = 1420  # 字幕區起點
 
 
 def f(size):
-    return ImageFont.truetype(FONT, size)
+    return ImageFont.truetype(FONT, size, index=FONT_IDX)
 
 
 CLOSERS = "。？！，、；：）」』"
