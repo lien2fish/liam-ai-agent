@@ -94,6 +94,23 @@ def daily_gap_warning(ws, monday, sunday, commits):
     )
 
 
+def read_prev_review(ws, monday):
+    """讀上一期的報告，讓本期能先結上期的帳。
+
+    ⚠️ 沒有這份素材的話，「下期建議推進」每週都從零開始猜——不知道上次建議的
+    做了沒，於是年復一年列同樣幾項，看的人很快就不再看那一章。
+    """
+    prev = monday - timedelta(days=7)
+    iso = prev.isocalendar()
+    path = os.path.join(ws, "reviews", "%d-W%02d.md" % (iso[0], iso[1]))
+    if not os.path.exists(path):
+        return "（沒有上一期報告，本期為首期）"
+    txt = open(path, encoding="utf-8").read()
+    # 只要「尚未解決」與「下期建議」兩章——那才是需要結帳的部分，全文塞進去只是浪費 token
+    cut = txt.find("## 四、")
+    return txt[cut:][:3000] if cut != -1 else txt[:3000]
+
+
 def read_commits(monday, sunday):
     raw = subprocess.run(
         [
@@ -209,6 +226,9 @@ Lien 的事業版圖：鉅鑫管理顧問、鑫酒坊（葡萄酒）、鑫茶坊
 === 素材四：待辦清單變動 ===
 {todo}
 
+=== 素材五：上一期報告的「尚未解決」與「下期建議」（要拿來結帳的）===
+{prev}
+
 請輸出一份 Markdown 報告，**嚴格照下列五個章節、不要加其他章節、不要寫開場白**：
 
 ## 一、本期成果
@@ -229,7 +249,19 @@ GitHub 高頻排程 delay）。全部正常就直說全部正常，不要湊字�
 表格：| 項目 | 卡在什麼 | 卡在誰身上 |。「卡在誰身上」只填「Lien」「AI」或「外部（廠商／協會／平台）」。
 
 ## 五、下期建議推進
+
+**先結上期的帳。** 素材五是上一期的報告。先用一個表格交代上期每一項建議現在怎麼了：
+| 上期建議 | 狀態 | 依據 |
+狀態只填「已完成／進行中／未動／已放棄」。**依據必須引本期素材裡查得到的事實**
+（commit 訊息、產出檔名、排程執行紀錄），不可以只憑印象或推測；查不到就寫「無法查證」。
+素材五若是「本期為首期」，這個表格就寫「本期為首期，無上期建議」。
+
+**接著才是本期建議：**
 表格：| 優先序 | 建議事項 | 為什麼值得做 | 預估工時 |，依投報率排序，最多五項。
+⛔ 上期**已完成**的不要再列。
+⛔ 上期**未動**的若仍有價值就保留並說明為什麼這次該排前面；若已經沒意義，
+   要在上面的結帳表格寫「已放棄」並給理由——**不要默默消失，也不要無腦重列**。
+
 表格後補一段「值得多想的方向」，一到三點，寫那種還沒被提過、但從本期素材看得出機會的延伸，
 例如某條產線的產出可以餵給另一條、某個重複人工可以自動化。"""
 
@@ -528,6 +560,7 @@ def main():
         commits=commits,
         actions=read_actions(monday, sunday),
         todo=read_todo_diff(ws, monday, sunday),
+        prev=read_prev_review(ws, monday),
     )
     print("素材長度 %d 字元" % len(prompt))
 
