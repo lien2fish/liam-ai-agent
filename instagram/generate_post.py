@@ -390,7 +390,12 @@ def knowledge_via_claude(prompt):
         },
         json={
             "model": CLAUDE_MODEL,
-            "max_tokens": 2048,
+            # ⚠️ 2048 不夠。Sonnet 5 預設開 adaptive thinking，thinking 會先吃掉一部分
+            #    預算，剩下的寫不完 JSON 就被截斷，於是 rfind("}") 找不到收尾括號、
+            #    判定「未含 JSON」而退到 Gemini——每天默默用備援產文案卻沒人發現
+            #    （通知這件事的 LINE 推播在 2026-08-28 之前也是壞的）。
+            #    youtube_auto 早就用 8192，這裡對齊到 4096。
+            "max_tokens": 4096,
             "messages": [{"role": "user", "content": prompt}],
         },
         timeout=90,
@@ -402,7 +407,14 @@ def knowledge_via_claude(prompt):
     text = next((b["text"] for b in data["content"] if b.get("type") == "text"), "")
     start, end = text.find("{"), text.rfind("}")
     if start == -1 or end == -1:
-        raise RuntimeError(f"Claude 回應未含 JSON：{text[:200]}")
+        # 分清楚「沒產出 JSON」與「產了但被截斷」——兩者的處置完全不同，
+        # 而原本的訊息一律說「未含 JSON」，看 log 的人會往錯的方向查。
+        why = (
+            "被 max_tokens 截斷（stop_reason=%s）" % data.get("stop_reason")
+            if start != -1
+            else "回應未含 JSON"
+        )
+        raise RuntimeError(f"Claude {why}：{text[:200]}")
     return json.loads(text[start : end + 1])
 
 
