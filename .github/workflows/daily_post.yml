@@ -1,8 +1,11 @@
 name: 每日海鮮限時動態
 
 on:
-  schedule:
-    - cron: '37 0 * * *'   # UTC 00:37 = 台灣 08:37（避開整點與 :00/:15/:30/:45）
+# ⛔ 計時已於 2026-08-28 搬到 Cloudflare Worker `liam-scheduler`。
+#    這裡刻意不留 schedule——兩邊都留會一天觸發兩次，
+#    daily_post 會變成發兩則限動，而 IG 發出去 API 刪不掉。
+#    要改時間去 scheduler_worker/（worker.js 的 SCHEDULE ＋ wrangler.toml 的 crons，兩邊都要改）。
+#    要搬回來就先把 Worker 那邊的時段拿掉，再把 cron 加回這裡。
   workflow_dispatch:        # 手動觸發（測試用）
 
 jobs:
