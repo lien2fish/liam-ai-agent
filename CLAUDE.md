@@ -108,9 +108,9 @@
 
 | 平台 | 類型 | 排程 | 狀態 |
 |------|------|------|------|
-| IG + FB | 每日發文 | 每天 08:07 | ✅ 運行中 |
-| IG | 留言自動回覆 | 每 5 分鐘 | ✅ 運行中 |
-| YouTube | Shorts 留言通知（不回覆） | 每天 08:37 | ✅ 運行中 |
+| IG + FB | 每日發文 | 每天 08:37 | ✅ 運行中 |
+| IG | 留言自動回覆 | 每 30 分鐘 | ✅ 運行中 |
+| YouTube | Shorts 留言通知（不回覆） | 每天 08:39 | ✅ 運行中 |
 | YouTube | 手動上傳＋排定發布（連老闆／泥馬的真心話） | 手動觸發 | ✅ 見下方 |
 | TikTok | — | — | 手動，不自動化 |
 
@@ -124,14 +124,14 @@
 
 | Workflow 檔案 | 任務 | 排程 |
 |--------------|------|------|
-| `daily_post.yml` | IG+FB 每日發文 | 每天 08:07 |
-| `ig_comment_reply.yml` | IG 留言自動回覆 | 每 5 分鐘（**實測常delay 1.5~4小時，GitHub高頻排程平台限制，非設定錯誤**） |
+| `daily_post.yml` | IG+FB 每日發文 | 每天 08:37（2026-08-28 Lien 指定，原 08:07）|
+| `ig_comment_reply.yml` | IG 留言自動回覆 | **每 30 分鐘**（2026-08-28 從 */5 降頻）。⚠️ */5 每天該跑 288 次、實測只跑到 24 次；08-27 起整個 repo 的排程一起被降到幾乎不觸發，高頻排程是最可疑的原因。**不要改回 */5** |
 | `ig_story_teaser.yml` | IG 限動 Reels 預告（從已發布 Reels 剪 3 秒＋「Reels完整版～」，30 天不重複） | 每天 18:08（接 Reels 18:00） |
 | `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:13，自動 commit 報告 |
 | `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:57（**2026-07-02 修**：CRM 於 06-26 整併後，`notion_crm/monthly_report.py` 原引用不存在的 `DB["sales"]` 且欄位名對不上，已改讀「全品牌銷售紀錄」統一DB `38bf4149-a6aa-81db-9b89-c47410857a2c`，欄位＝金額/出貨日期/客戶名稱）|
 | `market_daily.yml` | 每日股市全面分析報告 | 每天 **12:00**（台灣），自動 commit 報告 |
 | `seafood_prices.yml` | 漁獲市場行情追蹤 | 每天 09:37 |
-| `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:37 |
+| `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:39（原 08:37，與 daily_post 撞點後讓位）|
 | `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:17，自動 commit 報告 |
 | `life_visit_reminder.yml` | 壽險客戶固定拜訪提醒 | 每天 08:43，讀Notion算下次拜訪日，本週到期Email（**無commit，客戶個資只走Email**）|
 | `birthday_reminder.yml` | 壽險客戶生日提醒 | 每天 08:23，未來7天內生日則Email（含歲數，無commit）|
