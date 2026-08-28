@@ -794,6 +794,86 @@ def post_to_instagram(image_url, knowledge):
     return r2.json()
 
 
+def notify_video_fallback(err):
+    """影片失敗、退回靜態圖時推一則 LINE。貼文照常發出，但你要知道影片線壞了。"""
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from line_assistant.notify import notify
+
+        notify(
+            "⚠️ 今天本來要出影片版，失敗後退回靜態圖\n"
+            f"原因：{str(err)[:120]}\n\n"
+            "貼文照常發出。影片線要查一下。"
+        )
+    except Exception as e:
+        print(f"[notify] 推播失敗（不影響發文）：{e}", flush=True)
+
+
+def should_use_video(knowledge):
+    """奇數日出影片、偶數日出靜態圖。回傳 (要不要出影片, 不出的理由)。
+
+    刻意用單雙日而不是隨機：明天該出哪一種你事先知道，出錯時一眼看得出來。
+    隨機的話「今天沒有影片」分不清是抽到圖片還是影片壞了。
+    """
+    import explainer_video as ev
+
+    if datetime.now().timetuple().tm_yday % 2 == 0:
+        return False, "偶數日"
+    angle = knowledge.get("category", "")
+    hit = [
+        w
+        for w in ev.BLOCKED_WORDS
+        if w in knowledge.get("title_zh", "") + knowledge.get("content", "")
+    ]
+    if angle in ev.BLOCKED_ANGLES or hit:
+        why = f"角度「{angle}」" if angle in ev.BLOCKED_ANGLES else f"內容出現 {hit}"
+        return False, f"辨別型（{why}）——AI 插圖畫不出辨別特徵，配錯圖比沒圖更糟"
+    return True, ""
+
+
+def post_video_to_instagram(video_url, knowledge):
+    """發影片限動。轉檔比圖片久很多，輪詢要拉長到 3 分鐘。
+
+    ⚠️ FB 跨發走 best-effort：cross_post_ids 若讓 container 建不起來，去掉它再試一次。
+    FB 少一則可以補，IG 開天窗不行。
+    """
+
+    def _create(with_fb):
+        d = {"video_url": video_url, "media_type": "STORIES", "access_token": IG_TOKEN}
+        if with_fb and FB_PAGE_ID:
+            d["cross_post_ids"] = FB_PAGE_ID
+        return requests.post(
+            f"https://graph.facebook.com/v19.0/{IG_ID}/media", data=d
+        ).json()
+
+    data1 = _create(True)
+    if "id" not in data1:
+        print(f"[FB] 影片跨發失敗，改成只發 IG：{data1}", flush=True)
+        data1 = _create(False)
+    if "id" not in data1:
+        raise RuntimeError(f"建立影片 container 失敗：{data1}")
+
+    cid = data1["id"]
+    for i in range(45):
+        time.sleep(4)
+        st = requests.get(
+            f"https://graph.facebook.com/v19.0/{cid}",
+            params={"fields": "status_code,status", "access_token": IG_TOKEN},
+        ).json()
+        code = st.get("status_code")
+        if code == "FINISHED":
+            break
+        if code == "ERROR":
+            raise RuntimeError(f"影片轉檔失敗：{st}")
+    else:
+        raise RuntimeError("影片轉檔逾時（3 分鐘）")
+
+    return requests.post(
+        f"https://graph.facebook.com/v19.0/{IG_ID}/media_publish",
+        data={"creation_id": cid, "access_token": IG_TOKEN},
+    ).json()
+
+
 def post_to_facebook(image_url, knowledge):
     """FB 限時動態已透過 post_to_instagram 的 cross_post_ids 跨發，此函式保留備用"""
     if not FB_PAGE_ID:
@@ -819,21 +899,61 @@ if __name__ == "__main__":
     illustration = illustration_or_none(knowledge["illustration_prompt"])
     log("插圖完成")
 
-    log("合成圖片...")
-    image = compose_image(knowledge, illustration)
-    log("合成完成")
+    # ---- 影片日 vs 靜態圖日 ----
+    # ⚠️ 影片這條路只要出任何差錯就退回靜態圖。寧可今天是圖片，
+    #    也不能因為影片失敗而讓每日不缺席的節奏斷掉。
+    posted = False
+    want_video, why = should_use_video(knowledge)
+    if want_video and illustration is not None:
+        try:
+            import tempfile
 
-    log("上傳圖片...")
-    url = upload_image(image)
-    log(f"圖片 URL：{url}")
+            import explainer_video as ev
+            import story_teaser as st
 
-    log("發文到 Instagram...")
-    result = post_to_instagram(url, knowledge)
-    log(f"IG 完成：{result}")
+            log("影片日：算圖與配音...")
+            tmp = tempfile.mkdtemp(prefix="igpost_")
+            mp4 = os.path.join(tmp, "post.mp4")
+            secs = ev.build(knowledge, illustration, mp4, tmp=tmp)
+            log(f"影片完成 {secs:.1f} 秒")
 
-    log("發文到 Facebook...")
-    fb_result = post_to_facebook(url, knowledge)
-    log(f"FB 完成：{fb_result}")
+            name = f"post_{datetime.now():%Y%m%d}.mp4"
+            vurl = st.gh_upload(mp4, f"instagram/stories/{name}")
+            log(f"影片 URL：{vurl}")
+
+            result = post_video_to_instagram(vurl, knowledge)
+            log(f"IG 影片完成：{result}")
+            posted = True
+        except Exception as e:
+            log(f"⚠️ 影片失敗，退回靜態圖：{e}")
+            notify_video_fallback(e)
+
+        if posted:
+            # 限動 24 小時就失效，舊影片留著會讓公開 repo 無限膨脹。
+            # 這一步失敗不算發文失敗——獨立包起來，免得清檔出錯卻發出「影片失敗」的假警報。
+            try:
+                st.gh_prune(name)
+            except Exception as e:
+                log(f"（清舊影片失敗，不影響發文：{e}）")
+    elif not want_video:
+        log(f"今天出靜態圖（{why}）")
+
+    if not posted:
+        log("合成圖片...")
+        image = compose_image(knowledge, illustration)
+        log("合成完成")
+
+        log("上傳圖片...")
+        url = upload_image(image)
+        log(f"圖片 URL：{url}")
+
+        log("發文到 Instagram...")
+        result = post_to_instagram(url, knowledge)
+        log(f"IG 完成：{result}")
+
+        log("發文到 Facebook...")
+        fb_result = post_to_facebook(url, knowledge)
+        log(f"FB 完成：{fb_result}")
 
     log("更新歷史紀錄...")
     save_recent_seafood(recent_seafood, topic_angle)
