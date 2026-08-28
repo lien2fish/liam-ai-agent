@@ -26,11 +26,10 @@ STATE_FILE = WORKSPACE / "instagram/auto_reply/reply_state.json"
 LOG_FILE = Path("/tmp/ig_comment_reply.log")
 
 GRAPH_API = "https://graph.facebook.com/v19.0"
-GEMINI_MODELS = [
-    "gemini-3.5-flash",  # 主要：最新模型，回覆品質最佳
-    "gemini-2.5-flash",  # 備用一
-    "gemini-2.0-flash",  # 備用二
-]
+# ⚠️ 不要釘死版本號。2026-08-28 發現 gemini-2.0-flash 與 -flash-lite 都已 404 下架，
+#    當時 2.5-flash 又剛好 503，於是整條 fallback 全滅——Claude 一掛就開天窗。
+#    用 -latest 別名才不會被下架；503 是暫時性且會在模型間輪動，所以要留多個備援。
+GEMINI_MODELS = ["gemini-flash-latest", "gemini-2.5-flash", "gemini-flash-lite-latest"]
 FALLBACK = "感謝支持 🐟"
 MAX_IDS = 2000
 
