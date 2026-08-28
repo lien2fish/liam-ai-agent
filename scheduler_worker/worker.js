@@ -138,9 +138,39 @@ export default {
     return ctx.waitUntil(runSlot(env, key, now));
   },
 
-  // 手動驗證用：GET /?key=00:37 會回報那個時段會觸發什麼（不實際觸發）。
+  /**
+   * GET /            對照表（公開，不含機密）
+   * GET /?key=00:37  那個時段會觸發什麼（不實際觸發）
+   * GET /selftest    實際驗三個 secret 的「值」對不對，需 Bearer NOTIFY_TOKEN
+   *
+   * 為什麼要有 selftest：`wrangler secret list` 只列名字不列值，
+   * 而 `wrangler secret put` 在沒有互動 TTY 時會把值存成空字串卻照樣印 Success。
+   * 所以「名字在」完全不代表「值是對的」，一定要讓 Worker 真的拿去用一次。
+   */
   async fetch(request, env) {
-    const key = new URL(request.url).searchParams.get("key");
+    const url = new URL(request.url);
+
+    if (url.pathname === "/selftest") {
+      const auth = request.headers.get("Authorization") || "";
+      if (!env.NOTIFY_TOKEN || auth !== "Bearer " + env.NOTIFY_TOKEN) {
+        return new Response("unauthorized", { status: 401 });
+      }
+      const out = {};
+      // ① GITHUB_PAT 讀取權：列得出 workflow 就代表 token 有效且看得到這個 repo
+      const r1 = await gh(env, "/actions/workflows?per_page=1");
+      out.github_read = r1.status === 200 ? "✅ 200" : `❌ HTTP ${r1.status}`;
+      // ② GITHUB_PAT 寫入權：拿一支「只列 issue、不對外」的任務當測試靶
+      const r2 = await dispatch(env, "claude_task_runner.yml");
+      out.github_dispatch = r2.ok ? "✅ 204（Actions 寫入權正常）" : `❌ ${r2.detail}`;
+      // ③ NOTIFY_URL + NOTIFY_TOKEN：真的推一則出去
+      out.notify_configured = env.NOTIFY_URL ? "✅ 有設" : "❌ 沒設";
+      await notify(env, "✅ liam-scheduler 自我測試：三個設定都通了");
+      return new Response(JSON.stringify(out, null, 2), {
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+      });
+    }
+
+    const key = url.searchParams.get("key");
     const body = key
       ? { slot: key, would_dispatch: SCHEDULE[key] || [] }
       : { schedule: SCHEDULE, audit_at: AUDIT_AT, note: "全部為 UTC；台灣時間 = UTC+8" };
