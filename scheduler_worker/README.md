@@ -42,7 +42,7 @@ npx wrangler deploy
 
 ```bash
 npx wrangler secret put GITHUB_PAT     # 需要對 liam-ai-agent 的 Actions 寫入權限
-npx wrangler secret put NOTIFY_URL     # liam-assistant 的 /notify 網址
+npx wrangler secret put NOTIFY_URL     # liam-assistant 的**基底**網址，程式會自己接 /notify
 npx wrangler secret put NOTIFY_TOKEN   # 與 liam-assistant 的 NOTIFY_TOKEN 同值
 ```
 
