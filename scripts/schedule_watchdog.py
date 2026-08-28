@@ -33,6 +33,7 @@ GMAIL_PW = os.environ.get("GMAIL_APP_PASSWORD", "")
 ADDR = "lien2fish@gmail.com"
 
 TW = timezone(timedelta(hours=8))
+FIRST_SLOT_HOUR = 8  # 巡邏第一班 08:19；早於這個鐘點執行＝這輪是跨夜延遲來的
 
 # 誤點多久才算「這次被跳過了」。GitHub 誤點 1.5~4 小時是常態，
 # 抓太短會在它只是慢的時候補一次，變成兩封信。
@@ -111,13 +112,14 @@ def runs_today(wf, today):
     return out
 
 
-def due(hh, mm, period, now):
-    """該跑的時間已經過了寬限期就回傳 True；今天不該跑回傳 False。"""
-    if period == "mon" and now.weekday() != 0:
+def due(hh, mm, period, now, day):
+    """`day` 那天的班次已經過了寬限期就回傳 True；那天本來就不該跑回傳 False。"""
+    ref = now.replace(year=day.year, month=day.month, day=day.day)
+    if period == "mon" and ref.weekday() != 0:
         return False
-    if period.startswith("day") and now.day != int(period[3:]):
+    if period.startswith("day") and ref.day != int(period[3:]):
         return False
-    expected = now.replace(hour=hh, minute=mm, second=0, microsecond=0)
+    expected = ref.replace(hour=hh, minute=mm, second=0, microsecond=0)
     return now >= expected + timedelta(minutes=GRACE_MIN)
 
 
@@ -155,7 +157,16 @@ def main():
 
     now = datetime.now(timezone.utc).astimezone(TW)
     today = now.date()
+
+    # ⚠️ 巡邏自己也會被延遲。若在第一班（08:19）之前才執行，這一輪必然是前一天
+    # 被延到跨夜的班次——該查的是「昨天」。查今天等於空跑一趟。
+    # 2026-08-28 實例：20:19 那班延到隔天 06:17 才到，回報「今天該跑的都跑了」，
+    # 而它本來要抓的前一天 18:08 限動預告漏跑，沒有任何一輪查過。
+    catching_up = now.hour < FIRST_SLOT_HOUR
+    check_day = today - timedelta(days=1) if catching_up else today
     print("巡邏時間（台灣）：%s" % now.strftime("%Y-%m-%d %H:%M"))
+    if catching_up:
+        print("↩︎ 這輪早於第一班，判定為跨夜延遲，改查 %s" % check_day.isoformat())
 
     fixed, failed, manual, broken = [], [], [], []
 
@@ -165,27 +176,35 @@ def main():
             print("⚠️ %s 沒有 cron，跳過" % wf)
             continue
         hh, mm, period = cron
-        if not due(hh, mm, period, now):
+        if not due(hh, mm, period, now, check_day):
             continue
 
-        got = runs_today(wf, today)
+        got = runs_today(wf, check_day)
         if got:
             bad = [r for r in got if r["conclusion"] == "failure"]
             if bad and not [r for r in got if r["conclusion"] == "success"]:
-                broken.append("%s（%02d:%02d）今天跑了但失敗" % (name, hh, mm))
-                print("❌ %s 今天跑過但失敗" % name)
+                broken.append("%s（%02d:%02d）跑了但失敗" % (name, hh, mm))
+                print("❌ %s 跑過但失敗" % name)
             else:
-                print("✅ %s 今天已執行" % name)
+                print("✅ %s 已執行" % name)
             continue
 
-        if not auto:
+        # 補查前一天時一律只通知：隔了一夜才觸發，產出的是「今天」的內容，
+        # 補不回昨天那一份，硬跑只會製造一份對不上日期的東西。
+        if not auto or catching_up:
             manual.append("%s（原定 %02d:%02d）" % (name, hh, mm))
-            print("⏸ %s 今天沒跑——會對外發布，只通知不補" % name)
+            print(
+                "⏸ %s 沒跑——%s"
+                % (
+                    name,
+                    "跨夜補查，只通知" if catching_up else "會對外發布，只通知不補",
+                )
+            )
             continue
 
         print("🔧 %s 今天沒跑，補觸發……" % name)
         try:
-            ok = dispatch(wf, today)
+            ok = dispatch(wf, check_day)
         except urllib.error.HTTPError as e:
             ok = False
             print("   API 錯誤 HTTP %s" % e.code)
@@ -193,7 +212,7 @@ def main():
         print("   %s" % ("已補跑" if ok else "補跑失敗"))
 
     if not (fixed or failed or manual or broken):
-        print("✅ 今天該跑的都跑了，不發通知")
+        print("✅ %s 該跑的都跑了，不發通知" % check_day.isoformat())
         return
 
     lines = []
@@ -228,11 +247,11 @@ def main():
         if failed
         else ("🟡 有排程沒跑" if manual or broken else "✅ 排程已自動補跑")
     )
-    send_mail("%s（%s）" % (head, today.isoformat()), lines)
+    send_mail("%s（%s）" % (head, check_day.isoformat()), lines)
 
     # LINE 只推需要決策或壞掉的，補跑成功不吵
     if failed or manual or broken:
-        push = ["%s %s" % (head, today.isoformat())]
+        push = ["%s %s" % (head, check_day.isoformat())]
         push += ["・" + x for x in failed + manual + broken]
         if fixed:
             push += ["", "已自動補跑 %d 支" % len(fixed)]
