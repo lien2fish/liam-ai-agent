@@ -54,7 +54,6 @@ MUTED = (130, 112, 84)
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 FONT = "/System/Library/Fonts/STHeiti Medium.ttc"
-LOGO = os.path.join(BASE, "logo.png")
 
 PAD = 96  # 左右安全邊
 ILLUS_TOP, ILLUS_H = 330, 980  # 插圖區
@@ -105,13 +104,6 @@ def base_canvas(title_zh, title_en, today):
     d.text((PAD, 186), f"{today}　|　{title_zh}", font=f(64), fill=INK)
     d.text((PAD, 262), f"（{title_en}）", font=f(34), fill=MUTED)
     d.line([(PAD, 1360), (W - PAD, 1360)], fill=GOLD, width=3)
-    try:
-        lg = Image.open(LOGO).convert("RGBA")
-        h = 74
-        lg = lg.resize((int(lg.width * h / lg.height), h), Image.LANCZOS)
-        im.paste(lg, (PAD, H - 150), lg)
-    except Exception:
-        pass
     d.text(
         (W - PAD - d.textlength("鉅鑫 · 龜吼現流", font=f(32)), H - 130),
         "鉅鑫 · 龜吼現流",
