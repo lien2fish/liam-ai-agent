@@ -192,6 +192,18 @@ def _bare(t):
     return re.sub(r"[^\w]", "", t)
 
 
+def dur(path):
+    """用 ffmpeg 讀時長——這台只裝了 ffmpeg，沒有 ffprobe。"""
+    err = subprocess.run(
+        ["ffmpeg", "-hide_banner", "-i", path], capture_output=True, text=True
+    ).stderr
+    m = re.search(r"Duration: (\d+):(\d+):(\d+\.\d+)", err)
+    if not m:
+        raise RuntimeError("讀不出時長：" + path)
+    h, mi, se = m.groups()
+    return int(h) * 3600 + int(mi) * 60 + float(se)
+
+
 def sentence_starts(sents, marks, total):
     """把每一句對到時間軸上的起點。
 
