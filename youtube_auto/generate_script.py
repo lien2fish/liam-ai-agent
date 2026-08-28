@@ -265,8 +265,15 @@ def _finalize(script):
     sents = script.get("sentences", [])
     if not sents:
         raise ValueError("無 sentences")
-    script["narration"] = " ".join(x["en"] for x in sents)
-    script["subtitles_zh"] = [x["zh"] for x in sents]
+    # ⚠️ 2026-08-26 旁白改繁中時，prompt 的 sentences 變成只有 zh，這裡卻還在讀
+    # x["en"]——結果 Claude 重試三次、Gemini fallback 也一樣 KeyError 'en'，
+    # log 上看起來像「兩家模型都不可用」，其實是自己的解析壞了。
+    # build_video 那端當時已改好（用 .get("en","")），只漏了這一行。
+    bad = [i for i, x in enumerate(sents) if not (x.get("en") or x.get("zh"))]
+    if bad:
+        raise ValueError("第 %s 句缺 en 與 zh" % bad)
+    script["narration"] = " ".join(x.get("en") or x["zh"] for x in sents)
+    script["subtitles_zh"] = [x.get("zh", "") for x in sents]
     return script
 
 
