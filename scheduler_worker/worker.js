@@ -69,15 +69,26 @@ async function ranToday(env, wf, now) {
   );
 }
 
-/** 推 LINE。沒設定就靜默跳過——通知壞掉不該連累排程本身。 */
+/** 推 LINE。沒設定就靜默跳過——通知壞掉不該連累排程本身。
+ *
+ * ⚠️ 契約要跟 line_assistant/notify.py 完全一致：
+ *    網址是「基底 + /notify」、token 走 Authorization header（不是放在 body）、
+ *    body 只有 {text}。而且 User-Agent 不能用預設值——Cloudflare 會回 403，
+ *    2026-08-25 就因此推播了好幾天都沒送出而沒人發現。
+ */
 async function notify(env, text) {
   if (!env.NOTIFY_URL || !env.NOTIFY_TOKEN) return;
   try {
-    await fetch(env.NOTIFY_URL, {
+    const r = await fetch(env.NOTIFY_URL.replace(/\/+$/, "") + "/notify", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "User-Agent": UA },
-      body: JSON.stringify({ token: env.NOTIFY_TOKEN, text }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + env.NOTIFY_TOKEN,
+        "User-Agent": UA,
+      },
+      body: JSON.stringify({ text: String(text).slice(0, 900) }),
     });
+    if (!r.ok) console.log(`notify 回 ${r.status}（不影響排程）`);
   } catch (e) {
     console.log("notify 失敗（不影響排程）：" + e);
   }
