@@ -408,7 +408,14 @@ def knowledge_via_claude(prompt):
 
 def knowledge_via_gemini(prompt):
     """Gemini fallback（2.5-flash → 2.0-flash → 2.0-flash-lite）"""
-    for model in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite"]:
+    # ⚠️ 不要釘死版本號。2026-08-28 發現 gemini-2.0-flash 與 -flash-lite 都已 404 下架，
+    #    當時 2.5-flash 又剛好 503，於是整條 fallback 全滅——Claude 一掛就開天窗。
+    #    用 -latest 別名才不會被下架；503 是暫時性且會在模型間輪動，所以要留多個備援。
+    for model in [
+        "gemini-flash-latest",
+        "gemini-2.5-flash",
+        "gemini-flash-lite-latest",
+    ]:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
         r = requests.post(
             url,

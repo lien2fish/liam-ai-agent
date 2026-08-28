@@ -15,6 +15,7 @@
     python3 instagram/explainer_video.py out.mp4 --keep   # 保留中間檔好檢查
 """
 import asyncio
+import math
 import os
 import re
 import subprocess
@@ -25,8 +26,13 @@ from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1080, 1920
 FPS = 24
-VOICE = os.environ.get("IG_VOICE", "zh-TW-HsiaoChenNeural")
-RATE = os.environ.get("IG_VOICE_RATE", "-4%")  # 稍慢一點，海鮮知識要聽得進去
+VOICE = os.environ.get("IG_VOICE", "zh-TW-YunJheNeural")  # 男聲
+RATE = os.environ.get("IG_VOICE_RATE", "+8%")
+
+# 擋掉「辨別型」題目：gpt-image 分不出頭足類的鰭形、相似魚種的體側差異，
+# 教辨別卻配錯插圖比沒有插圖更糟，而且直接踩到產地真實性紅線。
+# 這些角度一律退回靜態圖，不出影片。
+BLOCKED_ANGLES = {"相似魚種比較", "外觀辨別", "選購技巧"}
 
 CREAM = (243, 238, 226)
 INK = (45, 65, 105)
@@ -102,7 +108,7 @@ def base_canvas(title_zh, title_en, today):
     return im
 
 
-def frame(canvas, illus, zoom, caption, cap_font, bleed):
+def frame(canvas, illus, zoom, caption, cap_font, bleed, drift=(0, 0)):
     """一格＝底 ＋ 插圖 ＋ 目前這句字幕。
 
     bleed=True：插圖是完整場景（gpt-image 常常不理會「白底」的指示），
@@ -115,17 +121,11 @@ def frame(canvas, illus, zoom, caption, cap_font, bleed):
         r = max(W / illus.width, ILLUS_H / illus.height) * zoom
         w, h = int(illus.width * r), int(illus.height * r)
         sm = illus.resize((w, h), Image.LANCZOS)
-        im.paste(
-            sm.crop(
-                (
-                    (w - W) // 2,
-                    (h - ILLUS_H) // 2,
-                    (w - W) // 2 + W,
-                    (h - ILLUS_H) // 2 + ILLUS_H,
-                )
-            ),
-            (0, ILLUS_TOP),
-        )
+        # 漂移要夾在裁切框的餘裕內，超出去會露出黑邊
+        sx, sy = (w - W) // 2, (h - ILLUS_H) // 2
+        x = max(0, min(w - W, sx + int(drift[0])))
+        y = max(0, min(h - ILLUS_H, sy + int(drift[1])))
+        im.paste(sm.crop((x, y, x + W, y + ILLUS_H)), (0, ILLUS_TOP))
     else:
         box = int(min(ILLUS_H, 820) * zoom)
         ratio = min(box / illus.width, box / illus.height)
@@ -142,21 +142,55 @@ def frame(canvas, illus, zoom, caption, cap_font, bleed):
     return im
 
 
-async def _speak(text, path):
+async def _speak_all(text, path):
+    """整段一次合成，並收下 word boundary 當時間軸。
+
+    ⚠️ 不要逐句合成。逐句的話每一句都從同樣的平板語氣起頭、句間又是硬接，
+    聽起來就是機械音；整段一次過，語氣才會連貫，標點自然帶出停頓。
+    代價是要自己把每句對回時間軸——這就是 word boundary 的用處。
+    """
     import edge_tts
 
-    for attempt in range(6):  # 雲端與本機都偶爾 NoAudioReceived，要重試
+    marks = []
+    comm = edge_tts.Communicate(text, VOICE, rate=RATE)
+    with open(path, "wb") as fh:
+        async for ch in comm.stream():
+            if ch["type"] == "audio":
+                fh.write(ch["data"])
+            elif ch["type"] == "WordBoundary":
+                marks.append((ch["offset"] / 1e7, ch.get("text", "")))
+    if os.path.getsize(path) < 800:
+        raise RuntimeError("edge-tts 回傳空音檔")
+    return marks
+
+
+def speak_all(text, path):
+    last = None
+    for _ in range(6):  # edge-tts 偶爾 NoAudioReceived
         try:
-            await edge_tts.Communicate(text, VOICE, rate=RATE).save(path)
-            if os.path.getsize(path) > 800:
-                return
+            return asyncio.run(_speak_all(text, path))
         except Exception as e:
             last = e
     raise RuntimeError(f"edge-tts 失敗：{last}")
 
 
-def speak(text, path):
-    asyncio.run(_speak(text, path))
+def _bare(t):
+    """只留會被唸出來的字——標點不會出現在 word boundary 裡。"""
+    return re.sub(r"[^\w]", "", t)
+
+
+def sentence_starts(sents, marks):
+    """用 word boundary 把每一句對到時間軸上的起點。"""
+    acc, idx = [], 0
+    for t, txt in marks:
+        acc.append((idx, t))
+        idx += len(_bare(txt))
+    starts, pos = [], 0
+    for x in sents:
+        t = next((tt for i, tt in acc if i >= pos), acc[-1][1] if acc else 0.0)
+        starts.append(t)
+        pos += len(_bare(x))
+    return starts
 
 
 def dur(path):
@@ -185,59 +219,15 @@ def build(knowledge, illustration, out_path, tmp=None, keep=False):
     sents = [x if x[-1] in "。？！" else x + "。" for x in sents]
     print(f"  拆成 {len(sents)} 句", flush=True)
 
-    # ① 逐句配音——每句的停留時間由它自己的旁白長度決定，不是硬給秒數
-    # ⚠️ 句尾的呼吸必須真的寫進音軌。只在畫面那邊加秒數的話，字幕會愈跑愈落後——
-    #    到第六句會差快 3 秒，而且 -shortest 會讓影片在音檔結束時直接被截掉。
-    PAUSE = 0.45
-    parts, durs = [], []
-    for i, s in enumerate(sents):
-        raw = os.path.join(tmp, f"v{i}.mp3")
-        speak(s, raw)
-        d0 = dur(raw)
-        padded = os.path.join(tmp, f"p{i}.mp3")
-        subprocess.run(
-            [
-                "ffmpeg",
-                "-y",
-                "-loglevel",
-                "error",
-                "-i",
-                raw,
-                "-af",
-                f"apad=pad_dur={PAUSE}",
-                "-t",
-                f"{d0 + PAUSE:.3f}",
-                padded,
-            ],
-            check=True,
-        )
-        parts.append(padded)
-        durs.append(dur(padded))
-        print(f"    [{i+1}/{len(sents)}] {durs[-1]:.1f}s", flush=True)
-
-    lst = os.path.join(tmp, "list.txt")
-    with open(lst, "w") as fh:
-        for p in parts:
-            fh.write(f"file '{p}'\n")
+    # ① 整段一次配音，再用 word boundary 把每句對回時間軸
     voice = os.path.join(tmp, "voice.mp3")
-    subprocess.run(
-        [
-            "ffmpeg",
-            "-y",
-            "-loglevel",
-            "error",
-            "-f",
-            "concat",
-            "-safe",
-            "0",
-            "-i",
-            lst,
-            "-c",
-            "copy",
-            voice,
-        ],
-        check=True,
-    )
+    marks = speak_all("".join(sents), voice)
+    starts = sentence_starts(sents, marks)
+    total = dur(voice)
+    print(f"  旁白 {total:.1f}s（word boundary {len(marks)} 個）", flush=True)
+    for i, (x, t0) in enumerate(zip(sents, starts)):
+        print(f"    [{i+1}] {t0:5.1f}s  {x[:18]}", flush=True)
+    assert starts == sorted(starts), "句子起點沒有遞增，時間軸對錯了"
 
     # ② 逐格算圖
     # gpt-image 常常無視「pure white background」直接畫整片場景。去背之後若幾乎沒縮小，
@@ -254,10 +244,6 @@ def build(knowledge, illustration, out_path, tmp=None, keep=False):
         datetime.now().strftime("%Y.%m.%d"),
     )
     cap_font = f(60)
-    total = dur(voice)  # 直接以音軌為準，畫面與聲音才不會各走各的
-    assert (
-        abs(total - sum(durs)) < 0.6
-    ), f"音軌 {total:.2f}s 與逐句加總 {sum(durs):.2f}s 對不上"
 
     cmd = [
         "ffmpeg",
@@ -301,15 +287,25 @@ def build(knowledge, illustration, out_path, tmp=None, keep=False):
     t, n = 0.0, 0
     while t < total:
         # 鏡頭：整支從 0.94 緩推到 1.06，不做花俏運鏡——內容是主角
-        zoom = 1.0 + (0.16 if bleed else 0.12) * (t / total)
-        acc, cap = 0.0, ""
-        for s, d_ in zip(sents, durs):
-            if t < acc + d_:
-                cap = s
-                break
-            acc += d_
+        # 起點就給 1.06 的餘裕，漂移才有空間可走（1.00 剛好貼齊，一動就露黑邊）
+        zoom = (1.06 if bleed else 1.0) + (0.14 if bleed else 0.12) * (t / total)
+        # 兩個不同週期的正弦：水流帶著整片景緩慢晃，比等速平移像「在游」
+        drift = (
+            (
+                math.sin(t / 9.0 * 2 * math.pi) * 26,
+                math.sin(t / 6.5 * 2 * math.pi + 1.1) * 16,
+            )
+            if bleed
+            else (0, 0)
+        )
+        cap = ""
+        for x, t0 in zip(sents, starts):
+            if t >= t0:
+                cap = x
         try:
-            proc.stdin.write(frame(canvas, illus, zoom, cap, cap_font, bleed).tobytes())
+            proc.stdin.write(
+                frame(canvas, illus, zoom, cap, cap_font, bleed, drift).tobytes()
+            )
         except BrokenPipeError:
             raise RuntimeError(
                 f"ffmpeg 在第 {n} 格（{t:.1f}s / 共 {total:.1f}s）就結束了——"
@@ -345,9 +341,23 @@ def main():
     sys.modules["gp"] = gp
     spec.loader.exec_module(gp)
 
+    # generate_post 在本機是從 config/instagram_config.json 讀 anthropic_api_key，
+    # 而那個檔沒有這個欄位 → 本機一定退到 Gemini。這裡直接補上，本機才跟雲端同一條路。
+    if not gp.ANTHROPIC_KEY and os.environ.get("ANTHROPIC_API_KEY"):
+        gp.ANTHROPIC_KEY = os.environ["ANTHROPIC_API_KEY"]
+
     print("→ 產生今日知識（Claude）...", flush=True)
     k = gp.generate_knowledge(gp.load_recent_seafood())
     print(f"  {k['title_zh']}｜{k.get('category')}", flush=True)
+
+    angle = k.get("category", "")
+    if angle in BLOCKED_ANGLES:
+        print(
+            f"⛔ 今日角度「{angle}」屬辨別型，不出影片——AI 插圖分不出相似魚種的\n"
+            f"   外型差異，教辨別卻配錯圖比沒有圖更糟。今天改用靜態圖即可。",
+            flush=True,
+        )
+        return 0
 
     print("→ 產生插圖（OpenAI）...", flush=True)
     illus = gp.generate_illustration(k["illustration_prompt"])
