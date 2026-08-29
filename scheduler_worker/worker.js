@@ -21,15 +21,43 @@ const REPO = "lien2fish/liam-ai-agent";
 
 // key = UTC 的 HH:MM，要跟 wrangler.toml 的 crons 對得上。
 // 台灣時間 = UTC + 8。改時間要兩邊一起改，不然這裡對不到就什麼都不會做。
+// 值可以是檔名字串（每天跑），或帶條件的物件：
+//   { wf, dow: 1 }  只在 UTC 星期一跑（0=日）
+//   { wf, dom: 1 }  只在 UTC 每月 1 日跑
+// 條件用 UTC 判斷，而這些任務都排在 UTC 上午＝台灣同一天的白天，日期不會跨掉。
 const SCHEDULE = {
+  "00:03": [{ wf: "weekly_revenue_sprint.yml", dow: 1 }], // 台灣一 08:03 營收衝刺週報
+  "00:13": ["gmail_automation.yml"], // 台灣 08:13 Gmail 清理＋新聞摘要
   "00:17": ["policy_expiry_check.yml"], // 台灣 08:17 產險保單到期
   "00:23": ["birthday_reminder.yml"], // 台灣 08:23 壽險客戶生日
   "00:27": ["rotary_birthday_reminder.yml"], // 台灣 08:27 扶輪社友生日
+  "00:33": ["yt_channel_report.yml"], // 台灣 08:33 The Unknown Hour 頻道日報
   "00:37": ["daily_post.yml"], // 台灣 08:37 IG+FB 每日發文
+  "00:39": ["yt_comment_monitor.yml"], // 台灣 08:39 YouTube Shorts 留言通知
   "00:43": ["life_visit_reminder.yml"], // 台灣 08:43 壽險固定拜訪
+  "00:47": ["token_expiry_check.yml"], // 台灣 08:47 IG／FB Token 到期檢查
+  "00:53": [{ wf: "weekly_review.yml", dow: 1 }], // 台灣一 08:53 AI 工作週報
+  "00:57": [{ wf: "notion_monthly_report.yml", dom: 1 }], // 台灣 1 日 08:57 Notion 月報
   "01:07": ["repurchase_reminder.yml"], // 台灣 09:07 三品牌回購提醒
+  "01:37": ["seafood_prices.yml"], // 台灣 09:37 漁獲市場行情
+  "02:07": ["yt_auto_post.yml"], // 台灣 10:07 YouTube 自動影片
+  "04:07": ["market_daily.yml"], // 台灣 12:07 每日股市分析
   "10:08": ["ig_story_teaser.yml"], // 台灣 18:08 IG 限動預告（接 18:00 的 Reels）
 };
+
+// 每 30 分鐘一次的高頻任務——不進 SCHEDULE，因為它跟「幾點幾分」無關。
+// 由 cron 的 */30 打進來，在每個 :00 與 :30 觸發，與時段表和稽核並行不衝突。
+const EVERY_30MIN = ["ig_comment_reply.yml"];
+
+const name = (job) => (typeof job === "string" ? job : job.wf);
+
+/** 帶條件的任務今天到底該不該跑。 */
+function due(job, now) {
+  if (typeof job === "string") return true;
+  if (job.dow !== undefined && now.getUTCDay() !== job.dow) return false;
+  if (job.dom !== undefined && now.getUTCDate() !== job.dom) return false;
+  return true;
+}
 
 // 回頭確認上面那些真的都跑了。安全網留在這裡，不放回 GitHub——
 // 否則計時器壞掉時偵測器會一起壞。
@@ -38,8 +66,13 @@ const SCHEDULE = {
 //    早上那輪（UTC 02:30）跑的時候它根本還沒到，一起查會每天誤報一次「沒執行」。
 // key＝稽核時間（UTC），value＝這一輪負責回頭檢查 SCHEDULE 的哪些時段。
 const AUDITS = {
-  "02:30": ["00:17", "00:23", "00:27", "00:37", "00:43", "01:07"], // 台灣 10:30
-  "12:30": ["10:08"], // 台灣 20:30
+  // 台灣 10:30——查凌晨到 02:30 之間（台灣早上）那一批
+  "02:30": [
+    "00:03", "00:13", "00:17", "00:23", "00:27", "00:33", "00:37",
+    "00:39", "00:43", "00:47", "00:53", "00:57", "01:07", "01:37", "02:07",
+  ],
+  // 台灣 20:30——查下午到傍晚那兩支，外加高頻的留言回覆今天有沒有跑過
+  "12:30": ["04:07", "10:08"],
 };
 
 const UA = "liam-scheduler/1";
@@ -103,7 +136,7 @@ async function notify(env, text) {
 }
 
 async function runSlot(env, key, now) {
-  const wfs = SCHEDULE[key] || [];
+  const wfs = (SCHEDULE[key] || []).filter((j) => due(j, now)).map(name);
   const results = [];
   for (const wf of wfs) results.push(await dispatch(env, wf));
   const bad = results.filter((r) => !r.ok);
@@ -118,7 +151,11 @@ async function runSlot(env, key, now) {
 }
 
 async function audit(env, key, now) {
-  const all = (AUDITS[key] || []).flatMap((slot) => SCHEDULE[slot] || []);
+  const all = (AUDITS[key] || [])
+    .flatMap((slot) => SCHEDULE[slot] || [])
+    .filter((j) => due(j, now))
+    .map(name)
+    .concat(key === "12:30" ? EVERY_30MIN : []);
   const missing = [];
   const unknown = [];
   for (const wf of all) {
@@ -151,8 +188,16 @@ export default {
   async scheduled(event, env, ctx) {
     const now = new Date(event.scheduledTime); // 原定時間，不是實際執行時間
     const key = now.toISOString().slice(11, 16); // UTC HH:MM
-    if (AUDITS[key]) return ctx.waitUntil(audit(env, key, now));
-    return ctx.waitUntil(runSlot(env, key, now));
+    const jobs = [];
+
+    // 高頻任務先處理，且不受下面的分支影響——02:30 與 12:30 同時是稽核輪，
+    // 若寫成 if/else 就會每天少跑兩次留言回覆。
+    if (key.endsWith(":00") || key.endsWith(":30")) {
+      for (const wf of EVERY_30MIN) jobs.push(dispatch(env, wf));
+    }
+
+    jobs.push(AUDITS[key] ? audit(env, key, now) : runSlot(env, key, now));
+    return ctx.waitUntil(Promise.all(jobs));
   },
 
   /**
@@ -188,9 +233,21 @@ export default {
     }
 
     const key = url.searchParams.get("key");
+    const now = new Date();
     const body = key
-      ? { slot: key, would_dispatch: SCHEDULE[key] || [] }
-      : { schedule: SCHEDULE, audits: AUDITS, note: "全部為 UTC；台灣時間 = UTC+8" };
+      ? {
+          slot: key,
+          would_dispatch: (SCHEDULE[key] || []).filter((j) => due(j, now)).map(name),
+          all_in_slot: (SCHEDULE[key] || []).map(name),
+          plus_every_30min:
+            key.endsWith(":00") || key.endsWith(":30") ? EVERY_30MIN : [],
+        }
+      : {
+          schedule: SCHEDULE,
+          every_30min: EVERY_30MIN,
+          audits: AUDITS,
+          note: "全部為 UTC；台灣時間 = UTC+8",
+        };
     return new Response(JSON.stringify(body, null, 2), {
       headers: { "Content-Type": "application/json; charset=utf-8" },
     });
