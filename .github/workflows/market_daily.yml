@@ -43,5 +43,10 @@ jobs:
           git add market/market_config.json market/market_history.json day/
           git add "reports/市場日報_$(date +%Y-%m-%d).md" 2>/dev/null || true
           git diff --staged --quiet || git commit -m "chore: 市場日報 $(date +%Y-%m-%d)"
-          git pull --rebase
-          git push
+          # ⚠️ pull 與 push 之間還有窗口讓別支任務插進來——2026-08-29 實測就中了：
+          # pull 回報 up to date，下一行 push 就被 rejected。所以要重試，不是 pull 一次就好。
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep $((RANDOM % 8 + 3))
+          done
+          echo "::error::連 5 次都沒推上去"; exit 1
