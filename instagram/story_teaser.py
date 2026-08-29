@@ -24,6 +24,7 @@ OWNER, REPO_NAME = "lien2fish", "liam-ai-agent"
 COOLDOWN_DAYS = 30  # 同一支 Reel 至少隔這麼久才會再被選中
 DUR = 3.00  # IG 限動影片下限＝3 秒，使用者上限也是 3 秒
 NSEG = 3  # 拼幾段
+MAX_TRIES = 3  # IG 端轉檔偶發失敗時，最多換幾支片重試
 HEAD_SKIP = 1.2  # 跳過開頭封面／標題卡：預告一開始就爆雷就沒意義了
 TAIL_SKIP = 2.5  # 跳過結尾「記得訂閱」卡
 TAG = "Reels完整版～"
@@ -75,7 +76,7 @@ def all_reels(tok, ig):
 
 
 def pick(reels):
-    """30 天內用過的排除，剩下取最新的一支。"""
+    """30 天內用過的排除，由新到舊排序——新片優先，用完才往回翻舊片。"""
     used = json.load(open(STATE)) if os.path.exists(STATE) else {}
     cutoff = date.today() - timedelta(days=COOLDOWN_DAYS)
     fresh = [
@@ -86,7 +87,7 @@ def pick(reels):
     if not fresh:
         raise SystemExit(f"❌ 全部 {len(reels)} 支都在 {COOLDOWN_DAYS} 天內用過了")
     fresh.sort(key=lambda r: r["timestamp"], reverse=True)
-    return fresh[0], used
+    return fresh, used
 
 
 def probe(path):
@@ -289,9 +290,9 @@ def publish(tok, ig, url):
         if code == "FINISHED":
             break
         if code == "ERROR":
-            raise SystemExit(f"❌ 轉檔失敗：{st.get('status')}")
+            raise RuntimeError(f"轉檔失敗：{st.get('status')}")
     else:
-        raise SystemExit("❌ 轉檔逾時")
+        raise RuntimeError("轉檔逾時")
     return post(f"{ig}/media_publish", {"creation_id": cid, "access_token": tok})["id"]
 
 
@@ -309,26 +310,57 @@ def main():
     dry = "--dry-run" in sys.argv
     tok, ig = creds()
     reels = all_reels(tok, ig)
-    r, used = pick(reels)
-    cap = (r.get("caption") or "").split("\n")[0]
+    fresh, used = pick(reels)
     print(f"已發布 Reels {len(reels)} 支")
-    print(f"選中：{r['timestamp'][:10]}  {cap[:44]}")
 
     os.makedirs(OUTDIR, exist_ok=True)
     tmp = tempfile.mkdtemp()
-    src = os.path.join(tmp, "src.mp4")
-    open(src, "wb").write(urllib.request.urlopen(r["media_url"]).read())
-    print(f"原片 {probe(src):.1f} 秒")
 
-    out = os.path.join(OUTDIR, f"teaser_{date.today():%Y%m%d}.mp4")
-    print(f"預告 {cut(src, out, tmp):.2f} 秒 → {out}")
-    if dry:
-        print("— dry-run，未發布 —")
-        return
+    # IG 端的轉檔會偶發失敗（2026-08-27 回 2207077 Media upload has failed），
+    # 原本一失敗就整支收攤，當天就沒有限動。改成換下一支再試。
+    # ⚠️ 重試一定要換檔名——raw CDN 對同名檔有快取，沿用會讓 IG 抓回剛剛失敗的那支。
+    r = mid = last = None
+    for attempt in range(1, MAX_TRIES + 1):
+        r = fresh[attempt - 1] if attempt <= len(fresh) else None
+        if r is None:
+            break
+        cap = (r.get("caption") or "").split("\n")[0]
+        print(f"選中：{r['timestamp'][:10]}  {cap[:44]}")
+        src = os.path.join(tmp, f"src{attempt}.mp4")
+        open(src, "wb").write(urllib.request.urlopen(r["media_url"]).read())
+        print(f"原片 {probe(src):.1f} 秒")
 
-    url = gh_upload(out, f"instagram/stories/{os.path.basename(out)}")
-    time.sleep(10)  # raw CDN 需要一點時間才拿得到新內容
-    mid = publish(tok, ig, url)
+        out = os.path.join(
+            OUTDIR,
+            f"teaser_{date.today():%Y%m%d}{'' if attempt == 1 else f'_r{attempt}'}.mp4",
+        )
+        print(f"預告 {cut(src, out, tmp):.2f} 秒 → {out}")
+        if dry:
+            print("— dry-run，未發布 —")
+            return
+
+        url = gh_upload(out, f"instagram/stories/{os.path.basename(out)}")
+        time.sleep(10)  # raw CDN 需要一點時間才拿得到新內容
+        try:
+            mid = publish(tok, ig, url)
+            break
+        except RuntimeError as e:
+            last = e
+            print(f"❌ {e}  → 換下一支（已試 {attempt}/{MAX_TRIES}）", flush=True)
+
+    if mid is None:
+        gh_prune("")  # 沒發成的暫存影片別留在 public repo
+        try:
+            sys.path.insert(0, REPO)
+            from line_assistant.notify import notify
+
+            notify(
+                f"⚠️ IG 限動預告失敗\n連試 {MAX_TRIES} 支都被 IG 退回\n最後錯誤：{last}"
+            )
+        except Exception as e:
+            print(f"[notify] 推播失敗：{e}", flush=True)
+        raise SystemExit(f"❌ 連試 {MAX_TRIES} 支都失敗：{last}")
+
     print(f"✅ 已發布：https://www.instagram.com/stories/lienstable/  (media {mid})")
     got = verify(tok, mid, tmp)
     print(f"驗證：線上限動 {got:.2f} 秒" if got else "驗證：抓不到 media_url")
