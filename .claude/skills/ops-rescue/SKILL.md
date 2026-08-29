@@ -69,6 +69,7 @@ gh workflow run <檔名>.yml        # 重跑
 | Gemini 503 UNAVAILABLE | 伺服器過載，暫時性 | 間隔 10~15 秒重試幾次會好。**跟 429 是不同問題，別搞混** | ✅ |
 | OpenAI 生圖 4xx | 額度沒了／內容政策 | 去 Console 儲值。**4xx 不重試**（腳本已設計成直接中止） | ⚠️ 要開 Console |
 | 生圖過半失敗 → `raise` 中止 | 生圖服務整體異常 | 這是**刻意的保護**（2026-08-05 曾產出整支同一張底圖的假成功影片）。等服務恢復再重跑 | ✅ |
+| IG 限動回 `轉檔失敗：… error code 2207077` | **IG 端轉檔偶發失敗**，跟 token 和影片編碼都無關（實測產出是合規的 H.264／yuv420p／1080x1920／AAC）| **2026-08-29 起會自動換下一支重試，最多 3 支**，全滅才推 LINE。看到這行不必動手 | ✅ |
 | IG／FB 回 `OAuthException` **190 / subcode 460** | **session 被作廢**（改 FB 密碼或 Meta 安全性重設），**跟到期日無關、隨時會發生** | 走完整重新授權（見 `ig-fb-auto` skill）。⚠️ `fb_exchange_token` 換發救不回來 | ❌ **手機做不到** |
 | IG／FB 回 `OAuthException`（其他） | IG Token 的**資料存取權**到期 | 走完整重新授權流程（見 `ig-fb-auto` skill） | ❌ **手機做不到** |
 | Notion 404／400 | DB ID 錯或頁面被封存 | 對照各 skill 裡的 DB ID | ✅ |
