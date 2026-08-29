@@ -1,8 +1,10 @@
 name: Gmail 自動化（清理 + 新聞摘要）
 
 on:
-  schedule:
-    - cron: '13 0 * * *'   # UTC 00:13 = 台灣 08:13（避開整點壅塞）
+  # 🕐 計時已於 2026-08-29 搬到 Cloudflare Worker `liam-scheduler`（UTC 00:13 = 台灣 08:13）。
+  # GitHub 的 schedule 誤點嚴重（實測延遲中位 37~689 分，最糟 23 小時），
+  # 全部任務改由 Worker 定時 dispatch，GitHub 只負責執行。
+  # ⛔ 不要把 cron 加回來——兩邊都留會一天觸發兩次。
   workflow_dispatch:        # 允許手動觸發
 
 jobs:
