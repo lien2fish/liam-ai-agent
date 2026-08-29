@@ -1,8 +1,10 @@
 name: AI 工作週報
 
 on:
-  schedule:
-    - cron: '53 0 * * 1'   # UTC 週一 00:53 = 台灣 週一 08:53（錯開營收週報）
+  # 🕐 計時已於 2026-08-29 搬到 Cloudflare Worker `liam-scheduler`（UTC 週一 00:53 = 台灣週一 08:53）。
+  # GitHub 的 schedule 誤點嚴重（實測延遲中位 37~689 分，最糟 23 小時），
+  # 全部任務改由 Worker 定時 dispatch，GitHub 只負責執行。
+  # ⛔ 不要把 cron 加回來——兩邊都留會一天觸發兩次。
   workflow_dispatch:
     inputs:
       week:
