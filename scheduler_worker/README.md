@@ -94,12 +94,18 @@ for(const c of [...b.matchAll(/\"([0-9,*\/ -]+)\"/g)].map(m=>m[1])){
   const [mm,hh]=c.trim().split(/\s+/);
   for(const h of hh.split(','))for(const m of mm.split(','))
     s.add(String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'));}
-const w=new Set([...Object.keys(SCHEDULE),AUDIT_AT]);
-console.log([...w].filter(k=>!s.has(k)).length||[...s].filter(k=>!w.has(k)).length?'❌ 對不上':'✅ 一致');"
+const w=[...Object.keys(SCHEDULE),...Object.keys(AUDITS)];
+const miss=w.filter(k=>!s.has(k));
+console.log(miss.length?'❌ 這些時段沒有 cron 打得到：'+miss.join('、'):'✅ 一致');
+const idle=[...s].filter(k=>!w.includes(k));
+if(idle.length)console.log('（空轉時段，刻意的：'+idle.join('、')+'）');"
 ```
 
 ## 還留在 GitHub schedule 上的
 
 其餘任務（股市日報、漁獲行情、YouTube 三支、Gmail、Token 檢查、週報、月報、
-IG 限動預告、IG 留言回覆、排程巡邏）**維持原樣**。先搬最有時效的六支，
-跑幾天穩了再決定要不要搬其餘的。
+IG 留言回覆、排程巡邏）**維持原樣**。
+
+**2026-08-29 加搬 `ig_story_teaser`**（第七支）：GitHub 把它延遲了 10~11 小時，
+連兩天在台灣凌晨四、五點才發限動，而這支的意義是「Reels 18:00 發完、18:08 導流」，
+遲到就沒有意義了。同批的 `daily_post` 走 Worker 則準時。
