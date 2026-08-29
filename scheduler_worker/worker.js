@@ -28,11 +28,19 @@ const SCHEDULE = {
   "00:37": ["daily_post.yml"], // 台灣 08:37 IG+FB 每日發文
   "00:43": ["life_visit_reminder.yml"], // 台灣 08:43 壽險固定拜訪
   "01:07": ["repurchase_reminder.yml"], // 台灣 09:07 三品牌回購提醒
+  "10:08": ["ig_story_teaser.yml"], // 台灣 18:08 IG 限動預告（接 18:00 的 Reels）
 };
 
-// 這一輪負責回頭確認上面那些真的都跑了（台灣 10:30）。
-// 安全網也留在這裡，不放回 GitHub——否則計時器壞掉時偵測器會一起壞。
-const AUDIT_AT = "02:30";
+// 回頭確認上面那些真的都跑了。安全網留在這裡，不放回 GitHub——
+// 否則計時器壞掉時偵測器會一起壞。
+//
+// ⚠️ 分兩輪，因為稽核只對「已經過去的時段」有意義：限動預告排在 UTC 10:08，
+//    早上那輪（UTC 02:30）跑的時候它根本還沒到，一起查會每天誤報一次「沒執行」。
+// key＝稽核時間（UTC），value＝這一輪負責回頭檢查 SCHEDULE 的哪些時段。
+const AUDITS = {
+  "02:30": ["00:17", "00:23", "00:27", "00:37", "00:43", "01:07"], // 台灣 10:30
+  "12:30": ["10:08"], // 台灣 20:30
+};
 
 const UA = "liam-scheduler/1";
 
@@ -109,8 +117,8 @@ async function runSlot(env, key, now) {
   }
 }
 
-async function audit(env, now) {
-  const all = Object.values(SCHEDULE).flat();
+async function audit(env, key, now) {
+  const all = (AUDITS[key] || []).flatMap((slot) => SCHEDULE[slot] || []);
   const missing = [];
   const unknown = [];
   for (const wf of all) {
@@ -118,7 +126,16 @@ async function audit(env, now) {
     if (ran === null) unknown.push(wf);
     else if (!ran) missing.push(wf);
   }
-  console.log(`稽核：缺 ${missing.length} 支、查不到 ${unknown.length} 支`);
+  console.log(`[${key}] 稽核 ${all.length} 支：缺 ${missing.length}、查不到 ${unknown.length}`);
+
+  // SCHEDULE 加了新時段卻忘了掛進 AUDITS，就再也沒有人回頭查它——
+  // 這種漏法是靜默的，所以每天主動比對一次。
+  const covered = new Set(Object.values(AUDITS).flat());
+  const orphan = Object.keys(SCHEDULE).filter((slot) => !covered.has(slot));
+  if (orphan.length && key === Object.keys(AUDITS)[0]) {
+    await notify(env, "⚠️ 這些排程時段沒有任何一輪稽核在看：" + orphan.join("、"));
+  }
+
   if (missing.length || unknown.length) {
     await notify(
       env,
@@ -134,7 +151,7 @@ export default {
   async scheduled(event, env, ctx) {
     const now = new Date(event.scheduledTime); // 原定時間，不是實際執行時間
     const key = now.toISOString().slice(11, 16); // UTC HH:MM
-    if (key === AUDIT_AT) return ctx.waitUntil(audit(env, now));
+    if (AUDITS[key]) return ctx.waitUntil(audit(env, key, now));
     return ctx.waitUntil(runSlot(env, key, now));
   },
 
@@ -173,7 +190,7 @@ export default {
     const key = url.searchParams.get("key");
     const body = key
       ? { slot: key, would_dispatch: SCHEDULE[key] || [] }
-      : { schedule: SCHEDULE, audit_at: AUDIT_AT, note: "全部為 UTC；台灣時間 = UTC+8" };
+      : { schedule: SCHEDULE, audits: AUDITS, note: "全部為 UTC；台灣時間 = UTC+8" };
     return new Response(JSON.stringify(body, null, 2), {
       headers: { "Content-Type": "application/json; charset=utf-8" },
     });

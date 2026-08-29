@@ -1,8 +1,10 @@
 name: IG 限動 Reels 預告
 
 on:
-  schedule:
-    - cron: '8 10 * * *'   # UTC 10:08 = 台灣 18:08（Reels 固定 18:00 發布）
+  # 🕐 計時已於 2026-08-29 搬到 Cloudflare Worker `liam-scheduler`（UTC 10:08 = 台灣 18:08）。
+  # GitHub 的 schedule 把這支延遲了 10~11 小時（8/27、8/28 兩天都在台灣凌晨才發），
+  # 而它的意義就是「Reels 18:00 發完，18:08 用限動導流」，遲到等於失效。
+  # ⛔ 不要把 cron 加回來——兩邊都留會一天發兩則限動，IG 發出去 API 刪不掉。
   workflow_dispatch:
 
 jobs:
