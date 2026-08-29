@@ -192,8 +192,18 @@ export default {
 
     // 高頻任務先處理，且不受下面的分支影響——02:30 與 12:30 同時是稽核輪，
     // 若寫成 if/else 就會每天少跑兩次留言回覆。
+    //
+    // 失敗只寫 log 不推 LINE：一天 48 次，真的壞掉會洗掉整個月的推播額度。
+    // 漏跑由 12:30 那輪稽核統一報一次（AUDITS 的 12:30 有把 EVERY_30MIN 算進去）。
     if (key.endsWith(":00") || key.endsWith(":30")) {
-      for (const wf of EVERY_30MIN) jobs.push(dispatch(env, wf));
+      jobs.push(
+        (async () => {
+          for (const wf of EVERY_30MIN) {
+            const r = await dispatch(env, wf);
+            console.log(`[${key}] 高頻 ${wf} ${r.ok ? "已觸發" : "失敗：" + r.detail}`);
+          }
+        })(),
+      );
     }
 
     jobs.push(AUDITS[key] ? audit(env, key, now) : runSlot(env, key, now));
