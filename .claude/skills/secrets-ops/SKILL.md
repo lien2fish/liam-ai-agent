@@ -73,7 +73,7 @@ keychain 不像檔案會被 rsync 帶走，**換機時這把 PAT 是會掉的**�
 | `NOTION_TOKEN` | **6 個**：生日／壽險拜訪／市場日報／月報／回購／漁獲行情 | 🔴 高 |
 | `GEMINI_KEY` | **5 個**：IG 留言回覆／市場日報／漁獲行情，＋IG 發文與 YT 影片的 fallback | 🟡 **免費額度共用會互搶**，不是失效也可能不夠用 |
 | `IG_TOKEN` | **3 個**：IG+FB 發文／留言回覆／限動預告 | 🔴 見下方到期規律 |
-| `ANTHROPIC_API_KEY` | 2 個：IG 發文／YT 影片（**兩者都有 Gemini fallback，不會開天窗**） | 🟢 低 |
+| `ANTHROPIC_API_KEY` | 3 個：IG 發文／YT 影片（**都有 Gemini fallback**）＋**LINE 手機助理的自然語言（無 fallback，直接回 `Claude 401`）** | 🟡 **這把存在兩個地方**：GitHub Secret ＋ Cloudflare Worker secret。**輪替時兩邊都要換**——2026-08-29 就是只換了 GitHub，助理整整三天回 401 卻沒人知道（斜線指令不走 Claude，照常能用，所以症狀只出現在自然語言） |
 | `OPENAI_API_KEY` | 2 個：IG 插圖／YT 場景圖（**沒有 fallback**） | 🟡 餘額歸零就停 |
 | `YT_API_KEY` | 2 個：YT 留言通知／頻道日報 | 🟢 無到期問題 |
 | `LINE_NOTIFY_URL` ＋ `LINE_NOTIFY_TOKEN` | 1 個：Token 到期提醒的 LINE 推播 | 🟢 掛了只是少一條通知管道，Email 還在 |
