@@ -46,5 +46,10 @@ jobs:
           git config user.email "lien2fish@gmail.com"
           git add reports/ 今日新聞摘要.md day/
           git diff --cached --quiet || git commit -m "chore: 自動更新 Gmail 報告 $(date '+%Y-%m-%d')"
-          git pull --rebase
-          git push
+          # ⚠️ pull 與 push 之間還有窗口讓別支任務插進來——2026-08-29 實測就中了：
+          # pull 回報 up to date，下一行 push 就被 rejected。所以要重試，不是 pull 一次就好。
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep $((RANDOM % 8 + 3))
+          done
+          echo "::error::連 5 次都沒推上去"; exit 1
