@@ -103,9 +103,12 @@ if(idle.length)console.log('（空轉時段，刻意的：'+idle.join('、')+'�
 
 ## 還留在 GitHub schedule 上的
 
-其餘任務（股市日報、漁獲行情、YouTube 三支、Gmail、Token 檢查、週報、月報、
-IG 留言回覆、排程巡邏）**維持原樣**。
+**一支都沒有了（2026-08-29）。** 20 支 workflow 全部拿掉 `schedule`，計時集中在這裡：
+17 支排在 `SCHEDULE` 的時段表、1 支（IG 留言回覆）走 `EVERY_30MIN`、
+`claude_task_runner` 本來就是手動、`schedule_watchdog` 退休。
 
-**2026-08-29 加搬 `ig_story_teaser`**（第七支）：GitHub 把它延遲了 10~11 小時，
-連兩天在台灣凌晨四、五點才發限動，而這支的意義是「Reels 18:00 發完、18:08 導流」，
-遲到就沒有意義了。同批的 `daily_post` 走 Worker 則準時。
+理由是實測資料：GitHub 的 schedule 沒有一支準時，延遲中位 37~689 分、最糟 23 小時，
+留言回覆每天只跑掉該跑的 44%，連巡邏任務自己中位都遲到 10 小時。
+
+**代價是單點風險**：這個 Worker 掛了就全部停擺，而稽核也跑在它身上，
+真死透時不會有人通知。搬過來之前那六支已經是這個狀態，全搬只是把範圍擴大。
