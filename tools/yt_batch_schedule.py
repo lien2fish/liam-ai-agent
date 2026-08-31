@@ -30,6 +30,7 @@ import upload as yt
 from yt_upload import (
     SHORTS_MAX_SEC,
     TW,
+    desc_override,
     find_thumb,
     probe,
     publish_at_utc,
@@ -100,6 +101,9 @@ def plan_one(video):
     md = f"{stem}_發文案.md"
     file_title, desc, tags = read_desc(md) if os.path.exists(md) else (None, "", [])
     title = file_title or os.path.basename(stem)
+    ov = desc_override(video)
+    if ov:
+        desc = ov
     if is_short and "#shorts" not in desc.lower():
         desc = (desc + "\n\n#shorts").strip()
     # Shorts 不另外設封面：<片名>_封面.jpg 是壓進影片開頭那 1 秒的直式封面卡，
