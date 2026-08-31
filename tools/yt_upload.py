@@ -59,6 +59,17 @@ def publish_at_utc(when):
 SKIP_TAGS = {"shorts", "foryou", "fyp"}
 
 
+def desc_override(video):
+    """<片名>_YouTube描述.txt 存在就整份當描述。
+
+    發文案 .md 的「- 描述：」只吃單行，長片要放章節時間點與段落文字塞不進去
+    （2026-09-01 兩支 3 分鐘長片上傳時描述只有一句）。要完整描述就把它寫進
+    這個 .txt，上傳當下就會帶上去——改既有影片才需要 force-ssl 寫入權限。
+    """
+    p = os.path.splitext(video)[0] + "_YouTube描述.txt"
+    return open(p, encoding="utf-8").read().strip() if os.path.exists(p) else None
+
+
 def read_desc(path):
     """解析發文案 .md，回傳 (標題, 描述, 標籤)。兩種格式都吃：
 
@@ -140,6 +151,9 @@ def main():
     title = a.title or file_title or os.path.splitext(os.path.basename(a.video))[0]
     if a.tags:
         tags = [t.strip() for t in a.tags.split(",") if t.strip()]
+    ov = desc_override(a.video)
+    if ov:
+        desc = ov
     if is_short and "#shorts" not in desc.lower():
         desc = (desc + "\n\n#shorts").strip()
 

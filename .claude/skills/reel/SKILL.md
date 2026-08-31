@@ -44,6 +44,23 @@ description: 剪輯短影音／長影音——把拍攝素材剪成 9:16 品牌�
 | ⚠️ | 借的聲音長度不到畫面一半，後段會靜音 |
 | ⚠️ | 字幕出現 Whisper 已知錯字（表在 `tools/whisper_corrections.json`，新踩到請往下加） |
 
+## 選段之前：確認說話的是誰（2026-08-31 踩到）
+
+**`fg`（前景／背景）判斷只看音量，分不出同一支麥收到的兩個人。**
+門檻是「最大值 −8dB 以內都算前景」——連老闆戴領夾麥 −28dB、旁邊的人 −31~−33dB，
+只差 3~5dB，**兩個人都會被標成 `fg: true`**。
+
+2026-08-31 龍虎斑因此把「畫面是他低頭、聲音是旁人」的 8 秒當成結尾 CTA，
+成片看起來就是**嘴沒動卻有字幕**，使用者一眼看出「字幕和講話沒對到」。
+
+**所以選段時**：
+- **結尾 CTA 與開場鉤子一定要抽幀確認嘴型**，不要只信 `fg`
+- 抽段落中點那一幀就夠：`ffmpeg -ss <中點> -i <素材> -frames:v 1 out.jpg`
+- 借別人的話配他的畫面，只有在**刻意做聲畫分離**時才成立（見下方聲畫分離）
+
+**驗成品的方法**：把成品自己的音訊再轉錄一次，跟 config 算出的字幕時間逐條比對，
+字幕早 0.2~0.7 秒屬正常提前量，差更多才是真的不同步。
+
 ## 逐字稿校對
 
 Whisper 已知錯法都在 `tools/whisper_corrections.json`，`reel_check` 會自動掃 config 的 cues。**新踩到的錯字請加進那份 JSON**，下次就自動抓。
@@ -70,7 +87,7 @@ Whisper 已知錯法都在 `tools/whisper_corrections.json`，`reel_check` 會�
 | 只留BGM / BGM音量 | `mute_source:true` 去掉原始收音只留 BGM；`bgm_vol`(預設0.15，墊在人聲下)——**無人聲時 0.15 會太小聲**，純 BGM 建議 0.38。已成片要改音軌不必重跑 build：抽 `bgm_bed()` 產配樂後 `-map 0:v -map 1:a -c:v copy` 換軌，1分鐘完成且畫質零損失 |
 | 批次轉錄 | `batch <工作資料夾> <影片...>`：多支素材一次轉錄，`transcripts/*.json`＋單一 `字幕稿_全部.txt` 供一次校對，不散落桌面 |
 | 搞笑定格特效 | 非內建。客製 `gag_render.py`(letterbox+片尾定格 tpad+drawtext爆字+numpy合成boing/pop音效)＋`build_with_gags.py`(把 gag 段插進 segments、算好cue偏移)。若要常用可正式併進 reel_maker |
-| 地雷 | 字幕**必須人工校對**(Whisper會錯,例:赤筆→刺筆、扁鱈→鞭血、圓鱈→鴛鱈/園巡、比目魚→底木魚)；**選段保留的畫面若有講話一定要給cue**否則該幾秒無字幕；**封面字 `・`(U+30FB)、`／`(U+FF0F) 在 STHeiti 是豆腐方框**(已在 `draw_cover_title` 自動替換成 `·` `/`)；opencv裝不起來→人臉追蹤不用；yt-dlp下載要`--extractor-args youtube:player_client=android` |
+| 地雷 | ⚠️ **`transcribe()` 給了 `initial_prompt` 卻沒關 `condition_on_previous_text`**——一吐幻覺就沿著前文一路傳染（2026-08-31 生蠔整支 27 段有 22 段是回吐的提示詞、龍虎斑後段迴圈重複同一句）。重轉時加 `condition_on_previous_text=False` 即可救回，工作資料夾留了 `retranscribe.py`；字幕**必須人工校對**(Whisper會錯,例:赤筆→刺筆、扁鱈→鞭血、圓鱈→鴛鱈/園巡、比目魚→底木魚)；**選段保留的畫面若有講話一定要給cue**否則該幾秒無字幕；**封面字 `・`(U+30FB)、`／`(U+FF0F) 在 STHeiti 是豆腐方框**(已在 `draw_cover_title` 自動替換成 `·` `/`)；opencv裝不起來→人臉追蹤不用；yt-dlp下載要`--extractor-args youtube:player_client=android` |
 
 > 詳見 memory `project_viral_reel_maker.md`。播放器顯示的檔名≠影片內字，發佈後不會出現。首個成品：好市多實測「扁鱈vs圓鱈」(2片合1、3:03、含2搞笑定格段)。
 
