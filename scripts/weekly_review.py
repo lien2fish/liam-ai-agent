@@ -28,7 +28,10 @@ from email.utils import formataddr
 CLAUDE_MODEL = (
     "claude-sonnet-5"  # 省錢可改 "claude-haiku-4-5"，但「可精進的地方」品質會變差
 )
-MAX_TOKENS = 16000  # thinking 也計入這個額度；8000 曾讓 2026-W35 的報告從第二章斷掉
+MAX_TOKENS = 32000  # thinking 也計入這個額度；8000 曾讓 2026-W35 的報告從第二章斷掉
+# Sonnet 5 的 effort 預設是 high，思考會吃掉大半個 max_tokens：W35 用 16000 跑到用盡時，
+# 報告本身只寫了 3,456 字元。這份工作是整理既有素材、不是解難題，medium 就夠。
+REPORT_EFFORT = "medium"
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(BASE)
@@ -343,6 +346,7 @@ def call_claude(prompt):
             {
                 "model": CLAUDE_MODEL,
                 "max_tokens": MAX_TOKENS,
+                "output_config": {"effort": REPORT_EFFORT},
                 "messages": [{"role": "user", "content": prompt}],
             }
         ).encode(),
@@ -352,7 +356,7 @@ def call_claude(prompt):
             "content-type": "application/json",
         },
     )
-    data = json.load(urllib.request.urlopen(req, timeout=300))
+    data = json.load(urllib.request.urlopen(req, timeout=600))
     if "content" not in data:
         raise RuntimeError("Claude 回傳異常：%s" % data)
     # Sonnet 5 預設開 adaptive thinking，content[0] 可能是 thinking block
@@ -361,6 +365,11 @@ def call_claude(prompt):
         raise RuntimeError("Claude 回應沒有文字內容")
     # ⚠️ 截斷過的報告長得跟正常的一樣，只是後面幾章不見了。2026-W35 就這樣寄出去
     # 一份只有兩章的週報，而且照樣 commit、照樣被下一期當成結帳依據。寧可讓 run 變紅。
+    u = data.get("usage", {})
+    print(
+        "token 用量：輸入 %s／輸出 %s（上限 %d，effort=%s）"
+        % (u.get("input_tokens"), u.get("output_tokens"), MAX_TOKENS, REPORT_EFFORT)
+    )
     if data.get("stop_reason") == "max_tokens":
         raise RuntimeError(
             "報告在 max_tokens=%d 用盡時被截斷（產出 %d 字元），沒有寄出。"
