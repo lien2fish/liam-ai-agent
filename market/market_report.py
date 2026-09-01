@@ -633,11 +633,22 @@ def create_notion_page(parent_id):
 
 def update_notion_page(page_id, blocks):
     existing = notion_req("GET", f"blocks/{page_id}/children?page_size=100")
+    # Notion 限流約 3 req/s，連打 DELETE 會被擋；原本失敗是 except: pass 靜默吞掉，
+    # 舊區塊就這樣留在頁面上，隔天「Notion 區塊 N/M」硬性驗證對不上而整支不交件
+    # （2026-09-01：8/31 的「外資動向」殘留一個，40/39 失敗）。
+    failed = []
     for b in existing.get("results", []):
         try:
             notion_req("DELETE", f"blocks/{b['id']}")
         except Exception:
-            pass
+            failed.append(b["id"])
+        time.sleep(0.12)
+    for bid in failed:  # 重試一輪，仍失敗就講出來，不要靜默殘留
+        try:
+            notion_req("DELETE", f"blocks/{bid}")
+        except Exception as e:
+            print(f"⚠️ 舊區塊 {bid} 刪不掉，頁面會殘留：{e}")
+        time.sleep(0.12)
     for i in range(0, len(blocks), 50):
         notion_req(
             "PATCH", f"blocks/{page_id}/children", {"children": blocks[i : i + 50]}
