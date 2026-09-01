@@ -1,0 +1,37 @@
+name: YouTube 留言自動回覆
+
+on:
+  # 🕐 計時由 Cloudflare Worker `liam-scheduler` dispatch，不要加 schedule。
+  workflow_dispatch:
+
+jobs:
+  reply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 判斷「回過沒有」是直接問 API 這串底下有沒有本頻道的回覆，不靠狀態檔，
+      # 所以不需要 cache、也不會因為狀態遺失而整批重回（YouTube 的回覆刪不掉）。
+      - name: 連老闆-產地到餐桌
+        env:
+          GEMINI_KEY:                 ${{ secrets.GEMINI_KEY }}
+          YT_LIEN_OAUTH_CLIENT_ID:     ${{ secrets.YT_LIEN_OAUTH_CLIENT_ID }}
+          YT_LIEN_OAUTH_CLIENT_SECRET: ${{ secrets.YT_LIEN_OAUTH_CLIENT_SECRET }}
+          YT_LIEN_OAUTH_REFRESH_TOKEN: ${{ secrets.YT_LIEN_OAUTH_REFRESH_TOKEN }}
+        run: python3 youtube/comment_reply.py --profile lien --max 5
+
+      - name: 泥馬的真心話（甜點）
+        env:
+          GEMINI_KEY:                     ${{ secrets.GEMINI_KEY }}
+          YT_DESSERT_OAUTH_CLIENT_ID:     ${{ secrets.YT_DESSERT_OAUTH_CLIENT_ID }}
+          YT_DESSERT_OAUTH_CLIENT_SECRET: ${{ secrets.YT_DESSERT_OAUTH_CLIENT_SECRET }}
+          YT_DESSERT_OAUTH_REFRESH_TOKEN: ${{ secrets.YT_DESSERT_OAUTH_REFRESH_TOKEN }}
+        run: python3 youtube/comment_reply.py --profile dessert --max 5
