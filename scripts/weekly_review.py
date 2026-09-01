@@ -142,6 +142,13 @@ def read_commits(monday, sunday):
     return "\n".join(lines) or "（本週沒有人為程式改動）"
 
 
+# GitHub Pages 每次 push 都自動重建一次；密集 push 時排隊中的舊部署會被新的取消，
+# 那是 concurrency 的正常行為，不是故障（2026-08-24~30 實測：158 次裡 133 成功、
+# 25 次 cancelled，最後一次部署成功、網站回 200）。不濾掉的話每期都會報一批「其他」，
+# 看報告的人白排查一次。真的 failure 仍會列出來——那才代表網站沒更新。
+NOISY_WORKFLOWS = {"pages build and deployment"}
+
+
 def read_actions(monday, sunday):
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if not token:
@@ -177,9 +184,16 @@ def read_actions(monday, sunday):
         page += 1
 
     rows = ["| 任務 | 成功 | 失敗 | 其他 |", "|---|---|---|---|"]
+    skipped = []
     for name in sorted(stats, key=lambda n: (-stats[n]["fail"], n)):
         s = stats[name]
+        if name in NOISY_WORKFLOWS and not s["fail"]:
+            skipped.append("%s（%d 次，無失敗）" % (name, sum(s.values())))
+            continue
         rows.append("| %s | %d | %d | %d |" % (name, s["ok"], s["fail"], s["other"]))
+    if skipped:
+        rows.append("")
+        rows.append("（未列入：" + "、".join(skipped) + "——GitHub 自帶任務，取消屬正常）")
     return "\n".join(rows) if stats else "（本週沒有任何 Actions 執行紀錄）"
 
 
