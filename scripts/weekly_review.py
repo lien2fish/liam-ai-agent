@@ -6,7 +6,7 @@
   workspace/daily/*.md    每次 session 做了什麼（SessionEnd hook 產）
   公開 repo 的 git log     人為改動（自動化 chore commit 會濾掉）
   GitHub Actions runs API  17 個排程任務的成功／失敗
-  workspace/TODO.md 的 diff 待辦進度
+  workspace/TODO.md          本期 diff（進度）＋目前未完成項全量（待辦章節用）
 
 ⚠️ 報告含客戶姓名與報價，只寫進私人 repo liam-workspace 與 Email，不進公開 repo。
 """
@@ -28,7 +28,7 @@ from email.utils import formataddr
 CLAUDE_MODEL = (
     "claude-sonnet-5"  # 省錢可改 "claude-haiku-4-5"，但「可精進的地方」品質會變差
 )
-MAX_TOKENS = 8000
+MAX_TOKENS = 16000  # thinking 也計入這個額度；8000 曾讓 2026-W35 的報告從第二章斷掉
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(BASE)
@@ -106,9 +106,13 @@ def read_prev_review(ws, monday):
     if not os.path.exists(path):
         return "（沒有上一期報告，本期為首期）"
     txt = open(path, encoding="utf-8").read()
-    # 只要「尚未解決」與「下期建議」兩章——那才是需要結帳的部分，全文塞進去只是浪費 token
+    # 只要「尚未解決」之後的章節——那才是需要結帳的部分，全文塞進去只是浪費 token
     cut = txt.find("## 四、")
-    return txt[cut:][:3000] if cut != -1 else txt[:3000]
+    if cut == -1:
+        # 上期報告本身就殘缺（例如被 max_tokens 截斷），此時抓 txt[:3000] 會拿到
+        # 第一二章當成「上期建議」，結出一本錯帳。寧可明講沒有。
+        return "（上一期報告 %s 沒有第四章之後的內容，可能當時產出被截斷，本期無上期建議可結帳）" % os.path.basename(path)
+    return txt[cut:][:4000]
 
 
 def read_commits(monday, sunday):
@@ -204,6 +208,50 @@ def read_todo_diff(ws, monday, sunday):
     return "\n".join(changes[:200]) or "（本週 TODO.md 沒有變動）"
 
 
+OPEN_ITEM = re.compile(r"^(\s*)- \[ \]\s*(.+)")
+
+
+def read_todo_open(ws):
+    """TODO.md 目前所有未打勾的項目（全量快照，不是本週 diff）。
+
+    ⚠️ 標題帶 💤 的區塊是「停止投入／已封存」的專案（親子旅遊 PWA 等），
+    Lien 要求不主動提。混進待辦會讓每週報告都在催一批早就決定不做的事。
+    """
+    path = os.path.join(ws, "TODO.md")
+    if not os.path.exists(path):
+        return "（找不到 TODO.md）"
+
+    section, skip, items, pending = "（未分類）", False, [], None
+    for line in open(path, encoding="utf-8").read().splitlines():
+        if line.startswith("## "):
+            section, skip, pending = line[3:].strip(), "💤" in line, None
+            continue
+        if skip:
+            continue
+        m = OPEN_ITEM.match(line)
+        if m:
+            pending = [section, m.group(2).strip()]
+            items.append(pending)
+        elif pending and re.match(r"^\s{2,}\S", line) and "- [" not in line:
+            pending[1] += " " + line.strip()  # 待辦常換行寫，只取第一行會斷句
+        elif line.strip():
+            pending = None
+
+    if not items:
+        return "（TODO.md 沒有未完成項目）"
+
+    out, cur = [], None
+    for sec, txt in items:
+        if sec != cur:
+            out.append("\n【%s】" % sec)
+            cur = sec
+        out.append("- " + txt[:300])
+    return "共 %d 項未完成（已排除停止投入／已封存的專案）：\n%s" % (
+        len(items),
+        "\n".join(out),
+    )
+
+
 PROMPT = """你是鉅鑫管理顧問有限公司的 AI 技術幕僚，要向老闆 Lien 提交本期工作週報。
 語氣像一位總經理向董事長報告：務實、有數字、直說問題，不寫空泛鼓勵、不用行銷語彙。
 一律使用繁體中文。表格優先於長段文字。
@@ -229,7 +277,10 @@ Lien 的事業版圖：鉅鑫管理顧問、鑫酒坊（葡萄酒）、鑫茶坊
 === 素材五：上一期報告的「尚未解決」與「下期建議」（要拿來結帳的）===
 {prev}
 
-請輸出一份 Markdown 報告，**嚴格照下列五個章節、不要加其他章節、不要寫開場白**：
+=== 素材六：待辦清單目前的未完成項（全量快照，非本期新增）===
+{todo_open}
+
+請輸出一份 Markdown 報告，**嚴格照下列六個章節、不要加其他章節、不要寫開場白**：
 
 ## 一、本期成果
 一段兩三句的總述，接一個表格：| 專案 | 進度 | 具體產出 |。
@@ -245,8 +296,19 @@ GitHub 高頻排程 delay）。全部正常就直說全部正常，不要湊字�
 特別注意反覆返工的環節（同一個版面改超過五次、同一個錯誤修兩次以上），
 指出下次怎麼一次到位。沒有值得檢討的就寫少一點，不要硬湊。
 
-## 四、尚未解決／卡住的
-表格：| 項目 | 卡在什麼 | 卡在誰身上 |。「卡在誰身上」只填「Lien」「AI」或「外部（廠商／協會／平台）」。
+## 四、尚未結案與待辦事項
+分兩個表格，中間不要寫過渡句。
+
+**（1）尚未結案**——第一章標為「進行中」或「暫停」的項目，逐項交代：
+| 項目 | 目前到哪 | 還差什麼才算結案 | 卡在誰身上 |
+
+**（2）待辦清單**——根據素材六收斂成表格，最多十二列，依「投報率高且卡在 AI 或已可動手」優先排序：
+| 待辦 | 所屬專案 | 卡在誰身上 | 擱置多久 |
+
+兩表的「卡在誰身上」都只填「Lien」「AI」或「外部（廠商／協會／平台）」。
+「擱置多久」只在素材看得出日期時才寫（例如「7/21 起」），看不出來就寫「—」，**不要推估日期**。
+素材六超過十二項時，沒列進表格的要在表格下用一句話交代還剩幾項、集中在哪些專案。
+⛔ 素材六已排除「停止投入／已封存」的專案（親子旅遊 PWA 等），不要自己加回來。
 
 ## 五、下期建議推進
 
@@ -262,8 +324,13 @@ GitHub 高頻排程 delay）。全部正常就直說全部正常，不要湊字�
 ⛔ 上期**未動**的若仍有價值就保留並說明為什麼這次該排前面；若已經沒意義，
    要在上面的結帳表格寫「已放棄」並給理由——**不要默默消失，也不要無腦重列**。
 
-表格後補一段「值得多想的方向」，一到三點，寫那種還沒被提過、但從本期素材看得出機會的延伸，
-例如某條產線的產出可以餵給另一條、某個重複人工可以自動化。"""
+## 六、值得投入的方向
+兩到四點，每點寫成「**方向**：…／**為什麼是現在**：…／**第一步**：…」三行。
+寫那種還沒被提過、但從本期素材看得出機會的延伸投入：某條產線的產出可以餵給另一條、
+某段重複人工可以自動化、某個已經建好卻還沒用滿的能力、某個一直卡在 Lien 身上的
+知識缺口可以用什麼低成本方式補起來。
+每一點都要能從本期素材指出根據，不要寫泛泛的產業趨勢。
+⛔ 不要重複第五章表格已經列出的項目——這一章是「還沒排進計畫的機會」，不是計畫本身。"""
 
 
 def call_claude(prompt):
@@ -292,6 +359,13 @@ def call_claude(prompt):
     text = next((b["text"] for b in data["content"] if b.get("type") == "text"), "")
     if not text.strip():
         raise RuntimeError("Claude 回應沒有文字內容")
+    # ⚠️ 截斷過的報告長得跟正常的一樣，只是後面幾章不見了。2026-W35 就這樣寄出去
+    # 一份只有兩章的週報，而且照樣 commit、照樣被下一期當成結帳依據。寧可讓 run 變紅。
+    if data.get("stop_reason") == "max_tokens":
+        raise RuntimeError(
+            "報告在 max_tokens=%d 用盡時被截斷（產出 %d 字元），沒有寄出。"
+            "請調高 MAX_TOKENS 後重跑。" % (MAX_TOKENS, len(text))
+        )
     return text.strip()
 
 
@@ -561,6 +635,7 @@ def main():
         actions=read_actions(monday, sunday),
         todo=read_todo_diff(ws, monday, sunday),
         prev=read_prev_review(ws, monday),
+        todo_open=read_todo_open(ws),
     )
     print("素材長度 %d 字元" % len(prompt))
 
