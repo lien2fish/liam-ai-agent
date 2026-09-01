@@ -23,18 +23,28 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Run channel report
+      # 三個頻道依序跑在同一個 job：並行會在 commit 那步互相 rebase 打架。
+      # 每個頻道的狀態檔與報告檔用 YT_REPORT_PROFILE 區隔，不給就是原本的檔名。
+      - name: Run channel report — The Unknown Hour
         env:
           YT_API_KEY:          ${{ secrets.YT_API_KEY }}
           YT_REPORT_HANDLE:    'UnknownHourCosmos'
           GMAIL_APP_PASSWORD:  ${{ secrets.GMAIL_APP_PASSWORD }}
         run: python youtube_auto/daily_report.py
 
+      - name: Run channel report — 連老闆-產地到餐桌
+        env:
+          YT_API_KEY:            ${{ secrets.YT_API_KEY }}
+          YT_REPORT_CHANNEL_ID:  ${{ secrets.YT_CHANNEL_ID }}
+          YT_REPORT_PROFILE:     'lien'
+          GMAIL_APP_PASSWORD:    ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python youtube_auto/daily_report.py
+
       - name: Commit report and state
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add reports/yt頻道日報_*.md youtube_auto/report_state.json
+          git add reports/yt頻道日報*.md youtube_auto/report_state*.json
           git diff --staged --quiet || git commit -m "YouTube 頻道日報 $(date +%F)"
           # ⚠️ pull 與 push 之間還有窗口讓別支任務插進來——2026-08-29 實測就中了：
           # pull 回報 up to date，下一行 push 就被 rejected。所以要重試，不是 pull 一次就好。

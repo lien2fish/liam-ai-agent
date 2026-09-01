@@ -15,7 +15,10 @@ GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
 
 API_BASE = "https://www.googleapis.com/youtube/v3"
 ROOT = os.path.dirname(os.path.abspath(__file__))
-STATE_PATH = os.path.join(ROOT, "report_state.json")
+# 多頻道共用這支腳本：狀態檔與報告檔名要分開，否則後跑的會蓋掉先跑的
+PROFILE = os.environ.get("YT_REPORT_PROFILE", "")
+_SFX = f"_{PROFILE}" if PROFILE else ""
+STATE_PATH = os.path.join(ROOT, f"report_state{_SFX}.json")
 REPORTS_DIR = os.path.join(os.path.dirname(ROOT), "reports")
 
 
@@ -175,7 +178,7 @@ def main():
 
     os.makedirs(REPORTS_DIR, exist_ok=True)
     open(
-        os.path.join(REPORTS_DIR, f"yt頻道日報_{today}.md"), "w", encoding="utf-8"
+        os.path.join(REPORTS_DIR, f"yt頻道日報{_SFX}_{today}.md"), "w", encoding="utf-8"
     ).write(report)
     print(report, flush=True)
 
