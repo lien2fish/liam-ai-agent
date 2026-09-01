@@ -16,7 +16,7 @@ import argparse, json, os, sys, time, urllib.error, urllib.parse, urllib.request
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "instagram", "auto_reply"))
 sys.path.insert(0, os.path.join(ROOT, "youtube_auto"))
-import ig_comment_reply as ig  # noqa: E402  護欄與 Gemini 降級邏輯的單一來源
+import reply_common as ig  # noqa: E402  護欄與 Gemini 降級邏輯的單一來源（import 無副作用）
 import upload as yt  # noqa: E402  OAuth access token
 
 API = "https://www.googleapis.com/youtube/v3"
