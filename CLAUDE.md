@@ -153,14 +153,15 @@
 | `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:57（**2026-07-02 修**：CRM 於 06-26 整併後，`notion_crm/monthly_report.py` 原引用不存在的 `DB["sales"]` 且欄位名對不上，已改讀「全品牌銷售紀錄」統一DB `38bf4149-a6aa-81db-9b89-c47410857a2c`，欄位＝金額/出貨日期/客戶名稱）|
 | `market_daily.yml` | 每日股市全面分析報告 | 每天 **12:07**（台灣），自動 commit 報告 |
 | `seafood_prices.yml` | 漁獲市場行情追蹤 | 每天 09:37 |
-| `yt_comment_monitor.yml` | YouTube Shorts 留言通知 | 每天 08:39（原 08:37，與 daily_post 撞點後讓位）|
+| ~~`yt_comment_monitor.yml`~~ | **2026-09-02 停用**：功能被 `yt_channel_report` 的留言區塊涵蓋（且日報看全部影片、不只 Shorts）。兩支各自通知同一批留言＝同一則收兩封信。保留 `workflow_dispatch` 當後路 | 已從 Worker 排程移除 |
+| `yt_comment_reply.yml` | **YouTube 留言自動回覆**（連老闆＋甜點頻道）。只回知識與閒聊，價格／訂購／到貨沿用 IG 的 `NEEDS_HUMAN` 護欄留給人工。⚠️ 判斷「回過沒有」是問 API 這串底下有沒有本頻道的回覆，**不用狀態檔**——狀態檔一遺失就整批重回，而 YouTube 回覆刪不掉。⚠️ 輸出端另有護欄：產季／價格／到貨黑名單、不得冒出留言沒提到的品項名、不得有數字（首次實測三則全部編產季）| **每小時一次**（掛在 `*/30` 的 `:00`）|
 | `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:17，自動 commit 報告|
 | `life_visit_reminder.yml` | 壽險客戶固定拜訪提醒 | 每天 08:43，讀Notion算下次拜訪日，本週到期Email（**無commit，客戶個資只走Email**）|
 | `birthday_reminder.yml` | 壽險客戶生日提醒 | 每天 08:23，未來7天內生日則Email（含歲數，無commit）|
 | `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:07，超60天未回購則 Email（**2026-08-21 起無commit，客戶個資只走Email**——原本每天 commit 報告，已累積 56 份含姓名與手機的報告在公開 repo）|
 | `weekly_revenue_sprint.yml` | 營收衝刺週報（本週壽險該接觸名單＋話術：A組未來14天生日切入、B組壽產保單健檢每週輪替6位） | 每週一 08:03，Email（**無commit，客戶個資只走Email**）|
 | `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；Shorts 週二/五、長片週日）| 每天 10:07（**2026-08-26 當日暫停半天後即恢復**，Lien 指示）|
-| `yt_channel_report.yml` | The Unknown Hour 頻道每日表現日報 | 每天 08:33（隨發片一起恢復，2026-08-26）|
+| `yt_channel_report.yml` | **三個頻道**每日表現日報：The Unknown Hour／連老闆-產地到餐桌／泥馬的真心話（2026-09-02 擴充）。含觀看・讚・留言數與新留言。三個頻道**依序跑在同一個 job**——並行會在 commit 那步互相 rebase 打架；狀態檔與報告檔用 `YT_REPORT_PROFILE` 區隔 | 每天 08:33 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 | `rotary_birthday_reminder.yml` | 中城網路扶輪社社友生日提醒（剛好前14天Email一次；資料=私人repo `liam-workspace/rotary/中城網路社友通訊錄.json` 71位，用`WORKSPACE_PAT` checkout，**個資不進公開repo、無commit**） | 每天 08:27|
 | `token_expiry_check.yml` | **IG／FB Token 到期與失效檢查**（不寫死日期，每天問 `debug_token` 實際狀態；剩 30/21/14/10/7/5/3/2/1 天時提醒，失效或缺權限則 🔴 並讓 run 變紅）。**Email＋LINE 雙通道** | 每天 08:47 |
