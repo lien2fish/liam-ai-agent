@@ -62,3 +62,6 @@ design/seafood_poster/*.png
 !design/seafood_poster/bg_*.png
 design/seafood_poster/photos/
 design/seafood_poster/備份_*/
+
+# 中秋 EDM：畫布組裝產物（約 3MB，可從 Main.dc.html 重建）
+design/mid_autumn_edm/mid-autumn-bbq-set.html

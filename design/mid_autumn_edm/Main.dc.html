@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; }
+    a { color: #D8B474; text-decoration: none; }
+    a:hover { color: #EBCE96; }
+    .sf { font-family: 'Songti TC','STSong','Noto Serif TC',serif; }
+    .sn { font-family: 'PingFang TC','Heiti TC','Microsoft JhengHei',sans-serif; }
+    .nu { font-family: 'Avenir Next','Avenir','Helvetica Neue',sans-serif; }
+    .feather-e, .feather-s { filter: saturate(1.16) contrast(1.1) brightness(1.06); }
+    .feather-e { -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 40%, rgba(0,0,0,0) 72%);
+                 mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 40%, rgba(0,0,0,0) 72%); }
+    .feather-s { -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 34%, rgba(0,0,0,0) 68%);
+                 mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 34%, rgba(0,0,0,0) 68%); }
+    .lift { text-shadow: 0 2px 18px rgba(4,14,26,0.85), 0 1px 4px rgba(4,14,26,0.7); }
+    .item { font-size: 31px; letter-spacing: 2px; color: #E8F1F8; }
+    .qty { font-size: 27px; color: #93AEC4; }
+  </style>
+</helmet>
+
+<div class="sn" style="width: 1080px; height: 1920px; background: #071628; color: #F0F6FA; position: relative; overflow: hidden;">
+
+  <img src="hero.jpg" style="position: absolute; top: 0; left: 0; width: 1080px; height: 660px; object-fit: cover; opacity: 0.92; -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 42%, rgba(0,0,0,0.55) 74%, rgba(0,0,0,0) 100%); mask-image: linear-gradient(180deg, #000 0%, #000 42%, rgba(0,0,0,0.55) 74%, rgba(0,0,0,0) 100%);" alt="炭火">
+  <div style="position: absolute; top: 0; left: 0; width: 1080px; height: 680px; background: linear-gradient(180deg, rgba(7,22,40,0.34) 0%, rgba(7,22,40,0.20) 26%, rgba(7,22,40,0.62) 55%, rgba(7,22,40,0.90) 78%, #071628 100%);"></div>
+  <div style="position: absolute; top: -170px; right: -140px; width: 660px; height: 660px; border-radius: 50%; background: radial-gradient(circle, rgba(216,180,116,0.22) 0%, rgba(216,180,116,0.07) 46%, rgba(7,22,40,0) 72%);"></div>
+  <div style="position: absolute; top: 76px; right: 104px; width: 128px; height: 128px; border-radius: 50%; background: #EBD8AC; box-shadow: 0 0 78px 20px rgba(216,180,116,0.32);"></div>
+
+  <div style="position: absolute; top: 92px; left: 64px; display: flex; align-items: center; gap: 14px;">
+    <div style="width: 44px; height: 2px; background: #D8B474;"></div>
+    <div class="lift" style="font-size: 29px; letter-spacing: 7px; color: #E8C88C;">鑫海產 · 龜吼現流直送</div>
+  </div>
+
+  <div class="sf lift" style="position: absolute; top: 372px; left: 60px; font-size: 116px; line-height: 1.02; letter-spacing: 12px; color: #F7F1E2; font-weight: 600;">中秋烤肉組</div>
+  <div class="lift" style="position: absolute; top: 520px; left: 66px; font-size: 33px; letter-spacing: 6px; color: #D8CFC0;">月圓夜 · 海陸同烤</div>
+
+  <img src="steak_new.jpg" class="feather-s" style="position: absolute; top: 520px; left: -72px; width: 436px; height: 436px; object-fit: cover; opacity: 0.96;" alt="牛小排・肋眼・翼板">
+  <img src="wagyu.jpg" class="feather-s" style="position: absolute; top: 548px; right: -64px; width: 396px; height: 396px; object-fit: cover; opacity: 0.95;" alt="日本和牛">
+
+  <div class="sf" style="position: absolute; top: 660px; left: 322px; font-size: 54px; letter-spacing: 8px; color: #F5EEDC;">四牛炭燒</div>
+  <div class="nu lift" style="position: absolute; top: 722px; left: 300px; font-size: 88px; font-weight: 600; color: #E8C88C; letter-spacing: 1px;">NT$3,499</div>
+  <div style="position: absolute; top: 840px; left: 326px; font-size: 25px; letter-spacing: 4px; color: #93AEC4;">4-6 人份 · 共 9 項</div>
+
+  <img src="steak2.jpg" class="feather-e" style="position: absolute; top: 878px; right: -34px; width: 430px; height: 322px; object-fit: cover; opacity: 0.95;" alt="肋眼牛排">
+  <div style="position: absolute; top: 898px; left: 64px; width: 620px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px 40px;">
+    <div class="item">牛小排　<span class="nu qty">300g</span></div>
+    <div class="item">肋眼牛排　<span class="nu qty">300g</span></div>
+    <div class="item">翼板　<span class="nu qty">300g</span></div>
+    <div class="item">松阪豬　<span class="nu qty">300g</span></div>
+    <div class="item">雞松阪　<span class="nu qty">300g</span></div>
+    <div class="item">雞腿排　<span class="nu qty">300g</span></div>
+    <div class="item" style="color: #F0DFB4;">日本和牛　<span class="nu" style="font-size: 27px; color: #D8B474;">400g</span></div>
+    <div class="item">秘製鹹豬肉　<span class="nu qty">×1</span></div>
+    <div class="item">黑豬肉香腸　<span class="nu qty">×8</span></div>
+  </div>
+
+  <div style="position: absolute; top: 1192px; left: 0; width: 1080px; height: 2px; background: linear-gradient(90deg, rgba(216,180,116,0) 0%, rgba(216,180,116,0.55) 22%, rgba(216,180,116,0.55) 78%, rgba(216,180,116,0) 100%); transform: rotate(-1.4deg);"></div>
+
+  <img src="shrimp.jpg" class="feather-s" style="position: absolute; top: 1200px; right: -25px; width: 262px; height: 262px; object-fit: cover;" alt="活蝦">
+  <img src="squid.jpg" class="feather-s" style="position: absolute; top: 1395px; right: -25px; width: 262px; height: 262px; object-fit: cover; opacity: 0.92;" alt="砲管透抽">
+
+  <img src="fish.jpg" class="feather-s" style="position: absolute; top: 1180px; left: 630px; width: 262px; height: 262px; object-fit: cover; opacity: 0.95;" alt="秋刀魚・鯖魚">
+  <img src="clam.jpg" class="feather-s" style="position: absolute; top: 1400px; left: 625px; width: 262px; height: 262px; object-fit: cover; opacity: 0.92;" alt="蛤蜊">
+  <div class="sf" style="position: absolute; top: 1218px; left: 64px; font-size: 54px; letter-spacing: 8px; color: #F5EEDC;">現流海味</div>
+  <div class="nu lift" style="position: absolute; top: 1274px; left: 60px; font-size: 88px; font-weight: 600; color: #E8C88C; letter-spacing: 1px;">NT$1,499</div>
+  <div style="position: absolute; top: 1394px; left: 66px; font-size: 25px; letter-spacing: 4px; color: #93AEC4;">4-6 人份 · 龜吼上岸現流</div>
+
+  <div style="position: absolute; top: 1436px; left: 64px; width: 620px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px 32px;">
+    <div class="item">活蝦　<span class="nu qty">1 斤</span></div>
+    <div class="item">砲管透抽　<span class="nu qty">1 支</span></div>
+    <div class="item">秋刀魚　<span class="nu qty">×4</span></div>
+    <div class="item">鯖魚片　<span class="nu qty">×2</span></div>
+    <div class="item">蛤蜊　<span class="nu qty">1 斤</span></div>
+  </div>
+
+  <div style="position: absolute; top: 1615px; left: 0; width: 1080px; height: 140px; background: linear-gradient(100deg, rgba(216,180,116,0.22) 0%, rgba(216,180,116,0.07) 62%, rgba(216,180,116,0.16) 100%); clip-path: polygon(0 18px, 1080px 0, 1080px 122px, 0 140px);"></div>
+  <div style="position: absolute; top: 1615px; left: 0; width: 1080px; height: 140px; clip-path: polygon(0 18px, 1080px 0, 1080px 2px, 0 20px);  background: #D8B474;"></div>
+  <div style="position: absolute; top: 1615px; left: 0; width: 1080px; height: 140px; clip-path: polygon(0 138px, 1080px 120px, 1080px 122px, 0 140px); background: #D8B474;"></div>
+
+  <div class="sf" style="position: absolute; top: 1636px; left: 64px; font-size: 46px; letter-spacing: 6px; color: #F5EEDC;">兩組合購 · 綜合組</div>
+  <div style="position: absolute; top: 1704px; left: 66px; font-size: 23px; letter-spacing: 2px; color: #A9BFD1;">單買合計 <span class="nu">NT$4,998</span>　合購省 <span class="nu" style="color:#E8C88C;">NT$199</span></div>
+  <div class="nu" style="position: absolute; top: 1634px; right: 60px; font-size: 82px; font-weight: 600; color: #E8C88C;">NT$4,799</div>
+
+  <div style="position: absolute; bottom: 44px; left: 64px; display: flex; flex-direction: column; gap: 10px;">
+    <div style="font-size: 30px; letter-spacing: 3px; color: #F0F6FA;">訂購 · <span style="color:#E8C88C;">[LINE ID／訂購電話]</span></div>
+    <div style="font-size: 25px; letter-spacing: 2px; color: #93AEC4;">訂購截止 <span style="color:#E8C88C;">[截止日]</span>　取貨 <span style="color:#E8C88C;">[取貨日]</span></div>
+  </div>
+  <div style="position: absolute; bottom: 46px; right: 64px; text-align: right; display: flex; flex-direction: column; gap: 8px;">
+    <div class="sf" style="font-size: 38px; letter-spacing: 6px; color: #F5EEDC;">鑫海產</div>
+    <div style="font-size: 23px; letter-spacing: 2px; color: #93AEC4;">自家漁船 · 龜吼共捕直送</div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>
