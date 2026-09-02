@@ -149,7 +149,7 @@
 | `daily_post.yml` | IG+FB 每日發文。**2026-08-28 起單雙日交替**：奇數日出解說動畫（`instagram/explainer_video.py`：插圖滿版＋正弦漂移＋`zh-TW-YunJheNeural` 男聲旁白＋逐句字幕），偶數日出原本的靜態卡片。⛔ **辨別型題目一律退回靜態圖**（分類或內容關鍵詞命中）——AI 插圖畫不出辨別特徵，配錯圖比沒圖更糟。影片出任何差錯也退回靜態圖並推 LINE。⚠️ 字型要走跨平台偵測，寫死 macOS 路徑在雲端會全滅 | 每天 08:37（2026-08-28 Lien 指定，原 08:07）|
 | `ig_comment_reply.yml` | IG 留言自動回覆 | **每 30 分鐘**（2026-08-28 從 */5 降頻）。⚠️ */5 每天該跑 288 次、實測只跑到 24 次；08-27 起整個 repo 的排程一起被降到幾乎不觸發，高頻排程是最可疑的原因。**不要改回 */5** |
 | `ig_story_teaser.yml` | IG 限動 Reels 預告（從已發布 Reels 剪 3 秒＋「Reels完整版～」，30 天不重複） | 每天 18:08（接 Reels 18:00） |
-| `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:13，自動 commit 報告 |
+| `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:13。**2026-09-03 起清理報告改寄 Email 不 commit**——報告列出各寄件者清了幾封，某銀行 >0 就等於對外證實是該行客戶，而 repo 是 public。只有新聞摘要與其 PDF 進版控 |
 | `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:57（**2026-07-02 修**：CRM 於 06-26 整併後，`notion_crm/monthly_report.py` 原引用不存在的 `DB["sales"]` 且欄位名對不上，已改讀「全品牌銷售紀錄」統一DB `38bf4149-a6aa-81db-9b89-c47410857a2c`，欄位＝金額/出貨日期/客戶名稱）|
 | `market_daily.yml` | 每日股市全面分析報告 | 每天 **12:07**（台灣），自動 commit 報告 |
 | `seafood_prices.yml` | 漁獲市場行情追蹤 | 每天 09:37 |

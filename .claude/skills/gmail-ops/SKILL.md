@@ -17,11 +17,22 @@ description: Gmail 自動化腳本與 OAuth 維運：月度清理、新聞摘要
 - **GitHub Actions**：讀環境變數 `GMAIL_CLIENT_ID` / `GMAIL_CLIENT_SECRET` / `GMAIL_REFRESH_TOKEN`
 - **本機執行**：fallback 讀 `~/.config/gmail-cleanup-token.json`（gitignore，不進 repo）
 
-### Gmail 產出（自動 commit 進 repo）
-| 腳本 | 產出位置 |
-|------|---------|
-| `gmail_monthly_cleanup.py` | `財務/gmail_cleanup_log.txt`（追加）|
-| `gmail_news_digest.py` | `今日新聞摘要.md`（每日覆寫）|
+### Gmail 產出去向
+
+| 產出 | 去向 | 進版控？ |
+|------|------|---------|
+| 清理報告 | **Email 寄給 Lien**，本機留 `reports/gmail_cleanup_YYYY-MM.md` | ❌ 已 gitignore |
+| 執行 log | `/tmp/gmail_cleanup.log` | ❌ 純暫存 |
+| 新聞摘要 | `今日新聞摘要.md`（每日覆寫）＋ `day/新聞日報_*.pdf` | ✅ 公開新聞，不敏感 |
+
+🔴 **清理報告不可以進公開 repo。** 報告表格列出各寄件者清了幾封，
+**只要某銀行的數字 >0，就等於對外證實這個信箱是該行客戶**。
+2026-09-03 改成寄 Email，並把 05~09 五份既有報告與含它的 PDF 從版控移除
+（備份在 `liam-workspace/backup/20260903_公開repo移除/`）。
+⚠️ **但歷史 commit 裡還在**，要徹底清除得走 `filter-repo` ＋ force push，見 `safe-commit` skill。
+
+寄信沿用 `GMAIL_APP_PASSWORD`（與回購提醒同一把）。**未設就靜默跳過**，
+不會弄壞清理本身——本機測試不必配置也能跑。
 
 ### Gmail OAuth Token
 | 項目 | 路徑 |

@@ -5,7 +5,11 @@ Gmail 每日自動清理腳本
 功能：
   1. 刪除純廣告信件（多個指定寄件者）
   2. 刪除 30 天前的銀行登入通知信
-  3. 將報告寫入 reports/gmail_cleanup_YYYY-MM.md
+  3. 報告寄 Email，並在本機留一份 reports/gmail_cleanup_YYYY-MM.md
+
+⚠️ 報告刻意不進版控。表格裡「某銀行清了 N 封」只要 N>0，
+   就等於對外證實這個信箱是該行客戶；repo 為 public。
+   與 repurchase_reminder／life_visit_reminder 一致：這類資訊只走 Email。
 """
 import json
 import os
@@ -13,6 +17,10 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import time
+import smtplib
+import ssl
+from email.mime.text import MIMEText
+from email.utils import formataddr
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -25,6 +33,8 @@ REPORTS_DIR.mkdir(exist_ok=True)
 now = datetime.now()
 REPORT_FILE = REPORTS_DIR / f"gmail_cleanup_{now.strftime('%Y-%m')}.md"
 LOG_FILE = Path("/tmp/gmail_cleanup.log")
+MAIL_ADDR = "lien2fish@gmail.com"
+GMAIL_PW = os.environ.get("GMAIL_APP_PASSWORD", "")
 
 _report_lines = []
 
@@ -208,8 +218,29 @@ def save_report(total, ad_results, login_results, read_count, read_err):
         f"| 已讀 + 超過 30 天 + 非星號/重要 | {'❌ ' + read_err if read_err else str(read_count) + ' 封'} |",
     ]
 
-    REPORT_FILE.write_text("\n".join(lines), encoding="utf-8")
-    print(f"報告已寫入：{REPORT_FILE}")
+    report = "\n".join(lines)
+    REPORT_FILE.write_text(report, encoding="utf-8")
+    print(f"報告已寫入：{REPORT_FILE}（此檔不進版控）")
+    return report
+
+
+def send_report_email(report, total):
+    """把清理報告寄給自己。未設 GMAIL_APP_PASSWORD 就跳過，不影響清理本身。"""
+    if not GMAIL_PW:
+        print("⚠️ 未設 GMAIL_APP_PASSWORD，跳過寄信（本機測試正常）")
+        return
+    try:
+        msg = MIMEText(report.replace("\n", "<br>"), "html", "utf-8")
+        msg["Subject"] = f"📧 Gmail 清理報告：{total} 封（{now.strftime('%Y-%m-%d')}）"
+        msg["From"] = formataddr(("鉅鑫 Gmail 自動化", MAIL_ADDR))
+        msg["To"] = MAIL_ADDR
+        ctx = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=ctx) as srv:
+            srv.login(MAIL_ADDR, GMAIL_PW)
+            srv.send_message(msg)
+        print(f"✅ 已寄出清理報告給 {MAIL_ADDR}")
+    except Exception as e:
+        print(f"⚠️ 寄信失敗（清理已完成，不影響）：{e}")
 
 
 def main():
@@ -266,7 +297,8 @@ def main():
     print(f"清理完成，本次共刪除 {total} 封")
     print("=" * 50)
 
-    save_report(total, ad_results, login_results, read_count, read_err)
+    report = save_report(total, ad_results, login_results, read_count, read_err)
+    send_report_email(report, total)
 
 
 if __name__ == "__main__":
