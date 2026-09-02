@@ -33,7 +33,6 @@ const SCHEDULE = {
   "00:27": ["rotary_birthday_reminder.yml"], // 台灣 08:27 扶輪社友生日
   "00:33": ["yt_channel_report.yml"], // 台灣 08:33 The Unknown Hour 頻道日報
   "00:37": ["daily_post.yml"], // 台灣 08:37 IG+FB 每日發文
-  "00:39": ["yt_comment_monitor.yml"], // 台灣 08:39 YouTube Shorts 留言通知
   "00:43": ["life_visit_reminder.yml"], // 台灣 08:43 壽險固定拜訪
   "00:47": ["token_expiry_check.yml"], // 台灣 08:47 IG／FB Token 到期檢查
   "00:53": [{ wf: "weekly_review.yml", dow: 1 }], // 台灣一 08:53 AI 工作週報
@@ -48,6 +47,11 @@ const SCHEDULE = {
 // 每 30 分鐘一次的高頻任務——不進 SCHEDULE，因為它跟「幾點幾分」無關。
 // 由 cron 的 */30 打進來，在每個 :00 與 :30 觸發，與時段表和稽核並行不衝突。
 const EVERY_30MIN = ["ig_comment_reply.yml"];
+
+// 每小時一次——掛在 */30 的 :00 那次，不必為它多開一條 cron。
+// 留言回覆多數情況只是把已回過的跳過（判斷方式是問 API 有沒有本頻道的回覆），
+// 真正呼叫 Gemini 的次數很少；每次上限 5 則，避免吃掉共用的免費額度。
+const EVERY_HOUR = ["yt_comment_reply.yml"];
 
 const name = (job) => (typeof job === "string" ? job : job.wf);
 
@@ -69,7 +73,7 @@ const AUDITS = {
   // 台灣 10:30——查凌晨到 02:30 之間（台灣早上）那一批
   "02:30": [
     "00:03", "00:13", "00:17", "00:23", "00:27", "00:33", "00:37",
-    "00:39", "00:43", "00:47", "00:53", "00:57", "01:07", "01:37", "02:07",
+    "00:43", "00:47", "00:53", "00:57", "01:07", "01:37", "02:07",
   ],
   // 台灣 20:30——查下午到傍晚那兩支，外加高頻的留言回覆今天有沒有跑過
   "12:30": ["04:07", "10:08"],
@@ -155,7 +159,7 @@ async function audit(env, key, now) {
     .flatMap((slot) => SCHEDULE[slot] || [])
     .filter((j) => due(j, now))
     .map(name)
-    .concat(key === "12:30" ? EVERY_30MIN : []);
+    .concat(key === "12:30" ? EVERY_30MIN.concat(EVERY_HOUR) : []);
   const missing = [];
   const unknown = [];
   for (const wf of all) {
@@ -198,7 +202,8 @@ export default {
     if (key.endsWith(":00") || key.endsWith(":30")) {
       jobs.push(
         (async () => {
-          for (const wf of EVERY_30MIN) {
+          const hourly = key.endsWith(":00") ? EVERY_HOUR : [];
+          for (const wf of EVERY_30MIN.concat(hourly)) {
             const r = await dispatch(env, wf);
             console.log(`[${key}] 高頻 ${wf} ${r.ok ? "已觸發" : "失敗：" + r.detail}`);
           }
@@ -250,11 +255,16 @@ export default {
           would_dispatch: (SCHEDULE[key] || []).filter((j) => due(j, now)).map(name),
           all_in_slot: (SCHEDULE[key] || []).map(name),
           plus_every_30min:
-            key.endsWith(":00") || key.endsWith(":30") ? EVERY_30MIN : [],
+            key.endsWith(":00")
+              ? EVERY_30MIN.concat(EVERY_HOUR)
+              : key.endsWith(":30")
+                ? EVERY_30MIN
+                : [],
         }
       : {
           schedule: SCHEDULE,
           every_30min: EVERY_30MIN,
+          every_hour: EVERY_HOUR,
           audits: AUDITS,
           note: "全部為 UTC；台灣時間 = UTC+8",
         };
