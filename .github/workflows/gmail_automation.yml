@@ -14,6 +14,9 @@ jobs:
     permissions:
       contents: write
 
+    # ⚠️ 清理報告（reports/gmail_cleanup_*.md）刻意不 commit，改寄 Email。
+    #    表格裡「某銀行清了 N 封」只要 N>0，就等於對外證實這信箱是該行客戶，而 repo 是 public。
+    #    與 repurchase_reminder／life_visit_reminder／birthday_reminder 一致。（2026-09-03 改）
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,19 +35,22 @@ jobs:
           GMAIL_CLIENT_ID:     ${{ secrets.GMAIL_CLIENT_ID }}
           GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
           GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+          GMAIL_APP_PASSWORD:  ${{ secrets.GMAIL_APP_PASSWORD }}
         run: python3 gmail_monthly_cleanup.py
 
-      - name: 產生 PDF 報告
+      - name: 產生 PDF 報告（只含新聞摘要）
         run: |
           pip install reportlab
-          rm -f day/gmail日報_*.pdf
-          python3 scripts/md_to_pdf.py "day/gmail日報_$(date +%Y-%m-%d).pdf" 今日新聞摘要.md reports/gmail_cleanup_$(date +%Y-%m).md
+          rm -f day/gmail日報_*.pdf day/新聞日報_*.pdf
+          # ⚠️ 刻意不把 reports/gmail_cleanup_*.md 併進 PDF——那份會 commit 進公開 repo。
+          #    清理報告改由 gmail_monthly_cleanup.py 直接寄 Email。
+          python3 scripts/md_to_pdf.py "day/新聞日報_$(date +%Y-%m-%d).pdf" 今日新聞摘要.md
 
       - name: Commit 報告到 repo
         run: |
           git config user.name  "Liam AI Agent"
           git config user.email "lien2fish@gmail.com"
-          git add reports/ 今日新聞摘要.md day/
+          git add 今日新聞摘要.md day/
           git diff --cached --quiet || git commit -m "chore: 自動更新 Gmail 報告 $(date '+%Y-%m-%d')"
           # ⚠️ pull 與 push 之間還有窗口讓別支任務插進來——2026-08-29 實測就中了：
           # pull 回報 up to date，下一行 push 就被 rejected。所以要重試，不是 pull 一次就好。
