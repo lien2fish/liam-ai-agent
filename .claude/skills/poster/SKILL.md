@@ -29,7 +29,7 @@ description: 海報與徽章排版：鑫海產「鮮味聚」四季海報（desi
 - `bottom_strip` 放 1 張＝滿版橫幅（底部沒入頁尾條），放多張＝等寬分格。去背走 u2net 顯著性遮罩 ∪ 非白遮罩，白底棚拍照效果好（冰塊、蝦鬚都留得住）
 - 成品 PNG 與 `photos/` 已 gitignore：前者可重產，後者是實拍素材且 repo 為 public
 - **底部照片素材來源＝鉅鑫官網鑫海產頁**（2026-08-15 確認）：`gs-group.com.tw/wp-content/uploads/2023/08/seafood-{1,2,3}.png` 三張本來就是去背 PNG（綜合魚／草蝦／鮭魚排），下載後只做 alpha 去邊裁切、**不需再跑 `seafood_cutout.py`**，存為 `photos/gs_seafood_{1,2,3}.png`
-- ⚠️ **`autumn_banner.png` 不要用**：來路不明的截圖（疑似圖庫）且圖上有帝王蟹腳，與「龜吼 19 艘共捕船直送」對不起來。秋季 config 仍指著它，出稿前要換掉
+- ⚠️ **`autumn_banner.png` 不要用**：來路不明的截圖（疑似圖庫）且圖上有帝王蟹腳，與「龜吼 共捕船直送」對不起來。秋季 config 仍指著它，出稿前要換掉
 - ⚠️ **`photos/` 與 `design/seafood_poster/*.png` 都在 gitignore**（成品可重產、素材不進 public repo）。代價是**換機或重新 clone 後跑 config 會找不到圖、底部變成空白佔位框**——素材要自己從官網重抓
 - 地雷：STHeiti 的 `·` 是全形寬且字面靠左，前後加空格會有明顯空隙，config 一律寫「鑫海產·私廚」不加空格
 

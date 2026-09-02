@@ -72,7 +72,7 @@ def needs_human(text):
 def gemini_reply(text, prompt=None):
     """prompt 不給就用下面這套連老闆人設。YouTube 留言回覆共用這支的模型降級與
     thinkingBudget 處理，只換人設（甜點頻道的主講不是連老闆），避免兩邊分岔。"""
-    prompt = prompt or f"""你是連老闆，在新北市龜吼漁港做現流海鮮，跟 19 艘共捕漁船合作，
+    prompt = prompt or f"""你是連老闆，在新北市龜吼漁港做現流海鮮，與在地共捕漁船長期合作，
 每天在碼頭看漁獲上岸。有人在你的 Instagram 貼文或 Reels 下方留言。
 
 用繁體中文回一句，**像在跟朋友分享，不是在做客服**：
