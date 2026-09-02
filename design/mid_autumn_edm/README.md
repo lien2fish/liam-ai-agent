@@ -19,9 +19,9 @@
 
 | 組合 | 售價 | 品項 |
 |---|---|---|
-| 四牛炭燒 | NT$3,499 | 牛小排／肋眼牛排／翼板／松阪豬／雞松阪／雞腿排 各 300g、日本和牛 400g、秘製鹹豬肉 ×1、黑豬肉香腸 ×8 |
-| 現流海味 | NT$1,499 | 活蝦 1 斤、砲管透抽 1 支、秋刀魚 ×4、鯖魚片 ×2、蛤蜊 1 斤 |
-| 兩組合購 | NT$4,799 | 單買合計 4,998，省 199 |
+| 四牛炭燒 | NT$3,299 | 牛小排／肋眼牛排／翼板／松阪豬／雞松阪／雞腿排 各 300g、日本和牛 400g、秘製鹹豬肉 ×1、黑豬肉香腸 ×8 |
+| 現流海味 | NT$1,399 | 活蝦 1 斤、砲管透抽 1 支、秋刀魚 ×4、鯖魚片 ×2、蛤蜊 1 斤 |
+| 兩組合購 | NT$4,399 | 單買合計 4,698，省 299 |
 
 兩組各 4-6 人份。標題刻意用具體事實（真的有四種牛、真的是龜吼現流）而不是形容詞堆疊。
 
@@ -41,11 +41,17 @@
 ```bash
 # 1. 改 Main.dc.html
 
-# 2. 本機預覽（把 <x-dc> 內容抽成單檔）＋ 用瀏覽器截 1080×1920
-#    截圖務必鎖 body > div 這個根容器，不要用 fullPage
-#    （viewport 尺寸與 root 不一致時，fullPage 會多出白邊）
+# 2. 本機預覽：把 <x-dc> 內容抽成單檔，起一個 http server
+#    （file:// 會被瀏覽器擋掉，一定要走 http）
+python3 -m http.server 8765
 
-# 3. 重新組裝畫布並發布
+# 3. 出圖：用系統 Chrome headless，一次到位 1080×1920
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  --headless --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \
+  --window-size=1080,1920 --virtual-time-budget=8000 \
+  --screenshot="$PWD/out.png" "http://localhost:8765/_preview_Main.html"
+
+# 4. 重新組裝畫布並發布
 SD="<design skill 的 base directory>"
 node "$SD/seed-canvas.mjs" --template "$SD/payload.template.html" \
   --out mid-autumn-bbq-set.html --title "中秋烤肉組 EDM" \
@@ -85,6 +91,10 @@ node "$SD/seed-canvas.mjs" --template "$SD/payload.template.html" \
   只有截圖看得出來。**每次改完都要真的截一張圖看過。**
 - 中文字型走系統堆疊（`Songti TC`／`PingFang TC`），**不要用 Google Fonts**——
   匯出 PNG／PDF 時嵌不進去，畫面與匯出會不一致。
+- **出圖不要用 Playwright MCP 截圖**：那邊有 5 秒硬上限，這張圖 8 張素材＋
+  `filter` 濾鏡在 2015 Air 上渲染就超過，會一直 `Timeout ... waiting for element to be stable`
+  （記憶體與磁碟都沒問題，純粹是渲染時間）。**改用系統 Chrome headless**，
+  `--window-size` 直接給 1080×1920 就不必事後裁切。
 
 ## 品牌規範
 
