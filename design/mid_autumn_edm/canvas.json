@@ -1,9 +1,26 @@
 {
   "artboards": [
-    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1080, "h": 1920, "title": "中秋烤肉組 · 1080×1920", "print": "fixed" }
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "title": "中秋烤肉組 · 1080×1920",
+      "print": "fixed"
+    }
   ],
   "annotations": [
-    { "id": "todo", "x": 1200, "y": 40, "w": 430, "text": "待填（方括號處，點一下就能改）：\n· 訂購 LINE ID／電話\n· 訂購截止日、取貨日\n\n圖片為 Unsplash 免費授權（可商用免署名），非實際出貨商品，之後換成龜吼實拍會更有說服力。" }
+    {
+      "id": "todo",
+      "x": 1200,
+      "y": 40,
+      "w": 430,
+      "text": "圖片為 Unsplash 免費授權（可商用免署名），非實際出貨商品，之後換成龜吼實拍會更有說服力。\n\nfooter 已改成「限量 100 組　要搶要快」，不放訂購方式與日期。"
+    }
   ],
-  "launch": { "view": "focused", "file": "Main.dc.html" }
+  "launch": {
+    "view": "focused",
+    "file": "Main.dc.html"
+  }
 }
