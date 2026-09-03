@@ -1,0 +1,35 @@
+name: 節慶送禮備料提醒
+
+on:
+# ⛔ 計時已於 2026-08-28 搬到 Cloudflare Worker `liam-scheduler`。
+#    這裡刻意不留 schedule——兩邊都留會一天觸發兩次，同一封提醒會寄兩份。
+#    要改時間去 scheduler_worker/（worker.js 的 SCHEDULE ＋ wrangler.toml 的 crons，兩邊都要改）。
+  workflow_dispatch:
+    inputs:
+      festival_today:
+        description: '模擬日期 YYYY-MM-DD（留空＝今天）。用來驗證命中那天會寄出什麼'
+        required: false
+        default: ''
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install lunardate
+        run: pip install lunardate==0.2.2
+
+      - name: Run festival reminder
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          FESTIVAL_TODAY: ${{ inputs.festival_today }}
+        run: python festivals/festival_reminder.py
