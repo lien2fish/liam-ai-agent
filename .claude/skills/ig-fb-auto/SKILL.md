@@ -18,7 +18,7 @@ description: IG + FB 每日自動發文、IG 留言自動回覆、IG 限動 Reel
 1. **Claude Sonnet 5** 生成知識 JSON（5～6句＋畫圖提示詞 `illustration_prompt`，三大類：海鮮/捕魚/漁船）。`generate_knowledge()` 以 Claude 為主、Gemini 為 fallback（Claude API 當機時自動降級，當天不開天窗）。模型常數 `CLAUDE_MODEL` 在腳本頂端，省錢可改 Haiku 4.5。
    - ⚠️ **不支援 assistant message prefill**（會回 invalid_request_error），改用單一 user message＋從回應擷取 `{...}` JSON 子字串
    - ⚠️ **Sonnet 5 預設開 adaptive thinking，`content[0]` 是 thinking block 不是 text**（2026-08-19 實測 `['thinking','text']`）。**不可寫 `content[0]["text"]`**——會 KeyError。要遍歷找 `type == "text"` 的 block。`max_tokens` 也因此從 1024 提到 2048，留空間給 thinking，否則文案會被截斷
-2. **OpenAI `gpt-image-1-mini`**（quality=low、1024×1024）生成圖文對應水彩插圖（吃 Claude 寫的 `illustration_prompt`）。**2026-08-06 從 Pollinations 改來**：Pollinations 轉 pollen 付費制且 flux 下架，402 被包成 HTTP 500 難辨識。模型／品質可用 `OPENAI_IMAGE_MODEL`／`OPENAI_IMAGE_QUALITY` 覆蓋。實測畫風正確、去背門檻 245>228 通過，約 $0.005/張
+2. **OpenAI `gpt-image-2`**（quality=low、1024×1024；2026-09-05 從 `gpt-image-1-mini` 遷移，舊模型 12/01 停用）生成圖文對應水彩插圖（吃 Claude 寫的 `illustration_prompt`）。**2026-08-06 從 Pollinations 改來**：Pollinations 轉 pollen 付費制且 flux 下架，402 被包成 HTTP 500 難辨識。模型／品質可用 `OPENAI_IMAGE_MODEL`／`OPENAI_IMAGE_QUALITY` 覆蓋。實測畫風正確、去背門檻 245>228 通過，約 $0.005/張
 3. **PIL** 動態排版合成（插圖大小＋字型大小依內容量自動調整）
 4. **GitHub API** 上傳圖片 → raw.githubusercontent.com 公開 URL（repo 必須 public）
 5. **Meta Graph API v19.0** 同時發送：

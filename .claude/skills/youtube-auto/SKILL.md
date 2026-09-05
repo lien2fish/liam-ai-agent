@@ -22,15 +22,23 @@ description: 全自動 AI 影片頻道：The Unknown Hour（宇宙／古文明�
 | 檔案 | 職責 |
 |------|------|
 | `generate_script.py` | **Claude Sonnet 5** 生英文腳本 JSON（title/narration/scenes/description/tags/topic），主題去重 `recent_topics.json`。**2026-07-25 加 Gemini fallback**（Claude 重試3次仍失敗→降級 2.5-flash→2.0-flash→2.0-flash-lite），避免 API 額度耗盡/當機時整支影片開天窗；workflow 需帶 `GEMINI_KEY`。⚠️ **Sonnet 5 預設開 adaptive thinking，`content[0]` 是 thinking block**——不可寫 `content[0]["text"]`（KeyError），要遍歷找 `type == "text"`；`max_tokens` 4096→8192 留空間給 thinking |
-| `build_video.py` | **OpenAI `gpt-image-1-mini`** 生10-14張電影感插圖 ＋ **edge-tts**英文配音 ＋ ffmpeg Ken Burns ＋ 燒錄字幕 → 1080×1920 MP4。⚠️OpenAI 只接受 1024²/1024×1536/1536×1024，與影片比例對不上，`_fit_to_frame()` 置中裁切後縮放（16:9 與 9:16 各裁掉約16%，實測構圖安全） |
+| `build_video.py` | **OpenAI `gpt-image-2`**（2026-09-05 從 `gpt-image-1-mini` 遷移，舊模型 12/01 停用）生10-14張電影感插圖 ＋ **edge-tts**英文配音 ＋ ffmpeg Ken Burns ＋ 燒錄字幕 → 1080×1920 MP4。⚠️OpenAI 只接受 1024²/1024×1536/1536×1024，與影片比例對不上，`_fit_to_frame()` 置中裁切後縮放（16:9 與 9:16 各裁掉約16%，實測構圖安全） |
 | `upload.py` | YouTube Data API v3 resumable 上傳（OAuth refresh token，純 urllib） |
 | `make_and_upload.py` | 每日進入點：生腳本→產影片→上傳→記錄去重 |
 | `oauth_setup.py` | 一次性取得 refresh token（手動授權流程，同 Gmail） |
 | `SETUP.md` | 一次性人工設定步驟（建頻道/OAuth/Secrets） |
 
 ### 排程與發布
-⛔ **2026-08-26 起全部暫停發文**（Lien 指示）。`yt_auto_post.yml` 的 schedule 已註解，
-保留 `workflow_dispatch`；要恢復就把那兩行取消註解。**下面是暫停前的運作方式，恢復時照這個看。**
+⛔ **2026-09-05 停排程（Lien 指示）。** 從 `scheduler_worker/worker.js` 的 `SCHEDULE`
+拿掉 02:07，同時從 `AUDITS["02:30"]` 拿掉該時段（留著會每天誤報「沒執行」）。
+`yt_auto_post.yml` 本身與程式全部保留，要跑走 `workflow_dispatch`；要恢復就把兩處加回去。
+
+停的理由是實測數據：開台 66 天（06-30→09-03）只到 **11 訂閱／2,738 觀看**，
+最近 19 天僅 +1 訂閱、近期 12 支影片留言全 0，題材與五個品牌零關聯。
+對照組——泥馬的真心話開台 20 天就到 5,431 觀看，單支最高 2,383。
+
+（先前這裡寫「2026-08-26 起全部暫停」是過期的：當天暫停半天後即恢復，
+排程一直掛在 Worker 上跑到 09-05。）**下面是停排程前的運作方式，恢復時照這個看。**
 
 `.github/workflows/yt_auto_post.yml`，每天 10:00 台灣（UTC 02:00）**製作並上傳**影片，用 YouTube 排程發布（`status.publishAt`）設**當天 18:00 台灣自動轉公開**。
 

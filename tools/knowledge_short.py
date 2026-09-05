@@ -233,7 +233,7 @@ ASSETS = pathlib.Path(__file__).resolve().parent / "assets/knowledge"
 
 # 背景圖的生成 prompt。tools/assets 不進版控（既有的 .gitignore 決定），
 # 所以把 prompt 留在這裡，換機器時 --gen-image 就能重建。
-# gpt-image-1-mini，1024x1536，一張約 US$0.005。
+# gpt-image-2，1024x1536，quality=medium，一張約 US$0.04（2026-09-05 實測 1372 output token）。
 IMAGE_PROMPTS = {
     "squid_lights.png": (
         "Aerial night view from very high altitude looking down at a dark ocean. A dense cluster "
@@ -256,7 +256,7 @@ def gen_image(name):
     key = (root / "config/.openai_key").read_text().strip()
     body = json.dumps(
         {
-            "model": "gpt-image-1-mini",
+            "model": "gpt-image-2",
             "prompt": IMAGE_PROMPTS[name],
             "size": "1024x1536",
             "quality": "medium",
@@ -273,7 +273,7 @@ def gen_image(name):
         d = json.loads(r.read())
     ASSETS.mkdir(parents=True, exist_ok=True)
     (ASSETS / name).write_bytes(base64.b64decode(d["data"][0]["b64_json"]))
-    print(f"✅ 已生成 {ASSETS / name}（約 US$0.005）")
+    print(f"✅ 已生成 {ASSETS / name}（約 US$0.04）")
 
 
 _photo_cache = {}
