@@ -72,7 +72,7 @@ if _bgm_env and not os.path.exists(_bgm_env):
 BGM = _bgm_env or (_bgm_default if os.path.exists(_bgm_default) else "")
 # 改用 OpenAI 生圖；Pollinations 於 2026-08 改付費制且 flux 下架，402 被包成 500 難以辨識
 OPENAI_IMG_URL = "https://api.openai.com/v1/images/generations"
-OPENAI_IMG_MODEL = os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-1-mini")
+OPENAI_IMG_MODEL = os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-2")
 OPENAI_IMG_QUALITY = os.environ.get("OPENAI_IMAGE_QUALITY", "low")
 # OpenAI 只接受這三種尺寸，與影片比例對不上，取最接近的再裁切
 OPENAI_IMG_SIZE = "1024x1536" if W < H else "1536x1024"

@@ -535,7 +535,7 @@ def generate_illustration(illustration_prompt):
         "soft warm color palette, highly detailed, beautiful, no text, no shadow, centered composition"
     )
     body = {
-        "model": os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-1-mini"),
+        "model": os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-2"),
         "prompt": prompt,
         "size": "1024x1024",
         "quality": os.environ.get("OPENAI_IMAGE_QUALITY", "low"),
