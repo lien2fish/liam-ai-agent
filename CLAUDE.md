@@ -160,7 +160,7 @@
 | `birthday_reminder.yml` | 壽險客戶生日提醒 | 每天 08:23，未來7天內生日則Email（含歲數，無commit）|
 | `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:07，超60天未回購則 Email（**2026-08-21 起無commit，客戶個資只走Email**——原本每天 commit 報告，已累積 56 份含姓名與手機的報告在公開 repo）|
 | `weekly_revenue_sprint.yml` | 營收衝刺週報（本週壽險該接觸名單＋話術：A組未來14天生日切入、B組壽產保單健檢每週輪替6位） | 每週一 08:03，Email（**無commit，客戶個資只走Email**）|
-| `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；Shorts 週二/五、長片週日）| 每天 10:07（**2026-08-26 當日暫停半天後即恢復**，Lien 指示）|
+| `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；Shorts 週二/五、長片週日）| **2026-09-05 停排程**（保留 `workflow_dispatch`）。開台 66 天只到 11 訂閱／2,738 觀看、近 19 天 +1 訂閱、留言全 0、與五品牌零關聯；同期泥馬的真心話開台 20 天就 5,431 觀看。從 Worker 的 `SCHEDULE` 與 `AUDITS["02:30"]` **兩處**移除 02:07 |
 | `yt_channel_report.yml` | **三個頻道**每日表現日報：The Unknown Hour／連老闆-產地到餐桌／泥馬的真心話（2026-09-02 擴充）。含觀看・讚・留言數與新留言。三個頻道**依序跑在同一個 job**——並行會在 commit 那步互相 rebase 打架；狀態檔與報告檔用 `YT_REPORT_PROFILE` 區隔 | 每天 08:33 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 | `rotary_birthday_reminder.yml` | 中城網路扶輪社社友生日提醒（剛好前14天Email一次；資料=私人repo `liam-workspace/rotary/中城網路社友通訊錄.json` 71位，用`WORKSPACE_PAT` checkout，**個資不進公開repo、無commit**） | 每天 08:27|
@@ -174,7 +174,7 @@
 |--------|------|
 | `ANTHROPIC_API_KEY` | Claude API Key。2026-06-26 新增，Console 已儲值（**預付制、非訂閱**，與 Claude Code 訂閱是兩筆帳）。四處在用：IG 發文文案＋畫圖 prompt（`instagram/generate_post.py`，**Sonnet 5**）、YouTube 影片腳本（`youtube_auto/generate_script.py`，**Sonnet 5**）、AI 工作週報（`scripts/weekly_review.py`，**Sonnet 5**，每週一次約 6K token）。手機助理（Haiku 4.5）已寫好但**未接通、不計費**。模型常數 `CLAUDE_MODEL` 在各腳本頂端。⚠️ **Sonnet 5 起 `content[0]` 可能是 thinking block**，解析回應一律遍歷找 `type == "text"` |
 | `GEMINI_KEY` | Gemini AI Key（claude-workspace-495009，**2.5-flash** 模型）。**注意：實為免費額度，未開通Cloud Billing**（2026-06-23實測證實，`2.5-flash`限20次/天、`2.5-pro`免費額度0），所有共用此Key的自動化共用同一日額度池，理論上會互搶額度 |
-| `OPENAI_API_KEY` | OpenAI 生圖（IG 插圖＋YouTube 場景圖），`gpt-image-1-mini`。2026-08-06 設定，預付制需儲值。本機備份於 `config/.openai_key` |
+| `OPENAI_API_KEY` | OpenAI 生圖（IG 插圖＋YouTube 場景圖），`gpt-image-2`（**2026-09-05 從 `gpt-image-1-mini` 遷移**，舊模型 2026-12-01 停用）。2026-08-06 設定，預付制需儲值。本機備份於 `config/.openai_key` |
 | `HF_TOKEN` | （已停用）Hugging Face FLUX→Pollinations→OpenAI，兩任前身皆因免費額度取消而汰換 |
 | `IG_TOKEN` | Instagram Graph API（到期 2026-07-16）|
 | `IG_ID` | Instagram 帳號 ID |
