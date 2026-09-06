@@ -75,3 +75,5 @@ day/gmail日報_*.pdf
 # 各專案內的副本由 sync.sh 產生，不進版控（避免四份漂移）
 hyperframes_trial/*/shared/
 hyperframes_trial/*/vendor/
+# vessel-02 的衛星影像來自私人 repo liam-workspace，不進公開庫
+hyperframes_trial/*/assets/
