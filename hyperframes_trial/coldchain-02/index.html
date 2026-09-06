@@ -67,21 +67,27 @@
       <!-- 2. DEEPCOLD 3.2–7.2 -->
       <section id="s2" class="clip" data-start="3.2" data-duration="4" data-track-index="2">
         <div class="sin" id="s2-in">
-          <div class="stack" id="s2-top" style="top: 380px">
+          <div class="stack" id="s2-top" style="top: 480px">
             <span class="line l-body">一般冷凍是 −18°C</span>
           </div>
-          <div class="tscale" id="sc-a" style="top: 560px"></div>
-          <div class="stack" id="s2-bottom" style="top: 900px">
+          <div class="tscale" id="sc-a" style="top: 850px"></div>
+          <div class="stack" id="s2-bottom" style="top: 1250px">
             <span class="line l-body gold">這裡要再往下三倍</span>
           </div>
         </div>
       </section>
 
+      <!-- 鮪魚肉塊自成一層，橫跨場景 3～4（褐變在場景 4 才發生） -->
+      <div id="meat" class="clip" data-start="7.2" data-duration="9.5" data-track-index="3">
+        <div class="sin" id="meat-in">
+          <div id="slab"><div id="brown"></div><div id="brownedge"></div></div>
+        </div>
+      </div>
+
       <!-- 3. MYO 7.2–12.2 -->
       <section id="s3" class="clip" data-start="7.2" data-duration="5" data-track-index="3">
         <div class="sin" id="s3-in">
           <div class="tag" id="s3-tag" style="top: 440px">鮪 魚 的 紅 色</div>
-          <div id="slab"><div id="brown"></div><div id="brownedge"></div></div>
           <div class="caption" id="s3-cap" style="top: 1120px">氧合肌紅蛋白 ＝ 鮮紅</div>
           <div class="stack" id="s3-text" style="top: 1330px">
             <span class="line l-body">來自</span>
@@ -105,11 +111,11 @@
       <!-- 5. DEEPCOLD2 16.7–20.7 -->
       <section id="s5" class="clip" data-start="16.7" data-duration="4" data-track-index="5">
         <div class="sin" id="s5-in">
-          <div class="stack" id="s5-top" style="top: 380px">
+          <div class="stack" id="s5-top" style="top: 480px">
             <span class="line l-body">只有 −60°C 以下</span>
           </div>
-          <div class="tscale" id="sc-b" style="top: 560px"></div>
-          <div class="stack" id="s5-bottom" style="top: 900px">
+          <div class="tscale" id="sc-b" style="top: 850px"></div>
+          <div class="stack" id="s5-bottom" style="top: 1250px">
             <span class="line l-body gold">能真正把它停住</span>
           </div>
         </div>
@@ -179,9 +185,8 @@
       tl.fromTo("#slab", { autoAlpha: 0, scale: 0.93 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "power3.out" }, 7.5);
       tl.fromTo("#s3-cap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 8.4);
       tl.fromTo("#s3-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 9.0);
-      // 肉塊要跨到下一段，所以只淡出這一段的字，不淡出整層
-      tl.to(["#s3-tag", "#s3-cap", "#s3-text"], { autoAlpha: 0, duration: 0.3, ease: "power1.in" }, 11.9);
-      tl.set(["#s3-tag", "#s3-cap", "#s3-text"], { autoAlpha: 0 }, 12.2);
+      tl.to("#s3-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 11.9);
+      tl.set("#s3-in", { opacity: 0 }, 12.2);
 
       // 4. MYO2：褐變由左往右推進
       tl.fromTo("#s4-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 12.3);
@@ -191,6 +196,8 @@
       tl.fromTo("#s4-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 14.0);
       tl.to("#s4-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 16.4);
       tl.set("#s4-in", { opacity: 0 }, 16.7);
+      tl.to("#meat-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 16.4);
+      tl.set("#meat-in", { opacity: 0 }, 16.7);
 
       // 5. DEEPCOLD2：金色段一路推到 −60°C
       tl.fromTo("#s5-top", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 16.75);

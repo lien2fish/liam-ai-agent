@@ -15,7 +15,12 @@
         position: absolute; left: 110px; top: 590px; width: 860px; height: 573px;
         border-radius: 20px; overflow: hidden; border: 3px solid #2f5c78;
       }
-      #sat { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+      /* 只做輕微提亮讓船燈在手機上讀得出來，不裁切、不改內容 */
+      #sat {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        object-fit: cover; display: block;
+        filter: brightness(1.18) contrast(1.06);
+      }
       #credit {
         position: absolute; left: 70px; right: 70px; top: 1196px; text-align: center;
         font-size: 30px; color: #6c8298; letter-spacing: 0.03em; line-height: 1.5;
@@ -92,12 +97,12 @@
       <!-- 5. STAT 16.4–20.8 -->
       <section id="s5" class="clip" data-start="16.4" data-duration="4.4" data-track-index="6">
         <div class="sin" id="s5-in">
-          <div class="stack" id="s5-top" style="top: 480px">
+          <div class="stack" id="s5-top" style="top: 620px">
             <span class="line l-body">那是魷釣船</span>
             <span class="line l-body">用強光把魷魚誘到表層</span>
           </div>
-          <div class="stat-num" id="s5-num" style="top: 900px">251,000</div>
-          <div class="caption" id="s5-cap" style="top: 1120px">2020 年全球魷釣船的作業「船日」</div>
+          <div class="stat-num" id="s5-num" style="top: 1060px">251,000</div>
+          <div class="caption" id="s5-cap" style="top: 1290px">2020 年全球魷釣船的作業「船日」</div>
         </div>
       </section>
 
