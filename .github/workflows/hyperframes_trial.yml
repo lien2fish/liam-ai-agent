@@ -13,9 +13,20 @@ jobs:
   render:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: coldchain-01
+            snaps: 1.5,4.7,9,13.7,18,22
+          - project: coldchain-02
+            snaps: 1.6,5.2,9.5,14.5,18.7,23
+          - project: vessel-01
+            snaps: 1.6,5.5,9.9,14.8,19.4,23.5
+
     defaults:
       run:
-        working-directory: hyperframes_trial/coldchain-01
+        working-directory: hyperframes_trial/${{ matrix.project }}
 
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +41,11 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg fonts-noto-cjk
           fc-list :lang=zh-tw family | sort -u | head
+
+      # shared/ 與 vendor/ 是唯一來源，各專案內的副本沒進版控
+      - name: 同步共用檔
+        working-directory: hyperframes_trial
+        run: ./sync.sh
 
       - name: 準備 Chrome 與關閉 telemetry
         run: |
@@ -50,7 +66,7 @@ jobs:
         run: npx --yes hyperframes@0.8.30 check --snapshots
 
       - name: 各場景中點抽格
-        run: npx --yes hyperframes@0.8.30 snapshot --at 1.5,4.7,9,13.7,18,22
+        run: npx --yes hyperframes@0.8.30 snapshot --at ${{ matrix.snaps }}
 
       - name: 渲染
         run: npx --yes hyperframes@0.8.30 render --quality ${{ inputs.quality }} --output out.mp4
@@ -93,15 +109,15 @@ jobs:
           [ "$(probe a:0 codec_name)" = "aac" ]     || { echo '❌ 沒有 aac 音軌'; exit 1; }
           [ "$(probe a:0 sample_rate)" = "48000" ]  || { echo '❌ 取樣率不是 48000'; exit 1; }
           [ "$(probe a:0 channels)" = "2" ]         || { echo '❌ 不是 stereo'; exit 1; }
-          echo '✅ 已對齊 reel_maker 規格'
+          echo "✅ ${{ matrix.project }} 已對齊 reel_maker 規格"
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: coldchain-01-hyperframes
+          name: ${{ matrix.project }}
           path: |
-            hyperframes_trial/coldchain-01/out.mp4
-            hyperframes_trial/coldchain-01/out_pipeline.mp4
-            hyperframes_trial/coldchain-01/**/*.png
-            hyperframes_trial/coldchain-01/doctor.json
+            hyperframes_trial/${{ matrix.project }}/out.mp4
+            hyperframes_trial/${{ matrix.project }}/out_pipeline.mp4
+            hyperframes_trial/${{ matrix.project }}/snapshots/**
+            hyperframes_trial/${{ matrix.project }}/doctor.json
           if-no-files-found: warn
