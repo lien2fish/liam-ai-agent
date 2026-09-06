@@ -1,0 +1,63 @@
+name: HyperFrames 試算（手動）
+
+on:
+  workflow_dispatch:
+    inputs:
+      quality:
+        description: 渲染品質
+        type: choice
+        options: [high, draft]
+        default: high
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: hyperframes_trial/coldchain-01
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 中文字型：runner 預設沒有 CJK，缺了會整片變豆腐
+      - name: 安裝 ffmpeg 與中文字型
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-noto-cjk
+          fc-list :lang=zh-tw family | sort -u | head
+
+      - name: 準備 Chrome 與關閉 telemetry
+        run: |
+          npx --yes hyperframes@0.8.30 telemetry disable
+          npx --yes hyperframes@0.8.30 browser ensure
+          npx --yes hyperframes@0.8.30 doctor --json | tee doctor.json
+          node -e "process.exit(JSON.parse(require('fs').readFileSync('doctor.json','utf8')).ok ? 0 : 1)"
+
+      - name: check（lint + runtime + 版面 + 對比）
+        run: npx --yes hyperframes@0.8.30 check --snapshots
+
+      - name: 各場景中點抽格
+        run: npx --yes hyperframes@0.8.30 snapshot --at 1.5,4.7,9,13.7,18,22
+
+      - name: 渲染
+        run: npx --yes hyperframes@0.8.30 render --quality ${{ inputs.quality }} --output out.mp4
+
+      - name: 驗收產出
+        run: |
+          test -s out.mp4
+          ffprobe -v error -show_entries format=duration,size -show_entries stream=codec_name,width,height,r_frame_rate -of default=noprint_wrappers=1 out.mp4
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coldchain-01-hyperframes
+          path: |
+            hyperframes_trial/coldchain-01/out.mp4
+            hyperframes_trial/coldchain-01/**/*.png
+            hyperframes_trial/coldchain-01/doctor.json
+          if-no-files-found: warn
