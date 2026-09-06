@@ -55,10 +55,45 @@ jobs:
       - name: 渲染
         run: npx --yes hyperframes@0.8.30 render --quality ${{ inputs.quality }} --output out.mp4
 
+      - name: 對齊產線規格（補靜音軌／清色彩標記／對齊 timescale）
+        run: |
+          # reel_maker 成品規格＝1080x1920 / 24fps / yuv420p(tv) / High@4.0 /
+          # aac 48000 stereo / 12288 tbn。reel_outro.py 的 append 用 -c:v copy，
+          # 正片必須本來就對齊，否則片尾會被靜默丟掉（實測過：ffmpeg 回 0、
+          # 印 ✅、但成品長度沒變）。
+          ffmpeg -hide_banner -bsfs | tr ' ' '\n' | grep -qx h264_metadata \
+            || { echo '這台 ffmpeg 沒有 h264_metadata bsf，無法無損清色彩標記'; exit 1; }
+          ffmpeg -y -v error -i out.mp4 \
+            -f lavfi -i anullsrc=r=48000:cl=stereo -shortest \
+            -c:v copy \
+            -bsf:v "h264_metadata=colour_primaries=2:transfer_characteristics=2:matrix_coefficients=2" \
+            -color_primaries unspecified -color_trc unspecified -colorspace unspecified \
+            -c:a aac -ar 48000 -ac 2 \
+            -video_track_timescale 12288 -movflags +faststart \
+            out_pipeline.mp4
+
       - name: 驗收產出
         run: |
-          test -s out.mp4
-          ffprobe -v error -show_entries format=duration,size -show_entries stream=codec_name,width,height,r_frame_rate -of default=noprint_wrappers=1 out.mp4
+          test -s out.mp4 && test -s out_pipeline.mp4
+
+          # 視訊必須零重編：比對視訊位元流 md5
+          a=$(ffmpeg -v error -i out.mp4          -map 0:v -c copy -f md5 - | tr -d '\r')
+          b=$(ffmpeg -v error -i out_pipeline.mp4 -map 0:v -c copy -f md5 - | tr -d '\r')
+          echo "視訊位元流 before=$a after=$b"
+          [ "$a" = "$b" ] || { echo '❌ 視訊被重編了'; exit 1; }
+
+          ffprobe -v error -show_entries format=duration,size \
+            -show_entries stream=codec_type,codec_name,width,height,r_frame_rate,sample_rate,channels \
+            -of default=noprint_wrappers=1 out_pipeline.mp4
+
+          # 逐項卡規格，對不上就讓 run 變紅
+          probe() { ffprobe -v error -select_streams "$1" -show_entries stream="$2" -of csv=p=0 out_pipeline.mp4; }
+          [ "$(probe v:0 r_frame_rate)" = "24/1" ]  || { echo '❌ fps 不是 24'; exit 1; }
+          [ "$(probe v:0 width),$(probe v:0 height)" = "1080,1920" ] || { echo '❌ 解析度不對'; exit 1; }
+          [ "$(probe a:0 codec_name)" = "aac" ]     || { echo '❌ 沒有 aac 音軌'; exit 1; }
+          [ "$(probe a:0 sample_rate)" = "48000" ]  || { echo '❌ 取樣率不是 48000'; exit 1; }
+          [ "$(probe a:0 channels)" = "2" ]         || { echo '❌ 不是 stereo'; exit 1; }
+          echo '✅ 已對齊 reel_maker 規格'
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -66,6 +101,7 @@ jobs:
           name: coldchain-01-hyperframes
           path: |
             hyperframes_trial/coldchain-01/out.mp4
+            hyperframes_trial/coldchain-01/out_pipeline.mp4
             hyperframes_trial/coldchain-01/**/*.png
             hyperframes_trial/coldchain-01/doctor.json
           if-no-files-found: warn
