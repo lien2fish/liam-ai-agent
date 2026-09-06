@@ -61,6 +61,20 @@ keychain 不像檔案會被 rsync 帶走，**換機時這把 PAT 是會掉的**�
 | 新機第一次 push | git 會跳一次鑰匙圈授權，**要在有螢幕的情況下操作**；背景任務（SessionEnd 日誌推送）不會幫你跳窗 |
 | 裝回 `gh` | 見專案 CLAUDE.md 技術環境；`~/bin/gh` wrapper 與 `~/bin/gh-bin` 都要複製，wrapper 不需改 |
 
+⚠️ **2026-09-06 補：`~/.git-credentials` 不是唯一的明文藏匿處。**
+`git clone https://TOKEN@github.com/...` 會把憑證寫進該 repo 的 `.git/config` remote URL，
+**08-27 那次清理漏掉了兩個**（`~/liam-workspace`、`~/Downloads/fishing-tycoon`），
+同一把 PAT 因此又在磁碟上明文躺了十天。全機複查一次：
+
+```bash
+find ~ -maxdepth 4 -name config -path '*/.git/*' \
+  -exec grep -l 'https://[^@/]*@github\.com' {} +
+```
+
+修法：`git remote set-url origin https://github.com/OWNER/REPO.git`（拿掉 `TOKEN@`），
+改走 keychain。**改完一定要用 `GIT_TERMINAL_PROMPT=0 git push --dry-run` 驗**——
+背景任務（SessionEnd 日誌推送）不會有人幫它按授權視窗。
+
 ⛔ **不要為了省事把 `store` 加回來。**
 
 ---
@@ -78,7 +92,7 @@ keychain 不像檔案會被 rsync 帶走，**換機時這把 PAT 是會掉的**�
 | `YT_API_KEY` | 2 個：YT 留言通知／頻道日報 | 🟢 無到期問題 |
 | `LINE_NOTIFY_URL` ＋ `LINE_NOTIFY_TOKEN` | 1 個：Token 到期提醒的 LINE 推播 | 🟢 掛了只是少一條通知管道，Email 還在 |
 | `FB_PAGE_TOKEN` | **目前 0 個真的在用**——FB 跨發走 IG 的 `cross_post_ids` | 🟢 只有 `token_expiry_check` 會抓到它壞掉 |
-| `WORKSPACE_PAT` | 1 個：扶輪社生日（checkout 私人 repo） | 🟢 永不過期 |
+| `WORKSPACE_PAT` | **它就是 keychain 那把主 PAT，不是獨立金鑰**（2026-09-06 比對指紋確認）。scope `repo`+`workflow`、**四個 repo 全部可讀寫**、永不過期。直接用它的有 2 個 workflow（扶輪社生日、YT 配樂）＋ hyperframes 試算取素材 | 🔴 **`workflow` scope ＝ 能改 Actions ＝ 能把其餘 20 把 Secret 全部印出來、也能觸發對外發布的 workflow。外洩＝整套自動化淪陷** |
 | `HF_TOKEN` | 已停用 | — |
 
 ---
