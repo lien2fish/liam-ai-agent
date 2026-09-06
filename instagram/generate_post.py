@@ -301,8 +301,38 @@ def build_knowledge_prompt(exclude_seafood=None):
   "title_zh": "標題（格式：XX的祕密 或 你不知道的XX，10字內）",
   "title_en": "Title in English (under 35 chars)",
   "content": "5到6句有趣知識，繁體中文。每句獨立，加換行符\\n分隔。每句不超過28字。內容要有層次：第一句引起好奇，中間深入說明，最後一句給讀者帶走的亮點。",
-  "illustration_prompt": "描述插圖主體的英文句子，用於 AI 繪圖。要能精準對應本則知識內容。格式：Watercolor illustration of [具體主體與場景]，例如：Watercolor illustration of a Taiwanese fisherman sitting on a small wooden boat doing pole-and-line fishing, calm sea, warm morning light"
+  "illustration_prompt": "描述插圖主體的英文句子，用於 AI 繪圖。要能精準對應本則知識內容。格式：Watercolor illustration of [具體主體與場景]，例如：Watercolor illustration of a Taiwanese fisherman sitting on a small wooden boat doing pole-and-line fishing, calm sea, warm morning light",
+  "layers": [選填，見下方「分件插圖」規則。不適合就整個欄位不要給]
 }}
+
+【分件插圖 layers】
+影片版會把插圖拆成幾層各自動起來。**只有當這則知識有自然的前後景時才給**
+（水下場景、漁港、船上作業這類）。像「冷凍保存原理」「怎麼挑」這種沒有空間層次的，
+**整個 layers 欄位不要給**——硬分件會比單張還糟。
+
+給的話是 2~3 件，格式：
+  {{"role": "bg|mid|front", "motion": "動作", "prompt": "英文繪圖描述"}}
+
+⚠️ **role=bg 必須是空場景**：prompt 要明寫 no animals, no objects, empty scene。
+   背景裡混進生物，動起來會出現兩隻魚。
+⚠️ **role=mid/front 必須是單一主體**：prompt 要明寫 pure white background,
+   isolated subject, nothing else in frame。切不出白底就整組作廢退回單張。
+
+**motion 必須符合那個東西真實的動法**，這是硬性要求：
+
+| motion | 用在什麼 | 實際動作 |
+|---|---|---|
+| water | 只給 bg：水體、海面、天空 | 緩慢漂移＋水面折射 |
+| seaweed | 海草、海藻、珊瑚、繩索、旗子 | **底端固定、越往上擺越大** |
+| swim | 魚、小卷、蝦、蟹、任何會自己游的 | 橫向游過畫面＋上下起伏＋尾部微擺 |
+（**motion=swim 的 prompt 必須寫 facing left, side view**——畫面裡是由右往左游，
+　朝向不對就會變成倒退嚕。）
+| drift | 水母、浮游生物、氣泡、雪花冰晶 | 緩慢上升並左右飄 |
+| still | 冰塊、盤子、刀具、漁具、船體、建物 | 幾乎不動，只有極輕微呼吸 |
+
+⛔ **不會自己移動的東西不准給 swim 或 drift。** 冰塊不會游、盤子不會飄、
+   船固定在畫面上就是 still。動作跟物體對不上，比完全不動更假。
+⛔ 固著生長的才給 seaweed（底端固定是它的物理特性）。整株漂走的海草是錯的。
 
 從以下四大類中選一個主題，再從該類的角度中選一個角度，組合出今日內容。
 目標是在365天內不重複相同的「主題+角度」組合。
@@ -496,6 +526,74 @@ def notify_no_illustration(err):
         )
     except Exception as e:  # 通知失敗絕不能連累發文
         print(f"[notify] 推播失敗（不影響發文）：{e}", flush=True)
+
+
+MOTIONS = {"water", "seaweed", "swim", "drift", "still"}
+
+
+def generate_layers(layers):
+    """分件插圖：每一件各生一張，之後在影片端各自動。
+
+    任何一件不合格就整組回 None 退回單張——**分件是加分項，不是必要條件**。
+    半套的分件（背景生出來了但主角沒去背成功）會做出一塊白方框浮在海裡，
+    比單張還糟。所以這裡的判斷一律往「退回」偏。
+
+    回傳 [(motion, PIL.Image), ...]，順序即疊放順序（先畫的在後面）。
+    """
+    from PIL import Image  # noqa: F401  與 generate_illustration 共用同一套解析
+
+    if not layers or not isinstance(layers, list) or not 2 <= len(layers) <= 3:
+        return None
+    roles = [x.get("role") for x in layers]
+    if roles[0] != "bg" or len(set(roles)) != len(roles):
+        return None  # 一定要有背景，且每個角色只能出現一次
+    if any(x.get("motion") not in MOTIONS for x in layers):
+        return None
+    if layers[0].get("motion") != "water":
+        return None  # 背景只能是水體，其他動法對整片場景沒有意義
+
+    out = []
+    for x in layers:
+        role, motion = x["role"], x["motion"]
+        extra = (
+            "empty scene, absolutely no animals, no people, no objects"
+            if role == "bg"
+            else "pure white background, isolated subject, nothing else in frame"
+        )
+        im = generate_illustration(f"{x.get('prompt','')}, {extra}")
+        if role == "bg":
+            out.append((motion, im.convert("RGB")))
+            continue
+        cut = cutout_subject(im)
+        # 去背後幾乎沒縮小＝gpt-image 又無視白底畫了整片場景，這件不能當前景用
+        if cut.width * cut.height > 0.82 * im.width * im.height:
+            print(f"⚠️ 分件 {role} 沒有白底可去，整組退回單張插圖", flush=True)
+            return None
+        out.append((motion, cut))
+    print(f"  分件插圖 {len(out)} 件：{[m for m, _ in out]}", flush=True)
+    return out
+
+
+def cutout_subject(im):
+    """去掉接近白的背景並裁到主體。與 explainer_video.cutout 同一套門檻。"""
+    import numpy as np
+
+    a = np.array(im.convert("RGBA"), dtype=np.float32)
+    r, g, b = a[:, :, 0], a[:, :, 1], a[:, :, 2]
+    a[:, :, 3] = np.where(
+        (r > 228) & (g > 228) & (b > 228) & (np.abs(r - g) < 25), 0, a[:, :, 3]
+    )
+    out = Image.fromarray(a.astype("uint8"))
+    return out.crop(out.getbbox() or (0, 0, im.width, im.height))
+
+
+def layers_or_none(layers):
+    """分件失敗一律吞掉——影片端會自己退回單張插圖，不該因此中斷發文。"""
+    try:
+        return generate_layers(layers)
+    except Exception as e:
+        print(f"⚠️ 分件插圖失敗，退回單張：{e}", flush=True)
+        return None
 
 
 def illustration_or_none(illustration_prompt):
