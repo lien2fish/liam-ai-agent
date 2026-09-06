@@ -74,6 +74,17 @@ PAD = 96  # 左右安全邊
 ILLUS_TOP, ILLUS_H = 330, 980  # 插圖區
 CAP_TOP = 1420  # 字幕區起點
 
+# ── 動態參數（都刻意留在這裡調）───────────────────────────────
+# 原本只有「整張圖等幅漂移」，看起來是鏡頭在動、畫面本身是死的。
+# 下面兩組把它拆成：水面折射（畫面自己在動）＋ 遠近分層（有景深）。
+RIPPLE_AMP = 7.0  # 水波最大水平位移（px）。超過 12 會開始像訊號雜訊而不像水
+RIPPLE_LAMBDA = 190.0  # 波長（px）。太短會變細密漣漪，配水彩插圖顯得髒
+RIPPLE_PERIOD = 3.4  # 波走完一個週期幾秒。越長越沉穩
+CUTOUT_RIPPLE_AMP = 5.0  # 去背主體的波幅——主體邊緣看得更清楚，要更收斂
+PARALLAX_FAR = 0.45  # 遠景漂移倍率（近景固定 1.0）。兩者差距就是景深感
+BOB_AMP, BOB_PERIOD = 14.0, 4.2  # 去背主體的上下浮沉
+SWAY_AMP, SWAY_PERIOD = 9.0, 6.8  # 去背主體的左右擺盪（與浮沉不同週期才不機械）
+
 
 def f(size):
     return ImageFont.truetype(FONT, size, index=FONT_IDX)
@@ -111,6 +122,112 @@ def cutout(im):
     return out.crop(out.getbbox() or (0, 0, im.width, im.height))
 
 
+def ripple(im, t, amp):
+    """水面折射：每一列依 sin(y/λ + t·ω) 水平位移。
+
+    振幅由上往下遞增——上緣接近水面幾乎不動，越深晃得越明顯。
+    整片等幅會像整張圖在抖，不像水，那是這個效果最容易做壞的地方。
+
+    邊界用 clip 不用 wrap：wrap 會把右邊的內容捲到左邊，滿版圖上是一條明顯的縫。
+    clip 只是把邊緣那一列拉長，位移只有幾像素時看不出來。
+    """
+    import numpy as np
+
+    a = np.asarray(im)
+    h, w = a.shape[:2]
+    y = np.arange(h)
+    taper = (y / max(1, h - 1)) ** 1.5
+    shift = (
+        np.sin(y / RIPPLE_LAMBDA * 2 * np.pi + t / RIPPLE_PERIOD * 2 * np.pi)
+        * amp
+        * taper
+    ).astype(int)
+    x = np.clip(np.arange(w)[None, :] - shift[:, None], 0, w - 1)
+    return Image.fromarray(a[y[:, None], x])
+
+
+def shear(im, t, amp, period, phase=0.0):
+    """底端固定、越往上位移越大的水平擺動——海草、繩索、旗子的動法。
+
+    根部不動是這類東西的物理特性。整株平移會像被人拿著走，不是長在那裡。
+    """
+    import numpy as np
+
+    a = np.asarray(im)
+    h, w = a.shape[:2]
+    y = np.arange(h)
+    k = (1 - y / max(1, h - 1)) ** 1.4  # 底 0 → 頂 1
+    sh = (np.sin(t / period * 2 * np.pi + phase) * amp * k).astype(int)
+    x = np.clip(np.arange(w)[None, :] - sh[:, None], 0, w - 1)
+    return Image.fromarray(a[y[:, None], x])
+
+
+def wag(im, t, amp, period):
+    """尾部擺動：越靠右（尾）上下位移越大，頭幾乎不動。
+
+    魚是靠尾巴推進的，所以擺動軸在頭、振幅往尾遞增。
+    整條魚一起上下＝在電梯裡，不是在游。
+    """
+    import numpy as np
+
+    a = np.asarray(im)
+    h, w = a.shape[:2]
+    x = np.arange(w)
+    k = (x / max(1, w - 1)) ** 1.6  # 頭 0 → 尾 1
+    sh = (np.sin(t / period * 2 * np.pi) * amp * k).astype(int)
+    y = np.clip(np.arange(h)[:, None] - sh[None, :], 0, h - 1)
+    return Image.fromarray(a[y, x[None, :]])
+
+
+def place(band, motion, im, t, total, idx):
+    """把一件疊到插圖帶上，動法由 motion 決定——動作必須對得上那個東西。
+
+    idx 只用來錯開相位，讓同類的兩件不要同步擺動。
+    """
+    ph = idx * 1.7
+    if motion == "seaweed":
+        # 固著生長：貼著底邊，頂端擺
+        h = int(ILLUS_H * 0.72)
+        w = max(1, int(im.width * h / im.height))
+        v = shear(im.resize((w, h), Image.LANCZOS), t, 26, 5.3, ph)
+        band.paste(v, (int(W * 0.06) + idx * 90, ILLUS_H - v.height), v)
+    elif motion == "swim":
+        # 自己會游：橫向移動＋上下起伏＋尾擺。素材一律畫成朝左，所以從右往左游
+        w = int(W * 0.46)
+        s = im.resize((w, max(1, int(im.height * w / im.width))), Image.LANCZOS)
+        v = wag(s, t, 11, 1.6)
+        prog = ((t / max(total, 1e-6)) * 1.15 + idx * 0.4) % 1.0
+        x = int(W + s.width * 0.4 - prog * (W + s.width * 0.8))
+        y = int(ILLUS_H * 0.34 + math.sin(t / 2.9 * 2 * math.pi + ph) * 34)
+        band.paste(v, (x, y), v)
+    elif motion == "drift":
+        # 隨水飄：緩慢上升，左右擺幅小，出頂後從底部回來
+        w = int(W * 0.3)
+        s = im.resize((w, max(1, int(im.height * w / im.width))), Image.LANCZOS)
+        prog = ((t / max(total, 1e-6)) * 0.9 + idx * 0.35) % 1.0
+        y = int(ILLUS_H - prog * (ILLUS_H + s.height))
+        x = int(W * 0.3 + math.sin(t / 5.5 * 2 * math.pi + ph) * 46)
+        band.paste(s, (x, y), s)
+    else:  # still：擺著不動的東西，只留極輕微呼吸，完全靜止會像貼紙
+        h = int(ILLUS_H * 0.5 * (1 + 0.006 * math.sin(t / 6.0 * 2 * math.pi + ph)))
+        w = max(1, int(im.width * h / im.height))
+        s = im.resize((w, h), Image.LANCZOS)
+        band.paste(s, ((W - w) // 2, ILLUS_H - s.height - int(ILLUS_H * 0.04)), s)
+
+
+def near_mask():
+    """遠近分層的權重：上緣＝遠景、下緣＝近景，中間羽化過渡。
+
+    沒有深度圖，所以用「畫面下方比較近」這個構圖通則來近似——
+    海鮮插圖幾乎都是這樣擺的（上面是海／背景，下面是冰、魚、盤子）。
+    """
+    import numpy as np
+
+    g = np.clip((np.arange(ILLUS_H) / ILLUS_H - 0.28) / 0.5, 0, 1)
+    g = (g * g * (3 - 2 * g) * 255).astype("uint8")  # smoothstep，避免出現分界線
+    return Image.fromarray(np.repeat(g[:, None], W, axis=1), mode="L")
+
+
 def base_canvas(title_zh, title_en, today):
     """不會變動的底：米色紙、頁首、金線、logo。每一格都疊在這上面。"""
     im = Image.new("RGB", (W, H), CREAM)
@@ -128,12 +245,45 @@ def base_canvas(title_zh, title_en, today):
     return im
 
 
-def frame(canvas, illus, zoom, caption, cap_font, bleed, drift=(0, 0)):
+def frame_layered(canvas, layers, caption, cap_font, t, total):
+    """分件版的一格：背景鋪滿，其餘各件依自己的 motion 疊上去。
+
+    第一件一定是 (water, 背景)——generate_layers 已經擋掉其他組合。
+    """
+    bg = layers[0][1]
+    zoom = 1.14 + 0.06 * (t / max(total, 1e-6))
+    r = max(W / bg.width, ILLUS_H / bg.height) * zoom
+    w, h = int(bg.width * r), int(bg.height * r)
+    sm = bg.resize((w, h), Image.LANCZOS)
+    dx = int(math.sin(t / 11.0 * 2 * math.pi) * 18)
+    dy = int(math.sin(t / 8.5 * 2 * math.pi + 1.1) * 10)
+    x = max(0, min(w - W, (w - W) // 2 + dx))
+    y = max(0, min(h - ILLUS_H, (h - ILLUS_H) // 2 + dy))
+    band = ripple(sm.crop((x, y, x + W, y + ILLUS_H)), t, RIPPLE_AMP).convert("RGB")
+    for i, (motion, im) in enumerate(layers[1:]):
+        place(band, motion, im, t, total, i)
+    out = canvas.copy()
+    out.paste(band, (0, ILLUS_TOP))
+    if caption:
+        d = ImageDraw.Draw(out)
+        lines = wrap(d, caption, cap_font, W - PAD * 2)
+        lh = int(cap_font.size * 1.5)
+        cy = CAP_TOP + max(0, (330 - len(lines) * lh) // 2)
+        for i, ln in enumerate(lines):
+            d.text((PAD, cy + i * lh), ln, font=cap_font, fill=INK)
+    return out
+
+
+def frame(
+    canvas, illus, zoom, caption, cap_font, bleed, drift=(0, 0), t=0.0, mask=None
+):
     """一格＝底 ＋ 插圖 ＋ 目前這句字幕。
 
     bleed=True：插圖是完整場景（gpt-image 常常不理會「白底」的指示），
     就滿版裁切填滿插圖區——不然會是一塊硬邊矩形浮在米色紙上，像沒做完。
+    裁兩次、用不同漂移倍率再依 mask 混合＝遠近分層，單一漂移只是鏡頭在平移。
     bleed=False：插圖真的去得掉背景，維持置中留白，比較克制。
+    主體自己浮沉擺盪，米色紙不動——動的是畫面裡的東西，不是鏡頭。
     """
     im = canvas.copy()
     if bleed:
@@ -141,17 +291,32 @@ def frame(canvas, illus, zoom, caption, cap_font, bleed, drift=(0, 0)):
         r = max(W / illus.width, ILLUS_H / illus.height) * zoom
         w, h = int(illus.width * r), int(illus.height * r)
         sm = illus.resize((w, h), Image.LANCZOS)
-        # 漂移要夾在裁切框的餘裕內，超出去會露出黑邊
-        sx, sy = (w - W) // 2, (h - ILLUS_H) // 2
-        x = max(0, min(w - W, sx + int(drift[0])))
-        y = max(0, min(h - ILLUS_H, sy + int(drift[1])))
-        im.paste(sm.crop((x, y, x + W, y + ILLUS_H)), (0, ILLUS_TOP))
+
+        def win(mul):
+            # 漂移要夾在裁切框的餘裕內，超出去會露出黑邊
+            sx, sy = (w - W) // 2, (h - ILLUS_H) // 2
+            x = max(0, min(w - W, sx + int(drift[0] * mul)))
+            y = max(0, min(h - ILLUS_H, sy + int(drift[1] * mul)))
+            return sm.crop((x, y, x + W, y + ILLUS_H))
+
+        band = Image.composite(win(1.0), win(PARALLAX_FAR), mask)
+        im.paste(ripple(band, t, RIPPLE_AMP), (0, ILLUS_TOP))
     else:
         box = int(min(ILLUS_H, 820) * zoom)
         ratio = min(box / illus.width, box / illus.height)
         w, h = max(1, int(illus.width * ratio)), max(1, int(illus.height * ratio))
         sm = illus.convert("RGBA").resize((w, h), Image.LANCZOS)
-        im.paste(sm, ((W - w) // 2, ILLUS_TOP + (ILLUS_H - h) // 2), sm)
+        # 先鑲一圈透明邊再折射：ripple 的 clip 會把最邊那一列拉長，
+        # 緊貼主體時等於把魚身抹出去，留白邊才不會咬到內容
+        pad = int(CUTOUT_RIPPLE_AMP) + 2
+        room = Image.new("RGBA", (w + pad * 2, h + pad * 2), (0, 0, 0, 0))
+        room.paste(sm, (pad, pad), sm)
+        room = ripple(room, t, CUTOUT_RIPPLE_AMP)
+        bob = math.sin(t / BOB_PERIOD * 2 * math.pi) * BOB_AMP
+        sway = math.sin(t / SWAY_PERIOD * 2 * math.pi + 0.7) * SWAY_AMP
+        x = (W - room.width) // 2 + int(sway)
+        y = ILLUS_TOP + (ILLUS_H - room.height) // 2 + int(bob)
+        im.paste(room, (x, y), room)
     if caption:
         d = ImageDraw.Draw(im)
         lines = wrap(d, caption, cap_font, W - PAD * 2)
@@ -246,7 +411,8 @@ def sentence_starts(sents, marks, total):
     return out
 
 
-def build(knowledge, illustration, out_path, tmp=None, keep=False):
+def build(knowledge, illustration, out_path, tmp=None, keep=False, layers=None):
+    """layers 有給就走分件版（各件各自動），沒給或不合格就走原本的單張版。"""
     tmp = tmp or tempfile.mkdtemp(prefix="igexp_")
     from datetime import datetime
 
@@ -273,12 +439,21 @@ def build(knowledge, illustration, out_path, tmp=None, keep=False):
     # ② 逐格算圖
     # gpt-image 常常無視「pure white background」直接畫整片場景。去背之後若幾乎沒縮小，
     # 代表本來就沒有白底可去 → 改走滿版，不要硬擠成一塊浮在紙上的方框。
-    cut = cutout(illustration)
-    bleed = cut.width * cut.height > 0.82 * illustration.width * illustration.height
-    illus = illustration.convert("RGB") if bleed else cut
-    print(
-        f"  插圖版式：{'滿版（原圖是完整場景）' if bleed else '去背置中'}", flush=True
+    # 走分件時 illustration 是 None——單張根本沒生，這裡不能無條件去背
+    cut = None if layers else cutout(illustration)
+    bleed = (
+        False
+        if layers
+        else cut.width * cut.height > 0.82 * illustration.width * illustration.height
     )
+    illus = None if layers else (illustration.convert("RGB") if bleed else cut)
+    if layers:
+        print(f"  插圖版式：分件 {len(layers)} 件 {[m for m, _ in layers]}", flush=True)
+    else:
+        print(
+            f"  插圖版式：{'滿版（原圖是完整場景）' if bleed else '去背置中'}",
+            flush=True,
+        )
     canvas = base_canvas(
         knowledge["title_zh"],
         knowledge["title_en"],
@@ -325,6 +500,7 @@ def build(knowledge, illustration, out_path, tmp=None, keep=False):
     ]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
 
+    mask = near_mask() if bleed else None  # 遠近權重整支不變，只算一次
     t, n = 0.0, 0
     while t < total:
         # 鏡頭：整支從 0.94 緩推到 1.06，不做花俏運鏡——內容是主角
@@ -344,9 +520,12 @@ def build(knowledge, illustration, out_path, tmp=None, keep=False):
             if t >= t0:
                 cap = x
         try:
-            proc.stdin.write(
-                frame(canvas, illus, zoom, cap, cap_font, bleed, drift).tobytes()
+            im = (
+                frame_layered(canvas, layers, cap, cap_font, t, total)
+                if layers
+                else frame(canvas, illus, zoom, cap, cap_font, bleed, drift, t, mask)
             )
+            proc.stdin.write(im.tobytes())
         except BrokenPipeError:
             raise RuntimeError(
                 f"ffmpeg 在第 {n} 格（{t:.1f}s / 共 {total:.1f}s）就結束了——"
@@ -404,11 +583,15 @@ def main():
         )
         return 0
 
+    # 先試分件。Claude 判斷這題沒有前後景就不會給 layers，任何一件不合格也會回 None，
+    # 兩種情況都退回單張插圖，不影響今天出不出得了片。
+    # ⚠️ 順序不能顛倒：先生單張再生分件的話，分件成功時那張單張就是白花的錢。
     print("→ 產生插圖（OpenAI）...", flush=True)
-    illus = gp.generate_illustration(k["illustration_prompt"])
+    layers = gp.layers_or_none(k.get("layers"))
+    illus = None if layers else gp.generate_illustration(k["illustration_prompt"])
 
     print("→ 配音與算圖...", flush=True)
-    secs = build(k, illus, out, keep=keep)
+    secs = build(k, illus, out, keep=keep, layers=layers)
     print(f"✅ {out}（{secs:.1f} 秒）", flush=True)
 
 
