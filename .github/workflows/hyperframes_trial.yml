@@ -35,8 +35,16 @@ jobs:
         run: |
           npx --yes hyperframes@0.8.30 telemetry disable
           npx --yes hyperframes@0.8.30 browser ensure
-          npx --yes hyperframes@0.8.30 doctor --json | tee doctor.json
-          node -e "process.exit(JSON.parse(require('fs').readFileSync('doctor.json','utf8')).ok ? 0 : 1)"
+          npx --yes hyperframes@0.8.30 doctor --json > doctor.json
+          # doctor 的頂層 .ok 會被選配套件（MusicGen／Whisper）拉成 false，
+          # 只卡渲染真正需要的三項
+          node -e "
+            const d = JSON.parse(require('fs').readFileSync('doctor.json','utf8'));
+            const need = ['Chrome', 'FFmpeg', 'FFprobe'];
+            const bad = d.checks.filter(c => need.includes(c.name) && !c.ok);
+            for (const c of d.checks.filter(c => need.includes(c.name))) console.log(c.name, c.ok, c.detail);
+            if (bad.length) { console.error('缺少必要元件：' + bad.map(c => c.name).join(', ')); process.exit(1); }
+          "
 
       - name: check（lint + runtime + 版面 + 對比）
         run: npx --yes hyperframes@0.8.30 check --snapshots
