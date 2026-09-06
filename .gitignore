@@ -70,3 +70,8 @@ design/mid_autumn_edm/mid-autumn-bbq-set.html
 # repo 為 public，改由 gmail_monthly_cleanup.py 寄 Email，本機仍會留一份。（2026-09-03）
 reports/gmail_cleanup_*.md
 day/gmail日報_*.pdf
+
+# HyperFrames 試算：共用檔的唯一來源是 hyperframes_trial/{shared,vendor}/
+# 各專案內的副本由 sync.sh 產生，不進版控（避免四份漂移）
+hyperframes_trial/*/shared/
+hyperframes_trial/*/vendor/

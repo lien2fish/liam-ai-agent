@@ -4,68 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1080, height=1920" />
     <title>你家冰箱凍不出這種魚</title>
+    <link rel="stylesheet" href="shared/brand.css" />
     <script src="vendor/gsap.min.js"></script>
+    <script src="shared/brand.js"></script>
     <style>
-      /* 跨平台字型：macOS 走 PingFang，Linux runner 走 Noto Sans CJK。
-         renderer 不會自動供應系統字型，沒有 @font-face 宣告就會靜默掉成預設字體。 */
-      @font-face { font-family: "PingFang TC"; src: local("PingFang TC"); }
-      @font-face { font-family: "Noto Sans CJK TC"; src: local("Noto Sans CJK TC"); }
-      @font-face { font-family: "Noto Sans TC"; src: local("Noto Sans TC"); }
-
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body {
-        width: 1080px; height: 1920px; overflow: hidden; background: #040e18;
-      }
-      body {
-        font-family: "PingFang TC", "Noto Sans CJK TC", "Noto Sans TC", sans-serif;
-        font-weight: 600;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
-      .clip { position: absolute; inset: 0; }
-      .sin { position: absolute; inset: 0; }
-
-      /* ---- 全片共用底 ---- */
-      #bg { background: linear-gradient(180deg, #091a29 0%, #040e18 100%); }
-      #bg .glow {
-        position: absolute; left: 0; right: 0; top: 0; height: 1100px;
-        background: radial-gradient(60% 55% at 50% 30%, rgba(122,190,226,0.13), rgba(122,190,226,0) 70%);
-      }
-      #bg .vignette {
-        position: absolute; inset: 0;
-        background: radial-gradient(75% 60% at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 100%);
-      }
-
-      /* ---- 文字 ---- */
-      .stack { position: absolute; left: 60px; right: 60px; text-align: center; }
-      .line { display: block; color: #eef4f9; line-height: 1.34; letter-spacing: 0.02em; }
-      .l-hook { font-size: 108px; font-weight: 700; }
-      .l-body { font-size: 66px; }
-      .l-small { font-size: 50px; color: #8098ac; }
-      .gold { color: #d6a85c; }
-      .cold { color: #7abee2; }
-      .warn { color: #ce6a4a; }
-      .dim  { color: #8098ac; }
-
-      #brand-top {
-        position: absolute; left: 0; right: 0; top: 270px; text-align: center;
-        font-size: 46px; color: #d6a85c; letter-spacing: 0.06em;
-      }
-      #brand-bottom {
-        position: absolute; left: 0; right: 0; top: 1830px; text-align: center;
-        font-size: 40px; color: #8098ac; letter-spacing: 0.14em;
-      }
-
-      .tag {
-        position: absolute; left: 0; right: 0; text-align: center;
-        font-size: 44px; letter-spacing: 0.34em; color: #7abee2;
-      }
-
-      /* ---- 冰晶 ---- */
-      .xtal { display: block; position: absolute; color: #7abee2; }
-
-      /* ---- 溫度尺 ---- */
+      /* 溫度尺：750px 對應 0°C～−20°C ⇒ y = |溫度|/20 × 750
+         0°C→0　−1°C→37.5　−5°C→187.5　−18°C→675
+         ⚠️ 這些 top 是相對 #scale-wrap，不要填絕對頁面座標 */
       #scale-wrap { position: absolute; left: 0; right: 0; top: 690px; height: 780px; }
       #scale-bar {
         position: absolute; left: 330px; top: 0; width: 26px; height: 750px;
@@ -74,33 +19,29 @@
       }
       #scale-band {
         position: absolute; left: 318px; top: 37px; width: 50px; height: 150px;
-        border-radius: 25px; background: #7abee2;
+        border-radius: 25px; background: var(--cold);
       }
-      .tick { position: absolute; left: 386px; font-size: 40px; color: #8098ac; letter-spacing: 0.04em; }
+      .tick { position: absolute; left: 386px; font-size: 40px; color: var(--dim); letter-spacing: 0.04em; }
       #band-label {
         position: absolute; left: 386px; top: 90px; font-size: 46px;
-        color: #d6a85c; letter-spacing: 0.04em;
+        color: var(--gold); letter-spacing: 0.04em;
       }
 
-      /* ---- 細胞 ---- */
       .cellgrid { position: absolute; left: 120px; top: 760px; width: 840px; height: 430px; }
       .cell {
         position: absolute; width: 260px; height: 200px; border-radius: 26px;
-        border: 5px solid #2f5c78; background: rgba(122,190,226,0.05);
+        border: 5px solid var(--line-idle); background: rgba(122, 190, 226, 0.05);
       }
 
       .drop {
-        position: absolute; width: 18px; height: 26px; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
-        background: #7abee2;
+        position: absolute; width: 18px; height: 26px;
+        border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: var(--cold);
       }
-
       #bigcell {
         position: absolute; left: 280px; top: 720px; width: 520px; height: 380px;
-        border-radius: 44px; border: 6px solid #ce6a4a; background: rgba(206,106,74,0.07);
+        border-radius: 44px; border: 6px solid var(--warn); background: rgba(206, 106, 74, 0.07);
       }
-      #crack {
-        position: absolute; left: 280px; top: 720px; width: 520px; height: 380px;
-      }
+      #crack { position: absolute; left: 280px; top: 720px; width: 520px; height: 380px; }
     </style>
   </head>
   <body>
@@ -113,188 +54,146 @@
       data-width="1080"
       data-height="1920"
     >
-      <!-- 底：全片 -->
-      <div id="bg" class="clip" data-start="0" data-duration="24" data-track-index="0">
-        <div class="glow"></div>
-        <div class="vignette"></div>
-        <div id="brand-top">海鮮冷知識</div>
-        <div id="brand-bottom">連老闆 · 產地到餐桌</div>
-      </div>
+      <div id="bg" class="clip" data-start="0" data-duration="24" data-track-index="0"></div>
 
-      <!-- 1. HOOK 0–3 ：第一格就是 Shorts 縮圖，開場即完整可讀 -->
+      <!-- 1. HOOK 0–3：第一格＝Shorts 縮圖，開場即完整可讀 -->
       <section id="s1" class="clip" data-start="0" data-duration="3" data-track-index="1">
         <div class="sin" id="s1-in">
-        <div class="xtal" id="x1" style="left: 240px; top: 480px; width: 600px; height: 600px; opacity: 0.22"></div>
-        <div class="stack" id="s1-text" style="top: 800px">
-          <span class="line l-hook">你家冰箱</span>
-          <span class="line l-hook gold">凍不出這種魚</span>
-        </div>
-        <div class="tag" id="s1-tag" style="top: 1180px">急 凍 的 真 相</div>
+          <div class="xtal" id="x1" style="left: 240px; top: 480px; width: 600px; height: 600px; opacity: 0.22"></div>
+          <div class="stack" id="s1-text" style="top: 800px">
+            <span class="line l-hook">你家冰箱</span>
+            <span class="line l-hook gold">凍不出這種魚</span>
+          </div>
+          <div class="tag" id="s1-tag" style="top: 1180px">急 凍 的 真 相</div>
         </div>
       </section>
 
       <!-- 2. ZONE 3–6.5 -->
       <section id="s2" class="clip" data-start="3" data-duration="3.5" data-track-index="2">
         <div class="sin" id="s2-in">
-        <div class="stack" id="s2-top" style="top: 380px">
-          <span class="line l-body">水在 −1°C 到 −5°C 之間結冰</span>
-        </div>
-        <div id="scale-wrap">
-          <div id="scale-bar"></div>
-          <div id="scale-band"></div>
-          <div class="tick" style="top: -22px">0°C</div>
-          <div class="tick" style="top: 655px">−18°C</div>
-          <div id="band-label">最大冰晶生成帶</div>
-        </div>
-        <div class="stack" id="s2-bottom" style="top: 1560px">
-          <span class="line l-body cold">八成的水分</span>
-          <span class="line l-body cold">都在這裡變成冰晶</span>
-        </div>
+          <div class="stack" id="s2-top" style="top: 380px">
+            <span class="line l-body">水在 −1°C 到 −5°C 之間結冰</span>
+          </div>
+          <div id="scale-wrap">
+            <div id="scale-bar"></div>
+            <div id="scale-band"></div>
+            <div class="tick" style="top: -22px">0°C</div>
+            <div class="tick" style="top: 655px">−18°C</div>
+            <div id="band-label">最大冰晶生成帶</div>
+          </div>
+          <div class="stack" id="s2-bottom" style="top: 1560px">
+            <span class="line l-body cold">八成的水分</span>
+            <span class="line l-body cold">都在這裡變成冰晶</span>
+          </div>
         </div>
       </section>
 
       <!-- 3. SLOW 6.5–11.5 -->
       <section id="s3" class="clip" data-start="6.5" data-duration="5" data-track-index="3">
         <div class="sin" id="s3-in">
-        <div class="tag" id="s3-tag" style="top: 420px; color: #ce6a4a">慢 慢 通 過 這 一 段</div>
-        <div class="cellgrid" id="grid-slow"></div>
-        <div class="stack" id="s3-text" style="top: 1340px">
-          <span class="line l-body">冰晶就長得又大又尖</span>
-          <span class="line l-body warn">撐破細胞</span>
-        </div>
+          <div class="tag warn" id="s3-tag" style="top: 420px">慢 慢 通 過 這 一 段</div>
+          <div class="cellgrid" id="grid-slow"></div>
+          <div class="stack" id="s3-text" style="top: 1340px">
+            <span class="line l-body">冰晶就長得又大又尖</span>
+            <span class="line l-body warn">撐破細胞</span>
+          </div>
         </div>
       </section>
 
       <!-- 4. FAST 11.5–16 -->
       <section id="s4" class="clip" data-start="11.5" data-duration="4.5" data-track-index="4">
         <div class="sin" id="s4-in">
-        <div class="tag" id="s4-tag" style="top: 420px">快 速 通 過</div>
-        <div class="cellgrid" id="grid-fast"></div>
-        <div class="stack" id="s4-text" style="top: 1340px">
-          <span class="line l-body">冰晶細小</span>
-          <span class="line l-body cold">細胞保持完整</span>
-        </div>
+          <div class="tag" id="s4-tag" style="top: 420px">快 速 通 過</div>
+          <div class="cellgrid" id="grid-fast"></div>
+          <div class="stack" id="s4-text" style="top: 1340px">
+            <span class="line l-body">冰晶細小</span>
+            <span class="line l-body cold">細胞保持完整</span>
+          </div>
         </div>
       </section>
 
       <!-- 5. DRIP 16–20 -->
       <section id="s5" class="clip" data-start="16" data-duration="4" data-track-index="5">
         <div class="sin" id="s5-in">
-        <div class="tag" id="s5-tag" style="top: 460px; color: #ce6a4a">細 胞 破 了</div>
-        <div id="bigcell"></div>
-        <div id="crack"></div>
-        <div id="drops"></div>
-        <div class="stack" id="s5-text" style="top: 1440px">
-          <span class="line l-body">解凍時</span>
-          <span class="line l-body warn">鮮味隨著水流走</span>
-        </div>
+          <div class="tag warn" id="s5-tag" style="top: 460px">細 胞 破 了</div>
+          <div id="bigcell"></div>
+          <div id="crack"></div>
+          <div id="drops"></div>
+          <div class="stack" id="s5-text" style="top: 1440px">
+            <span class="line l-body">解凍時</span>
+            <span class="line l-body warn">鮮味隨著水流走</span>
+          </div>
         </div>
       </section>
 
       <!-- 6. END 20–24 -->
       <section id="s6" class="clip" data-start="20" data-duration="4" data-track-index="6">
         <div class="sin" id="s6-in">
-        <div class="xtal" id="x6" style="left: 340px; top: 560px; width: 400px; height: 400px; opacity: 0.3"></div>
-        <div class="stack" id="s6-a" style="top: 940px">
-          <span class="line l-body dim">急凍不是凍得更冷</span>
-        </div>
-        <div class="stack" id="s6-b" style="top: 1090px">
-          <span class="line l-hook gold">是凍得更快</span>
-        </div>
+          <div class="xtal" id="x6" style="left: 340px; top: 560px; width: 400px; height: 400px; opacity: 0.3"></div>
+          <div class="stack" id="s6-a" style="top: 940px">
+            <span class="line l-body dim">急凍不是凍得更冷</span>
+          </div>
+          <div class="stack" id="s6-b" style="top: 1090px">
+            <span class="line l-hook gold">是凍得更快</span>
+          </div>
         </div>
       </section>
     </div>
 
     <script>
-      // ---- 六角冰晶：三條交叉主軸 + 兩層分枝，與 Python 版同一套幾何 ----
-      function crystalMarkup(width) {
-        const parts = [];
-        for (let k = 0; k < 3; k++) {
-          const a = (Math.PI / 180) * (60 * k);
-          const ca = Math.cos(a), sa = Math.sin(a);
-          parts.push(
-            '<line x1="' + (-90 * ca) + '" y1="' + (-90 * sa) +
-            '" x2="' + (90 * ca) + '" y2="' + (90 * sa) + '"/>'
-          );
-          for (const s of [0.45, 0.75]) {
-            for (const sign of [-1, 1]) {
-              const bx = 90 * s * ca * sign, by = 90 * s * sa * sign;
-              for (const d of [45, -45]) {
-                const ba = a + (Math.PI / 180) * d;
-                parts.push(
-                  '<line x1="' + bx + '" y1="' + by +
-                  '" x2="' + (bx + 90 * 0.22 * Math.cos(ba)) +
-                  '" y2="' + (by + 90 * 0.22 * Math.sin(ba)) + '"/>'
-                );
-              }
-            }
-          }
-        }
-        return '<svg viewBox="-100 -100 200 200" width="100%" height="100%">' +
-          '<g stroke="currentColor" stroke-width="' + width +
-          '" fill="none" stroke-linecap="round">' + parts.join("") + "</g></svg>";
-      }
-
+      brandChrome("bg");
       document.getElementById("x1").innerHTML = crystalMarkup(2.4);
       document.getElementById("x6").innerHTML = crystalMarkup(3);
 
-      // ---- 細胞格 ----
-      function buildGrid(host, xtalSize, xtalWidth, cellsWithXtal) {
+      function buildGrid(host, xtalSize, xtalWidth, color) {
         for (let i = 0; i < 6; i++) {
           const col = i % 3, row = (i / 3) | 0;
           const cell = document.createElement("div");
           cell.className = "cell";
-          cell.id = host.id + "-cell-" + i;
           cell.style.left = col * 290 + "px";
           cell.style.top = row * 230 + "px";
           host.appendChild(cell);
 
-          if (cellsWithXtal.includes(i)) {
-            const x = document.createElement("div");
-            x.className = "xtal " + host.id + "-x";
-            x.style.left = col * 290 + (260 - xtalSize) / 2 + "px";
-            x.style.top = row * 230 + (200 - xtalSize) / 2 + "px";
-            x.style.width = xtalSize + "px";
-            x.style.height = xtalSize + "px";
-            x.innerHTML = crystalMarkup(xtalWidth);
-            host.appendChild(x);
-          }
+          const x = document.createElement("div");
+          x.className = "xtal";
+          x.style.left = col * 290 + (260 - xtalSize) / 2 + "px";
+          x.style.top = row * 230 + (200 - xtalSize) / 2 + "px";
+          x.style.width = xtalSize + "px";
+          x.style.height = xtalSize + "px";
+          x.style.color = color;
+          x.innerHTML = crystalMarkup(xtalWidth);
+          host.appendChild(x);
         }
       }
-      buildGrid(document.getElementById("grid-slow"), 190, 3.4, [0, 1, 2, 3, 4, 5]);
-      buildGrid(document.getElementById("grid-fast"), 62, 3, [0, 1, 2, 3, 4, 5]);
-      document.querySelectorAll("#grid-slow .xtal").forEach((e) => (e.style.color = "#ce6a4a"));
+      buildGrid(document.getElementById("grid-slow"), 190, 3.4, "#ce6a4a");
+      buildGrid(document.getElementById("grid-fast"), 62, 3, "#7abee2");
 
-      // ---- 裂縫 ----
       document.getElementById("crack").innerHTML =
         '<svg viewBox="0 0 520 380" width="100%" height="100%">' +
         '<path id="crack-path" d="M 40 372 L 96 292 L 62 232 L 128 168 L 104 96 L 176 34" ' +
-        'stroke="#ce6a4a" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round" '
-        + 'stroke-dasharray="620" stroke-dashoffset="620"/></svg>';
+        'stroke="#ce6a4a" stroke-width="7" fill="none" stroke-linecap="round" ' +
+        'stroke-linejoin="round" stroke-dasharray="620" stroke-dashoffset="620"/></svg>';
 
-      // ---- 流失的水滴（位置由索引決定，無亂數） ----
       const dropsHost = document.getElementById("drops");
       for (let i = 0; i < 9; i++) {
         const d = document.createElement("div");
         d.className = "drop";
-        d.id = "drop-" + i;
         d.style.left = 318 + i * 52 + "px";
         d.style.top = 1090 + (i % 3) * 14 + "px";
         dropsHost.appendChild(d);
       }
 
-      // =====================  時間軸  =====================
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
 
-      // --- 1. HOOK：t=0 就要完整可讀（Shorts 第一格＝縮圖）---
+      // 1. HOOK：t=0 就要完整可讀
       tl.fromTo("#x1", { rotation: -6, scale: 0.94 }, { rotation: 6, scale: 1.06, duration: 3, ease: "none" }, 0);
       tl.fromTo("#s1-text", { scale: 1 }, { scale: 1.045, duration: 3, ease: "none" }, 0);
       tl.fromTo("#s1-tag", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 0.5);
       tl.to("#s1-in", { opacity: 0, duration: 0.35, ease: "power1.in" }, 2.65);
       tl.set("#s1-in", { opacity: 0 }, 3);
 
-      // --- 2. ZONE ---
+      // 2. ZONE
       tl.fromTo("#s2-top", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 3.05);
       tl.fromTo("#scale-bar", { scaleY: 0, transformOrigin: "50% 0%" }, { scaleY: 1, duration: 0.8, ease: "power2.out" }, 3.3);
       tl.fromTo(".tick", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, stagger: 0.12 }, 3.9);
@@ -305,7 +204,7 @@
       tl.to("#s2-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 6.2);
       tl.set("#s2-in", { opacity: 0 }, 6.5);
 
-      // --- 3. SLOW：冰晶長大撐破細胞 ---
+      // 3. SLOW：冰晶長大撐破細胞
       tl.fromTo("#s3-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 6.6);
       tl.fromTo("#grid-slow .cell", { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.5, stagger: 0.06, ease: "power2.out" }, 6.8);
       tl.fromTo("#grid-slow .xtal", { scale: 0.12, rotation: -25, autoAlpha: 0 }, { scale: 1, rotation: 0, autoAlpha: 1, duration: 2.6, stagger: 0.12, ease: "power1.inOut" }, 7.4);
@@ -315,7 +214,7 @@
       tl.to("#s3-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 11.2);
       tl.set("#s3-in", { opacity: 0 }, 11.5);
 
-      // --- 4. FAST：小冰晶瞬間出現，細胞完好 ---
+      // 4. FAST：小冰晶瞬間出現，細胞完好
       tl.fromTo("#s4-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out" }, 11.6);
       tl.fromTo("#grid-fast .cell", { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.3, stagger: 0.04, ease: "power2.out" }, 11.75);
       tl.fromTo("#grid-fast .xtal", { scale: 0.3, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.3, stagger: 0.05, ease: "power3.out" }, 12.4);
@@ -324,7 +223,7 @@
       tl.to("#s4-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 15.7);
       tl.set("#s4-in", { opacity: 0 }, 16);
 
-      // --- 5. DRIP ---
+      // 5. DRIP
       tl.fromTo("#s5-tag", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, 16.1);
       tl.fromTo("#bigcell", { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "power2.out" }, 16.2);
       tl.to("#crack-path", { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" }, 16.8);
@@ -334,7 +233,7 @@
       tl.to("#s5-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 19.7);
       tl.set("#s5-in", { opacity: 0 }, 20);
 
-      // --- 6. END ---
+      // 6. END
       tl.fromTo("#x6", { scale: 0.7, rotation: -12 }, { scale: 1, rotation: 0, duration: 1.2, ease: "power3.out" }, 20.1);
       tl.fromTo("#s6-a", { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 20.3);
       tl.fromTo("#s6-b", { autoAlpha: 0, y: 34, scale: 0.9 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.7)" }, 21.0);

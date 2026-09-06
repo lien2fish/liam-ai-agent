@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="zh-Hant" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>魚探機看到的其實不是魚</title>
+    <link rel="stylesheet" href="shared/brand.css" />
+    <script src="vendor/gsap.min.js"></script>
+    <script src="shared/brand.js"></script>
+    <style>
+      /* 船底：上緣 540±150 於 y=560，下緣 540±105 於 y=630 */
+      #hull { position: absolute; left: 380px; top: 552px; width: 320px; height: 88px; }
+
+      /* 聲波：每一道是獨立元素，靠 scale 擴散。
+         非等比縮放會讓線變粗，所以初始 stroke 給細一點。 */
+      .wave { position: absolute; width: 700px; height: 320px; margin-left: -350px; }
+      #waves-down { position: absolute; left: 540px; top: 630px; }
+      #waves-up   { position: absolute; left: 540px; top: 1010px; }
+      #waves-up .wave { margin-top: -320px; }
+
+      #fish {
+        position: absolute; left: 275px; top: 905px; width: 530px; height: 350px;
+        color: var(--cold);
+      }
+      #bladder {
+        position: absolute; left: 275px; top: 905px; width: 530px; height: 350px;
+        color: var(--gold);
+      }
+
+      /* 魚探機螢幕：540±330 於 y 660～1130 */
+      #screen {
+        position: absolute; left: 210px; top: 660px; width: 660px; height: 470px;
+        border-radius: 18px; border: 4px solid var(--dim);
+      }
+      #arch { position: absolute; left: 210px; top: 660px; width: 660px; height: 470px; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="vessel01"
+      data-start="0"
+      data-duration="25.5"
+      data-fps="24"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="25.5" data-track-index="0"></div>
+
+      <!-- 1. HOOK 0–3.2 -->
+      <section id="s1" class="clip" data-start="0" data-duration="3.2" data-track-index="1">
+        <div class="sin" id="s1-in">
+          <div class="stack" id="s1-text" style="top: 800px">
+            <span class="line l-hook">魚探機看到的</span>
+            <span class="line l-hook gold">其實不是魚</span>
+          </div>
+          <div class="tag" id="s1-tag" style="top: 1180px">聲 納 的 原 理</div>
+        </div>
+      </section>
+
+      <!-- 2. SONAR 3.2–7.4 -->
+      <section id="s2" class="clip" data-start="3.2" data-duration="4.2" data-track-index="2">
+        <div class="sin" id="s2-in">
+          <div class="stack" id="s2-top" style="top: 380px">
+            <span class="line l-body">船底發出聲波</span>
+          </div>
+          <div id="hull"></div>
+          <div id="waves-down"></div>
+          <div id="fish-a"></div>
+          <div class="stack" id="s2-bottom" style="top: 1400px">
+            <span class="line l-body cold">打向水裡</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. SONAR2 7.4–12.4 -->
+      <section id="s3" class="clip" data-start="7.4" data-duration="5" data-track-index="3">
+        <div class="sin" id="s3-in">
+          <div class="stack" id="s3-top" style="top: 380px">
+            <span class="line l-body">魚的肌肉密度</span>
+            <span class="line l-body">和水幾乎一樣</span>
+          </div>
+          <div id="fish-b"></div>
+          <div class="caption" id="s3-cap" style="top: 1290px">肌肉 ≈ 水的密度</div>
+          <div class="stack" id="s3-text" style="top: 1420px">
+            <span class="line l-body dim">聲波幾乎不反射</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. BLADDER 12.4–17.2 -->
+      <section id="s4" class="clip" data-start="12.4" data-duration="4.8" data-track-index="4">
+        <div class="sin" id="s4-in">
+          <div class="stack" id="s4-top" style="top: 380px">
+            <span class="line l-body">會反射的</span>
+          </div>
+          <div id="waves-up"></div>
+          <div id="fish"></div>
+          <div id="bladder"></div>
+          <div class="stack" id="s4-text" style="top: 1400px">
+            <span class="line l-body gold">是魚鰾裡的空氣</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. ARCH 17.2–21.5 -->
+      <section id="s5" class="clip" data-start="17.2" data-duration="4.3" data-track-index="5">
+        <div class="sin" id="s5-in">
+          <div class="tag" id="s5-tag" style="top: 440px">螢 幕 上 的 弧 形</div>
+          <div id="screen"></div>
+          <div id="arch"></div>
+          <div class="stack" id="s5-text" style="top: 1300px">
+            <span class="line l-body">是魚游過</span>
+            <span class="line l-body gold">聲波錐的軌跡</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. END 21.5–25.5 -->
+      <section id="s6" class="clip" data-start="21.5" data-duration="4" data-track-index="6">
+        <div class="sin" id="s6-in">
+          <div id="fish-c"></div>
+          <div class="stack" id="s6-a" style="top: 1200px">
+            <span class="line l-body dim">看不到魚鰾的魚</span>
+          </div>
+          <div class="stack" id="s6-b" style="top: 1350px">
+            <span class="line l-hook gold">就不容易被找到</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      brandChrome("bg");
+
+      const FW = 230, FH = 120;
+
+      // 船底梯形
+      document.getElementById("hull").innerHTML =
+        '<svg viewBox="0 0 320 88" width="100%" height="100%">' +
+        '<polygon points="8,8 312,8 267,80 53,80" fill="none" stroke="#eef4f9" ' +
+        'stroke-width="4" stroke-linejoin="round"/></svg>';
+
+      // 三個場景各放一條魚（clip 之間不共用元素，避免跨段狀態互相污染）
+      for (const id of ["fish-a", "fish-b", "fish-c", "fish"]) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        el.className = "svgbox";
+        el.style.cssText =
+          "position:absolute; left:275px; top:905px; width:530px; height:350px;";
+        el.innerHTML = fishMarkup(FW, FH, 5);
+      }
+      document.getElementById("fish-a").style.color = "#7abee2";
+      document.getElementById("fish-b").style.color = "#8098ac";
+      document.getElementById("fish-c").style.color = "#8098ac";
+      document.getElementById("fish").style.color = "#7abee2";
+      document.getElementById("bladder").innerHTML = bladderMarkup(FW, FH, 6);
+
+      // 聲波：dir=-1 由船往下、dir=+1 由魚往上
+      function buildWaves(hostId, count, dir) {
+        const host = document.getElementById(hostId);
+        for (let i = 0; i < count; i++) {
+          const d = document.createElement("div");
+          d.className = "wave";
+          d.id = hostId + "-w" + i;
+          d.innerHTML =
+            '<svg viewBox="-350 ' + (dir < 0 ? "0" : "-320") + ' 700 320" ' +
+            'width="100%" height="100%">' +
+            '<path d="M -330 0 A 330 300 0 0 ' + (dir < 0 ? 0 : 1) + ' 330 0" ' +
+            'fill="none" stroke="' + (dir < 0 ? "#4678a0" : "#d6a85c") +
+            '" stroke-width="3.5" stroke-linecap="round"/></svg>';
+          host.appendChild(d);
+        }
+      }
+      buildWaves("waves-down", 4, -1);
+      buildWaves("waves-up", 3, 1);
+
+      // 魚探機的弧：pathLength 固定成 1000，dasharray 就不必量實際長度
+      document.getElementById("arch").innerHTML =
+        '<svg viewBox="0 0 660 470" width="100%" height="100%">' +
+        '<path id="arch-path" d="M 50 380 C 190 80, 470 80, 610 380" pathLength="1000" ' +
+        'fill="none" stroke="#d6a85c" stroke-width="7" stroke-linecap="round" ' +
+        'stroke-dasharray="1000" stroke-dashoffset="1000"/></svg>';
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // 1. HOOK
+      tl.fromTo("#s1-text", { scale: 1 }, { scale: 1.04, duration: 3.2, ease: "none" }, 0);
+      tl.fromTo("#s1-tag", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 0.5);
+      tl.to("#s1-in", { opacity: 0, duration: 0.35, ease: "power1.in" }, 2.85);
+      tl.set("#s1-in", { opacity: 0 }, 3.2);
+
+      // 2. SONAR：船底發波、往下擴散
+      tl.fromTo("#s2-top", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 3.25);
+      tl.fromTo("#hull", { autoAlpha: 0, y: -24 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 3.4);
+      tl.fromTo("#fish-a", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6 }, 3.9);
+      tl.fromTo("#waves-down .wave",
+        { scale: 0.18, autoAlpha: 0.95, transformOrigin: "50% 0%" },
+        { scale: 1.5, autoAlpha: 0, duration: 1.8, stagger: 0.42, repeat: 1, ease: "none" }, 3.9);
+      tl.fromTo("#s2-bottom", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 5.0);
+      tl.to("#s2-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 7.1);
+      tl.set("#s2-in", { opacity: 0 }, 7.4);
+
+      // 3. SONAR2：魚變暗，聲波幾乎不反射
+      tl.fromTo("#s3-top", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 7.45);
+      tl.fromTo("#fish-b", { autoAlpha: 0, scale: 0.95 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "power2.out" }, 7.7);
+      tl.fromTo("#s3-cap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 9.0);
+      tl.fromTo("#s3-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 9.8);
+      tl.to("#s3-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 12.1);
+      tl.set("#s3-in", { opacity: 0 }, 12.4);
+
+      // 4. BLADDER：魚鰾亮起、聲波往上反射
+      tl.fromTo("#s4-top", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 12.45);
+      tl.fromTo("#fish", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6 }, 12.6);
+      tl.fromTo("#bladder", { autoAlpha: 0, scale: 0.6, transformOrigin: "50% 50%" }, { autoAlpha: 1, scale: 1, duration: 0.8, ease: "back.out(2)" }, 13.2);
+      tl.fromTo("#waves-up .wave",
+        { scale: 0.16, autoAlpha: 0.95, transformOrigin: "50% 100%" },
+        { scale: 1.5, autoAlpha: 0, duration: 1.6, stagger: 0.4, repeat: 1, ease: "none" }, 13.8);
+      tl.fromTo("#s4-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 14.4);
+      tl.to("#s4-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 16.9);
+      tl.set("#s4-in", { opacity: 0 }, 17.2);
+
+      // 5. ARCH：螢幕上的弧一筆畫出來
+      tl.fromTo("#s5-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 17.25);
+      tl.fromTo("#screen", { autoAlpha: 0, scale: 0.96 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "power2.out" }, 17.4);
+      tl.to("#arch-path", { strokeDashoffset: 0, duration: 1.6, ease: "power1.inOut" }, 18.0);
+      tl.fromTo("#s5-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 19.0);
+      tl.to("#s5-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 21.2);
+      tl.set("#s5-in", { opacity: 0 }, 21.5);
+
+      // 6. END
+      tl.fromTo("#fish-c", { autoAlpha: 0, x: 40 }, { autoAlpha: 0.55, x: 0, duration: 1.2, ease: "power2.out" }, 21.6);
+      tl.fromTo("#s6-a", { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 21.9);
+      tl.fromTo("#s6-b", { autoAlpha: 0, y: 34, scale: 0.9 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.7)" }, 22.6);
+
+      window.__timelines["vessel01"] = tl;
+    </script>
+  </body>
+</html>
