@@ -23,6 +23,8 @@ jobs:
             snaps: 1.6,5.2,9.5,14.5,18.7,23
           - project: vessel-01
             snaps: 1.6,5.5,9.9,14.8,19.4,23.5
+          - project: vessel-02
+            snaps: 1.7,5.5,9.9,14.3,18.6,23.3
 
     defaults:
       run:
@@ -41,6 +43,22 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg fonts-noto-cjk
           fc-list :lang=zh-tw family | sort -u | head
+
+      # vessel-02 的 NASA 衛星影像放私人 repo（沿用授權配樂的既有做法）
+      - name: 取衛星影像素材
+        if: matrix.project == 'vessel-02'
+        uses: actions/checkout@v4
+        with:
+          repository: lien2fish/liam-workspace
+          token: ${{ secrets.WORKSPACE_PAT }}
+          path: _workspace
+
+      - name: 放進專案
+        if: matrix.project == 'vessel-02'
+        run: |
+          mkdir -p assets
+          cp "$GITHUB_WORKSPACE/_workspace/assets/knowledge/nasa_malvinas_lights.jpg" assets/
+          ls -la assets/
 
       # shared/ 與 vendor/ 是唯一來源，各專案內的副本沒進版控
       - name: 同步共用檔
