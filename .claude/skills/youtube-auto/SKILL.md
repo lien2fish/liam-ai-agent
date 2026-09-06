@@ -29,7 +29,20 @@ description: 全自動 AI 影片頻道：The Unknown Hour（宇宙／古文明�
 | `SETUP.md` | 一次性人工設定步驟（建頻道/OAuth/Secrets） |
 
 ### 排程與發布
-⛔ **2026-09-05 停排程（Lien 指示）。** 從 `scheduler_worker/worker.js` 的 `SCHEDULE`
+⛔ **2026-09-06 起頻道停止上傳（Lien 決定）——長片與 Shorts 都停，等新機到手再討論方向。**
+不要主動提重啟；他要談的時候會自己開口。
+
+**兩道閘，任一道成立就不會產片：**
+1. Worker 的 `SCHEDULE` 與 `AUDITS["02:30"]` 已移除 02:07（09-05）。⚠️ **要 `wrangler deploy` 才生效**
+2. `yt_auto_post.yml` 加了 `confirm` 輸入、job 條件 `confirm == 'yes'`（09-06）。
+   Worker 的 dispatch 只送 `{ref:"main"}`、不帶 inputs → confirm 為空 → job 直接跳過。
+   **這道不需要部署，push 完就生效**，所以第一道沒做也擋得住。
+   手動要出一支：Actions → Run workflow → confirm 填 `yes`。
+
+⚠️ 09-06 早上（加閘門之前）還出了最後一支長片 https://youtu.be/vA7imLXtEps，
+   排定當天 18:00 公開——因為第一道閘沒部署。這正是為什麼補了第二道。
+
+**（原始停排程說明）** 從 `scheduler_worker/worker.js` 的 `SCHEDULE`
 拿掉 02:07，同時從 `AUDITS["02:30"]` 拿掉該時段（留著會每天誤報「沒執行」）。
 `yt_auto_post.yml` 本身與程式全部保留，要跑走 `workflow_dispatch`；要恢復就把兩處加回去。
 

@@ -5,10 +5,23 @@ on:
   # GitHub 的 schedule 誤點嚴重（實測延遲中位 37~689 分，最糟 23 小時），
   # 全部任務改由 Worker 定時 dispatch，GitHub 只負責執行。
   # ⛔ 不要把 cron 加回來——兩邊都留會一天觸發兩次。
+  #
+  # ⛔ 2026-09-06 起 The Unknown Hour 停止上傳（Lien 決定，長片與 Shorts 都停），
+  #    等新機到手再討論頻道方向。程式、skill、workflow 全部保留。
+  #    這裡加了 confirm 閘門當第二道保險：Worker 的 dispatch 只送 {ref:"main"}、
+  #    不帶 inputs，所以 confirm 會是空值而整個 job 直接跳過——
+  #    **即使 Worker 還沒重新部署、還在按時打這支，也不會再產出任何影片。**
+  #    要手動出一支：Actions 頁面 Run workflow，confirm 填 yes。
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: '頻道已停止上傳。確定要手動產出並上傳一支，才填 yes'
+        required: false
+        default: ''
 
 jobs:
   post:
+    if: github.event.inputs.confirm == 'yes'
     runs-on: ubuntu-latest
     timeout-minutes: 55    # 長片日會同時產 Shorts + 長片兩支，需較長時間
     permissions:
