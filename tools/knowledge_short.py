@@ -13,6 +13,10 @@
 ⚠️ 事實只能引用 .claude/skills/seafood-brand/references/ 裡查證過的，
    數字白名單見各 SCRIPT 的 sources 註記。
 ⚠️ 輸出帶靜音音軌（aac 48000 stereo），否則接 reel_outro.py 的片尾會壞檔。
+
+⛔ **vessel-02 已停用**（2026-09-07）：它拿 gpt-image 生的「衛星風格」圖配上
+   「這是從太空拍下來的」旁白，等於把 AI 圖當實拍衛星照。已由 HyperFrames 版
+   （hyperframes_trial/vessel-02，改用真實 NASA VIIRS 影像）取代。詳見 BLOCKED。
 """
 
 import math
@@ -229,6 +233,25 @@ SCRIPTS = {
 }
 
 
+# 停用的主題。理由要寫清楚——半年後看到只寫「已停用」等於沒寫。
+BLOCKED = {
+    "vessel-02": (
+        "前四個場景用 squid_lights.png 當滿版底，而旁白說「這是從太空拍下來的」。\n"
+        "   那張圖是 gpt-image-2 生的，prompt 含 'Photoreal satellite imagery aesthetic'，\n"
+        "   等於把 AI 生成圖當成實拍衛星照——品牌的說服力建立在產地真實性上，\n"
+        "   這種宣稱被抓到的代價太高（見 .claude/skills/seafood-brand）。\n"
+        "   ✅ 已由 HyperFrames 版取代：hyperframes_trial/vessel-02，\n"
+        "      改用真實的 NASA Earth Observatory / Suomi NPP VIIRS 影像並標註出處。"
+    ),
+}
+
+
+def check_blocked(slug):
+    if slug in BLOCKED:
+        print(f"⛔ 主題「{slug}」已停用\n   {BLOCKED[slug]}")
+        raise SystemExit(1)
+
+
 ASSETS = pathlib.Path(__file__).resolve().parent / "assets/knowledge"
 
 # 背景圖的生成 prompt。tools/assets 不進版控（既有的 .gitignore 決定），
@@ -252,6 +275,11 @@ def gen_image(name):
 
     if name not in IMAGE_PROMPTS:
         raise SystemExit(f"❌ 沒有 {name} 的 prompt")
+    if name == "squid_lights.png":
+        raise SystemExit(
+            "⛔ 不要重新生成這張。它是「衛星風格」的 AI 圖，配上「這是從太空拍下來的」\n"
+            "   旁白等於把 AI 圖當實拍。vessel-02 已停用，改用 HyperFrames 版的真實 NASA 影像。"
+        )
     root = pathlib.Path(__file__).resolve().parent.parent
     key = (root / "config/.openai_key").read_text().strip()
     body = json.dumps(
@@ -670,12 +698,14 @@ def main():
         print("可用主題：")
         for k, v in SCRIPTS.items():
             total = sum(s[0] for s in v["scenes"])
-            print(f"  {k:14s} {total:4.1f}s  {v['title']}")
+            mark = " ⛔已停用" if k in BLOCKED else ""
+            print(f"  {k:14s} {total:4.1f}s  {v['title']}{mark}")
             print(f"                 依據：{v['sources']}")
         return
     if args[0] == "--insert":
         if len(args) < 2 or args[1] not in SCRIPTS:
             raise SystemExit("用法：--insert <主題代號> [輸出資料夾]（--list 看清單）")
+        check_blocked(args[1])
         export_inserts(args[1], args[2] if len(args) > 2 else "inserts")
         return
     if args[0] == "--gen-image":
@@ -685,6 +715,7 @@ def main():
     if slug not in SCRIPTS:
         print(f"❌ 沒有這個主題：{slug}（用 --list 看清單）")
         raise SystemExit(1)
+    check_blocked(slug)
     script = SCRIPTS[slug]
     out = args[1] if len(args) > 1 else f"{slug}.mp4"
 
