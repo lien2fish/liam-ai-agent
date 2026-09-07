@@ -2,14 +2,20 @@
 // 只是從 PIL 逐格繪製改成一次產生 SVG、之後交給 GSAP 動。
 // 全部由索引與參數決定，沒有亂數——渲染必須可重現。
 
-function brandChrome(hostId) {
-  const host = document.getElementById(hostId);
-  host.insertAdjacentHTML(
-    "beforeend",
-    '<div class="glow"></div><div class="vignette"></div>' +
+// markHostId 省略時行為與原本相同。
+// 有滿版照片的場景要把品牌標記放到最上層的空 clip，否則會被照片的遮罩壓暗
+// （check 的版面稽核會報 text_occluded）。
+function brandChrome(hostId, markHostId) {
+  document
+    .getElementById(hostId)
+    .insertAdjacentHTML("beforeend", '<div class="glow"></div><div class="vignette"></div>');
+  document
+    .getElementById(markHostId || hostId)
+    .insertAdjacentHTML(
+      "beforeend",
       '<div id="brand-top">海鮮冷知識</div>' +
-      '<div id="brand-bottom">連老闆 · 產地到餐桌</div>'
-  );
+        '<div id="brand-bottom">連老闆 · 產地到餐桌</div>'
+    );
 }
 
 // 六角冰晶：三條交叉主軸 ＋ 兩層分枝
