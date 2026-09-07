@@ -39,6 +39,11 @@ REQUIRED_SCOPES = [
     "pages_manage_posts",
 ]
 
+# 只影響數據分析（觸及／播放／儲存／分享），發布與留言都用不到。
+# 刻意不列進 REQUIRED——IG token 到期時三個發布系統會一起掛，
+# 不能讓「報表權限勾不到」擋住 token 更新本身。
+OPTIONAL_SCOPES = ["instagram_manage_insights"]
+
 
 def die(msg):
     print(f"\n❌ {msg}")
@@ -105,9 +110,12 @@ def main():
     print("IG／FB Token 重新授權")
     print("=" * 60)
     print(f"\n1. 開這個網址：\n   {explorer}\n")
-    print("2. Permissions 勾滿六項：")
-    for s in REQUIRED_SCOPES:
-        print(f"   - {s}")
+    print(f"2. Permissions 勾滿這 {len(REQUIRED_SCOPES)} 項：")
+    for sc in REQUIRED_SCOPES:
+        print(f"   - {sc}")
+    print("   再加這項（讀觸及／播放數用，勾不到也能繼續）：")
+    for sc in OPTIONAL_SCOPES:
+        print(f"   - {sc}")
     print("\n3. Generate Access Token → 走完授權對話框")
     print("   ⚠️ 若它直接跳過沒問權限，點「編輯先前的設定」逐項確認都開著。")
     print("   ⚠️ session 被作廢（190/460）時，只有真的走完對話框才救得回來。\n")
@@ -138,14 +146,22 @@ def main():
     if not d.get("is_valid"):
         die("換出來的 token 被判定為 invalid。")
 
-    missing = [s for s in REQUIRED_SCOPES if s not in d.get("scopes", [])]
+    granted = d.get("scopes", [])
+    missing = [s for s in REQUIRED_SCOPES if s not in granted]
     if missing:
-        die("缺少權限：" + "、".join(missing) + "\n   回 Explorer 勾齊六項再跑一次。")
+        die(
+            "缺少權限："
+            + "、".join(missing)
+            + f"\n   回 Explorer 勾齊 {len(REQUIRED_SCOPES)} 項再跑一次。"
+        )
+    missing_opt = [s for s in OPTIONAL_SCOPES if s not in granted]
 
     old_dae = cfg.get("data_access_expires", "（無紀錄）")
     new_dae = when(d.get("data_access_expires_at"))
     new_exp = when(d.get("expires_at"))
-    print(f"   權限六項齊全")
+    print(f"   必要權限 {len(REQUIRED_SCOPES)} 項齊全")
+    if missing_opt:
+        print("   ⚠️ 沒拿到：" + "、".join(missing_opt) + "（觸及／播放數會讀不到）")
     print(f"   expires_at            ：{new_exp}")
     print(f"   data_access_expires_at：{old_dae} → {new_dae}")
 
@@ -162,6 +178,20 @@ def main():
         {"fields": "id", "limit": "1", "access_token": long_tok},
     )
     print(f"   ✅ 讀得到貼文（{len(media.get('data', []))} 篇）")
+
+    if not missing_opt and media.get("data"):
+        # 這只是加分項，讀不到也不能中止——token 還沒寫回，die 掉等於整次授權白做
+        print("\n→ 驗 insights 真的讀得到…")
+        try:
+            url = (
+                f"{GRAPH}/{media['data'][0]['id']}/insights?"
+                + urllib.parse.urlencode({"metric": "reach", "access_token": long_tok})
+            )
+            with urllib.request.urlopen(url, timeout=30) as r:
+                vals = json.loads(r.read()).get("data", [])
+            print(f"   ✅ 觸及數讀得到（{vals[0]['values'][0]['value']:,} 次觸及）")
+        except Exception as e:
+            print(f"   ⚠️ 讀不到觸及數（{e}）——權限有拿到，但 API 這關沒過")
 
     print("\n→ 重簽 FB Page token…")
     page = graph(

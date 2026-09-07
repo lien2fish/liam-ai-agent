@@ -9,11 +9,15 @@
   2) Safari 開啟、登入、允許 → 跳轉 localhost:8888/?code=XXX，複製 code
   3) python3 youtube_auto/oauth_setup.py "貼上code"  → 換取並存 refresh token
 
+--analytics 另外加讀 YouTube Analytics 的權限（流量來源、留存曲線），
+只讀不寫；既有憑證會先備份再覆蓋。
+
 不同頻道用 --profile 分開存憑證（授權畫面務必選到對應頻道）：
   python3 youtube_auto/oauth_setup.py --profile lien
   python3 youtube_auto/oauth_setup.py --profile lien "貼上code"
 """
-import json, os, sys, urllib.parse, urllib.request
+import json, os, shutil, sys, urllib.parse, urllib.request
+from datetime import datetime
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(BASE)
@@ -29,6 +33,9 @@ SCOPE = " ".join(
 )
 # --write 才加：videos.update 改既有影片設定要它。含刪除權限，非必要不要給。
 WRITE_SCOPE = SCOPE + " https://www.googleapis.com/auth/youtube.force-ssl"
+# --analytics 才加：流量來源與留存曲線要它，純唯讀。
+# ⚠️ 專案要先在 Console 啟用 YouTube Analytics API，否則授權過了照樣 403。
+ANALYTICS_SCOPE = " https://www.googleapis.com/auth/yt-analytics.readonly"
 
 
 def out_path(profile=None):
@@ -42,14 +49,17 @@ def _client():
     return c["client_id"], c["client_secret"]
 
 
-def auth_url(write=False):
+def auth_url(write=False, analytics=False):
     cid, _ = _client()
+    scope = WRITE_SCOPE if write else SCOPE
+    if analytics:
+        scope += ANALYTICS_SCOPE
     q = urllib.parse.urlencode(
         {
             "client_id": cid,
             "redirect_uri": REDIRECT,
             "response_type": "code",
-            "scope": WRITE_SCOPE if write else SCOPE,
+            "scope": scope,
             "access_type": "offline",
             "prompt": "consent",
         }
@@ -75,6 +85,11 @@ def exchange(code, profile=None):
     if "refresh_token" not in r:
         raise RuntimeError(f"未取得 refresh_token（請確認 prompt=consent）：{r}")
     out = out_path(profile)
+    # 覆蓋既有憑證前先備份：新 token 若有問題，上傳流程不能跟著陪葬
+    if os.path.exists(out):
+        bak = f"{out}.bak_{datetime.now().strftime('%Y%m%d_%H%M')}"
+        shutil.copy2(out, bak)
+        print(f"📦 舊憑證已備份：{bak}")
     json.dump(
         {
             "client_id": cid,
@@ -98,14 +113,18 @@ if __name__ == "__main__":
     write = "--write" in args
     if write:
         args.remove("--write")
+    analytics = "--analytics" in args
+    if analytics:
+        args.remove("--analytics")
     if args:
         exchange(args[0].strip(), profile)
     else:
         print(f"授權頻道：{profile or '預設 (The Unknown Hour)'}")
         print("⚠️ 授權畫面請務必選到對應的 YouTube 頻道")
         if write:
-            print("⚠️ 這次含寫入權限（可改／可刪影片）\n")
-        else:
-            print()
+            print("⚠️ 這次含寫入權限（可改／可刪影片）")
+        if analytics:
+            print("📊 這次加讀 Analytics（流量來源、留存），純唯讀")
+        print()
         print("在 Safari 開啟以下網址授權：\n")
-        print(auth_url(write))
+        print(auth_url(write, analytics))

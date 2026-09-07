@@ -148,24 +148,53 @@ def main():
                 new_comments.append((v["title"], v["id"], c))
                 seen_ids.add(c["id"])
         seen[v["id"]] = list(seen_ids)
-    save_state(state)
 
     subs = ch_stats.get("subscriberCount", "?")
     total_views = ch_stats.get("viewCount", "?")
+
+    # 頻道統計的 viewCount 會滯後好幾天（實測 9/3 發的影片已破千，頻道總數當天只加 93），
+    # 拿它當日指標會誤判成「昨天沒人看」。改比對上一次跑的每支觀看數，算真正的日增。
+    shown = vids[:12]
+    prev = state.get("views_snapshot", {})
+    prev_date = state.get("views_snapshot_date", "")
+    prev_subs = state.get("subscribers", "")
+
+    recent_views = sum(v["views"] for v in shown)
+    tracked = [v for v in shown if v["id"] in prev]
+    delta_views = sum(v["views"] - prev[v["id"]] for v in tracked)
+    new_count = len(shown) - len(tracked)
+
+    since = f"較 {prev_date} " if prev_date else ""
+    if tracked:
+        growth = f"（{since}**+{delta_views:,}**"
+        growth += f"，另有 {new_count} 支新片未計）" if new_count else "）"
+    else:
+        growth = "（首次記錄，無比較基準）"
+    sub_delta = ""
+    if str(prev_subs).isdigit() and str(subs).isdigit():
+        d = int(subs) - int(prev_subs)
+        sub_delta = f"（{since}{d:+d}）" if d else f"（{since}持平）"
+
+    state["views_snapshot"] = {v["id"]: v["views"] for v in shown}
+    state["views_snapshot_date"] = today
+    state["subscribers"] = subs
+
     lines = [
         f"# 📺 {name} 頻道日報 {today}",
         "",
-        f"> 訂閱數 **{subs}**｜頻道總觀看 **{total_views}**",
+        f"> 訂閱數 **{subs}**{sub_delta}｜近 {len(shown)} 支觀看 **{recent_views:,}**{growth}",
+        f"> 頻道總觀看 {total_views}（YouTube 官方統計，會滯後數日，不宜當日指標）",
         "",
         "## 近期影片表現",
         "",
-        "| 影片 | 發布 | 觀看 | 讚 | 留言 |",
-        "|------|------|------|----|----|",
+        "| 影片 | 發布 | 觀看 | 較上次 | 讚 | 留言 |",
+        "|------|------|------|------|----|----|",
     ]
-    for v in vids[:12]:
+    for v in shown:
         t = v["title"][:38]
+        d = f"+{v['views'] - prev[v['id']]:,}" if v["id"] in prev else "新"
         lines.append(
-            f"| {t} | {v['published']} | {v['views']:,} | {v['likes']:,} | {v['comments']:,} | https://youtu.be/{v['id']}"
+            f"| {t} | {v['published']} | {v['views']:,} | {d} | {v['likes']:,} | {v['comments']:,} | https://youtu.be/{v['id']}"
         )
     lines += ["", f"## 💬 新留言（{len(new_comments)} 則）"]
     if new_comments:
@@ -175,6 +204,8 @@ def main():
     else:
         lines.append("（今日無新留言）")
     report = "\n".join(lines)
+
+    save_state(state)
 
     os.makedirs(REPORTS_DIR, exist_ok=True)
     open(
