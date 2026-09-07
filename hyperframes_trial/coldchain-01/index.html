@@ -49,15 +49,15 @@
       id="root"
       data-composition-id="main"
       data-start="0"
-      data-duration="28.6"
+      data-duration="35.5"
       data-fps="24"
       data-width="1080"
       data-height="1920"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="28.6" data-track-index="0"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="35.5" data-track-index="0"></div>
 
       <!-- 1. HOOK 0–3：第一格＝Shorts 縮圖，開場即完整可讀 -->
-      <section id="s1" class="clip" data-start="0" data-duration="3.6" data-track-index="1">
+      <section id="s1" class="clip" data-start="0" data-duration="4.2" data-track-index="1">
         <div class="sin" id="s1-in">
           <div class="xtal" id="x1" style="left: 240px; top: 480px; width: 600px; height: 600px; opacity: 0.22"></div>
           <div class="stack" id="s1-text" style="top: 800px">
@@ -69,7 +69,7 @@
       </section>
 
       <!-- 2. ZONE 3–6.5 -->
-      <section id="s2" class="clip" data-start="3.6" data-duration="6" data-track-index="2">
+      <section id="s2" class="clip" data-start="4.2" data-duration="9.1" data-track-index="2">
         <div class="sin" id="s2-in">
           <div class="stack" id="s2-top" style="top: 380px">
             <span class="line l-body">水在 −1°C 到 −5°C 之間結冰</span>
@@ -89,7 +89,7 @@
       </section>
 
       <!-- 3. SLOW 6.5–11.5 -->
-      <section id="s3" class="clip" data-start="9.6" data-duration="5.2" data-track-index="3">
+      <section id="s3" class="clip" data-start="13.3" data-duration="5.9" data-track-index="3">
         <div class="sin" id="s3-in">
           <div class="tag warn" id="s3-tag" style="top: 420px">慢 慢 通 過 這 一 段</div>
           <div class="cellgrid" id="grid-slow"></div>
@@ -101,7 +101,7 @@
       </section>
 
       <!-- 4. FAST 11.5–16 -->
-      <section id="s4" class="clip" data-start="14.8" data-duration="4.8" data-track-index="4">
+      <section id="s4" class="clip" data-start="19.2" data-duration="5.7" data-track-index="4">
         <div class="sin" id="s4-in">
           <div class="tag" id="s4-tag" style="top: 420px">快 速 通 過</div>
           <div class="cellgrid" id="grid-fast"></div>
@@ -113,7 +113,7 @@
       </section>
 
       <!-- 5. DRIP 16–20 -->
-      <section id="s5" class="clip" data-start="19.6" data-duration="5" data-track-index="5">
+      <section id="s5" class="clip" data-start="24.9" data-duration="5.7" data-track-index="5">
         <div class="sin" id="s5-in">
           <div class="tag warn" id="s5-tag" style="top: 460px">細 胞 破 了</div>
           <div id="bigcell"></div>
@@ -127,7 +127,7 @@
       </section>
 
       <!-- 6. END 20–24 -->
-      <section id="s6" class="clip" data-start="24.6" data-duration="4" data-track-index="6">
+      <section id="s6" class="clip" data-start="30.6" data-duration="4.9" data-track-index="6">
         <div class="sin" id="s6-in">
           <div class="xtal" id="x6" style="left: 340px; top: 560px; width: 400px; height: 400px; opacity: 0.3"></div>
           <div class="stack" id="s6-a" style="top: 940px">
@@ -140,12 +140,12 @@
       </section>
 
       <!-- 旁白：zh-TW-YunJheNeural +8%，逐字沿用字卡內容 -->
-      <audio id="vo-1" data-start="0.25" data-duration="3.02" src="audio/s1.mp3"></audio>
-      <audio id="vo-2" data-start="3.85" data-duration="5.4" src="audio/s2.mp3"></audio>
-      <audio id="vo-3" data-start="9.85" data-duration="4.56" src="audio/s3.mp3"></audio>
-      <audio id="vo-4" data-start="15.05" data-duration="4.15" src="audio/s4.mp3"></audio>
-      <audio id="vo-5" data-start="19.85" data-duration="4.42" src="audio/s5.mp3"></audio>
-      <audio id="vo-6" data-start="24.85" data-duration="3.29" src="audio/s6.mp3"></audio>
+      <audio id="vo-1" data-start="0.25" data-duration="3.62" src="audio/s1.mp3"></audio>
+      <audio id="vo-2" data-start="4.45" data-duration="8.5" src="audio/s2.mp3"></audio>
+      <audio id="vo-3" data-start="13.55" data-duration="5.28" src="audio/s3.mp3"></audio>
+      <audio id="vo-4" data-start="19.45" data-duration="5.09" src="audio/s4.mp3"></audio>
+      <audio id="vo-5" data-start="25.15" data-duration="5.09" src="audio/s5.mp3"></audio>
+      <audio id="vo-6" data-start="30.85" data-duration="4.34" src="audio/s6.mp3"></audio>
     </div>
 
     <script>
@@ -195,57 +195,57 @@
       const tl = gsap.timeline({ paused: true });
 
       // 1. HOOK：t=0 就要完整可讀
-      tl.fromTo("#x1", { rotation: -6, scale: 0.94 }, { rotation: 6, scale: 1.06, duration: 3.6, ease: "none" }, 0);
-      tl.fromTo("#s1-text", { scale: 1 }, { scale: 1.045, duration: 3.6, ease: "none" }, 0);
+      tl.fromTo("#x1", { rotation: -6, scale: 0.94 }, { rotation: 6, scale: 1.06, duration: 4.2, ease: "none" }, 0);
+      tl.fromTo("#s1-text", { scale: 1 }, { scale: 1.045, duration: 4.2, ease: "none" }, 0);
       tl.fromTo("#s1-tag", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 0.5);
-      tl.to("#s1-in", { opacity: 0, duration: 0.35, ease: "power1.in" }, 3.25);
-      tl.set("#s1-in", { opacity: 0 }, 3.6);
+      tl.to("#s1-in", { opacity: 0, duration: 0.35, ease: "power1.in" }, 3.85);
+      tl.set("#s1-in", { opacity: 0 }, 4.2);
 
       // 2. ZONE
-      tl.fromTo("#s2-top", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 3.65);
-      tl.fromTo("#scale-bar", { scaleY: 0, transformOrigin: "50% 0%" }, { scaleY: 1, duration: 0.8, ease: "power2.out" }, 3.9);
-      tl.fromTo(".tick", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, stagger: 0.12 }, 4.5);
-      tl.fromTo("#scale-band", { autoAlpha: 0, scaleY: 0, transformOrigin: "50% 0%" }, { autoAlpha: 1, scaleY: 1, duration: 0.5, ease: "power3.out" }, 4.9);
-      tl.fromTo("#band-label", { autoAlpha: 0, x: -24 }, { autoAlpha: 1, x: 0, duration: 0.5, ease: "power2.out" }, 5.15);
-      tl.to("#scale-band", { opacity: 0.55, duration: 0.5, yoyo: true, repeat: 3, ease: "sine.inOut" }, 5.4);
-      tl.fromTo("#s2-bottom", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 5.6);
-      tl.to("#s2-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 9.3);
-      tl.set("#s2-in", { opacity: 0 }, 9.6);
+      tl.fromTo("#s2-top", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 4.25);
+      tl.fromTo("#scale-bar", { scaleY: 0, transformOrigin: "50% 0%" }, { scaleY: 1, duration: 0.8, ease: "power2.out" }, 4.5);
+      tl.fromTo(".tick", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, stagger: 0.12 }, 5.1);
+      tl.fromTo("#scale-band", { autoAlpha: 0, scaleY: 0, transformOrigin: "50% 0%" }, { autoAlpha: 1, scaleY: 1, duration: 0.5, ease: "power3.out" }, 5.5);
+      tl.fromTo("#band-label", { autoAlpha: 0, x: -24 }, { autoAlpha: 1, x: 0, duration: 0.5, ease: "power2.out" }, 5.75);
+      tl.to("#scale-band", { opacity: 0.55, duration: 0.5, yoyo: true, repeat: 3, ease: "sine.inOut" }, 6);
+      tl.fromTo("#s2-bottom", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 6.2);
+      tl.to("#s2-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 13);
+      tl.set("#s2-in", { opacity: 0 }, 13.3);
 
       // 3. SLOW：冰晶長大撐破細胞
-      tl.fromTo("#s3-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 9.7);
-      tl.fromTo("#grid-slow .cell", { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.5, stagger: 0.06, ease: "power2.out" }, 9.9);
-      tl.fromTo("#grid-slow .xtal", { scale: 0.12, rotation: -25, autoAlpha: 0 }, { scale: 1, rotation: 0, autoAlpha: 1, duration: 2.6, stagger: 0.12, ease: "power1.inOut" }, 10.5);
-      tl.to("#grid-slow .cell", { borderColor: "#ce6a4a", duration: 0.5, stagger: 0.1 }, 12.5);
-      tl.fromTo("#grid-slow .cell", { scale: 1 }, { scale: 1.06, duration: 0.35, stagger: 0.1, ease: "back.out(3)" }, 12.5);
-      tl.fromTo("#s3-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 11.7);
-      tl.to("#s3-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 14.5);
-      tl.set("#s3-in", { opacity: 0 }, 14.8);
+      tl.fromTo("#s3-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 13.4);
+      tl.fromTo("#grid-slow .cell", { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.5, stagger: 0.06, ease: "power2.out" }, 13.6);
+      tl.fromTo("#grid-slow .xtal", { scale: 0.12, rotation: -25, autoAlpha: 0 }, { scale: 1, rotation: 0, autoAlpha: 1, duration: 2.6, stagger: 0.12, ease: "power1.inOut" }, 14.2);
+      tl.to("#grid-slow .cell", { borderColor: "#ce6a4a", duration: 0.5, stagger: 0.1 }, 16.2);
+      tl.fromTo("#grid-slow .cell", { scale: 1 }, { scale: 1.06, duration: 0.35, stagger: 0.1, ease: "back.out(3)" }, 16.2);
+      tl.fromTo("#s3-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 15.4);
+      tl.to("#s3-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 18.9);
+      tl.set("#s3-in", { opacity: 0 }, 19.2);
 
       // 4. FAST：小冰晶瞬間出現，細胞完好
-      tl.fromTo("#s4-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out" }, 14.9);
-      tl.fromTo("#grid-fast .cell", { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.3, stagger: 0.04, ease: "power2.out" }, 15.05);
-      tl.fromTo("#grid-fast .xtal", { scale: 0.3, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.3, stagger: 0.05, ease: "power3.out" }, 15.7);
-      tl.to("#grid-fast .cell", { borderColor: "#7abee2", duration: 0.6 }, 16.3);
-      tl.fromTo("#s4-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 16.5);
-      tl.to("#s4-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 19.3);
-      tl.set("#s4-in", { opacity: 0 }, 19.6);
+      tl.fromTo("#s4-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out" }, 19.3);
+      tl.fromTo("#grid-fast .cell", { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.3, stagger: 0.04, ease: "power2.out" }, 19.45);
+      tl.fromTo("#grid-fast .xtal", { scale: 0.3, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.3, stagger: 0.05, ease: "power3.out" }, 20.1);
+      tl.to("#grid-fast .cell", { borderColor: "#7abee2", duration: 0.6 }, 20.7);
+      tl.fromTo("#s4-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 20.9);
+      tl.to("#s4-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 24.6);
+      tl.set("#s4-in", { opacity: 0 }, 24.9);
 
       // 5. DRIP
-      tl.fromTo("#s5-tag", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, 19.7);
-      tl.fromTo("#bigcell", { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "power2.out" }, 19.8);
-      tl.to("#crack-path", { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" }, 20.4);
-      tl.fromTo("#drops .drop", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25, stagger: 0.04 }, 20.8);
-      tl.to("#drops .drop", { y: 620, autoAlpha: 0, duration: 1.6, stagger: 0.07, ease: "power2.in" }, 21.4);
-      tl.fromTo("#s5-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 21.4);
-      tl.to("#s5-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 24.3);
-      tl.set("#s5-in", { opacity: 0 }, 24.6);
+      tl.fromTo("#s5-tag", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, 25);
+      tl.fromTo("#bigcell", { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "power2.out" }, 25.1);
+      tl.to("#crack-path", { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" }, 25.7);
+      tl.fromTo("#drops .drop", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25, stagger: 0.04 }, 26.1);
+      tl.to("#drops .drop", { y: 620, autoAlpha: 0, duration: 1.6, stagger: 0.07, ease: "power2.in" }, 26.7);
+      tl.fromTo("#s5-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 26.7);
+      tl.to("#s5-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 30.3);
+      tl.set("#s5-in", { opacity: 0 }, 30.6);
 
       // 6. END
-      tl.fromTo("#x6", { scale: 0.7, rotation: -12 }, { scale: 1, rotation: 0, duration: 1.2, ease: "power3.out" }, 24.7);
-      tl.fromTo("#s6-a", { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 24.9);
-      tl.fromTo("#s6-b", { autoAlpha: 0, y: 34, scale: 0.9 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.7)" }, 25.6);
-      tl.to("#x6", { opacity: 0.14, duration: 1.6, ease: "sine.inOut" }, 26.2);
+      tl.fromTo("#x6", { scale: 0.7, rotation: -12 }, { scale: 1, rotation: 0, duration: 1.2, ease: "power3.out" }, 30.7);
+      tl.fromTo("#s6-a", { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 30.9);
+      tl.fromTo("#s6-b", { autoAlpha: 0, y: 34, scale: 0.9 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.7)" }, 31.6);
+      tl.to("#x6", { opacity: 0.14, duration: 1.6, ease: "sine.inOut" }, 32.2);
 
       window.__timelines["main"] = tl;
     </script>
