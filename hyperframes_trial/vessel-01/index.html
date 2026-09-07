@@ -50,11 +50,15 @@
       <!-- 1. HOOK 0–3.2 -->
       <section id="s1" class="clip" data-start="0" data-duration="3.9" data-track-index="1">
         <div class="sin" id="s1-in">
-          <div class="stack" id="s1-text" style="top: 800px">
+          <div id="hero">
+            <img id="hero-img" src="assets/night_boat.jpg" alt="" />
+            <div id="hero-veil"></div>
+          </div>
+          <div class="stack" id="s1-text" style="top: 1250px">
             <span class="line l-hook">魚探機看到的</span>
             <span class="line l-hook gold">其實不是魚</span>
           </div>
-          <div class="tag" id="s1-tag" style="top: 1180px">聲 納 的 原 理</div>
+          <div class="tag" id="s1-tag" style="top: 1590px">聲 納 的 原 理</div>
         </div>
       </section>
 
@@ -129,6 +133,9 @@
         </div>
       </section>
 
+      <!-- 品牌標記獨立一層放最上面，才不會被開場照片的遮罩壓暗 -->
+      <div id="chrome" class="clip" data-start="0" data-duration="28.3" data-track-index="9"></div>
+
       <!-- 旁白：zh-TW-YunJheNeural +8%，逐字沿用字卡內容 -->
       <audio id="vo-1" data-start="0.25" data-duration="3.34" src="audio/s1.mp3"></audio>
       <audio id="vo-2" data-start="4.15" data-duration="3.5" src="audio/s2.mp3"></audio>
@@ -139,7 +146,7 @@
     </div>
 
     <script>
-      brandChrome("bg");
+      brandChrome("bg", "chrome");
 
       const FW = 230, FH = 120;
 
@@ -194,7 +201,8 @@
       const tl = gsap.timeline({ paused: true });
 
       // 1. HOOK
-      tl.fromTo("#s1-text", { scale: 1 }, { scale: 1.04, duration: 3.9, ease: "none" }, 0);
+      tl.fromTo("#hero-img", { scale: 1.03 }, { scale: 1.11, duration: 3.9, ease: "none" }, 0);
+      tl.fromTo("#s1-text", { scale: 1 }, { scale: 1.035, duration: 3.9, ease: "none" }, 0);
       tl.fromTo("#s1-tag", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 0.5);
       tl.to("#s1-in", { opacity: 0, duration: 0.35, ease: "power1.in" }, 3.55);
       tl.set("#s1-in", { opacity: 0 }, 3.9);

@@ -33,15 +33,6 @@
         border: 5px solid var(--line-idle); background: rgba(122, 190, 226, 0.05);
       }
 
-      .drop {
-        position: absolute; width: 18px; height: 26px;
-        border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: var(--cold);
-      }
-      #bigcell {
-        position: absolute; left: 280px; top: 720px; width: 520px; height: 380px;
-        border-radius: 44px; border: 6px solid var(--warn); background: rgba(206, 106, 74, 0.07);
-      }
-      #crack { position: absolute; left: 280px; top: 720px; width: 520px; height: 380px; }
     </style>
   </head>
   <body>
@@ -59,12 +50,15 @@
       <!-- 1. HOOK 0–3：第一格＝Shorts 縮圖，開場即完整可讀 -->
       <section id="s1" class="clip" data-start="0" data-duration="4.2" data-track-index="1">
         <div class="sin" id="s1-in">
-          <div class="xtal" id="x1" style="left: 240px; top: 480px; width: 600px; height: 600px; opacity: 0.22"></div>
-          <div class="stack" id="s1-text" style="top: 800px">
+          <div id="hero">
+            <img id="hero-img" src="assets/frozen_fish.jpg" alt="" />
+            <div id="hero-veil"></div>
+          </div>
+          <div class="stack" id="s1-text" style="top: 1250px">
             <span class="line l-hook">你家冰箱</span>
             <span class="line l-hook gold">凍不出這種魚</span>
           </div>
-          <div class="tag" id="s1-tag" style="top: 1180px">急 凍 的 真 相</div>
+          <div class="tag" id="s1-tag" style="top: 1590px">急 凍 的 真 相</div>
         </div>
       </section>
 
@@ -116,9 +110,11 @@
       <section id="s5" class="clip" data-start="24.9" data-duration="5.7" data-track-index="5">
         <div class="sin" id="s5-in">
           <div class="tag warn" id="s5-tag" style="top: 460px">細 胞 破 了</div>
-          <div id="bigcell"></div>
-          <div id="crack"></div>
-          <div id="drops"></div>
+          <div class="photo-frame" id="drip-frame"
+               style="left: 200px; top: 690px; width: 680px; height: 400px">
+            <img src="assets/drip_loss.jpg" alt="" />
+          </div>
+          <div class="caption" id="s5-cap" style="top: 1130px">流出來的是細胞裡的水</div>
           <div class="stack" id="s5-text" style="top: 1440px">
             <span class="line l-body">解凍時</span>
             <span class="line l-body warn">鮮味隨著水流走</span>
@@ -139,6 +135,9 @@
         </div>
       </section>
 
+      <!-- 品牌標記獨立一層放最上面，才不會被開場照片的遮罩壓暗 -->
+      <div id="chrome" class="clip" data-start="0" data-duration="35.5" data-track-index="9"></div>
+
       <!-- 旁白：zh-TW-YunJheNeural +8%，逐字沿用字卡內容 -->
       <audio id="vo-1" data-start="0.25" data-duration="3.62" src="audio/s1.mp3"></audio>
       <audio id="vo-2" data-start="4.45" data-duration="8.5" src="audio/s2.mp3"></audio>
@@ -149,8 +148,7 @@
     </div>
 
     <script>
-      brandChrome("bg");
-      document.getElementById("x1").innerHTML = crystalMarkup(2.4);
+      brandChrome("bg", "chrome");
       document.getElementById("x6").innerHTML = crystalMarkup(3);
 
       function buildGrid(host, xtalSize, xtalWidth, color) {
@@ -176,27 +174,14 @@
       buildGrid(document.getElementById("grid-slow"), 190, 3.4, "#ce6a4a");
       buildGrid(document.getElementById("grid-fast"), 62, 3, "#7abee2");
 
-      document.getElementById("crack").innerHTML =
-        '<svg viewBox="0 0 520 380" width="100%" height="100%">' +
-        '<path id="crack-path" d="M 40 372 L 96 292 L 62 232 L 128 168 L 104 96 L 176 34" ' +
-        'stroke="#ce6a4a" stroke-width="7" fill="none" stroke-linecap="round" ' +
-        'stroke-linejoin="round" stroke-dasharray="620" stroke-dashoffset="620"/></svg>';
 
-      const dropsHost = document.getElementById("drops");
-      for (let i = 0; i < 9; i++) {
-        const d = document.createElement("div");
-        d.className = "drop";
-        d.style.left = 318 + i * 52 + "px";
-        d.style.top = 1090 + (i % 3) * 14 + "px";
-        dropsHost.appendChild(d);
-      }
 
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
 
       // 1. HOOK：t=0 就要完整可讀
-      tl.fromTo("#x1", { rotation: -6, scale: 0.94 }, { rotation: 6, scale: 1.06, duration: 4.2, ease: "none" }, 0);
-      tl.fromTo("#s1-text", { scale: 1 }, { scale: 1.045, duration: 4.2, ease: "none" }, 0);
+      tl.fromTo("#hero-img", { scale: 1.03 }, { scale: 1.11, duration: 4.2, ease: "none" }, 0);
+      tl.fromTo("#s1-text", { scale: 1 }, { scale: 1.035, duration: 4.2, ease: "none" }, 0);
       tl.fromTo("#s1-tag", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 0.5);
       tl.to("#s1-in", { opacity: 0, duration: 0.35, ease: "power1.in" }, 3.85);
       tl.set("#s1-in", { opacity: 0 }, 4.2);
@@ -233,10 +218,6 @@
 
       // 5. DRIP
       tl.fromTo("#s5-tag", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power2.out" }, 25);
-      tl.fromTo("#bigcell", { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "power2.out" }, 25.1);
-      tl.to("#crack-path", { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" }, 25.7);
-      tl.fromTo("#drops .drop", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25, stagger: 0.04 }, 26.1);
-      tl.to("#drops .drop", { y: 620, autoAlpha: 0, duration: 1.6, stagger: 0.07, ease: "power2.in" }, 26.7);
       tl.fromTo("#s5-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 26.7);
       tl.to("#s5-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 30.3);
       tl.set("#s5-in", { opacity: 0 }, 30.6);
