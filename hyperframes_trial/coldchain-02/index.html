@@ -32,20 +32,20 @@
       #hero { position: absolute; inset: 0; overflow: hidden; }
       #hero img {
         position: absolute; inset: 0; width: 100%; height: 100%;
-        object-fit: cover; display: block; filter: brightness(0.78) saturate(0.9);
+        object-fit: cover; display: block; filter: brightness(1.30) contrast(1.06);
       }
       #hero-veil {
         position: absolute; inset: 0;
         background: linear-gradient(180deg,
-          rgba(4,14,24,0.55) 0%, rgba(4,14,24,0.25) 38%,
-          rgba(4,14,24,0.86) 62%, rgba(4,14,24,0.97) 100%);
+          rgba(4,14,24,0.62) 0%, rgba(4,14,24,0.18) 34%, rgba(4,14,24,0.10) 55%,
+          rgba(4,14,24,0.72) 66%, rgba(4,14,24,0.95) 76%, rgba(4,14,24,0.98) 100%);
       }
 
       /* 鮪魚肉塊：中心 (540, 900)，600×380。
          紅→褐用兩張同源貼圖疊著淡入——同一張圖做色彩位移，完全對齊。
          ⚠️ 用整面淡入不是由左往右擦除：肉是從切面均勻氧化的，擦除是美術效果不是事實。 */
       #slab {
-        position: absolute; left: 240px; top: 710px; width: 600px; height: 380px;
+        position: absolute; left: 200px; top: 690px; width: 680px; height: 400px;
         border-radius: 26px; overflow: hidden; border: 4px solid #e8c8a0;
         background: #1a1010;
       }
