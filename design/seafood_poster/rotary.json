@@ -1,0 +1,19 @@
+{
+  "_note": "扶輪社社團推薦版。品項與價格不重複維護，一律引用 current.json（2026-08-14 Lien 提供之實際店內售價）",
+  "items_from": "design/seafood_poster/current.json",
+  "brand": "鑫海產",
+  "brand_en": "XIN SEAFOOD",
+  "eyebrow": "龜吼現流．產地直送",
+  "title": "本季當令",
+  "series": "鮮味聚  SEASONAL SELECTION",
+  "trust_heading": "新鮮海產",
+  "trust": [
+    "自家漁船撈捕，並與在地共捕漁船長期合作",
+    "上岸後真空急凍，貨到港優先挑",
+    "從龜吼漁港到您的餐桌，只隔一個清晨"
+  ],
+  "tagline": "以上為本季當令品項，想要的其他海鮮可直接洽詢",
+  "footer_left": "鑫海產．龜吼現流",
+  "footer_right": "洽詢｜連老闆",
+  "background": "design/seafood_poster/bg_blue_deep.png"
+}
