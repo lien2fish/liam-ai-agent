@@ -46,7 +46,6 @@ jobs:
 
       # 影像素材放私人 repo（沿用授權配樂的既有做法），公開庫不含二進位素材
       - name: 取影像素材
-        if: matrix.project == 'vessel-02' || matrix.project == 'coldchain-02'
         uses: actions/checkout@v4
         with:
           repository: lien2fish/liam-workspace
@@ -54,13 +53,14 @@ jobs:
           path: _workspace
 
       - name: 放進專案
-        if: matrix.project == 'vessel-02' || matrix.project == 'coldchain-02'
         run: |
           mkdir -p assets
           K="$GITHUB_WORKSPACE/_workspace/assets/knowledge"
           case "${{ matrix.project }}" in
-            vessel-02)    cp "$K/nasa_malvinas_lights.jpg" assets/ ;;
+            coldchain-01) cp "$K/frozen_fish.jpg" "$K/drip_loss.jpg" assets/ ;;
             coldchain-02) cp "$K/tuna_fresh.jpg" "$K/tuna_brown.jpg" "$K/frozen_tuna.jpg" assets/ ;;
+            vessel-01)    cp "$K/night_boat.jpg" assets/ ;;
+            vessel-02)    cp "$K/nasa_malvinas_lights.jpg" assets/ ;;
           esac
           ls -la assets/
 
