@@ -1,41 +1,47 @@
 ---
 name: poster
-description: 海報與徽章排版：鑫海產「鮮味聚」四季海報（design/seafood_poster.py）、惜食台灣 A1 表揚海報、公益活動圓形徽章。含字級隨項數自動縮的規則與版面約束。要做海報、改品項報價版面時載入。
+description: 海報與徽章排版：鑫海產「鮮味聚」商務版海報（design/seafood_poster_rotary.py）、惜食台灣 A1 表揚海報、公益活動圓形徽章。含品項欄位格式與版面上限。要做海報、改品項報價版面時載入。
 ---
 
 > ⚠️ 捐款名單（姓名與金額）已移到 `config/savefood_donors.py`（repo 為 public，config/ 已 gitignore）。
 
-## 鑫海產「鮮味聚」四季海報（2026-08-08 定案）
+## 鑫海產「鮮味聚」海報（2026-09-07 改版）
 
-仿匠鑫聚「白酒聚」海報版型做的海鮮版，**品牌掛鑫海產**（白酒聚才是匠鑫聚的，勿混）。
-原始 Canva 檔已不存在，只剩截圖 `~/Desktop/IMG_4345.JPG`，故用 Python 重建版型。
+⛔ **舊的水彩四季版型已刪除**（`seafood_poster.py` ＋ spring/summer/autumn/winter config，
+2026-09-07 Lien 指示清掉）。**現行只有一套**：商務沉穩版，用於扶輪社社團推薦。
+不要再引用 `seafood_poster.py`、`draw_list` 自動縮字級、`bottom_strip` 那些規格，都不存在了。
 
 | 項目 | 說明 |
 |------|------|
-| 腳本 | `design/seafood_poster.py`（版面）／`design/seafood_cutout.py`（照片去背）|
-| Config | `design/seafood_poster/{spring,summer,autumn,winter}.json`（版面示範）＋`current.json`（**當令實際報價，不綁季節**）|
-| 底圖 | `bg_blue_light.png`（淺藍海洋，使用中）／`bg_blue_deep.png`（深藍夜色，配 `"theme": "dark"`）|
-| 輸出 | 1080×1920 RGB PNG，IG／LINE 用，**不做印刷**。成品另存 `~/Desktop/鑫海產_鮮味聚海報/` |
-| 換季 | 只改 config 的 `items`／`subtitle`／`intro`，跑 `python3 design/seafood_poster.py <config>` |
+| 腳本 | `design/seafood_poster_rotary.py` |
+| Config | `design/seafood_poster/rotary.json` |
+| 品項來源 | **不在 config 裡**——`items_from` 指向 `current.json`（Lien 給的實際店內售價）。**價格只維護一處** |
+| 底圖 | `bg_blue_deep.png`，壓到 20% 混色＋由上而下漸層暗罩，只留海洋質感不搶字 |
+| 輸出 | 1080×1920 RGB PNG，LINE 群組／IG 用，**不做印刷**。成品另存 `~/Desktop/鑫海產_鮮味聚海報/` |
+| 重產 | `python3 design/seafood_poster_rotary.py design/seafood_poster/rotary.json` |
 
-版面＝品牌小標／主標「鮮·味·聚」（字間金菱形）／副標／3 行引言／7 項×3 行／底部去背海鮮橫幅／〔洽詢標語條〕／深藍頁尾條。
+版面＝品牌區（鑫海產／XIN SEAFOOD／龜吼現流．產地直送）／主標「本季當令」／系列小標
+／金線／8 項編號式清單／金線／信任區塊／洽詢膠囊條／深藍頁尾條。
 
-- **四季 config 的價格全是版面示範值不是真實報價**，出稿前必須覆寫（config `_note` 有註明）。`current.json` 例外，裡面是使用者給的實際店內售價
-- **`tagline` 是選用欄位**（2026-08-15 加）：填了才畫，疊在底部照片**之上**、頁尾條之上方的深藍半透明膠囊條＋金框。`TAGLINE_BOTTOM=1722` 是調過的——貼到 1764 會與頁尾條只剩 24px、兩條深藍黏成一塊。四季 config 沒填此欄，改動後已逐像素回歸驗證 `autumn.png` 完全不變
-- 品項中文行＝**產地／漁獲狀態 ＋ 海鮮名 ＋ 品質形容詞**，**不寫料理方式**（清蒸整尾／一夜干／鹽烤／白灼皆已移除）；「現流／活魚現殺／生食級」屬狀態與等級可留
-- **品項字級中文 40px 是使用者反覆要求放大的結果**（20→32→40），空間靠引言砍到 3 行＋行距係數 1.14＋橫幅下沉擠出來。**不要為了塞內容再改小**
-- **字級由 `draw_list` 依項數自動算**（`min(42, slot*0.38)`），項數就是字級的主要變因：7 項 40／8 項 39／9 項 31（皆含底部照片）。**超過 8 項就會明顯掉到 35 以下**，此時要嘛拆兩張海報、要嘛砍引言行數，別默默讓它縮
-- **不放底部照片可換到更大字級**（`bottom_strip: []` → 品項區吃滿到 y=1745，8 項可到 42px）。有照片 vs 大字只能二選一，讓使用者決定
-- `bottom_strip` 放 1 張＝滿版橫幅（底部沒入頁尾條），放多張＝等寬分格。去背走 u2net 顯著性遮罩 ∪ 非白遮罩，白底棚拍照效果好（冰塊、蝦鬚都留得住）
-- 成品 PNG 與 `photos/` 已 gitignore：前者可重產，後者是實拍素材且 repo 為 public
-- **底部照片素材來源＝鉅鑫官網鑫海產頁**（2026-08-15 確認）：`gs-group.com.tw/wp-content/uploads/2023/08/seafood-{1,2,3}.png` 三張本來就是去背 PNG（綜合魚／草蝦／鮭魚排），下載後只做 alpha 去邊裁切、**不需再跑 `seafood_cutout.py`**，存為 `photos/gs_seafood_{1,2,3}.png`
-- ⚠️ **`autumn_banner.png` 不要用**：來路不明的截圖（疑似圖庫）且圖上有帝王蟹腳，與「龜吼 共捕船直送」對不起來。秋季 config 仍指著它，出稿前要換掉
-- ⚠️ **`photos/` 與 `design/seafood_poster/*.png` 都在 gitignore**（成品可重產、素材不進 public repo）。代價是**換機或重新 clone 後跑 config 會找不到圖、底部變成空白佔位框**——素材要自己從官網重抓
-- 地雷：STHeiti 的 `·` 是全形寬且字面靠左，前後加空格會有明顯空隙，config 一律寫「鑫海產·私廚」不加空格
+- **信任區塊的主軸＝「新鮮海產」**（2026-09-07 Lien 指定，原本是「為什麼是龜吼」）。
+  三行＝來源／處理／速度，全部出自 `seafood-brand` 已核可的事實
+- ⛔ **漁船不寫數量、不寫「老闆出海」、不寫「生食級」**。
+  ⚠️ 這份 skill 舊版寫過「生食級屬狀態與等級可留」——**那是錯的**，與 `seafood-brand`
+  「法規依據未確認前一律不准出現」直接衝突，2026-09-07 已更正
+- 品項中文行格式＝**「前綴 名稱　形容詞」**（半形空格分前綴、**全形空格**分形容詞），
+  `split_zh` 靠這個格式拆欄；改 `current.json` 的寫法會讓排版錯位
+- 價格格式＝「NT$500 / 片」（`split_price` 拆金額與單位），或整串倒裝如「2 尾 NT$400」（無單位）
+- **金額右緣統一切齊 `X_UNIT - 10`**，不是靠單位寬度反推——否則沒單位的那項會突出（踩過）
+- ⚠️ **PIL 的 `rounded_rectangle` 半透明填充在這版沒吃到 alpha**：洽詢條用過
+  `fill=(255,255,255,20)`，結果整條變不透明白、把白字吃掉。一律用實心深底 `(16,38,62)` ＋金框
+- 字距靠 `draw_tracked` 逐字繪製（PIL 沒有 letter-spacing）
+- **8 項是版面上限**：`LIST_TOP=556`、`ROW_H=106`，第 8 項落在 y=1404，再多會撞信任區塊
+- 地雷：中點一律用全形「．」，不要用 STHeiti 的「·」（全形寬且字面靠左，前後會有明顯空隙）
+- `photos/`（官網去背海鮮照）與 `bg_blue_light.png`／`bg_autumn.png` 留著，
+  但**目前沒有任何腳本在用**——舊水彩版型的遺留素材
+- 成品 PNG 與 `photos/` 已 gitignore（前者可重產，後者是實拍素材而 repo 為 public）
 
 ---
-
-
 ## 海報圖片生成系統（2026-05-26 建立）
 
 ### 公益活動圓形徽章（4張）
