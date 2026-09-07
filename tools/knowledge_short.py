@@ -418,7 +418,7 @@ def tuna_slab(d, cx, cy, w, h, brown_ratio):
     )
 
 
-def render_frame(bg, scene, p, seed, insert=False):
+def render_frame(bg, scene, p, seed, insert=False, shift=0):
     """p = 該段內的進度 0~1。"""
     mode, lines = scene[1], scene[2]
     cx = W // 2
@@ -573,7 +573,10 @@ def render_frame(bg, scene, p, seed, insert=False):
         # 插入段：只留圖解本身。字卡與品牌標記交給主影片，
         # 疊在口播上會跟旁白搶注意力。
         # 字卡拿掉後下半部會空一大塊，圖整體往下移讓它垂直置中。
-        shift = 0 if photo else INSERT_SHIFT
+        # shift 由 insert_shift() 依該段實際內容算出，同一段內固定不變
+        # ——每格重算會讓畫面隨動畫上下跳。照片場景本來就滿版，不位移。
+        if photo:
+            shift = 0
         if shift:
             out = bg.copy()
             out.paste(img.crop((0, 0, W, H - shift)), (0, shift))
@@ -612,6 +615,26 @@ def render_frame(bg, scene, p, seed, insert=False):
         center_text(d, 300, "海鮮冷知識", font(38), GOLD)
     center_text(d, H - 130, "連老闆 ・ 產地到餐桌", font(34), DIM)
     return img
+
+
+def insert_shift(bg, scene, seed):
+    """算這一段的圖解要往下移多少才會垂直置中。
+
+    取整段最飽滿的一格（p=1.0）量出圖的上下緣，把中心對到畫面中心。
+    ⚠️ 一段只算一次：每格重算會讓畫面隨著動畫上下跳。
+    """
+    import numpy as np
+
+    if len(scene) > 3:  # 照片場景本來就滿版
+        return 0
+    img = render_frame(bg, scene, 1.0, seed, insert=True, shift=0)
+    diff = np.abs(np.asarray(img).astype(int) - np.asarray(bg).astype(int)).sum(2)
+    ys = np.where(diff.max(1) > 24)[0]
+    if len(ys) == 0:
+        return 0
+    want = H // 2 - (int(ys.min()) + int(ys.max())) // 2
+    # 只往下移，且不推出畫面
+    return max(0, min(want, H - 1 - int(ys.max())))
 
 
 def export_inserts(slug, outdir):
@@ -678,18 +701,20 @@ def export_inserts(slug, outdir):
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
+        shift = insert_shift(bg, scene, i * 1000)
         for f in range(frames):
             ff.stdin.write(
                 render_frame(
-                    bg, scene, f / max(frames - 1, 1), i * 1000 + f, insert=True
+                    bg, scene, f / max(frames - 1, 1), i * 1000 + f,
+                    insert=True, shift=shift,
                 ).tobytes()
             )
         ff.stdin.close()
         ff.wait()
-        made.append((path.name, scene[0], " / ".join(scene[2])))
+        made.append((path.name, scene[0], " / ".join(scene[2]), shift))
     print(f"\n✅ {script['title']} → {out}/")
-    for name, dur, said in made:
-        print(f"   {name:34s} {dur:4.1f}s   旁白可講：{said}")
+    for name, dur, said, sh in made:
+        print(f"   {name:34s} {dur:4.1f}s  下移{sh:>4d}px   旁白可講：{said}")
 
 
 def main():
