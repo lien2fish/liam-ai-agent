@@ -18,13 +18,13 @@ jobs:
       matrix:
         include:
           - project: coldchain-01
-            snaps: 1.5,4.7,9,13.7,18,22
+            snaps: 1.8,6.5,12,19,26,27.5
           - project: coldchain-02
-            snaps: 1.6,5.2,9.5,14.5,18.7,23
+            snaps: 2,6.5,11,16,20.5,25
           - project: vessel-01
-            snaps: 1.6,5.5,9.9,14.8,19.4,23.5
+            snaps: 1.8,5.8,10.5,15.5,20,24
           - project: vessel-02
-            snaps: 1.7,5.5,9.9,14.3,18.6,23.3
+            snaps: 1.7,5.8,10,14.5,19,23.5
 
     defaults:
       run:
@@ -91,6 +91,8 @@ jobs:
 
       - name: 對齊產線規格（補靜音軌／清色彩標記／對齊 timescale）
         run: |
+          # ⚠️ 現在有旁白了，不能再灌 anullsrc——那會蓋掉聲音。
+          # HyperFrames 已把 <audio> 混進 out.mp4，這裡只做規格對齊。
           # reel_maker 成品規格＝1080x1920 / 24fps / yuv420p(tv) / High@4.0 /
           # aac 48000 stereo / 12288 tbn。reel_outro.py 的 append 用 -c:v copy，
           # 正片必須本來就對齊，否則片尾會被靜默丟掉（實測過：ffmpeg 回 0、
@@ -98,11 +100,10 @@ jobs:
           ffmpeg -hide_banner -bsfs | tr ' ' '\n' | grep -qx h264_metadata \
             || { echo '這台 ffmpeg 沒有 h264_metadata bsf，無法無損清色彩標記'; exit 1; }
           ffmpeg -y -v error -i out.mp4 \
-            -f lavfi -i anullsrc=r=48000:cl=stereo -shortest \
             -c:v copy \
             -bsf:v "h264_metadata=colour_primaries=2:transfer_characteristics=2:matrix_coefficients=2" \
             -color_primaries unspecified -color_trc unspecified -colorspace unspecified \
-            -c:a aac -ar 48000 -ac 2 \
+            -c:a aac -ar 48000 -ac 2 -b:a 128k \
             -video_track_timescale 12288 -movflags +faststart \
             out_pipeline.mp4
 

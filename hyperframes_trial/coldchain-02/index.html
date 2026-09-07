@@ -45,15 +45,15 @@
       id="root"
       data-composition-id="coldchain02"
       data-start="0"
-      data-duration="25"
+      data-duration="27.1"
       data-fps="24"
       data-width="1080"
       data-height="1920"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="25" data-track-index="0"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="27.1" data-track-index="0"></div>
 
       <!-- 1. HOOK 0–3.2 -->
-      <section id="s1" class="clip" data-start="0" data-duration="3.2" data-track-index="1">
+      <section id="s1" class="clip" data-start="0" data-duration="4.1" data-track-index="1">
         <div class="sin" id="s1-in">
           <div class="xtal" id="x1" style="left: 240px; top: 480px; width: 600px; height: 600px; opacity: 0.2"></div>
           <div class="stack" id="s1-text" style="top: 800px">
@@ -65,7 +65,7 @@
       </section>
 
       <!-- 2. DEEPCOLD 3.2–7.2 -->
-      <section id="s2" class="clip" data-start="3.2" data-duration="4" data-track-index="2">
+      <section id="s2" class="clip" data-start="4.1" data-duration="4.7" data-track-index="2">
         <div class="sin" id="s2-in">
           <div class="stack" id="s2-top" style="top: 480px">
             <span class="line l-body">一般冷凍是 −18°C</span>
@@ -78,14 +78,14 @@
       </section>
 
       <!-- 鮪魚肉塊自成一層，橫跨場景 3～4（褐變在場景 4 才發生） -->
-      <div id="meat" class="clip" data-start="7.2" data-duration="9.5" data-track-index="3">
+      <div id="meat" class="clip" data-start="8.8" data-duration="9.5" data-track-index="3">
         <div class="sin" id="meat-in">
           <div id="slab"><div id="brown"></div><div id="brownedge"></div></div>
         </div>
       </div>
 
       <!-- 3. MYO 7.2–12.2 -->
-      <section id="s3" class="clip" data-start="7.2" data-duration="5" data-track-index="3">
+      <section id="s3" class="clip" data-start="8.8" data-duration="5" data-track-index="3">
         <div class="sin" id="s3-in">
           <div class="tag" id="s3-tag" style="top: 440px">鮪 魚 的 紅 色</div>
           <div class="caption" id="s3-cap" style="top: 1120px">氧合肌紅蛋白 ＝ 鮮紅</div>
@@ -97,7 +97,7 @@
       </section>
 
       <!-- 4. MYO2 12.2–16.7（與 s3 共用同一塊肉，接著褐變） -->
-      <section id="s4" class="clip" data-start="12.2" data-duration="4.5" data-track-index="4">
+      <section id="s4" class="clip" data-start="13.8" data-duration="4.5" data-track-index="4">
         <div class="sin" id="s4-in">
           <div class="tag warn" id="s4-tag" style="top: 440px">它 會 慢 慢 氧 化</div>
           <div class="caption warn" id="s4-cap" style="top: 1120px">變性肌紅蛋白 ＝ 褐色</div>
@@ -109,7 +109,7 @@
       </section>
 
       <!-- 5. DEEPCOLD2 16.7–20.7 -->
-      <section id="s5" class="clip" data-start="16.7" data-duration="4" data-track-index="5">
+      <section id="s5" class="clip" data-start="18.3" data-duration="4.5" data-track-index="5">
         <div class="sin" id="s5-in">
           <div class="stack" id="s5-top" style="top: 480px">
             <span class="line l-body">只有 −60°C 以下</span>
@@ -122,7 +122,7 @@
       </section>
 
       <!-- 6. END 20.7–25.0 -->
-      <section id="s6" class="clip" data-start="20.7" data-duration="4.3" data-track-index="6">
+      <section id="s6" class="clip" data-start="22.8" data-duration="4.3" data-track-index="6">
         <div class="sin" id="s6-in">
           <div class="xtal" id="x6" style="left: 340px; top: 560px; width: 400px; height: 400px; opacity: 0.28"></div>
           <div class="stack" id="s6-a" style="top: 940px">
@@ -133,6 +133,14 @@
           </div>
         </div>
       </section>
+
+      <!-- 旁白：zh-TW-YunJheNeural +8%，逐字沿用字卡內容 -->
+      <audio id="vo-1" data-start="0.25" data-duration="3.46" src="audio/s1.mp3"></audio>
+      <audio id="vo-2" data-start="4.35" data-duration="4.08" src="audio/s2.mp3"></audio>
+      <audio id="vo-3" data-start="9.05" data-duration="3.41" src="audio/s3.mp3"></audio>
+      <audio id="vo-4" data-start="14.05" data-duration="3.55" src="audio/s4.mp3"></audio>
+      <audio id="vo-5" data-start="18.55" data-duration="3.86" src="audio/s5.mp3"></audio>
+      <audio id="vo-6" data-start="23.05" data-duration="3.58" src="audio/s6.mp3"></audio>
     </div>
 
     <script>
@@ -162,59 +170,59 @@
       const tl = gsap.timeline({ paused: true });
 
       // 1. HOOK：t=0 就要完整可讀
-      tl.fromTo("#x1", { rotation: 5, scale: 0.95 }, { rotation: -5, scale: 1.05, duration: 3.2, ease: "none" }, 0);
-      tl.fromTo("#s1-text", { scale: 1 }, { scale: 1.04, duration: 3.2, ease: "none" }, 0);
+      tl.fromTo("#x1", { rotation: 5, scale: 0.95 }, { rotation: -5, scale: 1.05, duration: 4.1, ease: "none" }, 0);
+      tl.fromTo("#s1-text", { scale: 1 }, { scale: 1.04, duration: 4.1, ease: "none" }, 0);
       tl.fromTo("#s1-tag", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 0.5);
-      tl.to("#s1-in", { opacity: 0, duration: 0.35, ease: "power1.in" }, 2.85);
-      tl.set("#s1-in", { opacity: 0 }, 3.2);
+      tl.to("#s1-in", { opacity: 0, duration: 0.35, ease: "power1.in" }, 3.75);
+      tl.set("#s1-in", { opacity: 0 }, 4.1);
 
       // 2. DEEPCOLD：指標推到 −18°C
-      tl.fromTo("#s2-top", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 3.25);
-      tl.fromTo("#sc-a .tbar", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 3.5);
-      tl.fromTo("#sc-a .tlabel", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, stagger: 0.1 }, 4.0);
-      tl.fromTo("#sc-a-cold", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 1.0, ease: "power2.inOut" }, 4.3);
-      tl.fromTo("#sc-a-mark", { x: 0, autoAlpha: 0 }, { x: 234, autoAlpha: 1, duration: 1.0, ease: "power2.inOut" }, 4.3);
-      tl.fromTo("#s2-bottom", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 5.4);
-      tl.to("#s2-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 6.9);
-      tl.set("#s2-in", { opacity: 0 }, 7.2);
+      tl.fromTo("#s2-top", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 4.15);
+      tl.fromTo("#sc-a .tbar", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 4.4);
+      tl.fromTo("#sc-a .tlabel", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, stagger: 0.1 }, 4.9);
+      tl.fromTo("#sc-a-cold", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 1.0, ease: "power2.inOut" }, 5.2);
+      tl.fromTo("#sc-a-mark", { x: 0, autoAlpha: 0 }, { x: 234, autoAlpha: 1, duration: 1.0, ease: "power2.inOut" }, 5.2);
+      tl.fromTo("#s2-bottom", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 6.3);
+      tl.to("#s2-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 8.5);
+      tl.set("#s2-in", { opacity: 0 }, 8.8);
 
       // 3. MYO：鮮紅的肉，褐變還沒開始
       tl.set("#brown", { scaleX: 0, transformOrigin: "0% 50%" }, 0);
       tl.set("#brownedge", { x: 0, autoAlpha: 0 }, 0);
-      tl.fromTo("#s3-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 7.3);
-      tl.fromTo("#slab", { autoAlpha: 0, scale: 0.93 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "power3.out" }, 7.5);
-      tl.fromTo("#s3-cap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 8.4);
-      tl.fromTo("#s3-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 9.0);
-      tl.to("#s3-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 11.9);
-      tl.set("#s3-in", { opacity: 0 }, 12.2);
+      tl.fromTo("#s3-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 8.9);
+      tl.fromTo("#slab", { autoAlpha: 0, scale: 0.93 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "power3.out" }, 9.1);
+      tl.fromTo("#s3-cap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 10);
+      tl.fromTo("#s3-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 10.6);
+      tl.to("#s3-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 13.5);
+      tl.set("#s3-in", { opacity: 0 }, 13.8);
 
       // 4. MYO2：褐變由左往右推進
-      tl.fromTo("#s4-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 12.3);
-      tl.to("#brown", { scaleX: 1, duration: 2.6, ease: "power1.inOut" }, 12.6);
-      tl.to("#brownedge", { x: 596, autoAlpha: 1, duration: 2.6, ease: "power1.inOut" }, 12.6);
-      tl.fromTo("#s4-cap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 13.4);
-      tl.fromTo("#s4-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 14.0);
-      tl.to("#s4-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 16.4);
-      tl.set("#s4-in", { opacity: 0 }, 16.7);
-      tl.to("#meat-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 16.4);
-      tl.set("#meat-in", { opacity: 0 }, 16.7);
+      tl.fromTo("#s4-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 13.9);
+      tl.to("#brown", { scaleX: 1, duration: 2.6, ease: "power1.inOut" }, 14.2);
+      tl.to("#brownedge", { x: 596, autoAlpha: 1, duration: 2.6, ease: "power1.inOut" }, 14.2);
+      tl.fromTo("#s4-cap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 15);
+      tl.fromTo("#s4-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 15.6);
+      tl.to("#s4-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 18);
+      tl.set("#s4-in", { opacity: 0 }, 18.3);
+      tl.to("#meat-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 18);
+      tl.set("#meat-in", { opacity: 0 }, 18.3);
 
       // 5. DEEPCOLD2：金色段一路推到 −60°C
-      tl.fromTo("#s5-top", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 16.75);
-      tl.set("#sc-b .tbar", { scaleX: 1 }, 16.7);
-      tl.fromTo("#sc-b .tlabel", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, stagger: 0.1 }, 16.9);
-      tl.fromTo("#sc-b-cold", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 17.1);
-      tl.fromTo("#sc-b-deep", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 1.4, ease: "power2.inOut" }, 17.6);
-      tl.fromTo("#sc-b-mark", { x: 234, autoAlpha: 1 }, { x: 780, duration: 1.4, ease: "power2.inOut" }, 17.6);
-      tl.fromTo("#s5-bottom", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 19.0);
-      tl.to("#s5-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 20.4);
-      tl.set("#s5-in", { opacity: 0 }, 20.7);
+      tl.fromTo("#s5-top", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 18.35);
+      tl.set("#sc-b .tbar", { scaleX: 1 }, 18.3);
+      tl.fromTo("#sc-b .tlabel", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.4, stagger: 0.1 }, 18.5);
+      tl.fromTo("#sc-b-cold", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.5, ease: "power2.out" }, 18.7);
+      tl.fromTo("#sc-b-deep", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 1.4, ease: "power2.inOut" }, 19.2);
+      tl.fromTo("#sc-b-mark", { x: 234, autoAlpha: 1 }, { x: 780, duration: 1.4, ease: "power2.inOut" }, 19.2);
+      tl.fromTo("#s5-bottom", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 20.6);
+      tl.to("#s5-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 22.5);
+      tl.set("#s5-in", { opacity: 0 }, 22.8);
 
       // 6. END
-      tl.fromTo("#x6", { scale: 0.72, rotation: -10 }, { scale: 1, rotation: 0, duration: 1.2, ease: "power3.out" }, 20.8);
-      tl.fromTo("#s6-a", { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 21.0);
-      tl.fromTo("#s6-b", { autoAlpha: 0, y: 34, scale: 0.9 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.7)" }, 21.7);
-      tl.to("#x6", { opacity: 0.13, duration: 1.6, ease: "sine.inOut" }, 22.3);
+      tl.fromTo("#x6", { scale: 0.72, rotation: -10 }, { scale: 1, rotation: 0, duration: 1.2, ease: "power3.out" }, 22.9);
+      tl.fromTo("#s6-a", { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 23.1);
+      tl.fromTo("#s6-b", { autoAlpha: 0, y: 34, scale: 0.9 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.7)" }, 23.8);
+      tl.to("#x6", { opacity: 0.13, duration: 1.6, ease: "sine.inOut" }, 24.4);
 
       window.__timelines["coldchain02"] = tl;
     </script>
