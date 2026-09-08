@@ -1,15 +1,31 @@
 {
   "seen_comment_ids": {
     "HMTqHANnWYc": [
-      "Ugw3Ws51UxJjUjaFEvp4AaABAg",
-      "UgzknPpi0nfJ2o-6H7t4AaABAg"
+      "UgzknPpi0nfJ2o-6H7t4AaABAg",
+      "Ugw3Ws51UxJjUjaFEvp4AaABAg"
     ],
     "vdkskjRmKuE": [
-      "UgyIc71JSISF7O-Kp4d4AaABAg",
-      "UgylN6xtfBMudBYVO_R4AaABAg"
+      "UgylN6xtfBMudBYVO_R4AaABAg",
+      "UgyIc71JSISF7O-Kp4d4AaABAg"
     ],
     "OL6OZt7hhCU": [
       "UgwxxWKuP4OUU00FPnB4AaABAg"
     ]
-  }
+  },
+  "views_snapshot": {
+    "1ENVzG9LblU": 1206,
+    "jTaDsMKI1vQ": 1249,
+    "NBsTCbABW2w": 1132,
+    "Yguem36ZA8I": 135,
+    "VSsQlbkadH0": 1251,
+    "ZdQv8UDHkRU": 1223,
+    "GQfD1VDzBk0": 34,
+    "tC5iQ5-5uG4": 406,
+    "edPWG_HRWqk": 222,
+    "fJ_REP3n4lo": 49,
+    "HMTqHANnWYc": 902,
+    "FfedqCZOfp8": 1438
+  },
+  "views_snapshot_date": "2026-09-08",
+  "subscribers": "47"
 }
