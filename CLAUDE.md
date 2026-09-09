@@ -18,7 +18,7 @@
 - **Shell**：bash（不是 zsh）
 - **啟動指令**：`cc`（alias，自動進入此目錄並啟動 Claude Code with NO_FLICKER）
 - **設定檔**：`~/.bashrc`（PATH + aliases）、`~/.bash_profile`（引入 .bashrc）
-- **Node.js**：v24.15.0，透過 nvm 安裝（`~/.nvm`）
+- **Node.js**：v24.21.0，透過 nvm 安裝（`~/.nvm`）。⚠️ **MCP server 的 `command` 一律寫 `npx` 不要寫死版本路徑**——2026-09-10 因 node 從 v24.15.0 升到 v24.21.0，`~/.claude.json` 裡三個 server 的絕對路徑全部 ENOENT，firecrawl／filesystem／playwright 一起連不上
 - **`gh` CLI**：v2.98.0，2026-08-27 裝於 `~/bin/`（**不經 Homebrew**，macOS 12 已不被 brew 支援）。
   `~/bin/gh` 是 wrapper，執行時經 `git credential` 取 PAT 注入 `GH_TOKEN`；本體是 `~/bin/gh-bin`。
   ⚠️ **`gh auth status` 會警告缺 `read:org`，那是正常的不用修**——PAT 只有 `repo`+`workflow`，
@@ -30,8 +30,8 @@
 | 工具 | 套件 | 說明 |
 |------|------|------|
 | firecrawl | `firecrawl-mcp` | 抓取任何網頁內容，API Key 已設定於環境變數 |
-| filesystem | `@modelcontextprotocol/server-filesystem` | 存取 Desktop / Documents / Downloads |
-| playwright | `@playwright/mcp` | 控制 Chromium 瀏覽器 |
+| filesystem | `@modelcontextprotocol/server-filesystem` | **只開 `~/Downloads`**（2026-09-10 從 Desktop／Documents／Downloads 縮小——Desktop 有敏感檔案，Documents 是空的）。⚠️ 這只管 MCP 這個 server，**內建 Read／Edit／Bash 不受此限**，不要誤以為個資已經隔離 |
+| playwright | `@playwright/mcp` | 控制 Chromium 瀏覽器。**2026-09-10 起加 `--isolated`**——每次開全新暫存 profile，不會接管你已登入私人帳號的瀏覽器（也代表它看不到任何登入狀態，要登入的操作一律走 Safari）|
 | notion-mcp | Notion MCP | 搜尋、新增頁面等 Notion 操作 |
 
 - ⛔ **google-workspace MCP 已於 2026-08-27 移除**：`@presto-ai/google-workspace-mcp` 借用 Gemini CLI 的 Workspace OAuth client，token 從未寫入本機，導致每次開 session 都跳一次授權頁（scope 含 gmail.modify、drive 全權）。Gmail／行事曆改走 GitHub Actions 自己的 Secret 與 Claude 內建連接器，不要重裝
