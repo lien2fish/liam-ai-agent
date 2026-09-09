@@ -22,7 +22,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 # ── Paths ──────────────────────────────────────────────────────────────────────
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "product_images")
-PINGFANG = "/System/Library/Fonts/PingFang.ttc"
+PINGFANG = "/Users/lien/Library/Fonts/PingFang.ttc"
 
 # ── Color palette ──────────────────────────────────────────────────────────────
 BG = "#faf8f3"

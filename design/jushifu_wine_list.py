@@ -15,7 +15,7 @@ DPI = 300
 W, H = 2480, 3508
 
 SONGTI = "/System/Library/Fonts/Supplemental/Songti.ttc"
-PINGFANG = "/System/Library/Fonts/PingFang.ttc"
+PINGFANG = "/Users/lien/Library/Fonts/PingFang.ttc"
 BASKERVILLE = "/System/Library/Fonts/Supplemental/Baskerville.ttc"
 AVENIR = "/System/Library/Fonts/Avenir Next.ttc"
 

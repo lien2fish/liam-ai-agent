@@ -59,7 +59,7 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 # 邏輯與 generate_post 相同，但刻意各自持有：互相 import 會在 __main__ 情境下
 # 載進第二份 generate_post，反而更難查。
 if platform.system() == "Darwin":
-    FONT, FONT_IDX = "/System/Library/Fonts/PingFang.ttc", 3
+    FONT, FONT_IDX = "/Users/lien/Library/Fonts/PingFang.ttc", 3
 else:
     _fc = subprocess.run(
         ["fc-list", ":lang=zh", "--format=%{file}\n"], capture_output=True, text=True
