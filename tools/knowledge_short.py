@@ -27,7 +27,7 @@ import sys
 from PIL import Image, ImageDraw, ImageFont
 
 W, H, FPS = 1080, 1920, 24
-FONT_PATH = "/System/Library/Fonts/PingFang.ttc"
+FONT_PATH = "/Users/lien/Library/Fonts/PingFang.ttc"
 FONT_IDX = 3
 
 BG_TOP = (9, 26, 41)

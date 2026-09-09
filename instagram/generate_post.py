@@ -41,7 +41,7 @@ LOGO_PATH = os.path.join(BASE_DIR, "logo.png")
 
 # 字型：macOS 用 PingFang，Linux（GitHub Actions）用 Noto CJK
 if platform.system() == "Darwin":
-    FONT = "/System/Library/Fonts/PingFang.ttc"
+    FONT = "/Users/lien/Library/Fonts/PingFang.ttc"
     FONT_IDX = 3
 else:
     # 用 fc-list 動態查找 Noto CJK 中文字型（相容各 Ubuntu 版本）

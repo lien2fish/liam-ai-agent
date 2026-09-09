@@ -44,7 +44,7 @@ def _title_font(size):
 def _cjk_font_path():
     """PIL 用的 CJK 字型檔路徑"""
     if platform.system() == "Darwin":
-        return ("/System/Library/Fonts/PingFang.ttc", 3)
+        return ("/Users/lien/Library/Fonts/PingFang.ttc", 3)
     fc = subprocess.run(
         ["fc-list", ":lang=zh", "--format=%{file}\n"], capture_output=True, text=True
     )
