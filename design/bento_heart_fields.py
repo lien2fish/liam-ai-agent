@@ -211,7 +211,13 @@ def cmyk_pdf(shape_alpha, ink, dpi, bleed_mm, out_pdf):
 
     keep = 1.0 - np.array(ink, dtype=np.float32) / 255.0
     W, H = ink.size
-    planes = [np.clip(v * keep + 0.5, 0, 255).astype(np.uint8) for v in base]
+    # 輪廓外一律歸零：形狀不能只靠 SMask，RIP 沒吃到軟遮罩時
+    # 滿版紅會整張印出來，歸零後最差也只是白紙上的愛心。
+    inside = np.array(a) > 0
+    planes = [
+        np.where(inside, np.clip(v * keep + 0.5, 0, 255), 0).astype(np.uint8)
+        for v in base
+    ]
     raw = np.stack(planes, axis=-1).tobytes()
 
     img = zlib.compress(raw, 6)
@@ -263,6 +269,7 @@ def cmyk_pdf(shape_alpha, ink, dpi, bleed_mm, out_pdf):
     pct = [round(v / 255 * 100, 1) for v in base]
     print(
         f"CMYK 底色 {base} = C{pct[0]} M{pct[1]} Y{pct[2]} K{pct[3]}％，出血 {bleed_mm:g}mm"
+        f"，上墨面積 {inside.mean()*100:.1f}％"
     )
 
 
@@ -314,6 +321,10 @@ def build(width_cm, dpi, outdir, bleed_mm=0.0):
         ink,
     ).convert("RGBA")
     heart.putalpha(alpha)
+    # 同理：.ai 與透明 PNG 的遮罩外也不要留紅色底
+    hp = np.array(heart)
+    hp[..., :3][hp[..., 3] == 0] = 255
+    heart = Image.fromarray(hp)
 
     os.makedirs(outdir, exist_ok=True)
     stem = f"惜食便當愛心_填寫欄_{width_cm:g}cm"
