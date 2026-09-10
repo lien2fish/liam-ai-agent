@@ -30,9 +30,9 @@
 | 工具 | 套件 | 說明 |
 |------|------|------|
 | firecrawl | `firecrawl-mcp` | 抓取任何網頁內容，API Key 已設定於環境變數 |
-| filesystem | `@modelcontextprotocol/server-filesystem` | **只開 `~/Downloads`**（2026-09-10 從 Desktop／Documents／Downloads 縮小——Desktop 有敏感檔案，Documents 是空的）。⚠️ 這只管 MCP 這個 server，**內建 Read／Edit／Bash 不受此限**，不要誤以為個資已經隔離 |
-| playwright | `@playwright/mcp` | 控制 Chromium 瀏覽器。**2026-09-10 起加 `--isolated`**——每次開全新暫存 profile，不會接管你已登入私人帳號的瀏覽器（也代表它看不到任何登入狀態，要登入的操作一律走 Safari）|
-| notion-mcp | Notion MCP | 搜尋、新增頁面等 Notion 操作 |
+| filesystem | `@modelcontextprotocol/server-filesystem` | **實際只開 `~/Downloads/Liam AI agent`**（啟動參數寫的是 `~/Downloads`，但 MCP roots protocol 會拿 workspace 根目錄蓋過參數——2026-09-10 實測連 `~/Downloads` 本身都被擋。設定成 Downloads 是當天從 Desktop／Documents／Downloads 縮小的，Desktop 有敏感檔案，Documents 是空的）。⚠️ 這只管 MCP 這個 server，**內建 Read／Edit／Bash 不受此限**，不要誤以為個資已經隔離 |
+| playwright | `@playwright/mcp` | 控制 Chromium 瀏覽器。args＝`--isolated --browser chromium`。**`--isolated`**（2026-09-10 起）每次開全新暫存 profile，不會接管你已登入私人帳號的瀏覽器（也代表它看不到任何登入狀態，要登入的操作一律走 Safari）。⚠️ **`--browser chromium` 不能拿掉**——預設會去找系統的 `/Applications/Google Chrome.app`，這台沒裝 Chrome，一拿掉就 launch 失敗。用的是 playwright 自帶的 chromium，裝在 `~/Library/Caches/ms-playwright/`（`npx playwright install chromium`，約 95MB）。⚠️ **換機器要重裝**——這個目錄不跟著 git 走，2026-09-10 搬到 M5 Air 就是因此整個開不起來 |
+| ~~notion-mcp~~ | — | ⛔ **這個 server 不存在**（2026-09-10 查證：`~/.claude.json` 的 `mcpServers` 只有 playwright／firecrawl／filesystem 三個）。Notion 走的是 **claude.ai 帳號層連接器**，不在專案設定裡、也不受 scope: user 管，工具名前綴是 `mcp__claude_ai_Notion__*`。同層還有 Canva／Gmail／Google Calendar／Google Drive 四個連接器 |
 
 - ⛔ **google-workspace MCP 已於 2026-08-27 移除**：`@presto-ai/google-workspace-mcp` 借用 Gemini CLI 的 Workspace OAuth client，token 從未寫入本機，導致每次開 session 都跳一次授權頁（scope 含 gmail.modify、drive 全權）。Gmail／行事曆改走 GitHub Actions 自己的 Secret 與 Claude 內建連接器，不要重裝
 - 查看 MCP 狀態：`/mcp`
@@ -45,7 +45,7 @@
 | filesystem | write_file |
 | playwright | navigate、screenshot、snapshot、click、type、press_key、evaluate、resize、close |
 | firecrawl | map、scrape、crawl、agent、agent_status |
-| notion-mcp | post-search、get-self、post-page |
+| ~~notion-mcp~~ | ⛔ **失效條目**：`API-post-search`／`API-get-self`／`API-post-page` 對應的 server 已不存在（舊自架 Notion MCP 的命名），留著不會有作用也不會出錯。現行 claude.ai Notion 連接器**不在這份 allow 清單裡**，走連接器自己的授權 |
 
 ### Bash 指令已允許
 | 類別 | 允許的指令 |
@@ -165,14 +165,14 @@
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
 | `rotary_birthday_reminder.yml` | 中城網路扶輪社社友生日提醒（剛好前14天Email一次；資料=私人repo `liam-workspace/rotary/中城網路社友通訊錄.json` 71位，用`WORKSPACE_PAT` checkout，**個資不進公開repo、無commit**） | 每天 08:27|
 | `festival_reminder.yml` | **節慶送禮備料提醒**（13 個商業檔期，節前 60 天寄 Email，含品項／客單價／三品牌火力；春節 120 天、中秋 90 天、端午 75 天另在各自備料起點多一封，一年 16 封）。資料表＝`festivals/festivals.json`。農曆走 `lunardate==0.2.2`，**每次執行先拿 6 個官方公告日期自我驗證，對不上就寄 🔴 警告信並讓 run 變紅、不寄任何提醒**。⚠️ 觸發是「剛好命中那一天」不是「≤」，漏跑就補 `workflow_dispatch`（只寄給自己，補跑安全）。⚠️ 冬至是節氣不是農曆日，以 12/21 近似。`festival_today` 輸入可模擬任一天實際寄信驗證 | 每天 08:29 |
-| `token_expiry_check.yml` | **IG／FB Token 到期與失效檢查**（不寫死日期，每天問 `debug_token` 實際狀態；剩 30/21/14/10/7/5/3/2/1 天時提醒，失效或缺權限則 🔴 並讓 run 變紅）。**Email＋LINE 雙通道** | 每天 08:47 |
+| `token_expiry_check.yml` | **IG／FB／Notion 金鑰失效與到期檢查**（2026-09-10 納入 Notion）（不寫死日期，每天問 `debug_token` 實際狀態；剩 30/21/14/10/7/5/3/2/1 天時提醒，失效或缺權限則 🔴 並讓 run 變紅）。**Email＋LINE 雙通道**，通知內容依實際壞掉的項目分流（影響範圍與修法提示各自對應）。⚠️ **Notion 那段一定要實際打資料庫**——只驗 secret 有效抓不到「integration 還在但被移出頁面」那種死法（`users/me` 回 200、業務查詢全 404）| 每天 08:47 |
 | `weekly_review.yml` | **AI 工作週報**（上週做了什麼＋可精進＋自動化健康＋下期建議，Email 附正式 PDF）。資料＝私人repo `daily/` 工作日誌＋公開repo git log＋Actions runs API＋`TODO.md` diff；**報告只進私人repo `liam-workspace/reviews/`，不進公開repo** | 每週一 08:53（錯開 08:03 營收週報）|
 | `schedule_watchdog.yml` | **已退休，下面是留給日後復活用的說明。** 排程巡邏（GitHub 的 schedule 會誤點、負載高時整次跳過。檢查今天該跑的有沒有跑，超過 2 小時寬限仍沒跑就自動 `workflow_dispatch` 補觸發，並回頭確認真的多出一次 run 才算成功）。⛔ **`daily_post`／`ig_story_teaser`／`yt_auto_post` 只通知不補跑**——自動補跑等於自動對外發布，發出去 API 刪不掉。時間表直接讀各 workflow 的 cron，改排程不用同步兩邊。⚠️ **巡邏自己也會被延遲**——若在 08:19 之前才執行，代表這輪是前一天被延到跨夜的班次，會改查「昨天」並**只通知不補跑**（隔夜才觸發只會產出對不上日期的東西）。2026-08-28 修：20:19 那班延到隔天 06:17 才到，原本會去查新的一天而回報「都跑了」，前一天的漏跑沒有任何一輪查過 | **2026-08-29 退休**（保留 `workflow_dispatch` 當後路）|
 
 ### GitHub Secrets 總覽
 | Secret | 用途 |
 |--------|------|
-| `ANTHROPIC_API_KEY` | Claude API Key。2026-06-26 新增，Console 已儲值（**預付制、非訂閱**，與 Claude Code 訂閱是兩筆帳）。四處在用：IG 發文文案＋畫圖 prompt（`instagram/generate_post.py`，**Sonnet 5**）、YouTube 影片腳本（`youtube_auto/generate_script.py`，**Sonnet 5**）、AI 工作週報（`scripts/weekly_review.py`，**Sonnet 5**，每週一次約 6K token）。手機助理（Haiku 4.5）已寫好但**未接通、不計費**。模型常數 `CLAUDE_MODEL` 在各腳本頂端。⚠️ **Sonnet 5 起 `content[0]` 可能是 thinking block**，解析回應一律遍歷找 `type == "text"` |
+| `ANTHROPIC_API_KEY` | Claude API Key。2026-06-26 新增，Console 已儲值（**預付制、非訂閱**，與 Claude Code 訂閱是兩筆帳）。**2026-09-10 已輪替一次**（舊金鑰已於 Console 刪除），本機備份於 `config/.anthropic_key`。四處在用：IG 發文文案＋畫圖 prompt（`instagram/generate_post.py`，**Sonnet 5**）、YouTube 影片腳本（`youtube_auto/generate_script.py`，**Sonnet 5**）、AI 工作週報（`scripts/weekly_review.py`，**Sonnet 5**，每週一次約 6K token）。手機助理（Haiku 4.5）已寫好但**未接通、不計費**。模型常數 `CLAUDE_MODEL` 在各腳本頂端。⚠️ **Sonnet 5 起 `content[0]` 可能是 thinking block**，解析回應一律遍歷找 `type == "text"` |
 | `GEMINI_KEY` | Gemini AI Key（claude-workspace-495009，**2.5-flash** 模型）。**注意：實為免費額度，未開通Cloud Billing**（2026-06-23實測證實，`2.5-flash`限20次/天、`2.5-pro`免費額度0），所有共用此Key的自動化共用同一日額度池，理論上會互搶額度 |
 | `OPENAI_API_KEY` | OpenAI 生圖（IG 插圖＋YouTube 場景圖），`gpt-image-2`（**2026-09-05 從 `gpt-image-1-mini` 遷移**，舊模型 2026-12-01 停用）。2026-08-06 設定，預付制需儲值。本機備份於 `config/.openai_key` |
 | `HF_TOKEN` | （已停用）Hugging Face FLUX→Pollinations→OpenAI，兩任前身皆因免費額度取消而汰換 |
@@ -183,7 +183,7 @@
 | `GMAIL_CLIENT_ID` | Gmail OAuth |
 | `GMAIL_CLIENT_SECRET` | Gmail OAuth |
 | `GMAIL_REFRESH_TOKEN` | Gmail OAuth |
-| `NOTION_TOKEN` | Notion API Token |
+| `NOTION_TOKEN` | Notion API Token（internal integration secret，`ntn_` 開頭）。**2026-09-10 整個 integration 被刪除導致全部 401**，已重建並輪替；本機備份於 `config/.notion_token`。⚠️ **授權靠父頁面繼承**——只要把 integration 連上「鉅鑫管理顧問 CRM」，底下客戶總表／銷售紀錄／壽險名單／庫存／漁獲行情／市場日報全部涵蓋，不必逐個資料庫連。⚠️ **Cloudflare Worker 也有同一把**，只換 GitHub 會讓 LINE 助理的 `/客戶` `/庫存` 靜默失效 |
 | `YT_API_KEY` | YouTube Data API v3 金鑰（無到期問題；連老闆留言通知＋The Unknown Hour 頻道日報共用）|
 | `YT_CHANNEL_ID` | YouTube 頻道 ID（連老闆-產地到餐桌）|
 | `YT_OAUTH_CLIENT_ID` / `YT_OAUTH_CLIENT_SECRET` / `YT_OAUTH_REFRESH_TOKEN` | The Unknown Hour 自動上傳 OAuth（scope youtube.upload，同意畫面已發Production不過期）2026-06-29設 |
