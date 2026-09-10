@@ -54,7 +54,16 @@ jobs:
 
       - name: 放進專案
         run: |
-          mkdir -p assets
+          mkdir -p assets audio
+          # 旁白音檔＝Lien 的克隆聲音，屬個資敏感資料，不進公開 repo。
+          # 與影像素材同一個判斷：公開庫不含二進位素材。
+          # 缺了就整支沒有聲音，所以這裡要卡住而不是靜默跳過。
+          V="$GITHUB_WORKSPACE/_workspace/assets/voice/hyperframes/${{ matrix.project }}"
+          test -d "$V" || { echo "❌ 找不到旁白音檔：$V"; exit 1; }
+          cp "$V"/s*.mp3 audio/
+          n=$(ls -1 audio/s*.mp3 | wc -l)
+          [ "$n" -eq 6 ] || { echo "❌ 旁白只有 $n 段，應為 6 段"; exit 1; }
+          echo "✅ 旁白 6 段已就位"
           K="$GITHUB_WORKSPACE/_workspace/assets/knowledge"
           case "${{ matrix.project }}" in
             coldchain-01) cp "$K/frozen_fish.jpg" "$K/drip_loss.jpg" assets/ ;;

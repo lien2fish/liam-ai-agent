@@ -82,3 +82,11 @@ hyperframes_trial/*/shared/
 hyperframes_trial/*/vendor/
 # vessel-02 的衛星影像來自私人 repo liam-workspace，不進公開庫
 hyperframes_trial/*/assets/
+
+# HyperFrames 旁白音檔：一律不進公開 repo
+# 克隆聲音是生物特徵資料（2026-09-10 Lien 明確歸類為個資敏感），
+# 與影像素材同一個判斷——公開庫不含二進位素材。
+# 音檔在私人 repo liam-workspace/assets/voice/hyperframes/，
+# 渲染時與影像素材同一個 checkout 步驟取回。
+hyperframes_trial/*/audio/
+hyperframes_trial/*/audio_edgetts_備份_*/
