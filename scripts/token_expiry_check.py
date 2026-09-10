@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-IG／FB Token 到期與失效檢查
+金鑰失效與到期檢查（IG／FB／Notion）
 
 不寫死到期日——每天向 debug_token 問實際狀態，所以換發後不用改程式。
 順便涵蓋 2026-08-25 那次的死法：session 被作廢（190/460），跟到期日無關。
@@ -21,6 +21,20 @@ ADDR = "lien2fish@gmail.com"
 IG_TOKEN = os.environ.get("IG_TOKEN", "")
 IG_ID = os.environ.get("IG_ID", "")
 FB_PAGE_TOKEN = os.environ.get("FB_PAGE_TOKEN", "")
+NOTION_TOKEN = os.environ.get("NOTION_TOKEN", "")
+
+NOTION_API = "https://api.notion.com/v1"
+
+# Notion 有兩種死法，只驗 token 有效只抓得到第一種：
+#   ① secret 被撤銷或 integration 被刪 → 每次呼叫都 401
+#   ② integration 還在、token 也有效，但被移出頁面 → 業務查詢全部 404
+# 2026-09-10 那次是 ①＋②（integration 整個被刪），六個 workflow 與 LINE 助理一起停。
+# 所以要實際打真正在用的資料庫，不能只打 users/me。
+NOTION_PROBES = {
+    "全品牌客戶總表": "38bf4149a6aa816e9850f3dfbbb925ec",
+    "全品牌銷售紀錄": "38bf4149a6aa81db9b89c47410857a2c",
+    "壽險客戶名單": "390f4149a6aa81bf98e1c3bffc0caad2",
+}
 
 # 重新授權要本人開瀏覽器，不能等到最後一天才說
 NOTIFY_DAYS = {30, 21, 14, 10, 7, 5, 3, 2, 1}
@@ -34,12 +48,33 @@ REQUIRED_SCOPES = [
     "pages_manage_posts",
 ]
 
-SKILL_HINT = (
+HINT_IGFB = (
     "修法：載入 <b>ig-fb-auto</b> skill 走〈IG Token 更新步驟〉——"
     "Graph API Explorer 勾滿六項權限、走完授權對話框、換長效、"
     "寫回 config/instagram_config.json 與 GitHub Secret IG_TOKEN。<br>"
     "⚠️ fb_exchange_token 換發救不了被作廢的 session，也不會延長資料存取權。"
 )
+
+HINT_NOTION = (
+    "修法：載入 <b>secrets-ops</b> skill——到 notion.so/profile/integrations 的"
+    "〈連接〉分頁（不是〈個人存取權杖〉）確認 integration 還在，"
+    "重產 Internal Integration Secret（<code>ntn_</code> 開頭）。<br>"
+    "⚠️ 授權靠父頁面繼承：把 integration 連上「鉅鑫管理顧問 CRM」即涵蓋底下全部資料庫。<br>"
+    "⚠️ <b>GitHub Secret 與 Cloudflare Worker 兩邊都要換</b>，只換一邊 LINE 助理會靜默失效。"
+)
+
+IMPACT = {
+    "IG_TOKEN": "每日發文、留言自動回覆、限動預告<b>三套一起停</b>",
+    "FB_PAGE_TOKEN": "目前沒有腳本真的在用（FB 跨發走 IG 的 cross_post_ids），影響最小",
+    "NOTION_TOKEN": (
+        "壽險生日與拜訪提醒、回購提醒、市場日報、漁獲行情、Notion 月報，"
+        "<b>＋LINE 助理的 /客戶 /買 /庫存</b>"
+    ),
+}
+
+
+def impacted(items):
+    return [v for k, v in IMPACT.items() if any(x.startswith(k) for x in items)]
 
 
 def graph(path, params):
@@ -119,18 +154,58 @@ def check_token(label, token, smoke_path, broken, warn, need_scopes=False):
     )
 
 
+def notion_get(path):
+    req = urllib.request.Request(
+        f"{NOTION_API}/{path}",
+        headers={
+            "Authorization": f"Bearer {NOTION_TOKEN}",
+            "Notion-Version": "2022-06-28",
+        },
+    )
+    with urllib.request.urlopen(req, timeout=25) as r:
+        return json.loads(r.read())
+
+
+def check_notion(broken):
+    """integration secret 沒有到期日，只會突然失效，所以不做 warn。"""
+    label = "NOTION_TOKEN"
+    if not NOTION_TOKEN:
+        broken.append(f"{label} 沒有設定——workflow 的 secret 是空的")
+        return
+
+    try:
+        notion_get("users/me")
+    except urllib.error.HTTPError as e:
+        broken.append(
+            f"{label} 已失效（HTTP {e.code}）——secret 被撤銷或 integration 被刪除"
+        )
+        return
+
+    lost = []
+    for name, did in NOTION_PROBES.items():
+        try:
+            notion_get(f"databases/{did}")
+        except urllib.error.HTTPError as e:
+            lost.append(f"{name}（HTTP {e.code}）")
+
+    if lost:
+        broken.append(
+            f"{label} 本身有效，但讀不到 {len(lost)} 個資料庫："
+            f"{'、'.join(lost)}——integration 沒有連上父頁面"
+        )
+
+
 def send_line(broken, warn):
     """LINE 只給結論與該做什麼，細節看 Email。push 計入 200 則／月額度。"""
     if broken:
-        lines = [f"🔴 IG／FB Token 出問題（{len(broken)} 項）"]
+        lines = [f"🔴 金鑰出問題（{len(broken)} 項）"]
         lines += [f"・{b}" for b in broken]
-        lines += [
-            "",
-            "每日發文／留言回覆／限動預告三套已停擺。",
-            "要用電腦走一次授權對話框，手機做不到。",
-        ]
+        impact = [i.replace("<b>", "").replace("</b>", "") for i in impacted(broken)]
+        if impact:
+            lines += [""] + [f"影響：{i}" for i in impact]
+        lines += ["", "修復要用電腦，手機做不到。"]
     else:
-        lines = ["🟡 IG／FB Token 快到期"]
+        lines = ["🟡 Token 快到期"]
         lines += [f"・{w}" for w in warn]
         lines += ["", "重新授權要用電腦，手機做不到，找時間處理。"]
     notify("\n".join(lines))
@@ -142,21 +217,26 @@ def send_mail(broken, warn):
         return
 
     if broken:
-        subject = f"🔴 IG／FB Token 出問題（{len(broken)} 項）——自動化已經停擺"
+        subject = f"🔴 金鑰出問題（{len(broken)} 項）——自動化已經停擺"
     else:
         soonest = min(int(w.split("剩 ")[1].split(" 天")[0]) for w in warn)
-        subject = f"🟡 IG／FB Token 剩 {soonest} 天到期，該重新授權了"
+        subject = f"🟡 Token 剩 {soonest} 天到期，該重新授權了"
 
     lines = []
     if broken:
         lines += ["<b>🔴 已經壞了，現在就要修：</b>", ""]
         lines += [f"• {b}" for b in broken]
-        lines += ["", "影響：每日發文、留言自動回覆、限動預告<b>三套一起停</b>。", ""]
+        lines += [""] + [f"影響：{i}。" for i in impacted(broken)] + [""]
     if warn:
         lines += ["<b>🟡 還能用，但快到期：</b>", ""]
         lines += [f"• {w}" for w in warn]
         lines += [""]
-    lines += ["─" * 30, "", SKILL_HINT]
+    hints = []
+    if any(x.startswith(("IG_TOKEN", "FB_PAGE_TOKEN")) for x in broken + warn):
+        hints.append(HINT_IGFB)
+    if any(x.startswith("NOTION_TOKEN") for x in broken):
+        hints.append(HINT_NOTION)
+    lines += ["─" * 30, "", "<br>".join(hints)]
 
     msg = MIMEText("<br>".join(lines), "html", "utf-8")
     msg["Subject"] = subject
@@ -175,13 +255,14 @@ def main():
 
     check_token("IG_TOKEN", IG_TOKEN, f"{IG_ID}/media", broken, warn, need_scopes=True)
     check_token("FB_PAGE_TOKEN", FB_PAGE_TOKEN, "me", broken, warn)
+    check_notion(broken)
 
     for b in broken:
         print("🔴", b)
     for w in warn:
         print("🟡", w)
     if not broken and not warn:
-        print("✅ Token 全部正常，且沒有接近到期")
+        print("✅ IG／FB／Notion 全部正常，且沒有接近到期")
 
     if broken or warn:
         send_mail(broken, warn)
