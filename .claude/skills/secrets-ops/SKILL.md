@@ -60,6 +60,17 @@ keychain 不像檔案會被 rsync 帶走，**換機時這把 PAT 是會掉的**�
 | 乾淨安裝 | 舊機先 `security find-internet-password -s github.com -w` 取出（**只在 Terminal.app 做，不要在 Claude Code 對話框**），或直接去 GitHub 產一把新的 |
 | 新機第一次 push | git 會跳一次鑰匙圈授權，**要在有螢幕的情況下操作**；背景任務（SessionEnd 日誌推送）不會幫你跳窗 |
 | 裝回 `gh` | 見專案 CLAUDE.md 技術環境；`~/bin/gh` wrapper 與 `~/bin/gh-bin` 都要複製，wrapper 不需改 |
+| 裝回 `wrangler` | **OAuth 憑證同樣不會跟著搬**——`~/Library/Preferences/.wrangler/config/default.toml` 在新機是空的。要在 Terminal.app 跑 `npx wrangler login`（會開瀏覽器授權），驗證用 `npx wrangler whoami` |
+
+⚠️ **2026-09-10 補：`wrangler login` 有兩個會互相掩蓋的坑。**
+
+1. **`| pipe` 進 stdin 會讓它判定成非互動環境**，於是不走 OAuth、改要求 `CLOUDFLARE_API_TOKEN`。
+   錯誤訊息只講 token，**不會告訴你其實是沒登入**。所以 `login` 一定要單獨跑、不接 pipe；
+   寫 secret 那行才用 pipe（避開「互動輸入讀到空值卻印 Success」那個坑）。
+2. **callback port 8976 被佔用時，login 會直接失敗**——常見於前一次啟動沒清乾淨。
+   `wrangler login` 底下有四層進程（zsh → npm exec → wrangler → node cli.js），
+   **只 kill 外層不會放掉 port**。查 `lsof -nP -i :8976`，
+   或改用 `npx wrangler login --callback-port <其他埠>`。
 
 ⚠️ **2026-09-06 補：`~/.git-credentials` 不是唯一的明文藏匿處。**
 `git clone https://TOKEN@github.com/...` 會把憑證寫進該 repo 的 `.git/config` remote URL，
@@ -84,7 +95,7 @@ find ~ -maxdepth 4 -name config -path '*/.git/*' \
 | 金鑰 | 連帶影響 | 風險 |
 |---|---|---|
 | `GMAIL_APP_PASSWORD` | **7 個**：生日／壽險拜訪／扶輪生日／保單到期／回購／營收週報／YT 留言＋頻道日報 | 🔴 **失效是靜默的**——你只會覺得「最近沒收到提醒」，不會有任何錯誤通知。**超過一週沒收到提醒信就該主動查** |
-| `NOTION_TOKEN` | **6 個**：生日／壽險拜訪／市場日報／月報／回購／漁獲行情 | 🔴 高 |
+| `NOTION_TOKEN` | **6 個 workflow**：生日／壽險拜訪／市場日報／月報／回購／漁獲行情，**＋ LINE 助理的 `/客戶` `/買` `/庫存`** | 🔴 高。**這把也存在兩個地方**，見下方 |
 | `GEMINI_KEY` | **5 個**：IG 留言回覆／市場日報／漁獲行情，＋IG 發文與 YT 影片的 fallback | 🟡 **免費額度共用會互搶**，不是失效也可能不夠用 |
 | `IG_TOKEN` | **3 個**：IG+FB 發文／留言回覆／限動預告 | 🔴 見下方到期規律 |
 | `ANTHROPIC_API_KEY` | 3 個：IG 發文／YT 影片（**都有 Gemini fallback**）＋**LINE 手機助理的自然語言（無 fallback，直接回 `Claude 401`）** | 🟡 **這把存在兩個地方**：GitHub Secret ＋ Cloudflare Worker secret。**輪替時兩邊都要換**——2026-08-29 就是只換了 GitHub，助理整整三天回 401 卻沒人知道（斜線指令不走 Claude，照常能用，所以症狀只出現在自然語言） |
@@ -94,6 +105,28 @@ find ~ -maxdepth 4 -name config -path '*/.git/*' \
 | `FB_PAGE_TOKEN` | **目前 0 個真的在用**——FB 跨發走 IG 的 `cross_post_ids` | 🟢 只有 `token_expiry_check` 會抓到它壞掉 |
 | `WORKSPACE_PAT` | **它就是 keychain 那把主 PAT，不是獨立金鑰**（2026-09-06 比對指紋確認）。scope `repo`+`workflow`、**四個 repo 全部可讀寫**、永不過期。直接用它的有 2 個 workflow（扶輪社生日、YT 配樂）＋ hyperframes 試算取素材 | 🔴 **`workflow` scope ＝ 能改 Actions ＝ 能把其餘 20 把 Secret 全部印出來、也能觸發對外發布的 workflow。外洩＝整套自動化淪陷** |
 | `HF_TOKEN` | 已停用 | — |
+
+### 🔁 存在兩個地方的金鑰（GitHub Secret ＋ Cloudflare Worker）
+
+**輪替時只換一邊 = 另一邊靜默壞掉。** 2026-08-29（`ANTHROPIC_API_KEY`）與
+2026-09-10（`NOTION_TOKEN`）都踩過。Worker 目前持有 8 把，其中**這 4 把與 GitHub 重疊**：
+
+| 金鑰 | 只換 GitHub 的後果 |
+|---|---|
+| `ANTHROPIC_API_KEY` | 助理自然語言回 `Claude 401`（斜線指令照常，**症狀不明顯**）|
+| `NOTION_TOKEN` | 助理 `/客戶` `/買` `/庫存` 全查不到 |
+| `OPENAI_API_KEY` | 助理的生圖類功能 |
+| `GITHUB_PAT` | 助理的 `/待辦` `/筆記` 寫不進 repo |
+
+```bash
+npx wrangler secret list        # 在 line_assistant/ 下跑，確認漏了誰
+```
+
+**標準輪替流程**（缺一不可）：
+
+1. `python3 scripts/set_secret.py NAME --file <檔案>`
+2. `cd line_assistant && printf '%s' "$(tr -d '\r\n' < ../<檔案>)" | npx wrangler secret put NAME`
+3. **兩邊各實跑一次驗收**——GitHub 端重跑一支用到它的 workflow，Worker 端用 LINE 實際發一則
 
 ---
 
