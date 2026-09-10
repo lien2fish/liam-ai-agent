@@ -89,4 +89,7 @@ hyperframes_trial/*/assets/
 # 音檔在私人 repo liam-workspace/assets/voice/hyperframes/，
 # 渲染時與影像素材同一個 checkout 步驟取回。
 hyperframes_trial/*/audio/
+# 渲染與檢查的中間產物
+hyperframes_trial/*/snapshots/
+hyperframes_trial/*/doctor.json
 hyperframes_trial/*/audio_edgetts_備份_*/
