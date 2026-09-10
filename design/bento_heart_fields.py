@@ -31,6 +31,9 @@ RULE_FRAC = 0.0035  # 底線粗細
 CLEFT_FIT_ROWS = 30  # 外推凹口尖點時取樣的列數
 TIP_FIT_ROWS = 150  # 外推底部尖角時取樣的列數
 TIP_SUBSAMPLE = 4  # 合成尖角每列的垂直取樣數
+CUT_LINE_MM = 0.25  # 模切導引線線寬（實印 K100）
+CUT_SPOT = "CutContour"  # 刀模層特別色名稱
+CUT_TOL_PX = 1.0  # 刀模路徑簡化容差（0.08mm，跟得上實印黑線）
 
 
 def runs(row):
@@ -50,6 +53,97 @@ def gaps(row):
     idx = np.nonzero(row)[0]
     breaks = np.nonzero(np.diff(idx) > 1)[0]
     return [(idx[i] + 1, idx[i + 1] - 1) for i in breaks]
+
+
+def cut_band(alpha, px):
+    """輪廓內側寬 px 的細線覆蓋率。
+
+    畫在內側而非騎線上，外形一像素都不動。
+    ⚠️ 用圓形結構元素侵蝕，不能用 MinFilter：方形 SE 走的是 Chebyshev 距離，
+    45 度斜邊會侵蝕掉 px×√2，實測線寬從 0.25mm 胖到 0.36mm。
+    ⚠️ 補零而非複製邊界——愛心最寬處貼齊影像左右緣，複製邊界會讓那兩段侵蝕不到。
+    """
+    a = np.array(alpha, np.float32) / 255.0
+    H, W = a.shape
+    pad = np.pad(a, px, constant_values=0.0)
+    inner = np.ones_like(a)
+    for dy in range(-px, px + 1):
+        for dx in range(-px, px + 1):
+            if dy * dy + dx * dx > px * px:
+                continue
+            np.minimum(inner, pad[px + dy : px + dy + H, px + dx : px + dx + W], inner)
+    # 除以 a 而非直接相減：最外圈半透明像素的覆蓋率整份都屬於細線，
+    # 相減會讓它只染一半黑，鋸齒邊外側留一圈淡粉色光暈。
+    # 兩者的含墨量相同（band × a 恆等於 a − inner），只是顏色歸屬正確。
+    return np.clip((a - inner) / np.maximum(a, 1e-6), 0, 1)
+
+
+def trace_contour(mask):
+    """Moore 鄰域輪廓追蹤，回傳外輪廓像素序列。愛心是單連通、無孔。"""
+    nb = [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)]
+    H, W = mask.shape
+    ys, xs = np.nonzero(mask)
+    i = int(np.argmin(ys.astype(np.int64) * W + xs))
+    start = (int(ys[i]), int(xs[i]))
+    cur, back = start, (start[0], start[1] - 1)
+    out = [start]
+    while len(out) < 8 * (H + W):
+        d0 = nb.index((back[0] - cur[0], back[1] - cur[1]))
+        for k in range(1, 9):
+            dy, dx = nb[(d0 + k) % 8]
+            n = (cur[0] + dy, cur[1] + dx)
+            if 0 <= n[0] < H and 0 <= n[1] < W and mask[n]:
+                py, px_ = nb[(d0 + k - 1) % 8]
+                back = (cur[0] + py, cur[1] + px_)
+                cur = n
+                break
+        else:
+            break
+        if cur == start:
+            break
+        out.append(cur)
+    return np.array([(x, y) for y, x in out], np.float64)
+
+
+def simplify(pts, tol):
+    """Douglas-Peucker。容差取 0.25mm，順帶把來源點陣圖的鋸齒抖動濾掉。"""
+    keep = np.zeros(len(pts), bool)
+    keep[0] = keep[-1] = True
+    stack = [(0, len(pts) - 1)]
+    while stack:
+        i, j = stack.pop()
+        if j <= i + 1:
+            continue
+        a, b = pts[i], pts[j]
+        d = b - a
+        L = float(np.hypot(*d))
+        seg = pts[i + 1 : j]
+        if L < 1e-9:
+            dist = np.hypot(*(seg - a).T)
+        else:
+            dist = np.abs(d[0] * (seg[:, 1] - a[1]) - d[1] * (seg[:, 0] - a[0])) / L
+        k = int(np.argmax(dist))
+        if dist[k] > tol:
+            k += i + 1
+            keep[k] = True
+            stack += [(i, k), (k, j)]
+    return pts[keep]
+
+
+def cut_path(mask):
+    raw = trace_contour(mask)
+    pts = simplify(raw, CUT_TOL_PX)
+    print(f"刀模路徑：輪廓 {len(raw)} 點 → 簡化 {len(pts)} 點（容差 {CUT_TOL_PX:g}px）")
+    return pts
+
+
+def path_ops(pts, dpi, H):
+    s = dpi / 72.0
+    seg = [
+        f"{x/s:.2f} {(H-y)/s:.2f} {'m' if i == 0 else 'l'}"
+        for i, (x, y) in enumerate(pts)
+    ]
+    return " ".join(seg) + " h"
 
 
 def extend_tip(alpha):
@@ -197,7 +291,50 @@ def cmyk_to_srgb(cmyk, w, h):
     )
 
 
-def cmyk_pdf(shape_alpha, ink, dpi, bleed_mm, out_pdf):
+def write_pdf(objs, out_pdf):
+    with open(out_pdf, "wb") as f:
+        f.write(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
+        offsets = {}
+        for n in sorted(objs):
+            offsets[n] = f.tell()
+            f.write(f"{n} 0 obj\n".encode() + objs[n] + b"\nendobj\n")
+        xref = f.tell()
+        f.write(f"xref\n0 {len(objs)+1}\n0000000000 65535 f \n".encode())
+        for n in sorted(objs):
+            f.write(f"{offsets[n]:010d} 00000 n \n".encode())
+        f.write(
+            f"trailer\n<< /Size {len(objs)+1} /Root 1 0 R >>\n"
+            f"startxref\n{xref}\n%%EOF\n".encode()
+        )
+
+
+def cut_pdf(cut, dpi, W, H, out_pdf):
+    """只有刀模路徑的向量檔，供廠商開刀模。與送印檔同尺寸同原點，可直接疊。"""
+    w_pt, h_pt = W / dpi * 72.0, H / dpi * 72.0
+    content = (
+        f"q /CS0 CS 1 SCN {CUT_LINE_MM / 25.4 * 72.0:.2f} w 1 j 1 J\n"
+        f"{path_ops(cut, dpi, H)}\nS Q"
+    ).encode()
+    write_pdf(
+        {
+            1: b"<< /Type /Catalog /Pages 2 0 R >>",
+            2: b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+            3: (
+                f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {w_pt:.2f} {h_pt:.2f}] "
+                f"/TrimBox [0 0 {w_pt:.2f} {h_pt:.2f}] "
+                f"/Resources << /ColorSpace << /CS0 5 0 R >> >> /Contents 4 0 R >>"
+            ).encode(),
+            4: f"<< /Length {len(content)} >>\nstream\n".encode()
+            + content
+            + b"\nendstream",
+            5: f"[/Separation /{CUT_SPOT} /DeviceCMYK 6 0 R]".encode(),
+            6: b"<< /FunctionType 2 /Domain [0 1] /C0 [0 0 0 0] /C1 [0 1 0 0] /N 1 >>",
+        },
+        out_pdf,
+    )
+
+
+def cmyk_pdf(shape_alpha, ink, band, cut, dpi, bleed_mm, out_pdf, spot=True):
     """DeviceCMYK + FlateDecode 自組 PDF，透明走 SMask。
 
     白字＝不上墨（露出紙白），故直接以覆蓋率扣墨，不把整張圖丟進 ICC——
@@ -214,16 +351,30 @@ def cmyk_pdf(shape_alpha, ink, dpi, bleed_mm, out_pdf):
     # 輪廓外一律歸零：形狀不能只靠 SMask，RIP 沒吃到軟遮罩時
     # 滿版紅會整張印出來，歸零後最差也只是白紙上的愛心。
     inside = np.array(a) > 0
-    planes = [
-        np.where(inside, np.clip(v * keep + 0.5, 0, 255), 0).astype(np.uint8)
-        for v in base
-    ]
+    b = band * keep  # 白字不與細線重疊，相乘只是保險
+    planes = []
+    for i, v in enumerate(base):
+        plane = v * keep * (1.0 - b)
+        if i == 3:
+            plane = plane + 255.0 * b  # 細線走 K100 單色黑，不用四色黑
+        planes.append(
+            np.where(inside, np.clip(plane + 0.5, 0, 255), 0).astype(np.uint8)
+        )
     raw = np.stack(planes, axis=-1).tobytes()
 
     img = zlib.compress(raw, 6)
     smask = zlib.compress(np.array(a).tobytes(), 6)
     w_pt, h_pt = W / dpi * 72.0, H / dpi * 72.0
-    content = f"q {w_pt:.2f} 0 0 {h_pt:.2f} 0 0 cm /Im0 Do Q".encode()
+    cut_w = CUT_LINE_MM / 25.4 * 72.0
+    # 刀模層：Separation 特別色＋疊印，不上墨也不去掉底下的紅
+    # ⚠️ 描邊要用大寫 CS/SCN，小寫是填色用的，設錯會靜默不畫
+    body = f"q {w_pt:.2f} 0 0 {h_pt:.2f} 0 0 cm /Im0 Do Q"
+    if spot:
+        body += (
+            f"\nq /GS0 gs /CS0 CS 1 SCN {cut_w:.2f} w 1 j 1 J\n"
+            f"{path_ops(cut, dpi, H)}\nS Q"
+        )
+    content = body.encode()
 
     objs = {
         1: b"<< /Type /Catalog /Pages 2 0 R >>",
@@ -231,7 +382,9 @@ def cmyk_pdf(shape_alpha, ink, dpi, bleed_mm, out_pdf):
         3: (
             f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {w_pt:.2f} {h_pt:.2f}] "
             f"/TrimBox [0 0 {w_pt:.2f} {h_pt:.2f}] "
-            f"/Resources << /XObject << /Im0 5 0 R >> >> /Contents 4 0 R >>"
+            f"/Resources << /XObject << /Im0 5 0 R >>"
+            + (" /ColorSpace << /CS0 7 0 R >> /ExtGState << /GS0 8 0 R >>" if spot else "")
+            + f" >> /Contents 4 0 R >>"
         ).encode(),
         4: f"<< /Length {len(content)} >>\nstream\n".encode()
         + content
@@ -251,29 +404,26 @@ def cmyk_pdf(shape_alpha, ink, dpi, bleed_mm, out_pdf):
         + smask
         + b"\nendstream",
     }
-
-    with open(out_pdf, "wb") as f:
-        f.write(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
-        offsets = {}
-        for n in sorted(objs):
-            offsets[n] = f.tell()
-            f.write(f"{n} 0 obj\n".encode() + objs[n] + b"\nendobj\n")
-        xref = f.tell()
-        f.write(f"xref\n0 {len(objs)+1}\n0000000000 65535 f \n".encode())
-        for n in sorted(objs):
-            f.write(f"{offsets[n]:010d} 00000 n \n".encode())
-        f.write(
-            f"trailer\n<< /Size {len(objs)+1} /Root 1 0 R >>\n"
-            f"startxref\n{xref}\n%%EOF\n".encode()
+    if spot:
+        objs[7] = f"[/Separation /{CUT_SPOT} /DeviceCMYK 9 0 R]".encode()
+        objs[8] = b"<< /Type /ExtGState /OP true /op true /OPM 1 >>"
+        objs[9] = (
+            b"<< /FunctionType 2 /Domain [0 1] /C0 [0 0 0 0] /C1 [0 1 0 0] /N 1 >>"
         )
+
+    write_pdf(objs, out_pdf)
     pct = [round(v / 255 * 100, 1) for v in base]
     print(
         f"CMYK 底色 {base} = C{pct[0]} M{pct[1]} Y{pct[2]} K{pct[3]}％，出血 {bleed_mm:g}mm"
         f"，上墨面積 {inside.mean()*100:.1f}％"
     )
+    print(
+        f"細黑線 K100 寬 {CUT_LINE_MM:g}mm"
+        + (f"／刀模層特別色 {CUT_SPOT}（疊印、不上墨）" if spot else "／主檔不含刀模層")
+    )
 
 
-def build(width_cm, dpi, outdir, bleed_mm=0.0):
+def build(width_cm, dpi, outdir, bleed_mm=0.0, spot=True):
     arr, body_h = heart_alpha()
     a_src = Image.fromarray(arr)
     target_w = int(round(width_cm / 2.54 * dpi))
@@ -315,11 +465,20 @@ def build(width_cm, dpi, outdir, bleed_mm=0.0):
             [line_x0, base - rule, line_x1, base], radius=rule // 2, fill=255
         )
 
-    heart = Image.composite(
-        Image.new("RGB", (target_w, target_h), (255, 255, 255)),
-        Image.new("RGB", (target_w, target_h), HEART_RGB),
-        ink,
-    ).convert("RGBA")
+    line_px = max(1, round(CUT_LINE_MM / 25.4 * dpi))
+    band = cut_band(alpha, line_px)
+    cut = cut_path(np.array(alpha) > 128)
+
+    flat = np.array(
+        Image.composite(
+            Image.new("RGB", (target_w, target_h), (255, 255, 255)),
+            Image.new("RGB", (target_w, target_h), HEART_RGB),
+            ink,
+        ),
+        dtype=np.float32,
+    )
+    flat *= 1.0 - band[..., None]  # 細黑線
+    heart = Image.fromarray(flat.astype(np.uint8)).convert("RGBA")
     heart.putalpha(alpha)
     # 同理：.ai 與透明 PNG 的遮罩外也不要留紅色底
     hp = np.array(heart)
@@ -342,17 +501,32 @@ def build(width_cm, dpi, outdir, bleed_mm=0.0):
     pw, ph = target_w / dpi * 72.0, target_h / dpi * 72.0
     c = canvas.Canvas(ai, pagesize=(pw, ph))
     c.drawImage(ImageReader(png), 0, 0, pw, ph, mask="auto")
+    from reportlab.lib.colors import CMYKColorSep
+
+    c.setStrokeColor(CMYKColorSep(0, 1, 0, 0, spotName=CUT_SPOT, density=1))
+    c.setLineWidth(CUT_LINE_MM / 25.4 * 72.0)
+    path = c.beginPath()
+    for i, (x, y) in enumerate(cut):
+        pt = (x / dpi * 72.0, (target_h - y) / dpi * 72.0)
+        (path.moveTo if i == 0 else path.lineTo)(*pt)
+    path.close()
+    c.drawPath(path, stroke=1, fill=0)
     c.showPage()
     c.save()
 
     pdf = os.path.join(outdir, stem + "_CMYK.pdf")
-    cmyk_pdf(alpha, ink, dpi, bleed_mm, pdf)
+    cmyk_pdf(alpha, ink, band, cut, dpi, bleed_mm, pdf, spot=spot)
+    cut_only = os.path.join(outdir, stem + "_刀模.pdf")
+    cut_pdf(cut, dpi, target_w, target_h, cut_only)
 
     # 印刷模擬：走同一支 ICC 轉回 sRGB，審色看這張不要看 RGB 版
     sim = Image.composite(
         Image.new("RGB", (target_w, target_h), (255, 255, 255)),
         cmyk_to_srgb(heart_cmyk(), target_w, target_h),
         ink,
+    )
+    sim = Image.fromarray(
+        (np.array(sim, np.float32) * (1.0 - band[..., None])).astype(np.uint8)
     )
     proof = Image.new("RGB", (target_w + 240, target_h + 240), (255, 255, 255))
     proof.paste(sim, (120, 120), alpha)
@@ -372,6 +546,7 @@ def build(width_cm, dpi, outdir, bleed_mm=0.0):
         os.path.join(outdir, stem + "_預覽.png"),
         ai,
         pdf,
+        cut_only,
         os.path.join(outdir, stem + "_印刷模擬.png"),
         sep="\n  ",
     )
@@ -385,5 +560,10 @@ if __name__ == "__main__":
     p.add_argument(
         "--bleed-mm", type=float, default=0.0, help="模切出血：沿輪廓外擴的紅色寬度"
     )
+    p.add_argument(
+        "--no-spot",
+        action="store_true",
+        help=f"主送印檔不放 {CUT_SPOT} 刀模層（廠商 RIP 認不出特別色會印成洋紅線時用）",
+    )
     a = p.parse_args()
-    build(a.width_cm, a.dpi, a.out, a.bleed_mm)
+    build(a.width_cm, a.dpi, a.out, a.bleed_mm, spot=not a.no_spot)
