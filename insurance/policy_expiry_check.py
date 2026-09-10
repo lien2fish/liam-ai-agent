@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
 產險保單到期提醒
-每日讀取 insurance/active_policies.json（已去重複的有效保單清單），
-找出「下次續保日」落在接下來 14 天內的保單，寫報告 + 寄信通知。
+每日讀取有效保單清單，找出「下次續保日」落在接下來 14 天內的保單，寄信通知。
+
+⚠️ 保單資料含客戶姓名與保單號碼，**只放私人 repo liam-workspace**，
+本檔以 POLICIES_PATH 環境變數指向 checkout 位置。
+⛔ 不要把提醒報告寫進 reports/——那個資料夾會 commit 進公開 repo。
 """
 import json
 import os
@@ -17,8 +20,9 @@ GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
 WORKSPACE = Path(
     os.environ.get("GITHUB_WORKSPACE", Path(__file__).resolve().parent.parent)
 )
-POLICIES_PATH = WORKSPACE / "insurance" / "active_policies.json"
-REPORTS_DIR = WORKSPACE / "reports"
+POLICIES_PATH = Path(
+    os.environ.get("POLICIES_PATH", WORKSPACE / "insurance" / "active_policies.json")
+)
 
 REMINDER_WINDOW_DAYS = 14
 
@@ -71,27 +75,6 @@ def main():
             due.append({**p, "下次續保日": renewal.isoformat(), "剩餘天數": days_left})
 
     due.sort(key=lambda x: x["剩餘天數"])
-
-    lines = [f"# 📋 產險保單到期提醒 {today.isoformat()}", ""]
-    if not due:
-        lines.append("接下來 14 天內沒有保單需要續保。")
-    else:
-        lines.append(f"接下來 14 天內共有 {len(due)} 筆保單即將續保：")
-        lines.append("")
-        lines.append(
-            "| 要保人 | 被保險人 | 保險公司 | 保單號碼 | 下次續保日 | 剩餘天數 |"
-        )
-        lines.append("|--------|---------|---------|---------|-----------|---------|")
-        for p in due:
-            lines.append(
-                f"| {p['要保人']} | {p['被保險人']} | {p['保險公司']} | {p['保單號碼']} "
-                f"| {p['下次續保日']} | {p['剩餘天數']} 天 |"
-            )
-
-    REPORTS_DIR.mkdir(parents=True, exist_ok=True)
-    report_path = REPORTS_DIR / f"產險到期提醒_{today.isoformat()}.md"
-    report_path.write_text("\n".join(lines), encoding="utf-8")
-    print(f"報告已輸出：{report_path}")
 
     if due:
         body = "\n".join(

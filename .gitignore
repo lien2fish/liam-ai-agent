@@ -12,6 +12,11 @@ insurance/policy_data.py
 財務/
 reports/回購提醒_*.md
 reports/營收衝刺_*.md
+reports/產險到期提醒_*.md
+
+# 有效保單清單（要保人／被保險人姓名＋保單號碼）。2026-09-10 從公開 repo 移除，
+# 正式存放位置改為私人 repo liam-workspace/insurance/，workflow 以 WORKSPACE_PAT checkout。
+insurance/active_policies.json
 
 # Playwright 瀏覽器快照
 .playwright-mcp/

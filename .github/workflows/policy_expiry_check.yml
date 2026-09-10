@@ -12,26 +12,19 @@ jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
+
+      # 保單資料含客戶姓名與保單號碼，只存在私人 repo
+      - name: Checkout 私人資料
+        uses: actions/checkout@v4
+        with:
+          repository: lien2fish/liam-workspace
+          token: ${{ secrets.WORKSPACE_PAT }}
+          path: workspace
 
       - name: 檢查即將到期保單
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          POLICIES_PATH: ${{ github.workspace }}/workspace/insurance/active_policies.json
         run: python3 insurance/policy_expiry_check.py
-
-      - name: Commit 報告
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add reports/產險到期提醒_*.md
-          git diff --staged --quiet || git commit -m "chore: 產險到期提醒 $(date +%Y-%m-%d)"
-          # ⚠️ pull 與 push 之間還有窗口讓別支任務插進來——2026-08-29 實測就中了：
-          # pull 回報 up to date，下一行 push 就被 rejected。所以要重試，不是 pull 一次就好。
-          for i in 1 2 3 4 5; do
-            git pull --rebase --autostash && git push && exit 0
-            sleep $((RANDOM % 8 + 3))
-          done
-          echo "::error::連 5 次都沒推上去"; exit 1
