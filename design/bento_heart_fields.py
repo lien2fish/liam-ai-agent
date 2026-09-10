@@ -29,6 +29,8 @@ FONT_FRAC = 0.068  # 字面高 / 愛心寬
 GAP_FRAC = 0.022  # 冒號到底線的間距
 RULE_FRAC = 0.0035  # 底線粗細
 CLEFT_FIT_ROWS = 30  # 外推凹口尖點時取樣的列數
+TIP_FIT_ROWS = 150  # 外推底部尖角時取樣的列數
+TIP_SUBSAMPLE = 4  # 合成尖角每列的垂直取樣數
 
 
 def runs(row):
@@ -48,6 +50,48 @@ def gaps(row):
     idx = np.nonzero(row)[0]
     breaks = np.nonzero(np.diff(idx) > 1)[0]
     return [(idx[i] + 1, idx[i + 1] - 1) for i in breaks]
+
+
+def extend_tip(alpha):
+    """補回底部尖角。
+
+    來源卡片上的愛心被卡片下緣切平，下緣兩側外推到交點才是完整輪廓。
+    半寬對 y 是二次的（線性擬合殘差 5.3px、二次 0.34px），故用二次外推。
+    """
+    h, w = alpha.shape
+    xs = np.arange(w)
+
+    def edge(row):
+        idx = np.nonzero(row > 0.5)[0]
+        lo, hi = idx.min(), idx.max()
+        l = lo - (row[lo] - 0.5) / max(row[lo] - row[lo - 1], 1e-6) if lo else float(lo)
+        r = (
+            hi + (row[hi] - 0.5) / max(row[hi] - row[hi + 1], 1e-6)
+            if hi + 1 < w
+            else float(hi)
+        )
+        return l, r
+
+    fit = range(h - TIP_FIT_ROWS, h - 2)
+    pairs = [edge(alpha[y]) for y in fit]
+    half = np.array([(r - l) / 2 for l, r in pairs])
+    cx = float(np.mean([(l + r) / 2 for l, r in pairs]))
+    coef = np.polyfit(np.array(fit), half, 2)
+    y_tip = min(t.real for t in np.roots(coef) if abs(t.imag) < 1e-9 and t.real > h - 3)
+
+    extra = int(np.ceil(y_tip)) - h + 1
+    out = np.zeros((h + extra, w), np.float32)
+    out[:h] = alpha
+    for i in range(extra):
+        acc = np.zeros(w)
+        for s in range(TIP_SUBSAMPLE):
+            hw = max(np.polyval(coef, h + i + (s + 0.5) / TIP_SUBSAMPLE), 0.0)
+            acc += np.clip(
+                np.minimum(xs + 1, cx + hw) - np.maximum(xs, cx - hw), 0, 1
+            )
+        out[h + i] = acc / TIP_SUBSAMPLE
+    print(f"尖角：來源切平於 y={h-1}，外推尖點 y={y_tip:.1f}（補 {extra} 列）")
+    return np.clip(out, 0, 1), h
 
 
 def heart_alpha():
@@ -110,7 +154,8 @@ def heart_alpha():
 
     alpha = np.maximum(np.where(outer, edge, 0.0), soft)
     print(f"凹口：可辨識到 y={y_last}，外推尖點 y={y_tip} x={la*y_tip+lb:.0f}")
-    return (alpha * 255).astype(np.uint8)
+    alpha, body_h = extend_tip(alpha)
+    return (alpha * 255).astype(np.uint8), body_h
 
 
 def steepen(alpha_img, lo=0.25, hi=0.75):
@@ -222,10 +267,12 @@ def cmyk_pdf(shape_alpha, ink, dpi, bleed_mm, out_pdf):
 
 
 def build(width_cm, dpi, outdir, bleed_mm=0.0):
-    a_src = Image.fromarray(heart_alpha())
+    arr, body_h = heart_alpha()
+    a_src = Image.fromarray(arr)
     target_w = int(round(width_cm / 2.54 * dpi))
     target_h = int(round(target_w * a_src.height / a_src.width))
     alpha = steepen(a_src.resize((target_w, target_h), Image.LANCZOS))
+    body_h_px = round(body_h * target_w / a_src.width)  # 尖角不參與文字定位
 
     m = np.array(alpha) > 128
     ink = Image.new("L", (target_w, target_h), 0)  # 白色文字的覆蓋率，CMYK 端當作留白
@@ -239,7 +286,7 @@ def build(width_cm, dpi, outdir, bleed_mm=0.0):
     rows = []
     avail = []
     for f in ROW_FRACS:
-        y = int(target_h * f)
+        y = int(body_h_px * f)
         xs = np.nonzero(m[y])[0]
         rows.append(y)
         avail.append((xs.min(), xs.max()))
