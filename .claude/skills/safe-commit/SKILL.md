@@ -31,6 +31,7 @@ description: commit／push 前的敏感資料檢查與落點判斷。任何要�
 | 等級 | 判準 | 例子 | 該去哪 |
 |---|---|---|---|
 | 🔴 **絕不進任何 repo** | 外洩＝立即實害 | 身分證號、金鑰／token／密碼、原始保單、銀行帳號密碼 | **純本機**：`~/Desktop/`、`config/`（已被 .gitignore） |
+| 🟠 **生物特徵**（2026-09-10 新增）| 可被拿去冒充本人 | **聲音克隆樣本與克隆產出的旁白**、`~/聲音素材/` 整個目錄 | **`liam-workspace`**；渲染時 checkout 取回，見 `hyperframes_trial/pull_voice.sh` |
 | 🟠 **只進私人 repo** | 可識別到特定個人或揭露財務狀況 | 客戶姓名／電話／Email／地址、報價與成交金額、個人財務、工作日誌、會議記錄 | **`liam-workspace`**（私人） |
 | 🟡 **可進公開，但要逐檔看過** | 本身無害，但可能夾帶 | 報告、設計檔、資料處理腳本、CSV／XLSX 任何資料檔 | `liam-ai-agent`，**打開來確認過才進** |
 | 🟢 **公開沒問題** | 純邏輯，不含資料 | 程式碼、workflow、文件、.gitignore | `liam-ai-agent` |
@@ -101,6 +102,10 @@ for name, value in 實際的金鑰們.items():
   **要同時看：欄位標題、人名表格結構、值的樣式。**
 
 - **`.gitignore` 不會讓已追蹤的檔案消失。** 加規則只擋新檔；既有的要 `git rm`。
+- **`git check-ignore` 對已追蹤的檔案不會回報**，看起來像規則寫錯。
+  要驗規則本身是否正確，加 `--no-index`；規則沒問題的話，`git rm --cached` 之後就會生效。
+- **全形括號會被 bash 併進變數名**：`"$p（...）"` 會去找不存在的變數 `p（`，
+  在 `set -u` 下直接中止。中文輸出一律寫 `${p}` 界定邊界。
 - **`git rm` 不會清掉歷史。** 刪掉只是擋隨手瀏覽，任何人仍能從舊 commit 撈回。
   真的要清必須 `git filter-repo` ＋ force push（見下方流程）。
 - **force push 之後 GitHub 仍會用 SHA 提供舊 commit**，直到它自己 GC。
