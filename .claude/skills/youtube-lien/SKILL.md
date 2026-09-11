@@ -112,9 +112,16 @@ Shorts 若另存子資料夾就不會自動穿插，這種情況改用 `--plan` 
 - **1080×1920 且 ≤3 分鐘一律被當 Shorts 收錄**，會活在 Shorts 頁籤而非一般影片版位
 - **發文案 .md 有兩種格式**，`read_desc` 兩種都吃：連老闆是 IG/YT/TikTok 三段式
   （`- 標題：`），甜點頻道是 `**標題**`／`**描述**` 程式碼區塊／`**Tags**` 逗號清單
-- `youtube.upload` scope **不含讀取**，查頻道／影片一律 403
-- 背景執行時 `input()` 的提示字尾沒換行，會被誤判成「waiting for interactive input」。
-  看 `.yt_uploaded_*.json` 判斷實際進度，不要砍掉重跑
+- `youtube.upload` scope 查 **channels** endpoint 會 403，
+  但 **`videos?part=status,processingDetails&id=<自己上傳的影片>` 查得到**
+  （2026-09-11 實測）。⇒ **驗收 `processingStatus` 不必另外授權讀取 scope**，
+  用 `config/youtube_oauth_lien.json` 的 refresh token 換 access token 直接打即可
+- 🔴 **背景／非互動執行時 `yt_upload.py` 會直接 EOFError，什麼都不會上傳，
+  而且 exit code 仍是 0。** 它有一步 `input("確認上傳？(y/N) ")`，
+  沒有 stdin 就拋例外收場——log 看起來把資訊都印完了，很像已經送出。
+  要在非互動環境跑就餵確認：`printf 'y\n' | python3 tools/yt_upload.py ...`
+  ⚠️ 砍掉重跑前**先確認 `.yt_uploaded_<profile>.json` 有沒有那支**，
+  真的沒上傳才重跑，否則會傳成兩支
 
 
 ## YouTube Shorts 留言每日通知系統（2026-06-11 建立）
