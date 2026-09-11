@@ -95,6 +95,7 @@ SCHEMAS = {
             "分裝單位": {"rich_text": {}},
             "進價": {"number": {"format": "number"}},
             "計價單位": {"select": {}},
+            "售價": {"number": {"format": "number"}},
             "估算庫存成本": {"number": {"format": "number"}},
             "成本狀態": {"select": {}},
             "備註": {"rich_text": {}},
@@ -156,6 +157,12 @@ SEAFOOD_UNITS = {
     if not k.startswith("_")
 }
 
+SEAFOOD_BUNDLES = json.load(
+    open(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "seafood_bundles.json")
+    )
+)["items"]
+
 
 def seafood_cost(name, qty, price, price_unit):
     """回傳 (估算成本, 成本狀態)。進價以斤計但庫存以顆/包計時，需 catty_per_unit 才能換算。"""
@@ -186,6 +193,7 @@ def to_props(brand, item):
             "分裝單位": text(item["分裝單位"]),
             "進價": num(price),
             "計價單位": sel(item["計價單位"]),
+            "售價": num(item.get("售價")),
             "估算庫存成本": num(cost),
             "成本狀態": sel(status),
             "備註": text(item["備註"]),
@@ -445,6 +453,7 @@ def main():
     path = sys.argv[1] if len(sys.argv) > 1 else SRC
     wine_path = sys.argv[2] if len(sys.argv) > 2 else WINE_SRC
     data = parse(path, wine_path)
+    data["鑫海產"] += SEAFOOD_BUNDLES
     cfg = load_config()
     parent = ensure_parent(cfg)
     print(f"父頁面 {parent}")
