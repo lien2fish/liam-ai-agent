@@ -27,11 +27,26 @@ NOISE_PREFIX = (
 
 # 使用者有時會把金鑰直接貼進對話（2026-08-25 就發生過，IG 短效 token）。
 # 那則訊息會原樣寫進日誌並 push 上 repo——私人 repo 也不該留這種東西。
+#
+# 2026-09-11 補：這道防護是 08-25 才加的，在那之前的日誌沒被保護到，
+# daily/2026-07-25、07-31、08-05 裡留了四把明文金鑰（已清）。
+# 當時的樣式也漏了 ntn_／sk_（底線版）／hf_／URL 內嵌憑證，一併補上。
+# 新增服務時記得回來加樣式，並用 sk_ 那條的教訓檢查分隔符號是 - 還是 _。
 SECRETS = [
     (re.compile(r"EAA[A-Za-z0-9]{20,}"), "〔已遮蔽：Meta token〕"),
     (re.compile(r"sk-[A-Za-z0-9_-]{20,}"), "〔已遮蔽：OpenAI／Anthropic 金鑰〕"),
+    # ElevenLabs 用底線不是連字號，上面那條抓不到（2026-09-11 實際漏掉一把）
+    (re.compile(r"sk_[A-Za-z0-9]{30,}"), "〔已遮蔽：ElevenLabs 等金鑰〕"),
     (re.compile(r"gh[pousr]_[A-Za-z0-9]{20,}"), "〔已遮蔽：GitHub token〕"),
     (re.compile(r"AIza[A-Za-z0-9_-]{30,}"), "〔已遮蔽：Google 金鑰〕"),
+    (re.compile(r"ntn_[A-Za-z0-9]{30,}"), "〔已遮蔽：Notion token〕"),
+    (re.compile(r"secret_[A-Za-z0-9]{40,}"), "〔已遮蔽：Notion 舊式 token〕"),
+    (re.compile(r"hf_[A-Za-z0-9]{30,}"), "〔已遮蔽：HuggingFace token〕"),
+    # clone 網址內嵌的憑證，一印就進日誌
+    (
+        re.compile(r"https://[A-Za-z0-9_-]{16,}(:[^@\s]+)?@"),
+        "https://〔已遮蔽：憑證〕@",
+    ),
     (re.compile(r"xox[baprs]-[A-Za-z0-9-]{10,}"), "〔已遮蔽：Slack token〕"),
     # 32 字以上的純 hex——涵蓋自產的隨機 token（也會吃掉完整 commit SHA，
     # 但寧可日誌少一個 SHA，也不要漏掉一把金鑰）
@@ -100,11 +115,13 @@ def main():
     home = os.path.expanduser("~")
     lines = [
         "",
-        "## %02d:%02d — %s" % (now.hour, now.minute, title or prompts[0][:30]),
+        "## %02d:%02d — %s" % (now.hour, now.minute, redact(title or prompts[0])[:30]),
         "",
     ]
     for p in prompts:
-        lines.append("- 我：" + p[:300])
+        # parse() 已經 redact 過一次，這裡再一次是保險——寫入是最後一關，
+        # 之後若有人新增別的取值路徑，不會因為漏了上游那道而外洩。
+        lines.append("- 我：" + redact(p)[:300])
     if files:
         lines += ["", "**改動的檔案**"]
         lines += ["- `%s`" % f.replace(home, "~") for f in files[:20]]
