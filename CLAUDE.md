@@ -324,12 +324,6 @@ wt list    # 列出所有 worktree
 wt clean   # 清除額外 worktree
 ```
 
-### SessionStart Hooks（每次開啟 Claude Code 自動觸發）
-| 腳本 | 說明 |
-|------|------|
-| `cache_cleanup.sh` | Mac 快取清理（背景執行）|
-| `gmail_monthly_cleanup.py` | Gmail 清理（背景執行，GitHub Actions 為主、本機為備）|
-
 ---
 
 ## 剪輯短影音／長影音
