@@ -175,3 +175,54 @@ python3 tools/reel_outro.py append "素材/8月2日 (3)(1).mp4" 成品/*.mp4
 - 沒釘 pix_fmt/color_range → 正片與封面卡 profile 或色彩範圍不一致，`concat copy` 只保留第一段的 SPS/PPS，整支正片會用錯的解碼參數
 
 ⚠️ 曾經誤判成「1.3 倍速造成 VFR」——**不是**，`-r 24` 本來就強制 CFR。詳見 memory `feedback_youtube_upload_reel`。
+
+---
+
+## ⚠️ 這台 ffmpeg 沒有 drawtext／subtitles／libass（2026-09-11 實測）
+
+M5 Air 上的 ffmpeg 9.0.1 **沒有編進 freetype 與 libass**：
+
+```
+❌ drawtext    ❌ subtitles    ❌ ass
+✅ overlay（有 timeline 支援）  ✅ boxblur  ✅ alimiter  ✅ sidechaincompress
+```
+
+⇒ **任何靠 `drawtext` 畫字、或 `subtitles=x.srt` 燒字幕的寫法都會直接失敗**
+（`No such filter: 'drawtext'`）。
+
+**替代作法**：用 Pillow 把字畫成透明 PNG，再用 `overlay` 的 `enable='between(t,a,b)'` 疊上去。
+36 歲生日影片就是這樣做的，腳本可參考 `~/Downloads/36歲生日文/製作素材/make_text.py`。
+
+⛔ **字幕 PNG 一定要 `-loop 1 -framerate 30` 讀進來。**
+單幀輸入在多層 overlay 串接下撐不過整條時間軸，**後半段的 enable 會全部落空**
+——第一版只有前 5 句有字幕、32 秒之後全空白，就是漏了這個。
+
+## ⚠️ 混音鏈上不可以放會產生延遲的濾鏡（2026-09-11 實測）
+
+旁白配樂混音時踩到兩個，兩個都**不報錯、只是結果壞掉**：
+
+| 濾鏡 | 症狀 | 代替方案 |
+|---|---|---|
+| `loudnorm` | lookahead buffer 讓整條鏈短掉約 1.9 秒，**從旁白尾巴吃掉**（最後一句的結尾沒了、128 秒後全靜音）| 事先用 `ebur128` 量好響度，改用固定 `volume=XdB` |
+| `sidechaincompress` | 旁白相對字幕**提前 0.43 秒**，字幕慢半拍 | 依逐句時間表用 numpy 預先算好 ducking 包絡，做成音床再單純 `amix` |
+
+**驗收方式**：拿成品音訊與原始旁白做人聲頻段（1–4kHz）包絡互相關，偏移要 ≈ 0。
+⚠️ 但**混了 BGM 之後這個量測會被音樂帶偏**（實測報 −0.26s，母帶卻是 −0.01s）——
+真正可信的判準是**逐格看字幕在哪一格出現／消失**，那完全不受音訊影響。
+
+## ⚠️ AAC 的 intersample peak 會超過限幅點
+
+旁白提了音量再疊 BGM 很容易破表。實測：
+- 不加限幅 → 成品 **+1.09 dBFS**（削峰）
+- `alimiter=limit=0.891`（−1dB）→ 仍然 **+0.38 dBFS**
+- `alimiter=limit=0.708`（−3dB）→ **−2.7 dBFS** ✅
+
+**要留到 −3dB 才穩。** 驗收一定要解碼出來量取樣峰值，不能只看 `ebur128` 的 LUFS。
+
+## ⚠️ 圖片與影片混用時的色彩範圍
+
+圖片來源進 ffmpeg 是 **full range（`pc`）**、影片來源是 **`tv`**。
+混在同一支 concat 裡，影片段會被當 full range 解讀而**發灰**。
+
+`scale` 一律加 `out_range=tv`，輸出再釘 `-color_range tv`。
+成品用 `ffprobe -show_entries stream=pix_fmt,color_range` 確認是 `yuv420p` + `tv`。
