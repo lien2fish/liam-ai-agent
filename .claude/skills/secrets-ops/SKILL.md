@@ -139,7 +139,17 @@ cd scheduler_worker && npx wrangler secret list    # ⚠️ 這個也要查
 2. `cd line_assistant && printf '%s' "$(tr -d '\r\n' < ../<檔案>)" | npx wrangler secret put NAME`
 3. **`GITHUB_PAT`／`NOTIFY_TOKEN` 還要再做 `scheduler_worker` 一次**
 4. **每一邊各實跑一次驗收**——GitHub 端重跑一支用到它的 workflow、
-   assistant 用 LINE 實際打一則、scheduler 看隔天排程有沒有照常觸發
+   scheduler 看隔天排程有沒有照常觸發，assistant 則**兩種路徑都要測**：
+
+   | 測什麼 | 走到哪把金鑰 |
+   |---|---|
+   | 斜線指令（`/查` `/庫存`）| `GITHUB_PAT`／`NOTION_TOKEN`，**不經 Claude** |
+   | 自然語言（「幫我記一個待辦…」）| `ANTHROPIC_API_KEY` |
+   | 傳語音訊息 | `OPENAI_API_KEY`（Whisper）|
+
+   ⚠️ **只測斜線指令會漏掉一半。** 2026-09-11 就是這樣：補灌 `GITHUB_PAT` 後
+   `/查` 恢復正常，但 `ANTHROPIC_API_KEY`（09-10 輪替）同樣沒同步，
+   自然語言還是壞的——因為斜線指令不走 Claude，測不出來。
 
 #### 案例：2026-09-11「自動化全部失敗」其實是助理自己壞了
 
