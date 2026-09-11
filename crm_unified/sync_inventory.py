@@ -89,6 +89,8 @@ SCHEMAS = {
         "properties": {
             "品名": {"title": {}},
             "產品種類": {"select": {}},
+            "販售類型": {"select": {}},
+            "檔期": {"select": {}},
             "供貨狀態": {"select": {}},
             "庫存數量": {"number": {"format": "number"}},
             "數量單位": {"select": {}},
@@ -187,6 +189,8 @@ def to_props(brand, item):
         return {
             "品名": title(item["品名"]),
             "產品種類": sel(item["產品種類"]),
+            "販售類型": sel(item.get("販售類型", "經常性")),
+            "檔期": sel(item.get("檔期")),
             "供貨狀態": sel("現有庫存" if qty > 0 else "可調貨"),
             "庫存數量": num(qty),
             "數量單位": sel(SEAFOOD_UNITS.get(item["品名"], {}).get("unit")),
