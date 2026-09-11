@@ -93,6 +93,26 @@ def build_report_blocks(year, month, stats, rows):
     blocks.append(para(f"毛利：NT$ {total_profit:,}　（毛利率 {margin:.1f}%）"))
     blocks.append(divider())
 
+    # 經常性／節慶（販售類型空白視同經常性）
+    kinds = defaultdict(lambda: {"訂單數": 0, "營收": 0, "成本": 0})
+    for r in rows:
+        props = r["properties"]
+        kind = (props.get("販售類型", {}).get("select") or {}).get("name") or "經常性"
+        season = (props.get("檔期", {}).get("select") or {}).get("name")
+        key = f"{kind}（{season}）" if season else kind
+        kinds[key]["訂單數"] += 1
+        kinds[key]["營收"] += props.get("金額", {}).get("number") or 0
+        kinds[key]["成本"] += props.get("成本", {}).get("number") or 0
+    blocks.append(heading2("🥮 經常性／節慶"))
+    for key, v in sorted(kinds.items()):
+        profit = v["營收"] - v["成本"]
+        blocks.append(
+            para(
+                f"{key}：{v['訂單數']} 筆・營收 NT$ {v['營收']:,}・毛利 NT$ {profit:,}"
+            )
+        )
+    blocks.append(divider())
+
     # 各品牌
     blocks.append(heading2("🏪 各品牌明細"))
     for brand, v in sorted(stats.items()):

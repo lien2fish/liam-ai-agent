@@ -197,6 +197,7 @@ def create_seafood_record(
         "訂購金額": {"number": amount},
         "付款方式": {"select": {"name": pay}} if pay else None,
         "備註": rt(""),
+        "販售類型": {"select": {"name": "經常性"}},
     }
     if cost:
         props["成本"] = {"number": cost}
@@ -286,6 +287,7 @@ def sync_to_unified(
         "出貨日期": {"date": {"start": order_date}},
         "客戶名稱": rt(customer_name),
         "品項": rt(item_desc),
+        "販售類型": {"select": {"name": "經常性"}},
     }
     if qty:
         props["數量"] = {"number": qty}
