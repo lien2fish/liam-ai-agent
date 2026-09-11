@@ -106,27 +106,57 @@ find ~ -maxdepth 4 -name config -path '*/.git/*' \
 | `WORKSPACE_PAT` | **它就是 keychain 那把主 PAT，不是獨立金鑰**（2026-09-06 比對指紋確認）。scope `repo`+`workflow`、**四個 repo 全部可讀寫**、永不過期。直接用它的有 2 個 workflow（扶輪社生日、YT 配樂）＋ hyperframes 試算取素材 | 🔴 **`workflow` scope ＝ 能改 Actions ＝ 能把其餘 20 把 Secret 全部印出來、也能觸發對外發布的 workflow。外洩＝整套自動化淪陷** |
 | `HF_TOKEN` | 已停用 | — |
 
-### 🔁 存在兩個地方的金鑰（GitHub Secret ＋ Cloudflare Worker）
+### 🔁 同一把金鑰散在三個地方（GitHub Secret ＋ 兩個 Cloudflare Worker）
 
-**輪替時只換一邊 = 另一邊靜默壞掉。** 2026-08-29（`ANTHROPIC_API_KEY`）與
-2026-09-10（`NOTION_TOKEN`）都踩過。Worker 目前持有 8 把，其中**這 4 把與 GitHub 重疊**：
+**輪替時漏掉任何一邊 = 那邊靜默壞掉。** 已經踩過三次：
+2026-08-29（`ANTHROPIC_API_KEY`）、2026-09-10（`NOTION_TOKEN`）、
+2026-09-11（`GITHUB_PAT`，見下方案例）。
 
-| 金鑰 | 只換 GitHub 的後果 |
+⚠️ **有兩個 Worker，不是一個。** 只查 `line_assistant` 會漏掉 `scheduler_worker`：
+
+| 位置 | 持有 |
+|---|---|
+| GitHub Secrets | 21 把 |
+| Cloudflare `liam-assistant`（`line_assistant/`）| `ANTHROPIC_API_KEY`、`OPENAI_API_KEY`、`NOTION_TOKEN`、`GITHUB_PAT`、`NOTIFY_TOKEN`、LINE 三把 |
+| Cloudflare `liam-scheduler`（`scheduler_worker/`）| **`GITHUB_PAT`**、`NOTIFY_TOKEN`、`NOTIFY_URL` |
+
+| 金鑰 | 漏掉 Worker 的後果 |
 |---|---|
 | `ANTHROPIC_API_KEY` | 助理自然語言回 `Claude 401`（斜線指令照常，**症狀不明顯**）|
 | `NOTION_TOKEN` | 助理 `/客戶` `/買` `/庫存` 全查不到 |
-| `OPENAI_API_KEY` | 助理的生圖類功能 |
-| `GITHUB_PAT` | 助理的 `/待辦` `/筆記` 寫不進 repo |
+| `OPENAI_API_KEY` | 助理的語音轉文字（Whisper）|
+| `GITHUB_PAT` | assistant：`/待辦` `/筆記` 寫不進 repo、**`/查` 每支都回 401 而顯示成「全部失敗」**<br>scheduler：🔴 **所有排程停擺**（它靠 PAT 打 workflow_dispatch）|
+| `NOTIFY_TOKEN` | 自動化推播送不出去 |
 
 ```bash
-npx wrangler secret list        # 在 line_assistant/ 下跑，確認漏了誰
+cd line_assistant   && npx wrangler secret list    # 確認漏了誰
+cd scheduler_worker && npx wrangler secret list    # ⚠️ 這個也要查
 ```
 
 **標準輪替流程**（缺一不可）：
 
 1. `python3 scripts/set_secret.py NAME --file <檔案>`
 2. `cd line_assistant && printf '%s' "$(tr -d '\r\n' < ../<檔案>)" | npx wrangler secret put NAME`
-3. **兩邊各實跑一次驗收**——GitHub 端重跑一支用到它的 workflow，Worker 端用 LINE 實際發一則
+3. **`GITHUB_PAT`／`NOTIFY_TOKEN` 還要再做 `scheduler_worker` 一次**
+4. **每一邊各實跑一次驗收**——GitHub 端重跑一支用到它的 workflow、
+   assistant 用 LINE 實際打一則、scheduler 看隔天排程有沒有照常觸發
+
+#### 案例：2026-09-11「自動化全部失敗」其實是助理自己壞了
+
+Lien 用 LINE 打 `/查`，回報全部失敗、要檢查連線或金鑰。
+實際查 Actions：**當天 67 次執行、66 成功 0 失敗**，任務根本沒問題。
+
+根因＝2026-09-06 輪替主 PAT 時只更新了 keychain 與 GitHub Secret，
+漏掉 `liam-assistant` 的 `GITHUB_PAT`。舊的已撤銷，`/查` 對每支 workflow 打 API 都 401，
+逐一累加就變成「全部失敗」。
+
+**這個症狀最會騙人**：助理報的是「任務失敗」，但壞的是助理自己。
+⇒ **看到 `/查` 回報全滅，先用 Actions API 對一次**，
+免金鑰就讀得到：`curl -s "https://api.github.com/repos/lien2fish/liam-ai-agent/actions/runs?per_page=100"`。
+真的全滅通常是 scheduler 掛了（那會是「沒有 run」而不是「run 失敗」）。
+
+⚠️ 同一次也發現 `NOTION_TOKEN`（09-10 輪替）同樣沒同步到 Worker，一併補灌。
+**輪替後沒人用到的功能不會報錯，等到用才發現——所以輪替當下就要把三個地方一起做完。**
 
 ---
 
