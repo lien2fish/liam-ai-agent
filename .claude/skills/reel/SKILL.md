@@ -178,20 +178,38 @@ python3 tools/reel_outro.py append "素材/8月2日 (3)(1).mp4" 成品/*.mp4
 
 ---
 
-## ⚠️ 這台 ffmpeg 沒有 drawtext／subtitles／libass（2026-09-11 實測）
+## 🔧 換機後 ffmpeg 缺 libass，整條產線靜默失效（2026-09-11 已修）
 
-M5 Air 上的 ffmpeg 9.0.1 **沒有編進 freetype 與 libass**：
+**症狀**：`reel_maker build` 跑完 19 段、cues 全部對上，然後只產出一張封面 jpg，
+**exit code 還是 0**，最後在「把封面卡壓進開頭」爆 `FileNotFoundError`。
 
+**根因**：`reel_maker` 燒字幕靠 `subtitles=` 濾鏡（ASS），而 M5 Air 上
+Homebrew 官方 formula 編的 ffmpeg **依賴清單裡根本沒有 libass／freetype／fontconfig**。
+濾鏡不存在 → ffmpeg 報錯 → 但那行 `subprocess.run(..., capture_output=True)`
+**沒有檢查 returncode**，錯誤被完全吞掉。
+
+**修法**（官方 formula 怎麼編都沒有 libass，`--build-from-source` 也沒用）：
+
+```bash
+brew install libass
+brew tap homebrew-ffmpeg/ffmpeg
+brew uninstall ffmpeg                          # 同名 formula 不能並存
+brew install homebrew-ffmpeg/ffmpeg/ffmpeg     # 無 bottle，要編 15~40 分鐘
 ```
-❌ drawtext    ❌ subtitles    ❌ ass
-✅ overlay（有 timeline 支援）  ✅ boxblur  ✅ alimiter  ✅ sidechaincompress
+
+**換機後一定要驗這個**，不然只有在跑長片時才會發現：
+
+```bash
+for f in subtitles ass drawtext; do ffmpeg -filters | grep -qE " $f " && echo "✅ $f" || echo "❌ $f"; done
 ```
 
-⇒ **任何靠 `drawtext` 畫字、或 `subtitles=x.srt` 燒字幕的寫法都會直接失敗**
-（`No such filter: 'drawtext'`）。
+⚠️ 舊的 2015 Air 有 libass，所以這個問題是**換機才出現的**，
+而且 `reel_check.py` 檢查不到——它只驗 config 與素材，不驗執行環境。
 
-**替代作法**：用 Pillow 把字畫成透明 PNG，再用 `overlay` 的 `enable='between(t,a,b)'` 疊上去。
-36 歲生日影片就是這樣做的，腳本可參考 `~/Downloads/36歲生日文/製作素材/make_text.py`。
+**另一條路（不改環境時可用）**：用 Pillow 把字畫成透明 PNG，
+再用 `overlay` 的 `enable='between(t,a,b)'` 疊上去。
+36 歲生日影片就是這樣做的，腳本在 `~/Downloads/36歲生日文/製作素材/make_text.py`。
+⚠️ 那條路的字幕樣式要自己刻，**跟 reel_maker 的橘黃高光不是同一套**。
 
 ⛔ **字幕 PNG 一定要 `-loop 1 -framerate 30` 讀進來。**
 單幀輸入在多層 overlay 串接下撐不過整條時間軸，**後半段的 enable 會全部落空**
