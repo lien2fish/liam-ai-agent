@@ -49,6 +49,18 @@ curl -s "https://api.github.com/repos/$R/actions/runs?per_page=100"             
 
 在那之前 GitHub 的 schedule 誤點 1.5~4 小時是常態，舊紀錄裡看到的漏跑多半是這個原因。
 
+⚠️ **助理報的「失敗」與 Actions 真正的失敗是兩回事。**
+2026-09-11 Lien 用 `/查` 得到「全部失敗」，實際當天 67 次執行 66 成功 0 失敗——
+壞的是助理的 `GITHUB_PAT`（輪替時漏掉 Cloudflare 那份）。
+**任何「全部失敗」的回報，先用免金鑰 API 對一次事實**：
+
+```bash
+curl -s "https://api.github.com/repos/lien2fish/liam-ai-agent/actions/runs?per_page=100"
+```
+
+真的全面停擺會長成「**沒有 run**」（scheduler 沒觸發），而不是「run 失敗」。
+兩者的根因完全不同，別混為一談。
+
 **② 判斷屬於哪一類**（見下方症狀表）
 
 **③ 分兩種處置**：偶發 → 直接重跑；根因 → 改程式後再跑
@@ -66,6 +78,7 @@ gh workflow run <檔名>.yml        # 重跑
 
 | 症狀（log 裡看到的） | 原因 | 處置 | 手機能做？ |
 |---|---|---|---|
+| **LINE 助理 `/查` 回報「全部失敗、檢查連線或金鑰」** | 🔴 **多半是助理自己壞了，不是任務掛了**。`/查` 用 Worker 的 `GITHUB_PAT` 逐支打 Actions API，那把過期就每支都 401、累加成「全滅」 | **先用 Actions API 對一次**再判斷（見下方）。確認是助理的問題就補灌 Worker secret，見 `secrets-ops` | ✅ |
 | Claude API 5xx／逾時 | 偶發 | **直接重跑**，別改程式 | ✅ |
 | `Claude 回傳異常` + `content` KeyError | Sonnet 5 開 adaptive thinking，`content[0]` 是 thinking block | 遍歷找 `type == "text"`，**不可寫 `content[0]["text"]`**（2026-08-19 已修 IG 與 YT 兩支） | ✅ |
 | Gemini 429 `RESOURCE_EXHAUSTED` | 免費額度 20 次/天用完，**五個系統共用同一把 key** | 重跑無效，等隔天重置（**UTC 00:00 ＝台北 15:00**） | ✅ 等 |
