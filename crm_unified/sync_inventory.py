@@ -159,11 +159,9 @@ SEAFOOD_UNITS = {
     if not k.startswith("_")
 }
 
-SEAFOOD_BUNDLES = json.load(
-    open(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), "seafood_bundles.json")
-    )
-)["items"]
+# 含進價，放本機不進公開 repo
+BUNDLES_SRC = "/Users/lien/Desktop/鉅鑫管理顧問/鑫海產組合商品.json"
+SEAFOOD_BUNDLES = json.load(open(BUNDLES_SRC))["items"]
 
 
 def seafood_cost(name, qty, price, price_unit):
