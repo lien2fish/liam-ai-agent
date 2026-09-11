@@ -145,6 +145,22 @@ for name, value in 實際的金鑰們.items():
    （`客戶名單/` 會變成 `\345\256\242\346\210\266...`），拿中文去 grep **永遠 0 命中**，
    於是「已清乾淨」與「遠端已推送」兩個判斷同時誤判。
    **中文路徑的專案，任何用 grep 比對 git 輸出的驗證都要先關掉 quotepath。**
+
+   🔑 **光關掉還不夠——要跑對照組才知道 grep 真的有效。**
+   「0 命中」有兩種可能：真的乾淨，或搜尋根本沒作用。兩者長得一模一樣。
+   所以每次驗證都同時搜一個**確定存在**的路徑當對照：
+
+   ```bash
+   # 要驗的
+   git -c core.quotepath=false log --all --pretty=format: --name-only | sort -u | grep -cE "客戶名單|財務/"
+   # 對照組——這個一定要 > 0，否則上面那個 0 不可信
+   git -c core.quotepath=false log --all --pretty=format: --name-only | sort -u | grep -c "reports/"
+   ```
+
+   ⚠️ 另外**不要把 grep 接在管線中間然後靠 `|| echo` 判斷**——
+   管線的退出碼取自最後一個指令（`sed`／`head` 幾乎永遠回 0），
+   `||` 分支不會執行，你會以為「沒輸出＝乾淨」。**一律改用 `grep -c` 取數字。**
+   （2026-09-11 複驗時就先寫錯一次，靠對照組才發現。）
 8. **force push**——**請使用者自己跑**。推之前先確認遠端沒有新 commit
    （排程隨時在推，有新的就重做第 6 步）
 9. **本機跟上**——`git fetch origin && git checkout -B main origin/main`
