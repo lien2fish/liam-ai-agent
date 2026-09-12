@@ -113,3 +113,9 @@ proposal_video/*/doctor.json
 proposal_video/*/renders/
 proposal_video/*/shots/
 proposal_video/*.備份_*
+
+# 轉錄稿含未剪輯的完整對話（第三方店家被檢舉、公司名、住址玩笑），
+# 公開 repo 不放。要重產 config 需先自行轉錄，成品字幕已在 config 裡。
+dessert/甜點_工作檔/
+# 成品照的中繼檔由 dessert/成品照.py 從 素材/ 自動轉出
+dessert/工作檔_成品照/
