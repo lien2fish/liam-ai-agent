@@ -93,3 +93,9 @@ hyperframes_trial/*/audio/
 hyperframes_trial/*/snapshots/
 hyperframes_trial/*/doctor.json
 hyperframes_trial/*/audio_edgetts_備份_*/
+
+# 遮擋工具的衍生檔（render 會重新產生）
+dessert/遮擋/*.cmd
+dessert/遮擋/*_sticker.png
+dessert/遮擋/*.proxy.mp4
+dessert/遮擋/*_check.jpg
