@@ -99,3 +99,17 @@ dessert/遮擋/*.cmd
 dessert/遮擋/*_sticker.png
 dessert/遮擋/*.proxy.mp4
 dessert/遮擋/*_check.jpg
+
+# 提案影片（proposal_video/）：同 hyperframes_trial 的判斷
+# 旁白是 Lien 的克隆聲音＝生物特徵資料，一律不進公開 repo。
+# 正本在 proposal_video/audio/，備份走私人 repo liam-workspace/assets/voice/proposal/
+proposal_video/audio/
+proposal_video/*/audio/
+# 共用檔的唯一來源是 proposal_video/{shared,vendor}/，各專案內的副本由 build.py 產生
+proposal_video/*/shared/
+proposal_video/*/vendor/
+proposal_video/*/snapshots/
+proposal_video/*/doctor.json
+proposal_video/*/renders/
+proposal_video/*/shots/
+proposal_video/*.備份_*
