@@ -244,3 +244,46 @@ for f in subtitles ass drawtext; do ffmpeg -filters | grep -qE " $f " && echo "�
 
 `scale` 一律加 `out_range=tv`，輸出再釘 `-color_range tv`。
 成品用 `ffprobe -show_entries stream=pix_fmt,color_range` 確認是 `yuv420p` + `tv`。
+
+## 素材裡有不能播的東西：追蹤式遮擋（2026-09-12 建立）
+
+`tools/paper_mask.py`。當初是為了蓋掉甜點素材裡那張手寫配方紙，
+但任何「不能入鏡的固定物件」都適用。
+
+```bash
+python3 tools/paper_mask.py flow  <src> <t0> <t1> <track.json> "x,y,w,h@秒數" ...
+python3 tools/paper_mask.py check <track.json> [每幾秒抽一格]      # 一定要看
+python3 tools/paper_mask.py merge <合併.json> <track1.json> ...
+python3 tools/paper_mask.py render <src> <track.json> <out> "w,h"  # 貼紙尺寸
+```
+
+座標一律用**代理片的 540 寬**座標；render 時自動換算回原尺寸。
+`flow` 是光流＋仿射傳遞（檯面是平面、物件躺在上面，這種做法比物件追蹤器穩），
+第一個錨點之前會反向推回去，所以錨點可以下在區間中間。
+
+### 地雷
+
+| 踩到的 | 說明 |
+|---|---|
+| ⚠️ **cv2 的 `TrackerMIL` 永遠回傳 True** | 「lost 0」不代表沒追丟。判斷只能看 `check` 產出的畫面 |
+| ⚠️ **圓形貼紙蓋不住矩形的紙** | 內接圓會露出四個角。要用同比例的圓角卡 |
+| ⚠️ **貼紙尺寸要取最大不是平均** | MIL／光流的框不隨鏡頭遠近縮放，用平均會在鏡頭推近時蓋不滿 |
+| ⚠️ **物件不在鏡頭裡時要關掉貼紙** | 不然貼紙會浮在地板上。`render` 的 `enable` 是「每段連續有框」的聯集 |
+| ⚠️ **錨點量錯比不下錨點更糟** | 它會把原本追得好的後半段整個帶偏。先只下一個錨點跑完看 check |
+| 🔴 **追蹤器可能跟到旁邊的物件** | 實際發生過：貼紙跟著電子秤走，紙的字跡在貼紙旁邊完全可讀。**遮完一定要驗成品** |
+
+### 找區間的方法
+
+**固定物件會跨整支素材反覆入鏡，不要只抽查「規劃要用的段落」。**
+2 秒一格掃全片 → 可疑處 0.5 秒細掃 → 原尺寸放大確認。
+縮到 200px 的接觸表看不到淡鉛筆字。
+
+## ⚠️ dessert_longform 的 `wrap_lines` 只切一刀，且優先切標點
+
+一行上限約 **14 個全形字**（`SAFE_W` 900 ÷ `BASE_FS` 64），高光字會放大到 82。
+`wrap_lines` 找「最平衡的標點位置」切一刀——**句中有逗號又很長時會切出一行 18 字衝出畫面**
+（達克瓦茲短4 踩過：`老實說，達克瓦茲的膨脹性影響更大的其實是烤箱`）。
+
+所以寫 cue 的規則是：**每個逗號分隔的片段都要 ≤13 字**，
+或者乾脆把整句切到 24 字以內、句中不留標點，讓它從正中間折。
+`dessert/make_達克瓦茲長片.py` 的 `split_text()` 就是這樣做的，可以照抄。
