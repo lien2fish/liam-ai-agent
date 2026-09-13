@@ -23,7 +23,7 @@ file '$PWD/$OUT/$NAME.mp4'
 file '$PWD/$OUT/成品照片尾.mp4'
 EOF
 ffmpeg -v error -f concat -safe 0 -i /tmp/dq_concat.txt \
-  -c:v copy -c:a aac -b:a 192k -ar 48000 -ac 1 \
+  -c:v copy -c:a aac -b:a 192k -ar 48000 -ac 2 \
   -movflags +faststart "$OUT/${NAME}_完整.mp4" -y
 mv "$OUT/${NAME}_完整.mp4" "$OUT/$NAME.mp4"
 

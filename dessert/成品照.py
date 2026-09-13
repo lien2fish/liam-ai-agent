@@ -140,13 +140,13 @@ def tail(cards, out, per=4.0, fade=0.6):
     subprocess.run(
         # fmt: off
         ["ffmpeg", "-v", "error", *parts,
-         "-f", "lavfi", "-t", str(per * len(cards)), "-i", "anullsrc=r=48000:cl=mono",
+         "-f", "lavfi", "-t", str(per * len(cards)), "-i", "anullsrc=r=48000:cl=stereo",
          "-filter_complex", chain, "-map", "[v]", "-map", f"{len(cards)}:a",
          "-shortest", "-c:v", "libx264", "-crf", "20", "-preset", "medium",
          "-pix_fmt", "yuv420p", "-color_range", "tv",
          "-profile:v", "high", "-level", "4.0", "-r", str(fps),
          "-video_track_timescale", "12288",
-         "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "1",
+         "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2",
          "-movflags", "+faststart", out, "-y"],
         # fmt: on
         check=True,
