@@ -1,0 +1,134 @@
+/* 鉅鑫管理顧問．AI 導入包 — 提案影片設計系統
+   刻意不沿用 hyperframes_trial/shared/brand.css（那是「連老闆．海鮮冷知識」的識別，
+   冷藍＋金，頻道專用）。這裡走商務沉穩：墨藍底＋溫潤金，字級大、留白多。
+
+   橫式與直式共用同一份 HTML 與時間軸，版面差異全部收在下面兩組 CSS 變數裡。
+   改版型改這裡，不要去各專案的 index.html。 */
+
+:root {
+  --ink: #f0f4f8;
+  --dim: #8a97a8;
+  --gold: #d4af6a;
+  --cool: #6fa8cf;
+  --warm: #c9714f;
+  --bg-top: #0e1a28;
+  --bg-bottom: #05090f;
+  --line: #2a4560;
+}
+
+html[data-fmt="wide"] {
+  --W: 1920px; --H: 1080px;
+  --hook: 96px; --body: 56px; --small: 40px; --tag: 32px;
+  --art: 420px; --cardh: 300px; --gap: 64px; --pad: 140px;
+  --brand-top: 62px; --brand-bottom: 986px;
+}
+html[data-fmt="tall"] {
+  --W: 1080px; --H: 1920px;
+  --hook: 86px; --body: 62px; --small: 48px; --tag: 40px;
+  --art: 700px; --cardh: 470px; --gap: 96px; --pad: 72px;
+  --brand-top: 210px; --brand-bottom: 1800px;
+}
+
+/* renderer 不供應系統字型，沒有 @font-face 宣告會靜默掉成預設字體。
+   macOS 走 PingFang，Linux runner 走 Noto Sans CJK。 */
+@font-face { font-family: "PingFang TC"; src: local("PingFang TC"); }
+@font-face { font-family: "Noto Sans CJK TC"; src: local("Noto Sans CJK TC"); }
+@font-face { font-family: "Noto Sans TC"; src: local("Noto Sans TC"); }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: var(--W); height: var(--H); overflow: hidden; background: var(--bg-bottom);
+}
+body {
+  font-family: "PingFang TC", "Noto Sans CJK TC", "Noto Sans TC", sans-serif;
+  font-weight: 600;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root { position: relative; width: var(--W); height: var(--H); overflow: hidden; }
+
+/* .clip 由 framework 控可見性；.sin 是內層，場景淡出掛在它身上。
+   直接淡出 clip 會在非線性 seek 留殘影（lint 會擋）。 */
+.clip { position: absolute; inset: 0; }
+.sin  { position: absolute; inset: 0; }
+
+/* ---- 全片共用底 ---- */
+#bg { background: linear-gradient(165deg, var(--bg-top) 0%, var(--bg-bottom) 78%); }
+#bg .glow {
+  position: absolute; inset: 0;
+  background: radial-gradient(58% 62% at 50% 38%, rgba(111, 168, 207, 0.11), rgba(111, 168, 207, 0) 72%);
+}
+#bg .vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(78% 66% at 50% 50%, rgba(0, 0, 0, 0) 42%, rgba(0, 0, 0, 0.58) 100%);
+}
+
+#brand-top {
+  position: absolute; left: 0; right: 0; top: var(--brand-top); text-align: center;
+  font-size: var(--tag); color: var(--gold); letter-spacing: 0.22em;
+}
+#brand-bottom {
+  position: absolute; left: 0; right: 0; top: var(--brand-bottom); text-align: center;
+  font-size: calc(var(--tag) * 0.86); color: var(--dim); letter-spacing: 0.18em;
+}
+
+/* ---- 場景骨架：圖解在上、文字在下，兩種版面共用 ---- */
+.stage {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--gap); padding: 0 var(--pad);
+}
+/* ⚠️ 一定要給 .art 一個 color——圖元的 SVG 用 currentColor 上色，
+   沒指定就會掉成預設的黑，在墨藍底上幾乎看不見（2026-09-12 踩過）。 */
+.art { position: relative; width: 100%; height: var(--art); color: var(--cool); }
+.art.is-gold { color: var(--gold); }
+.art svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* 同一個場景會有多張字卡輪替，彼此必須重疊而不是往下堆，
+   所以字卡區是固定高度、字卡在裡面絕對定位各自置中。
+   置中用 flex 不用 translate——GSAP 進場動的是 transform，會打架。 */
+.cardzone { position: relative; width: 100%; height: var(--cardh); }
+.cardzone > * {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+
+.stack { text-align: center; }
+.line  { display: block; color: var(--ink); line-height: 1.36; letter-spacing: 0.02em; }
+.l-hook  { font-size: var(--hook); font-weight: 700; line-height: 1.26; }
+.l-body  { font-size: var(--body); }
+.l-small { font-size: var(--small); color: var(--dim); }
+
+.gold { color: var(--gold); }
+.cool { color: var(--cool); }
+.warm { color: var(--warm); }
+.dim  { color: var(--dim); }
+
+.tag {
+  font-size: var(--tag); letter-spacing: 0.34em; color: var(--cool); text-align: center;
+}
+.rule {
+  width: 120px; height: 3px; background: var(--gold); opacity: 0.75; align-self: center;
+}
+
+/* 交付三項／指令清單用的卡片列。橫式排成一列，直式自動換行成一欄。 */
+.cards {
+  display: flex; height: 100%; gap: calc(var(--gap) * 0.55);
+  justify-content: center; align-items: center; align-content: center; flex-wrap: wrap;
+}
+html[data-fmt="tall"] .cards { flex-direction: column; flex-wrap: nowrap; gap: calc(var(--gap) * 0.28); }
+html[data-fmt="tall"] .card { width: 80%; padding: calc(var(--gap) * 0.26) calc(var(--gap) * 0.4); }
+html[data-fmt="tall"] .card .v { font-size: var(--small); margin-top: 8px; }
+html[data-fmt="tall"] .card .d { margin-top: 8px; }
+.card {
+  flex: 0 1 auto; min-width: 0;
+  padding: calc(var(--gap) * 0.5) calc(var(--gap) * 0.62);
+  border: 2px solid var(--line); border-radius: 20px; background: rgba(14, 26, 40, 0.55);
+  text-align: center;
+}
+.card .k { display: block; font-size: var(--small); color: var(--gold); letter-spacing: 0.1em; }
+.card .v { display: block; font-size: var(--body); color: var(--ink); margin-top: 12px; }
+.card .d { display: block; font-size: calc(var(--small) * 0.82); color: var(--dim); margin-top: 14px; }
+
+.svgbox { display: block; position: absolute; }
