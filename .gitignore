@@ -100,18 +100,17 @@ dessert/遮擋/*_sticker.png
 dessert/遮擋/*.proxy.mp4
 dessert/遮擋/*_check.jpg
 
-# 提案影片（proposal_video/）：同 hyperframes_trial 的判斷
-# 旁白是 Lien 的克隆聲音＝生物特徵資料，一律不進公開 repo。
-# 正本在 proposal_video/audio/，備份走私人 repo liam-workspace/assets/voice/proposal/
+# 提案影片（proposal_video/）
+# 🔴 文案不進公開 repo：script.md（旁白）與 scenes.json（字卡）是對客戶提案的
+# 銷售話術。2026-09-13 從公開庫撤下並改寫歷史。正本在私人 repo
+# liam-workspace/proposal/，用 pull_content.sh 取回。
+proposal_video/content/
+# 四個專案目錄整包都是 build.py 的產出（index.html 內含旁白與字卡全文），
+# 不進版控——改東西改 content/ 與 shared/，不要改產出。
+proposal_video/full-*/
+proposal_video/short-*/
+# 旁白是 Lien 的克隆聲音＝生物特徵資料，備份走 liam-workspace/assets/voice/proposal/
 proposal_video/audio/
-proposal_video/*/audio/
-# 共用檔的唯一來源是 proposal_video/{shared,vendor}/，各專案內的副本由 build.py 產生
-proposal_video/*/shared/
-proposal_video/*/vendor/
-proposal_video/*/snapshots/
-proposal_video/*/doctor.json
-proposal_video/*/renders/
-proposal_video/*/shots/
 proposal_video/*.備份_*
 
 # 轉錄稿含未剪輯的完整對話（第三方店家被檢舉、公司名、住址玩笑），
