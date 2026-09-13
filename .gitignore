@@ -119,3 +119,6 @@ proposal_video/*.備份_*
 dessert/甜點_工作檔/
 # 成品照的中繼檔由 dessert/成品照.py 從 素材/ 自動轉出
 dessert/工作檔_成品照/
+
+# 片尾卡是 dessert/片尾.py make 產生的衍生檔
+dessert/片尾卡.mp4
