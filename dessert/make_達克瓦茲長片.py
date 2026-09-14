@@ -20,14 +20,14 @@ ROOT = os.path.dirname(HERE)
 TS = os.path.join(HERE, "甜點_工作檔", "transcripts")
 
 VIDEOS = [
-    "素材/IMG_4703_遮擋.MOV",
-    "素材/IMG_4704.MOV",
-    "素材/IMG_4705.MOV",
-    "素材/IMG_4706.MOV",
-    "素材/IMG_4707.MOV",
-    "素材/IMG_4708.MOV",
-    "素材/IMG_4711.MOV",
-    "素材/IMG_4716.MOV",
+    "素材/達克瓦茲/IMG_4703_遮擋.MOV",
+    "素材/達克瓦茲/IMG_4704.MOV",
+    "素材/達克瓦茲/IMG_4705.MOV",
+    "素材/達克瓦茲/IMG_4706.MOV",
+    "素材/達克瓦茲/IMG_4707.MOV",
+    "素材/達克瓦茲/IMG_4708.MOV",
+    "素材/達克瓦茲/IMG_4711.MOV",
+    "素材/達克瓦茲/IMG_4716.MOV",
 ]
 SRC = [
     "IMG_4703",
@@ -459,7 +459,7 @@ def main():
             "sub": "不是下火太高",
         },
         "youtube": {
-            "title": "達克瓦茲裂掉不是下火太高｜#達克瓦茲",
+            "title": "達克瓦茲不難，難的是你家那台烤箱｜#烘焙",
             "description": DESC + "\n\n" + "\n".join(
                 f"{int(t)//60:02d}:{int(t)%60:02d}　{n}" for t, n in chaps
             ) + "\n\n" + TAGS,

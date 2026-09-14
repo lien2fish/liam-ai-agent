@@ -6,7 +6,7 @@
 #   3  接上成品照片尾
 #   4  另出 16:9 縮圖——直式長片在 YouTube 會掉進 16:9 版位
 #
-# ⚠️ 4703 走 素材/IMG_4703_遮擋.MOV（配方紙追蹤遮擋版）。
+# ⚠️ 4703 走 素材/達克瓦茲/IMG_4703_遮擋.MOV（配方紙追蹤遮擋版）。
 #    遮擋區間在 dessert/遮擋/，要重出母帶看 tools/paper_mask.py。
 set -eu
 cd "$(dirname "$0")/.."
@@ -35,7 +35,9 @@ spec.loader.exec_module(dl)
 cfg = json.load(open("dessert/達克瓦茲_長片_config.json", encoding="utf-8"))
 cov = cfg["cover"]
 out = os.path.join(cfg["out_dir"], cfg["subject"] + "_封面_16x9.jpg")
-dl.make_cover_169(cfg["videos"][cov["video_index"]], cov["time"],
+# 16:9 縮圖用試吃段的糖珠特寫（IMG_4716 第 8 秒），跟 9:16 封面卡刻意不同格——
+# 那格右半是洗碗槽（2026-09-14 改）
+dl.make_cover_169(cfg["videos"][7], 8.0,
                   cov["main"], cov["sub"], out)
 print("✅", out)
 PY
