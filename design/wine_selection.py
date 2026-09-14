@@ -1,13 +1,15 @@
-"""聚食釜 六支精選酒款 — 客戶介紹 PDF（一酒一頁）＋餐桌酒單（單張 A4），不放價格。
+"""聚食釜 六支精選酒款 — 客戶介紹 PDF（一酒一頁，含進貨價與售價）＋餐桌酒單（單張 A4，只放售價）。
 
     python3 design/wine_selection.py            # 兩份都產
     python3 design/wine_selection.py intro      # 只產客戶介紹
     python3 design/wine_selection.py menu       # 只產餐桌酒單
 
 輸出：~/Desktop/聚食釜_精選酒款/（同名檔案先搬進 _備份/ 再覆蓋）
+價格：config/jushifu_wine_prices.json（進貨價＋售價，不進版控，repo 是公開的）
 """
 
 import html
+import json
 import os
 import shutil
 import sys
@@ -21,6 +23,8 @@ CHROMIUM = os.path.expanduser(
     "~/Library/Caches/ms-playwright/chromium_headless_shell-1243/"
     "chrome-headless-shell-mac-arm64/chrome-headless-shell"
 )
+
+PRICE_FILE = os.path.join(os.path.dirname(__file__), "..", "config", "jushifu_wine_prices.json")
 
 BRAND = "聚食釜"
 TAGLINE = "台式頂級蝦湯鍋物"
@@ -149,6 +153,16 @@ def esc(s):
     return html.escape(s)
 
 
+def load_prices():
+    with open(PRICE_FILE, encoding="utf-8") as f:
+        prices = json.load(f)
+    missing = [w["name_en"] for w in WINES if w["name_en"] not in prices]
+    if missing:
+        sys.exit(f"❌ {PRICE_FILE} 缺價格：{missing}")
+    for w in WINES:
+        w.update(prices[w["name_en"]])
+
+
 def footer():
     return (
         f'<div class="foot"><span>{BRAND}・{TAGLINE}</span><span>{LEGAL}</span></div>'
@@ -170,6 +184,7 @@ def intro_html():
 .list .en {{ font-family: {SERIF_EN}; font-size: 11.5pt; }}
 .list .zh {{ font-family: {SERIF_ZH}; font-size: 10pt; color: {MUTED}; margin-top: 1mm; }}
 .list .meta {{ text-align: right; font-size: 8.5pt; color: {MUTED}; line-height: 1.7; white-space: nowrap; }}
+.list .meta + .meta {{ width: 34mm; padding-left: 8mm; }}
 .wine .top {{ display: flex; justify-content: space-between; align-items: baseline; }}
 .wine .idx {{ font-family: {SERIF_EN}; font-size: 10pt; color: {GOLD}; letter-spacing: 0.15em; }}
 .wine .name-en {{ font-family: {SERIF_EN}; font-size: 22pt; line-height: 1.2; margin: 16mm 0 3mm; }}
@@ -180,6 +195,9 @@ def intro_html():
          padding: 5mm 0; border-top: 0.5pt solid {RULE}; border-bottom: 0.5pt solid {RULE}; margin-bottom: 9mm; }}
 .facts dt {{ font-size: 7.5pt; color: {GOLD}; letter-spacing: 0.2em; margin-bottom: 1.5mm; }}
 .facts dd {{ font-family: {SERIF_EN}; font-size: 9.5pt; line-height: 1.45; }}
+.prices {{ display: flex; gap: 14mm; margin: -4mm 0 9mm; }}
+.prices dt {{ font-size: 7.5pt; color: {GOLD}; letter-spacing: 0.2em; margin-bottom: 1.5mm; }}
+.prices dd {{ font-family: {SERIF_EN}; font-size: 13pt; }}
 .sec {{ margin-bottom: 7.5mm; }}
 .sec h3 {{ font-family: {SERIF_ZH}; font-size: 11pt; font-weight: 600; letter-spacing: 0.3em; color: {GOLD}; margin-bottom: 2.5mm; }}
 .sec p {{ font-size: 10pt; line-height: 1.95; text-align: justify; letter-spacing: 0.02em; }}
@@ -188,7 +206,8 @@ def intro_html():
     rows = "".join(
         f'<tr><td class="no">{i:02d}</td>'
         f'<td><div class="en">{esc(w["name_en"])}</div><div class="zh">{esc(w["name_zh"])}</div></td>'
-        f'<td class="meta">{w["style"]}<br>{esc(w["region"])}</td></tr>'
+        f'<td class="meta">{w["style"]}<br>{esc(w["region"])}</td>'
+        f'<td class="meta">進貨 NT$ {w["cost"]:,}<br>售價 NT$ {w["price"]:,}</td></tr>'
         for i, w in enumerate(WINES, 1)
     )
     cover = (
@@ -214,6 +233,9 @@ def intro_html():
             f'<div><dt>葡萄品種</dt><dd>{esc(w["grapes"])}</dd></div>'
             f'<div><dt>酒精濃度</dt><dd>{w["abv"]}</dd></div>'
             f'<div><dt>容量</dt><dd>{w["volume"]}</dd></div></dl>'
+            f'<dl class="prices">'
+            f'<div><dt>進貨價</dt><dd>NT$ {w["cost"]:,}</dd></div>'
+            f'<div><dt>售價</dt><dd>NT$ {w["price"]:,}</dd></div></dl>'
             f'<div class="sec"><h3>酒質</h3><p>{esc(w["tasting"])}</p></div>'
             f'<div class="sec"><h3>餐酒搭配</h3><p>{esc(w["pairing"])}</p></div>'
             f'<div class="sec"><h3>釀造與風土</h3><p>{esc(w["tips"])}</p></div>'
@@ -241,7 +263,8 @@ def menu_html():
 .item:last-child {{ border-bottom: none; }}
 .item .l1 {{ display: flex; justify-content: space-between; align-items: baseline; gap: 6mm; }}
 .item .en {{ font-family: {SERIF_EN}; font-size: 12.5pt; }}
-.item .zh {{ font-family: {SERIF_ZH}; font-size: 10.5pt; white-space: nowrap; }}
+.item .zh {{ font-family: {SERIF_ZH}; font-size: 10.5pt; white-space: nowrap; margin-left: auto; }}
+.item .price {{ font-family: {SERIF_EN}; font-size: 12.5pt; white-space: nowrap; width: 23mm; text-align: right; }}
 .item .l2 {{ font-size: 8.3pt; color: {MUTED}; margin-top: 1.2mm; letter-spacing: 0.03em; }}
 .item .l3 {{ font-size: 9pt; margin-top: 1.6mm; line-height: 1.6; }}
 .item .l3 span {{ color: {GOLD}; margin: 0 1.5mm 0 4mm; }}
@@ -251,7 +274,8 @@ def menu_html():
     def group(style, en):
         items = "".join(
             f'<div class="item"><div class="l1"><div class="en">{esc(w["name_en"])}</div>'
-            f'<div class="zh">{esc(w["name_zh"])}</div></div>'
+            f'<div class="zh">{esc(w["name_zh"])}</div>'
+            f'<div class="price">NT$ {w["price"]:,}</div></div>'
             f'<div class="l2">{esc(w["winery"])}・{esc(w["region"])}</div>'
             f'<div class="l3">{esc(w["menu_note"])}<span>搭配</span>{esc(w["menu_pair"])}</div></div>'
             for w in WINES
@@ -300,6 +324,7 @@ def render(browser, doc, name):
 def main():
     which = sys.argv[1] if len(sys.argv) > 1 else "all"
     os.makedirs(os.path.join(OUT_DIR, "_預覽"), exist_ok=True)
+    load_prices()
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path=CHROMIUM)
         if which in ("all", "intro"):
