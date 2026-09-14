@@ -31,7 +31,7 @@ SHOTS = [
     ("IMG_4713.HEIC", (470, 100, 1190, 1100), "糖珠"),
     ("IMG_4714.jpg", (300, 385, 880, 1025), "成品"),
 ]
-SRCDIR = os.path.join(ROOT, "素材")
+SRCDIR = os.path.join(ROOT, "素材", "達克瓦茲")
 WORK = os.path.join(HERE, "工作檔_成品照")
 
 
