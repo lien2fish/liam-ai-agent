@@ -294,11 +294,14 @@ python3 tools/paper_mask.py render <src> <track.json> <out> "w,h"  # 貼紙尺�
 （千層那批因此要改 BGM 只能整個重跑 build）。改走 `dessert/加配樂.py`：
 
 ```bash
-python3 dessert/加配樂.py <成品.mp4> [lively|warm|halftime|happy] [GAP]
+python3 dessert/加配樂.py <成品.mp4> [lively|warm|halftime|happy|light] [GAP]
 ```
 
 先把母帶複製到 `無配樂母帶/`，量這支自己的人聲 LUFS，
 算出讓 BGM 剛好低 `GAP` dB 的增益再混。短影音 `lively` GAP 15、長片 `warm` GAP 17。
+
+⚠️ **Lien 要「輕鬆活潑、不要重低音」時用 `light`**（2026-09-14）：happy／lively／halftime 的能量有 60~83% 在 250Hz 以下（kick＋低音線），
+聽起來是重低音為主；`light`＝happy 過兩道 250Hz highpass，低頻只剩 1.6%，木琴旋律留著。**Lien 聽過確認 OK，甜點頻道之後預設用 `light`。**
 
 | 地雷 | 說明 |
 |---|---|

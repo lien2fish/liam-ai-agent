@@ -8,7 +8,7 @@
 這裡的做法：先把母帶複製到 無配樂母帶/，量人聲的 LUFS，
 算出讓 BGM 剛好低 GAP dB 的增益，混完再過一道限幅。
 
-用法：python3 dessert/加配樂.py <mp4> [warm|lively|halftime|happy] [GAP]
+用法：python3 dessert/加配樂.py <mp4> [warm|lively|halftime|happy|light] [GAP]
 """
 import importlib.util
 import os
@@ -49,7 +49,7 @@ def lufs(path):
     raise RuntimeError("量不到響度：" + path)
 
 
-def main(video, style="lively", gap=GAP):
+def main(video, style="light", gap=GAP):
     master_dir = os.path.join(os.path.dirname(video), "無配樂母帶")
     os.makedirs(master_dir, exist_ok=True)
     master = os.path.join(master_dir, os.path.basename(video))
@@ -77,7 +77,28 @@ def main(video, style="lively", gap=GAP):
         "lively": dl.gen_lively_bgm,
         "halftime": dl.gen_halftime_bgm,
         "happy": dl.gen_happy_bgm,
+        "light": dl.gen_happy_bgm,
     }.get(style, dl.gen_warm_bgm)(dur)
+    if style == "light":
+        # 輕快不帶重低音：happy 的木琴旋律與和聲留著，濾掉 250Hz 以下的 kick 與低音線
+        # （那兩樣佔 happy 能量 60%，2026-09-14 Lien 說聽起來重低音為主）
+        light = bed[:-4] + "_light.wav"
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-v",
+                "error",
+                "-i",
+                bed,
+                "-af",
+                "highpass=f=250,highpass=f=250",
+                "-y",
+                light,
+            ],
+            check=True,
+        )
+        os.remove(bed)
+        bed = light
 
     voice, music = lufs(master), lufs(bed)
     adjust = (voice - gap) - music
@@ -109,6 +130,6 @@ def main(video, style="lively", gap=GAP):
 if __name__ == "__main__":
     main(
         sys.argv[1],
-        sys.argv[2] if len(sys.argv) > 2 else "lively",
+        sys.argv[2] if len(sys.argv) > 2 else "light",
         float(sys.argv[3]) if len(sys.argv) > 3 else GAP,
     )
