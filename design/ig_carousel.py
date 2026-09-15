@@ -217,6 +217,21 @@ def slide_summary(s, handle, idx, total):
     return im
 
 
+def render_story(s):
+    """限時動態導流圖，1080×1920。上方約 250px、下方約 340px 會被 IG 介面蓋住，文字放中段。"""
+    sw, sh = 1080, 1920
+    im = cover_fit(grab_frame(s["video"], s["t"]), s.get("crop"), (sw, sh))
+    shade = Image.new("RGB", (sw, sh), DEEP)
+    im = Image.composite(shade, im, gradient((sw, sh), 0, 235, start=0.35, end=0.62))
+    d = ImageDraw.Draw(im)
+    f_eye, f_title, f_sub = font(BOLD, 40), font(HEAVY, 100), font(REGULAR, 44)
+    y = 1040
+    d.text((MARGIN, y), s["eyebrow"], font=f_eye, fill=GOLD)
+    y = lines(d, (MARGIN, y + 76), s["title"], f_title, INK, 18, "story title")
+    lines(d, (MARGIN, y + 34), s["sub"], f_sub, INK_SOFT, 14, "story sub")
+    return im
+
+
 RENDER = {
     "cover": slide_cover,
     "card": slide_card,
@@ -235,6 +250,10 @@ def main(cfg_path):
         path = os.path.join(out_dir, f"{i:02d}.jpg")
         im.save(path, quality=92, subsampling=0)
         print(f"  {path}")
+    if cfg.get("story"):
+        story_path = os.path.join(out_dir, "限動.jpg")
+        render_story(cfg["story"]).save(story_path, quality=92, subsampling=0)
+        print(f"  {story_path}")
     if cfg.get("caption"):
         with open(os.path.join(out_dir, "文案.txt"), "w") as fh:
             fh.write(cfg["caption"])
