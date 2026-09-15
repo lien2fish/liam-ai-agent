@@ -99,6 +99,7 @@
 | `gmail-ops` | Gmail 清理／新聞摘要腳本、OAuth 重新授權 |
 | `meeting-minutes` | 會議錄音轉會議記錄 PDF |
 | `company-docs` | 報價單、發票、合約等正式文件（公司統編／帳戶） |
+| `memory-extract` | Lien 說「萃取記憶」，或週報提醒有對話尚未萃取——從工作日誌挑出沒記下來的偏好與決定，**勾選後才寫入** |
 
 - **新增 Skill 的判準：連續三次在不同對話講同一件事，就寫成 Skill。**
 - 封存專案與歷史紀錄見 `docs/archive/封存專案與歷史紀錄.md`（不主動提及）。

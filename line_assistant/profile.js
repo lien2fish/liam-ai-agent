@@ -34,6 +34,7 @@ export default {
     agentRepo: "lien2fish/liam-ai-agent",
     todoPath: "TODO.md",
     knowledgeDir: "knowledge",
+    knowledgeBacklog: "_待補清單.md",
   },
 
   knowledgeCategories: {

@@ -46,6 +46,9 @@ export default {
     workspaceRepo: "你的帳號/你的私人repo",
     todoPath: "TODO.md",
     knowledgeDir: "knowledge",
+    // 選用。各分類資料夾裡的待補題目清單檔名，題目寫成「- [ ] **A1** 問題」。
+    // 口述時講出題號，助理會在清單上打勾。不用就刪掉這行。
+    knowledgeBacklog: "_待補清單.md",
     agentRepo: null, // 選用，見下方
   },
 
