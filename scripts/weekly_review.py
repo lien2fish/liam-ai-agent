@@ -37,6 +37,7 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(BASE)
 sys.path.insert(0, BASE)
 from md_to_pdf import md_to_story
+from memory_extract import pending_sessions
 
 ADDR = "lien2fish@gmail.com"
 GH_REPO = "lien2fish/liam-ai-agent"
@@ -114,7 +115,9 @@ def read_prev_review(ws, monday):
     if cut == -1:
         # 上期報告本身就殘缺（例如被 max_tokens 截斷），此時抓 txt[:3000] 會拿到
         # 第一二章當成「上期建議」，結出一本錯帳。寧可明講沒有。
-        return "（上一期報告 %s 沒有第四章之後的內容，可能當時產出被截斷，本期無上期建議可結帳）" % os.path.basename(path)
+        return "（上一期報告 %s 沒有第四章之後的內容，可能當時產出被截斷，本期無上期建議可結帳）" % os.path.basename(
+            path
+        )
     return txt[cut:][:4000]
 
 
@@ -193,7 +196,9 @@ def read_actions(monday, sunday):
         rows.append("| %s | %d | %d | %d |" % (name, s["ok"], s["fail"], s["other"]))
     if skipped:
         rows.append("")
-        rows.append("（未列入：" + "、".join(skipped) + "——GitHub 自帶任務，取消屬正常）")
+        rows.append(
+            "（未列入：" + "、".join(skipped) + "——GitHub 自帶任務，取消屬正常）"
+        )
     return "\n".join(rows) if stats else "（本週沒有任何 Actions 執行紀錄）"
 
 
@@ -663,6 +668,12 @@ def main():
     print("素材長度 %d 字元" % len(prompt))
 
     body = call_claude(prompt)
+    pending = len(pending_sessions(os.path.join(ws, "daily")))
+    if pending:
+        body = (
+            "💡 **還有 %d 段對話尚未萃取記憶** —— 在 Claude Code 說「萃取記憶」，"
+            "講過但沒記下來的偏好與決定會列成清單讓你勾選。\n\n" % pending
+        ) + body
 
     outdir = os.path.join(ws, "reviews")
     os.makedirs(outdir, exist_ok=True)

@@ -28,6 +28,7 @@ const WORKSPACE_REPO = GH.workspaceRepo || null;
 const AGENT_REPO = GH.agentRepo || null;
 const TODO_PATH = GH.todoPath || "TODO.md";
 const KNOWLEDGE_DIR = GH.knowledgeDir || "knowledge";
+const KNOWLEDGE_BACKLOG = GH.knowledgeBacklog || null;
 
 // 沒設定的區塊就關掉對應功能，工具清單與指令表都會跟著少。
 const HAS_NOTES = Boolean(WORKSPACE_REPO);
@@ -121,6 +122,20 @@ const TOOLS = [
           type: "string",
           description: "整理過的內容。保留他講的所有具體細節與數字，不要精簡掉。",
         },
+        topic: {
+          type: "string",
+          description:
+            "這段知識的主題，用最具體的名稱：品種、品項、產地或手法（例：白帶魚、萬里蟹、急速冷凍）。" +
+            "同一主題講幾次都會累積在同一份檔案。零碎想法、沒有明確主題就不填。",
+        },
+        summary: { type: "string", description: "一句話重點，15 字內，會寫進分類索引（例：看幾指判斷大小）" },
+        ...(KNOWLEDGE_BACKLOG && {
+          answers: {
+            type: "array",
+            items: { type: "string" },
+            description: "他明確說在回答待補清單的哪幾題（例：B1、C3）才填。沒講題號就不填，不要自己猜。",
+          },
+        }),
       },
       required: ["category", "title", "content"],
     },
@@ -628,6 +643,57 @@ function today() {
   return new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
 }
 
+// ---------- 知識庫 ----------
+
+// 主題直接當檔名：擋掉會跑出資料夾或弄壞路徑的字元；底線開頭留給 _index.md 與待補清單。
+function cleanTopic(topic) {
+  const t = String(topic || "")
+    .replace(/[\/\\:*?"<>|#\s]+/g, "")
+    .replace(/^\.+/, "")
+    .slice(0, 20);
+  return t && !t.startsWith("_") ? t : null;
+}
+
+const INDEX_LINE = /^- \[.+?\]\(.+?\) — (.*)（(\d+) 則，最後 [\d-]+）$/;
+
+// 每個分類一份 _index.md，一個主題一行、後面是累積的重點。
+// 要找「講過什麼」先看這份，不用把每份全文打開。
+async function updateKnowledgeIndex(env, dir, topic, summary) {
+  const path = `${dir}/_index.md`;
+  const file = await ghGet(env, path);
+  const lines = file
+    ? file.text.trimEnd().split("\n")
+    : [`# ${dir.split("/").pop()} 索引`, "", "一個主題一行，後面是累積的重點。先看這裡再開全文。", ""];
+  const at = lines.findIndex((l) => l.startsWith(`- [${topic}](`));
+  const old = at >= 0 ? lines[at].match(INDEX_LINE) : null;
+  const parts = old && old[1] ? old[1].split("／") : [];
+  const point = String(summary || "").replace(/\s+/g, " ").trim().slice(0, 30);
+  if (point && !parts.includes(point)) parts.push(point);
+  const count = old ? Number(old[2]) + 1 : 1;
+  // 只留最近四個重點，索引一行要能一眼看完
+  const line = `- [${topic}](${topic}.md) — ${parts.slice(-4).join("／")}（${count} 則，最後 ${today()}）`;
+  if (at >= 0) lines[at] = line;
+  else lines.push(line);
+  await ghPut(env, path, lines.join("\n") + "\n", `index: ${topic}`, file ? file.sha : null);
+}
+
+// 他明說在回答待補清單的哪一題，就把那題打勾，清單才看得出還剩什麼沒講。
+async function tickBacklog(env, dir, answers, source) {
+  const path = `${dir}/${KNOWLEDGE_BACKLOG}`;
+  const file = await ghGet(env, path);
+  if (!file) return [];
+  const ids = answers.map((a) => String(a).trim().toUpperCase());
+  const ticked = [];
+  const lines = file.text.split("\n").map((l) => {
+    const id = ids.find((k) => l.startsWith(`- [ ] **${k}**`));
+    if (!id) return l;
+    ticked.push(id);
+    return l.replace("- [ ]", "- [x]") + `　✅ ${today()} → ${source}`;
+  });
+  if (ticked.length) await ghPut(env, path, lines.join("\n"), `backlog: ${ticked.join(",")}`, file.sha);
+  return ticked;
+}
+
 // ---------- 工具實作 ----------
 
 async function runTool(env, name, input) {
@@ -639,13 +705,37 @@ async function runTool(env, name, input) {
   }
 
   if (name === "save_note") {
-    const slug = today();
-    const path = `${KNOWLEDGE_DIR}/${input.category}/${slug}.md`;
+    const dir = `${KNOWLEDGE_DIR}/${input.category}`;
+    const topic = cleanTopic(input.topic);
+    // 有主題就累積進同一份檔案（白帶魚講三次＝一份檔案三段）；沒主題照舊按日期存
+    const path = topic ? `${dir}/${topic}.md` : `${dir}/${today()}.md`;
     const existing = await ghGet(env, path);
-    const block = `\n## ${input.title}\n\n${input.content}\n`;
-    const text = existing ? existing.text.trimEnd() + "\n" + block : `# ${input.category} ${slug}\n${block}`;
+    const heading = topic ? `${today()}｜${input.title}` : input.title;
+    const block = `\n## ${heading}\n\n${input.content}\n`;
+    const text = existing
+      ? existing.text.trimEnd() + "\n" + block
+      : `# ${topic || `${input.category} ${today()}`}\n${block}`;
     await ghPut(env, path, text, `note: ${input.title}`, existing ? existing.sha : null);
-    return `已存進 ${path}`;
+
+    // 筆記本身已經存好——索引或清單更新失敗，不能讓他以為整筆沒存到而重講一次
+    const done = [`已存進 ${path}`];
+    if (topic) {
+      try {
+        await updateKnowledgeIndex(env, dir, topic, input.summary || input.title);
+        done.push("索引已更新");
+      } catch (e) {
+        done.push(`⚠️ 索引沒更新：${e.message}`);
+      }
+    }
+    if (KNOWLEDGE_BACKLOG && Array.isArray(input.answers) && input.answers.length) {
+      try {
+        const ticked = await tickBacklog(env, dir, input.answers, topic || input.title);
+        done.push(ticked.length ? `待補清單已勾 ${ticked.join("、")}` : `待補清單沒有 ${input.answers.join("、")} 這題`);
+      } catch (e) {
+        done.push(`⚠️ 待補清單沒更新：${e.message}`);
+      }
+    }
+    return done.join("；");
   }
 
   if (name === "run_workflow") {
