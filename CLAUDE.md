@@ -102,6 +102,8 @@
 
 - **新增 Skill 的判準：連續三次在不同對話講同一件事，就寫成 Skill。**
 - 封存專案與歷史紀錄見 `docs/archive/封存專案與歷史紀錄.md`（不主動提及）。
+- **找「以前講過什麼」先跑 `python3 scripts/find_context.py 關鍵字`**——一次搜記憶、skill、規則、知識庫、決策、工作日誌，附出處行號（`--in 記憶,日誌`、`--since 7`、`--full N`）。
+- **大量改記憶之後跑 `python3 scripts/memory_doctor.py --quiet`**，❌ 要歸零；報「不同步」就跑 `~/liam-workspace/sync_workspace.sh push`。
 
 ---
 
