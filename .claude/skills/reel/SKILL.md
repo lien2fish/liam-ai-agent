@@ -288,6 +288,29 @@ python3 tools/paper_mask.py render <src> <track.json> <out> "w,h"  # 貼紙尺�
 或者乾脆把整句切到 24 字以內、句中不留標點，讓它從正中間折。
 `dessert/make_達克瓦茲長片.py` 的 `split_text()` 就是這樣做的，可以照抄。
 
+## 疊圖特效：圈選／箭頭／標籤／資訊卡（2026-09-23 新增）
+
+`tools/overlay_fx.py`——**對已經剪好的成品再加工**，不動 `reel_maker`（那支明訂不可改）。
+Pillow 畫成透明 PNG → ffmpeg overlay，用 `enable='between(t,起,迄)'` 控出現時間。
+
+```bash
+python3 tools/overlay_fx.py <config.json> --check   # 先驗座標、時間、字型
+python3 tools/overlay_fx.py <config.json>           # 產出 <原檔名>_疊圖.mp4
+```
+
+四種 item：`circle`（圈選，可帶 label）、`arrow`（箭頭）、`label`（字）、`card`（資訊卡：標題＋數行）。
+顏色沿用字幕高光的橘黃 `(245,156,48)`，字型同 `ZHF`；每層自動淡入淡出 0.15 秒。
+
+| 地雷 | 說明 |
+|---|---|
+| 🔴 **一定要 `-shortest`** | PNG 是 `-loop 1` 的無限輸入，不加的話 ffmpeg 永遠不會停——首次實測編到 226MB 還在跑，要手動砍掉 |
+| ⚠️ PNG 要 `-loop 1 -framerate <fps>` | 單幀輸入撐不過多層 overlay，後段 enable 會全部落空 |
+| ⚠️ 編碼參數要跟正片一致 | yuv420p／High@4.0／同 fps／faststart，不然 YouTube 處理完才報無法上傳 |
+| 音軌 | `-c:a copy` 不重編，實測輸出與原片音軌 md5 相同 |
+| 版位 | Shorts 從橫式中間裁直式，疊圖別放太靠邊；`label` 放太低會跟字幕打架 |
+
+實測：55 秒的片 4 層疊圖，M5 上 17 秒算完。範例 config 與驗證圖在 `成品/疊圖測試/`。
+
 ## 加 BGM：不要用 config 的 `bgm` 欄位，另外跑（2026-09-13）
 
 `dessert_longform` 的 `bgm` 欄位會**就地覆蓋成品**，無配樂母帶就沒了
