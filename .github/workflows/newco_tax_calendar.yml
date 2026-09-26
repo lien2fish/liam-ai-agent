@@ -1,0 +1,41 @@
+name: 新公司稅務行事曆
+
+on:
+# ⛔ 計時統一由 Cloudflare Worker `liam-scheduler` 打 workflow_dispatch。
+#    這裡刻意不留 schedule——兩邊都留會一天觸發兩次，同一封提醒寄兩份。
+#    要排時間：改 scheduler_worker/worker.js 的 SCHEDULE ＋ wrangler.toml 的 crons，兩邊都要改，
+#    只改一邊會靜默失效。
+#
+# ⏸️ 公司尚未設立，newco/tax_calendar.json 的 active=false，跑了也不會寄信。
+#    設立完成、拿到統編之後：① 把 active 改成 true ② 填入食品業者登錄日 ③ 才加進 Worker 排程。
+  workflow_dispatch:
+    inputs:
+      tax_today:
+        description: '模擬日期 YYYY-MM-DD（留空＝今天）。用來驗證某天會寄出什麼'
+        required: false
+        default: ''
+      dryrun:
+        description: '只印不寄（1＝乾跑）'
+        required: false
+        default: ''
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run tax calendar
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          TAX_TODAY: ${{ inputs.tax_today }}
+          TAX_DRYRUN: ${{ inputs.dryrun }}
+        run: python newco/tax_calendar.py
