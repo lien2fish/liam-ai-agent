@@ -1,0 +1,98 @@
+{
+  "_note": "新公司法定申報時程。日期依現行稅法，若法規修正需同步更新。公司設立後把 active 改成 true 才會真的寄提醒。",
+  "active": false,
+  "company": "（待定名）",
+  "items": [
+    {
+      "name": "營業稅申報",
+      "rule": { "type": "odd_month", "day": 15 },
+      "notify_before": 7,
+      "level": "high",
+      "who": "記帳士代辦",
+      "action": "確認記帳士已送出申報，並索取回執存檔",
+      "detail": "雙月申報，一年六次：1-2月→3/15、3-4月→5/15、5-6月→7/15、7-8月→9/15、9-10月→11/15、11-12月→隔年1/15",
+      "penalty": "滯報金／怠報金；逾期繳稅每逾 3 日加徵 1% 滯納金，最高 10%",
+      "note": "⚠️ 一年六次，是最容易漏的一項。申報義務在公司不在事務所。"
+    },
+    {
+      "name": "扣繳稅款繳納",
+      "rule": { "type": "monthly", "day": 10 },
+      "notify_before": 5,
+      "level": "mid",
+      "who": "記帳士代辦",
+      "action": "繳納上月代扣稅款",
+      "detail": "負責人薪資也要扣繳，不例外",
+      "penalty": "加徵滯納金"
+    },
+    {
+      "name": "勞健保費繳納",
+      "rule": { "type": "month_end" },
+      "notify_before": 5,
+      "level": "mid",
+      "who": "自動扣款",
+      "action": "確認扣款成功",
+      "detail": "繳上個月。負責人健保為雇主身分，全額自付",
+      "penalty": "加徵滯納金"
+    },
+    {
+      "name": "扣繳憑單申報",
+      "rule": { "type": "annual", "month": 1, "day": 31 },
+      "notify_before": 7,
+      "level": "high",
+      "who": "記帳士代辦",
+      "action": "申報上年度各類所得扣繳憑單",
+      "detail": "2/10 前還要開立扣繳憑單給所得人（含你自己）",
+      "penalty": "罰鍰"
+    },
+    {
+      "name": "營所稅結算申報 ＋ 未分配盈餘申報",
+      "rule": { "type": "annual", "month": 5, "day": 31 },
+      "notify_before": 37,
+      "level": "high",
+      "who": "記帳士代辦",
+      "action": "備妥全年憑證與財報交記帳士；同時決定未分配盈餘要不要發掉",
+      "detail": "課稅所得 × 20%。未分配部分加徵 5%",
+      "penalty": "滯報金 10%（最高 3 萬）、怠報金 20%（最高 9 萬）"
+    },
+    {
+      "name": "個人綜所稅：股利課法比較",
+      "rule": { "type": "annual", "month": 5, "day": 31 },
+      "notify_before": 37,
+      "level": "mid",
+      "who": "你＋記帳士",
+      "action": "比較「合併計稅 8.5% 抵減（上限 8 萬）」與「28% 分開計稅」，擇優",
+      "detail": "新公司薪資會把綜所稅級距推高，鉅鑫股息改用 28% 分開計稅可能較划算。每年都要重算",
+      "penalty": "不是罰則，是多繳的錢"
+    },
+    {
+      "name": "營所稅暫繳申報",
+      "rule": { "type": "annual", "month": 9, "day": 30 },
+      "notify_before": 7,
+      "level": "high",
+      "who": "記帳士代辦",
+      "action": "按上年度營所稅額 1/2 預繳",
+      "detail": "很多人只記得 5 月，忘記 9 月還有一次",
+      "penalty": "加計利息"
+    },
+    {
+      "name": "年終獎金與薪資切分點檢視",
+      "rule": { "type": "annual", "month": 11, "day": 15 },
+      "notify_before": 0,
+      "level": "mid",
+      "who": "你",
+      "action": "看當年度實際獲利，用年終獎金把薪資調整到最適切分點",
+      "detail": "年終獎金同屬薪資所得、可列公司費用，但要在年底發。此時已知實際獲利，可精準調整。⚠️ 不要發到淨利 0——帳面淨利是融資與租約的信用依據",
+      "penalty": "非法定，錯過只能等明年"
+    },
+    {
+      "name": "食品業者登錄更新",
+      "rule": { "type": "annual", "month": 0, "day": 0 },
+      "notify_before": 30,
+      "level": "mid",
+      "who": "你",
+      "action": "至食藥署平台更新登錄",
+      "detail": "⚠️ 月份與日期待公司實際登錄後填入（把 month/day 改成登錄日）",
+      "penalty": "食安法罰鍰，且影響營業"
+    }
+  ]
+}
