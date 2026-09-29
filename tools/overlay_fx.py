@@ -13,6 +13,7 @@ config：
     {"type": "circle", "t": [3.0, 5.5], "xy": [540, 900], "r": 180, "label": "背殼這裡"},
     {"type": "arrow",  "t": [6.0, 8.0], "from": [300, 1500], "to": [520, 1150], "label": "鰓"},
     {"type": "label",  "t": [9.0, 11.0], "xy": [540, 700], "text": "蝦頭"},
+    {"type": "image",  "t": [15.0, 21.0], "path": "照片.jpg", "w": 760, "xy": [540, 760]},
     {"type": "card",   "t": [12.0, 14.0], "title": "一斤幾顆",
                        "lines": ["4 顆 ＝ 長了 3 年", "8 顆 ＝ 長了 1 年"]}
   ]
@@ -161,6 +162,23 @@ def layer_label(img, it, W, H):
     )
 
 
+def layer_image(img, it, W, H):
+    """把一張照片疊上去（例如公母對照圖）。等比縮到指定寬度，加橘黃細框與深色襯底。"""
+    from PIL import Image, ImageDraw
+
+    src = Image.open(it["path"]).convert("RGBA")
+    w = int(it.get("w", W * 0.68))
+    h = int(src.height * w / src.width)
+    src = src.resize((w, h), Image.LANCZOS)
+    cx, cy = it.get("xy", [W // 2, int(H * 0.42)])
+    pad = it.get("pad", 10)
+    plate = Image.new("RGBA", (w + pad * 2, h + pad * 2), (16, 22, 26, 235))
+    ImageDraw.Draw(plate).rectangle([0, 0, w + pad * 2 - 1, h + pad * 2 - 1],
+                                    outline=ORANGE + (255,), width=4)
+    plate.alpha_composite(src, (pad, pad))
+    img.alpha_composite(plate, (int(cx - plate.width / 2), int(cy - plate.height / 2)))
+
+
 def layer_card(img, it, W, H):
     """資訊卡：深底半透明，標題橘黃、內容白字。範例影片講法規與數字時就是這樣插一張。"""
     from PIL import Image, ImageDraw
@@ -202,6 +220,7 @@ LAYERS = {
     "arrow": layer_arrow,
     "label": layer_label,
     "card": layer_card,
+    "image": layer_image,
 }
 
 
@@ -235,6 +254,16 @@ def check(cfg, W, H, dur):
             pts = [tuple(it["from"]), tuple(it["to"])]
         elif it["type"] == "label":
             pts = [tuple(it["xy"])]
+        elif it["type"] == "image":
+            if not os.path.exists(it.get("path", "")):
+                errs.append(f"{tag} 找不到照片：{it.get('path')}")
+                continue
+            from PIL import Image as _I
+
+            iw = int(it.get("w", W * 0.68))
+            ih = int(_I.open(it["path"]).height * iw / _I.open(it["path"]).width)
+            cx, cy = it.get("xy", [W // 2, int(H * 0.42)])
+            pts = [(cx - iw / 2, cy - ih / 2), (cx + iw / 2, cy + ih / 2)]
         for x, y in pts:
             if not (0 <= x <= W and 0 <= y <= H):
                 errs.append(f"{tag} 座標 ({x},{y}) 超出畫面 {W}x{H}")
