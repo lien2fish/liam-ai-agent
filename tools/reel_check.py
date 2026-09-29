@@ -177,7 +177,8 @@ def user_verified():
     """
     p = os.path.join(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-        "reels", "驗收清單.json",
+        "reels",
+        "驗收清單.json",
     )
     if not os.path.exists(p):
         return set()
@@ -221,8 +222,11 @@ def check_wording(caps, transcript, issues):
         r = difflib.SequenceMatcher(None, txt, actual).ratio()
         if r < 0.5:
             issues.append(
-                ("❌", f"cue[{n}] 文字與該時段不符（相似度 {r:.0%}）\n"
-                       f"        字幕：{txt}\n        實際：{actual[:30]}")
+                (
+                    "❌",
+                    f"cue[{n}] 文字與該時段不符（相似度 {r:.0%}）\n"
+                    f"        字幕：{txt}\n        實際：{actual[:30]}",
+                )
             )
         elif r < 0.65:
             issues.append(
@@ -255,7 +259,10 @@ def check_gaps(offs, caps, transcript, issues):
             if not covered and (t["end"] - t["start"]) >= 1.5:
                 who = "" if t.get("fg", True) else "旁人 "
                 issues.append(
-                    ("⚠️", f'seg{i} {t["start"]:.1f}s 有人講話沒字幕：{who}「{t["text"][:24]}」')
+                    (
+                        "⚠️",
+                        f'seg{i} {t["start"]:.1f}s 有人講話沒字幕：{who}「{t["text"][:24]}」',
+                    )
                 )
 
 
@@ -293,11 +300,11 @@ def check_text(caps, issues):
         for line in rm.wrap_lines(txt, kw):
             mask = rm._hl_mask(line, kw)
             w = sum(rm._char_w(c, mask[i]) for i, c in enumerate(line))
-            if w > rm.SAFE_W:
+            if w > rm.P["safe_w"]:
                 issues.append(
                     (
                         "❌",
-                        f"cue[{n}] 換行後仍有 {w:.0f}px > {rm.SAFE_W}，會貼邊：「{line}」",
+                        f"cue[{n}] 換行後仍有 {w:.0f}px > {rm.P['safe_w']}，會貼邊：「{line}」",
                     )
                 )
         for wrong, (right, group) in corrections.items():
@@ -332,6 +339,12 @@ def check_cover(videos, segs, cfg, issues):
 def check_config(path):
     cfg = json.load(open(path, encoding="utf-8"))
     issues = []
+    # 字幕寬度與換行依版面而不同，不跟著 config 走的話會拿直式的 820px 去驗橫式
+    name = cfg.get("profile", "shorts")
+    if name not in rm.PROFILES:
+        print(f"  ❌ profile 只能是 {'/'.join(rm.PROFILES)}，收到「{name}」")
+        return 1
+    rm.P = rm.PROFILES[name]
     videos, segs, caps = normalize(cfg)
     speed = cfg.get("speed", 1.3)
     offs, newt, total = timeline(segs, speed)

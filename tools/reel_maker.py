@@ -931,7 +931,8 @@ def build(cfg):
         if intro_dur > 0:
             prepend_intro(out_mp4, card, intro_dur)
             print(f"  封面卡已壓進開頭 {intro_dur:.0f} 秒", flush=True)
-        if total / speed + intro_dur > SHORTS_MAX_SEC:
+        # 直式超過 3 分鐘會掉進 16:9 版位，要另出橫式縮圖；本來就是橫式的不用
+        if P["W"] < P["H"] and total / speed + intro_dur > SHORTS_MAX_SEC:
             card169 = os.path.join(out_dir, f"{subject}_封面_16x9.jpg")
             make_cover_169(
                 videos[cov.get("video_index", 0)],
@@ -949,7 +950,10 @@ def build(cfg):
     print(" ", f"{subject}.mp4  (約{total/speed:.0f}秒, {speed}x)")
     if cov:
         print(" ", f"{subject}_封面.jpg")
-        if total / speed + float(cfg.get("cover_intro", 1.0)) > SHORTS_MAX_SEC:
+        if (
+            P["W"] < P["H"]
+            and total / speed + float(cfg.get("cover_intro", 1.0)) > SHORTS_MAX_SEC
+        ):
             print(" ", f"{subject}_封面_16x9.jpg  ← YouTube 一般影片版位用")
     print(" ", f"{subject}_發文案.md")
 
