@@ -51,6 +51,16 @@ BASE_FS = 64  # 字幕基準字級(需與 build_ass Style 的 Fontsize 一致)
 HL_FS = 82  # 關鍵字放大字級
 ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
+# 輸出版面。config 不寫 "profile" 就是 shorts，值與舊版寫死的完全相同。
+#   fit=pad   來源縮到滿寬、上下用自己的模糊放大版填滿(直式素材出直式)
+#   fit=cover 來源放大後裁掉出血，不留黑邊也不模糊(橫式素材出橫式或裁中間出直式)
+PROFILES = {
+    "shorts": {"W": 1080, "H": 1920, "fs": 64, "hl_fs": 82, "mv": 560, "safe_w": 820, "fit": "pad"},
+    "wide": {"W": 1920, "H": 1080, "fs": 48, "hl_fs": 62, "mv": 90, "safe_w": 1480, "fit": "cover"},
+    "shorts_crop": {"W": 1080, "H": 1920, "fs": 64, "hl_fs": 82, "mv": 560, "safe_w": 820, "fit": "cover"},
+}  # fmt: skip
+P = PROFILES["shorts"]  # build() 會依 config 換掉
+
 
 # ---------- 音訊/轉錄 ----------
 
@@ -342,13 +352,13 @@ def hl(text, kws):
             "{"
             + ORANGE_BGR
             + r"\fs"
-            + str(HL_FS)
+            + str(P["hl_fs"])
             + "}"
             + k
             + "{"
             + WHITE_BGR
             + r"\fs"
-            + str(BASE_FS)
+            + str(P["fs"])
             + "}",
         )
     return text
@@ -375,7 +385,7 @@ def _hl_mask(t, kws):
 
 
 def _char_w(ch, big):
-    fs = HL_FS if big else BASE_FS
+    fs = P["hl_fs"] if big else P["fs"]
     return fs * 0.55 if ch.isascii() else fs  # 拉丁/數字半形較窄
 
 
@@ -398,7 +408,7 @@ def wrap_lines(t, kws):
     """超過 SAFE_W 就換行；切完仍過寬會繼續切，不切斷高光詞。"""
     mask = _hl_mask(t, kws)
     w = [_char_w(c, mask[i]) for i, c in enumerate(t)]
-    if sum(w) <= SAFE_W:
+    if sum(w) <= P["safe_w"]:
         return [t]
     n = len(t)
     spans = []
@@ -450,10 +460,10 @@ def wrap_cue(t, kws):
 
 def build_ass(cues_new, path):
     head = (
-        "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\nWrapStyle: 0\n"
+        f"[Script Info]\nScriptType: v4.00+\nPlayResX: {P['W']}\nPlayResY: {P['H']}\nWrapStyle: 0\n"
         "[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, "
         "Bold, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n"
-        f"Style: Def, {ASS_FONT}, 64, &H00FFFFFF, &H00101010, &H00000000, 1, 1, 6, 2, 2, 80, 80, 560, 1\n"
+        f"Style: Def, {ASS_FONT}, {P['fs']}, &H00FFFFFF, &H00101010, &H00000000, 1, 1, 6, 2, 2, 80, 80, {P['mv']}, 1\n"
         "[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n"
     )
     body = "".join(
@@ -463,15 +473,24 @@ def build_ass(cues_new, path):
     open(path, "w", encoding="utf-8").write(head + body)
 
 
+def vf_fit(bright=-0.08, out=""):
+    """把來源套成本 profile 的畫幅，封面抽格與正片每一段共用這一條。"""
+    W, H = P["W"], P["H"]
+    box = f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H}"
+    if P["fit"] == "cover":
+        return f"[0:v]{box},setsar=1{out}"
+    return (
+        f"[0:v]{box},boxblur=25:2,eq=brightness={bright}[bg];"
+        f"[0:v]scale={W}:-1[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2{out}"
+    )
+
+
 # ---------- 封面 ----------
 def make_cover(video, t, main, sub, out, line2=""):
     from PIL import Image, ImageDraw, ImageFont
 
     base = tempfile.mktemp(suffix=".jpg")
-    fc = (
-        "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=25:2,eq=brightness=-0.12[bg];"
-        "[0:v]scale=1080:-1[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2"
-    )
+    fc = vf_fit(-0.12)
     subprocess.run(
         [
             "ffmpeg",
@@ -517,33 +536,38 @@ def draw_cover_title(img, main, sub="", line2=""):
     img.paste(Image.new("RGB", (W, H), (0, 0, 0)), (0, 0), scrim)
     d = ImageDraw.Draw(img)
 
+    # 字級全是照 1920 高的直式訂的，換畫幅要等比縮，否則 16:9 上整行爆出去
+    k = H / 1920
+    px = lambda v: max(1, int(v * k))
+    floor = px(44)
+
     def fit(tx, cap):
         fs = cap
-        while fs > 44:
+        while fs > floor:
             f = ImageFont.truetype(ZHF, fs)
             ls = fs * 0.05
             w = sum(d.textlength(c, font=f) + ls for c in tx) - ls
-            if w <= W - 150:
+            if w <= W - px(150):
                 return f, ls
             fs -= 6
-        return ImageFont.truetype(ZHF, 44), 44 * 0.05
+        return ImageFont.truetype(ZHF, floor), floor * 0.05
 
-    lines = [(main, HL_YELLOW, 250 if not line2 else 240)]
+    lines = [(main, HL_YELLOW, px(250 if not line2 else 240))]
     if line2:
-        lines.append((line2, HL_RED, 210))
+        lines.append((line2, HL_RED, px(210)))
     measured = []
     for tx, fill, cap in lines:
         f, ls = fit(tx, cap)
         asc, desc = f.getmetrics()
         measured.append((tx, fill, f, ls, asc + desc))
 
-    gap = 20
+    gap = px(20)
     block_h = sum(m[4] for m in measured) + gap * (len(measured) - 1)
     y = int(H * 0.60) - block_h // 2
     for tx, fill, f, ls, h in measured:
         w = sum(d.textlength(c, font=f) + ls for c in tx) - ls
         x = (W - w) / 2
-        sw = max(14, f.size // 10)
+        sw = max(px(14), f.size // 10)
         for c in tx:
             d.text(
                 (x, y), c, font=f, fill=fill, stroke_width=sw, stroke_fill=(18, 18, 18)
@@ -552,14 +576,14 @@ def draw_cover_title(img, main, sub="", line2=""):
         y += h + gap
 
     if sub:
-        f2 = ImageFont.truetype(ZHF, 60)
+        f2 = ImageFont.truetype(ZHF, px(60))
         tw = d.textlength(sub, font=f2)
         d.rounded_rectangle(
-            [W / 2 - tw / 2 - 32, y + 6, W / 2 + tw / 2 + 32, y + 110],
-            radius=16,
+            [W / 2 - tw / 2 - px(32), y + px(6), W / 2 + tw / 2 + px(32), y + px(110)],
+            radius=px(16),
             fill=(18, 18, 18),
         )
-        d.text((W / 2 - tw / 2, y + 22), sub, font=f2, fill=(255, 255, 255))
+        d.text((W / 2 - tw / 2, y + px(22)), sub, font=f2, fill=(255, 255, 255))
 
 
 # 超過 3 分鐘的直式片會掉進 YouTube 一般影片版位（16:9），直式封面塞進去只剩中間一條，
@@ -649,7 +673,7 @@ def prepend_intro(out_mp4, card_jpg, dur=1.0):
             "-i",
             "anullsrc=r=48000:cl=stereo",
             "-vf",
-            "scale=1080:1920:out_range=tv,format=yuv420p",
+            f"scale={P['W']}:{P['H']}:out_range=tv,format=yuv420p",
             "-c:v",
             "libx264",
             "-preset",
@@ -719,6 +743,12 @@ def prepend_intro(out_mp4, card_jpg, dur=1.0):
 
 # ---------- build 主流程 ----------
 def build(cfg):
+    # 版面：不寫就是 shorts(直式)，wide=16:9 長片，shorts_crop=橫式素材裁中間出直式
+    global P
+    name = cfg.get("profile", "shorts")
+    if name not in PROFILES:
+        raise SystemExit(f"❌ profile 只能是 {'/'.join(PROFILES)}，收到「{name}」")
+    P = PROFILES[name]
     # 單來源 video:[s,e]/[s,e,文字,[高光]]；多來源 videos:[vi,s,e]/[vi,s,e,文字,[高光]]
     multi = "videos" in cfg
     videos = cfg["videos"] if multi else [cfg["video"]]
@@ -740,10 +770,7 @@ def build(cfg):
     caps = cfg["cues"] if multi else [[0] + list(x) for x in cfg["cues"]]
     # 純環境音素材(留白給旁白)可設 af 關掉動態壓縮、bgm=false 不混配樂
     af = cfg.get("af", "highpass=f=100,afftdn=nf=-28,speechnorm=e=6.25:r=0.00015")
-    LB = (
-        "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=25:2,eq=brightness=-0.08[bg];"
-        "[0:v]scale=1080:-1[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2[v]"
-    )
+    LB = vf_fit(-0.08, "[v]")
     tmp = tempfile.mkdtemp()
     parts = []
     offs = []

@@ -6,11 +6,12 @@
 改用同樣的圓框頭像版型重做繁體版。
 
 用法：
-  python3 tools/reel_outro.py make <頭像圖> [輸出mp4]      產生片尾卡
-  python3 tools/reel_outro.py append <片尾mp4> <影片...>    接到影片尾端
+  python3 tools/reel_outro.py make <頭像圖> [輸出mp4] [--profile=wide]  產生片尾卡
+  python3 tools/reel_outro.py append <片尾mp4> <影片...>                接到影片尾端
 
 規格對齊（與 reel_maker 成品一致，否則 concat 會壞檔）：
-  1080×1920 / 24fps / yuv420p(tv) / High@4.0 / aac 48000 stereo
+  1080×1920（--profile=wide 則 1920×1080）/ 24fps / yuv420p(tv) / High@4.0 / aac 48000 stereo
+append 的畫幅由正片決定，不用指定；一批混了直式與橫式會被擋下來。
 拿到的原片尾是 60fps + 44.1kHz，直接接會出 DTS 錯亂，所以一律重編。
 """
 
@@ -22,17 +23,30 @@ import tempfile
 
 from PIL import Image, ImageDraw, ImageFont
 
-W, H, FPS = 1080, 1920, 24
+FPS = 24
 DUR = 2.0
 ZHF = "/System/Library/Fonts/STHeiti Medium.ttc"
-ORANGE = (245, 156, 48)  # 與字幕高光同色
+PINK = (232, 16, 80)  # 從現行片尾的勾勾取樣，讓長短片的片尾看起來是同一個
 WHITE = (255, 255, 255)
 BG = (0, 0, 0)
+TEXT = "记得點讚加訂閱/追蹤哦"  # 與現行片尾同字（首字簡體，2026-08-04 確認不改）
 
-AVATAR_C, AVATAR_R = (540, 800), 190
-BTN_C, BTN_R = (540, 1010), 58
-TEXT_Y, TEXT_SIZE = 1120, 76
-TEXT = "記得按讚訂閱"
+# 版面。橫式不是把直式等比縮小——16:9 垂直空間只剩 56%，元素照比例縮會小到看不見，
+# 所以頭像相對放大、整組重新排一次。
+PROFILES = {
+    "shorts": {"W": 1080, "H": 1920, "avatar": (540, 800, 190), "btn": (540, 1010, 58), "text_y": 1120, "text_fs": 76},
+    "wide": {"W": 1920, "H": 1080, "avatar": (960, 430, 160), "btn": (960, 650, 49), "text_y": 730, "text_fs": 64},
+}  # fmt: skip
+P = PROFILES["shorts"]
+W, H = P["W"], P["H"]
+
+
+def use(name):
+    global P, W, H
+    if name not in PROFILES:
+        raise SystemExit(f"❌ profile 只能是 {'/'.join(PROFILES)}，收到「{name}」")
+    P = PROFILES[name]
+    W, H = P["W"], P["H"]
 
 
 def _cleanup(path):
@@ -87,26 +101,28 @@ def frame(avatar, t):
     ease = 1 - (1 - p) ** 3
     scale = 0.86 + 0.14 * ease
 
+    ax, ay, ar = P["avatar"]
+    bx, by, br0 = P["btn"]
     img = Image.new("RGB", (W, H), BG)
-    r = int(AVATAR_R * scale)
+    r = int(ar * scale)
     av = avatar.resize((r * 2, r * 2), Image.LANCZOS)
-    img.paste(av, (AVATAR_C[0] - r, AVATAR_C[1] - r), av)
+    img.paste(av, (ax - r, ay - r), av)
 
     d = ImageDraw.Draw(img)
-    br = int(BTN_R * scale)
-    d.ellipse((BTN_C[0] - br, BTN_C[1] - br, BTN_C[0] + br, BTN_C[1] + br), fill=ORANGE)
-    draw_check(d, BTN_C[0], BTN_C[1], br, WHITE, max(6, int(br * 0.18)))
+    br = int(br0 * scale)
+    d.ellipse((bx - br, by - br, bx + br, by + br), fill=WHITE)
+    draw_check(d, bx, by, br, PINK, max(6, int(br * 0.18)))
 
-    fs = int(TEXT_SIZE * scale)
+    fs = int(P["text_fs"] * scale)
     f = ImageFont.truetype(ZHF, fs)
     tw = d.textlength(TEXT, font=f)
-    d.text((W / 2 - tw / 2, TEXT_Y), TEXT, font=f, fill=WHITE)
+    d.text((W / 2 - tw / 2, P["text_y"]), TEXT, font=f, fill=WHITE)
     return img
 
 
 def make(avatar_path, out):
     tmp = tempfile.mkdtemp()
-    av = circle_avatar(avatar_path, AVATAR_R)
+    av = circle_avatar(avatar_path, P["avatar"][2])
     n = int(DUR * FPS)
     for i in range(n):
         frame(av, i / (n - 1)).save(os.path.join(tmp, f"f{i:04d}.png"))
@@ -122,7 +138,9 @@ def make(avatar_path, out):
     print(f"✅ 片尾卡：{out}（{DUR}s）")
 
 
-TARGET_CS = "bt470bg"  # reel_maker 成品的色彩矩陣
+# 直式成品是 bt470bg、橫式是 bt709（ffmpeg 依解析度推導的預設不同）。
+# append() 會改成正片的實際矩陣；寫死一種，另一種就會被多轉一次而偏色。
+TARGET_CS = "bt470bg"
 CS_SYSTEM = {"bt709": "bt709", "bt470bg": "bt601-6-625", "smpte170m": "bt601-6-525"}
 
 
@@ -162,7 +180,29 @@ def normalize(outro, tmp):
     return out
 
 
+def probe_size(path):
+    err = subprocess.run(["ffmpeg", "-i", path], capture_output=True, text=True).stderr
+    m = re.search(r"Video:.*?(\d{2,5})x(\d{2,5})", err)
+    return (int(m.group(1)), int(m.group(2))) if m else None
+
+
 def append(outro, videos):
+    # concat 是 -c:v copy，片尾畫幅跟正片不一樣不會報錯，只會產出播放器認不出第二段的壞檔。
+    # 所以畫幅一律由正片決定，不讓呼叫端指定。
+    global W, H, TARGET_CS
+    sizes = {}
+    for v in videos:
+        if os.path.exists(v):
+            sizes.setdefault(probe_size(v), []).append(os.path.basename(v))
+    if len(sizes) > 1:
+        rows = "\n".join(f"  {s[0]}×{s[1]}：{'、'.join(n)}" for s, n in sizes.items())
+        raise SystemExit(f"❌ 這批正片畫幅不一致，要分開接：\n{rows}")
+    if sizes:
+        W, H = next(iter(sizes))
+        cs = {probe_colorspace(v) for v in videos if os.path.exists(v)}
+        if len(cs) == 1 and next(iter(cs)) in CS_SYSTEM:
+            TARGET_CS = next(iter(cs))
+        print(f"  片尾對齊正片 {W}×{H} / {TARGET_CS}")
     tmp0 = tempfile.mkdtemp()
     outro = normalize(outro, tmp0)
     try:
@@ -198,7 +238,11 @@ def main():
         print(__doc__)
         return 1
     if sys.argv[1] == "make":
-        make(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else "片尾卡.mp4")
+        args = [a for a in sys.argv[2:] if not a.startswith("--")]
+        for a in sys.argv[2:]:
+            if a.startswith("--profile="):
+                use(a.split("=", 1)[1])
+        make(args[0], args[1] if len(args) > 1 else "片尾卡.mp4")
     elif sys.argv[1] == "append":
         append(sys.argv[2], sys.argv[3:])
     else:
