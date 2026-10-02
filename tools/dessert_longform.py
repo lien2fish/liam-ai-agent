@@ -15,6 +15,8 @@ config 格式（多來源檔，segments/cues 用 [影片索引, 秒數] 定位�
   "subject": "影片主題名",
   "out_dir": "~/Desktop",
   "segments": [[0, 10.0, 25.0], [1, 5.0, 40.0]],
+  "fit": "crop",   # 選填：橫式素材直接裁成 9:16（預設是縮到滿寬＋模糊背景）
+                   # 單段可加第 4 個值指定裁切中心（0~1，0.5＝正中）：[0, 10.0, 25.0, 0.62]
   "cues": [[0, 10.5, 13.0, "字幕文字", ["高光詞"]]],
   "cover": {"video_index": 1, "time": 20.0, "main": "大標", "sub": "副標"},
   "youtube": {"title": "...", "description": "...", "tags": ["..."]}
@@ -347,7 +349,16 @@ def build(cfg):
     parts = []
     offs = []
     cum = 0.0
-    for i, (vi, s, e) in enumerate(segs):
+    fit_crop = cfg.get("fit") == "crop"
+    for i, seg in enumerate(segs):
+        vi, s, e = seg[:3]
+        vf = LB
+        if fit_crop or len(seg) > 3:
+            cx = float(seg[3]) if len(seg) > 3 else 0.5
+            vf = (
+                "[0:v]scale=-2:1920,"
+                f"crop=1080:1920:'min(max(iw*{cx}-540,0),iw-1080)':0[v]"
+            )
         offs.append((cum, vi, s, e))
         cum += e - s
         p = os.path.join(tmp, f"seg{i:03d}.mp4")
@@ -362,11 +373,11 @@ def build(cfg):
                 "-i",
                 videos[vi],
                 "-filter_complex",
-                LB,
+                vf,
                 "-map",
                 "[v]",
                 "-map",
-                "0:a",
+                "0:a:0",
                 "-af",
                 "highpass=f=100,afftdn=nf=-28,speechnorm=e=6.25:r=0.00015",
                 "-c:v",
@@ -682,10 +693,23 @@ def gen_halftime_bgm(duration, vol=0.025):
     bpm = 100
     beat = 60 / bpm
     N = {
-        "C2": 65.41, "F2": 87.31, "G2": 98.0, "A2": 110.0,
-        "C4": 261.63, "D4": 293.66, "E4": 329.63, "F4": 349.23,
-        "G4": 392.0, "A3": 220.0, "B3": 246.94, "F3": 174.61,
-        "G3": 196.0, "C3": 130.81, "E5": 659.25, "G4b": 392.0, "C5": 523.25,
+        "C2": 65.41,
+        "F2": 87.31,
+        "G2": 98.0,
+        "A2": 110.0,
+        "C4": 261.63,
+        "D4": 293.66,
+        "E4": 329.63,
+        "F4": 349.23,
+        "G4": 392.0,
+        "A3": 220.0,
+        "B3": 246.94,
+        "F3": 174.61,
+        "G3": 196.0,
+        "C3": 130.81,
+        "E5": 659.25,
+        "G4b": 392.0,
+        "C5": 523.25,
     }
 
     def kick(v=0.6):
@@ -698,8 +722,10 @@ def gen_halftime_bgm(duration, vol=0.025):
         n = int(0.13 * sr)
         t = np.arange(n) / sr
         rng = np.random.default_rng(23)
-        return (rng.standard_normal(n) * np.exp(-t * 34) * 0.75
-                + np.sin(2 * np.pi * 190 * t) * np.exp(-t * 30) * 0.45) * v
+        return (
+            rng.standard_normal(n) * np.exp(-t * 34) * 0.75
+            + np.sin(2 * np.pi * 190 * t) * np.exp(-t * 30) * 0.45
+        ) * v
 
     def hat(v=0.085, open_=False):
         n = int((0.10 if open_ else 0.035) * sr)
@@ -741,6 +767,7 @@ def gen_halftime_bgm(duration, vol=0.025):
     pos = 0.0
     for _ in range(loops):
         for chord, bs in prog:
+
             def put(w, at):
                 i = int(at * sr)
                 L[i : i + len(w)] += w
@@ -790,17 +817,36 @@ def gen_happy_bgm(duration, vol=0.016):
     bpm = 120
     beat = 60 / bpm
     N = {
-        "C3": 130.81, "E3": 164.81, "F3": 174.61, "G3": 196.0, "A3": 220.0,
-        "B3": 246.94, "C4": 261.63, "D4": 293.66, "E4": 329.63, "F4": 349.23,
-        "G4": 392.0, "A4": 440.0, "B4": 493.88, "C5": 523.25, "D5": 587.33,
-        "E5": 659.25, "F5": 698.46, "G5": 783.99, "A5": 880.0, "C6": 1046.5,
+        "C3": 130.81,
+        "E3": 164.81,
+        "F3": 174.61,
+        "G3": 196.0,
+        "A3": 220.0,
+        "B3": 246.94,
+        "C4": 261.63,
+        "D4": 293.66,
+        "E4": 329.63,
+        "F4": 349.23,
+        "G4": 392.0,
+        "A4": 440.0,
+        "B4": 493.88,
+        "C5": 523.25,
+        "D5": 587.33,
+        "E5": 659.25,
+        "F5": 698.46,
+        "G5": 783.99,
+        "A5": 880.0,
+        "C6": 1046.5,
     }
 
     def mallet(f, dur, v):
         n = int(dur * sr)
         t = np.arange(n) / sr
-        w = (np.sin(2 * np.pi * f * t) + 0.5 * np.sin(2 * np.pi * f * 4 * t)
-             + 0.22 * np.sin(2 * np.pi * f * 6 * t)) / 1.72
+        w = (
+            np.sin(2 * np.pi * f * t)
+            + 0.5 * np.sin(2 * np.pi * f * 4 * t)
+            + 0.22 * np.sin(2 * np.pi * f * 6 * t)
+        ) / 1.72
         e = np.exp(-t * 8.0)
         ai = max(1, int(0.004 * sr))
         e[:ai] *= np.linspace(0, 1, ai)
@@ -811,8 +857,11 @@ def gen_happy_bgm(duration, vol=0.016):
         t = np.arange(n) / sr
         w = np.zeros(n)
         for f in freqs:
-            w += (np.sin(2 * np.pi * f * t) + 0.28 * np.sin(2 * np.pi * f * 2 * t)
-                  + 0.12 * np.sin(2 * np.pi * f * 3 * t))
+            w += (
+                np.sin(2 * np.pi * f * t)
+                + 0.28 * np.sin(2 * np.pi * f * 2 * t)
+                + 0.12 * np.sin(2 * np.pi * f * 3 * t)
+            )
         w /= len(freqs) * 1.4
         env = np.ones(n)
         a, r = int(0.12 * dur * sr), int(0.35 * dur * sr)
@@ -849,6 +898,7 @@ def gen_happy_bgm(duration, vol=0.016):
     pos = 0.0
     for _ in range(loops):
         for chord, bs, mel in prog:
+
             def put(w, at):
                 i = int(at * sr)
                 L[i : i + len(w)] += w
