@@ -95,6 +95,12 @@ Shorts 若另存子資料夾就不會自動穿插，這種情況改用 `--plan` 
 
 - 連老闆：`reel_maker.write_captions()` 已自動產出三平台 hashtag——該支主題字寫在 config 的
   `hashtags`，品牌字（`BRAND_TAGS`）自動墊後，標題超過 30 字會在文案裡標警告
+- 🔴 **標籤只從 `--desc` 指的那份發文案 .md 抓，不給就是 0 個**（2026-10-01 螃蟹長片踩到）。
+  用 `--title` 自己下標、靠 `_YouTube描述.txt` 帶描述時很容易忘記還要傳 `--desc`，
+  上傳不會報錯、描述與縮圖都正常，**只有標籤靜悄悄是空的**。
+  長片一律 `--desc <發文案.md>`，或直接 `--tags "a,b,c"` 明寫。
+  事後補救：`videos.update` part=snippet，**要帶齊 title／description／categoryId／defaultLanguage**，
+  只送 tags 會把其他欄位清空。補完重抓比對那四個欄位與縮圖都還在才算數。
 - 甜點頻道：`dessert_longform.py` 是照 config 的 `youtube` 區塊原樣輸出，**要自己寫足**
 - **實測依據**：連老闆長片 17 字標題 CTR **9.3%**、49 字標題 **1.3%**
 
