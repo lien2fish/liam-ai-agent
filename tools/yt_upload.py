@@ -41,6 +41,11 @@ def probe(path):
 def find_thumb(video_path):
     """成品慣例：封面與影片同目錄、檔名為 <片名>_封面.jpg／.png"""
     stem = os.path.splitext(video_path)[0]
+    # 16:9 縮圖優先：同一支長片可能同時有直式封面卡 _封面.jpg（不能當縮圖）
+    for ext in (".jpg", ".jpeg", ".png"):
+        p = f"{stem}_封面_16x9{ext}"
+        if os.path.exists(p):
+            return p
     for ext in (".jpg", ".jpeg", ".png"):
         p = f"{stem}_封面{ext}"
         if os.path.exists(p):

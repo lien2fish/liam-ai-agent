@@ -38,6 +38,8 @@ WHITE_BGR = r"\c&H00FFFFFF&"
 BASE_FS = 64
 HL_FS = 82
 SAFE_W = 900
+# 16:9 長片（config "fit": "wide"）：字幕貼底、字級縮小。build() 依 config 切換
+LAYOUT = {"W": 1080, "H": 1920, "fs": 64, "mv": 560}
 
 
 def hl(text, kws):
@@ -98,10 +100,10 @@ def wrap_cue(t, kws):
 
 def build_ass(cues_new, path):
     head = (
-        "[Script Info]\nScriptType: v4.00+\nPlayResX: 1080\nPlayResY: 1920\nWrapStyle: 0\n"
+        f"[Script Info]\nScriptType: v4.00+\nPlayResX: {LAYOUT['W']}\nPlayResY: {LAYOUT['H']}\nWrapStyle: 0\n"
         "[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, "
         "Bold, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n"
-        f"Style: Def, {ASS_FONT}, 64, &H00FFFFFF, &H00101010, &H00000000, 1, 1, 6, 2, 2, 80, 80, 560, 1\n"
+        f"Style: Def, {ASS_FONT}, {LAYOUT['fs']}, &H00FFFFFF, &H00101010, &H00000000, 1, 1, 6, 2, 2, 80, 80, {LAYOUT['mv']}, 1\n"
         "[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n"
     )
     body = "".join(
@@ -291,12 +293,21 @@ def make_cover_169(video, t, main, sub, out):
     img.paste(bg)
     dark = Image.new("RGB", (W, H), (0, 0, 0))
     img = Image.blend(img, dark, COVER_DARK_169)
-    fh = H
-    fw = int(frame.width * fh / frame.height)
-    fg = frame.resize((fw, fh))
-    img.paste(fg, (W - fw - 40, 0))
+    if frame.width > frame.height:
+        # 橫式素材：畫面滿版，左半壓暗漸層放字（直式的做法會把字擠到 40px 寬）
+        img = frame.resize((W, int(frame.height * W / frame.width))).crop((0, 0, W, H))
+        shade = Image.new("L", (W, H))
+        for x in range(W):
+            shade.paste(int(max(0, 200 * (1 - x / (W * 0.62)))), (x, 0, x + 1, H))
+        img = Image.composite(Image.new("RGB", (W, H)), img, shade)
+        tx_w = int(W * 0.56)
+    else:
+        fh = H
+        fw = int(frame.width * fh / frame.height)
+        fg = frame.resize((fw, fh))
+        img.paste(fg, (W - fw - 40, 0))
+        tx_w = W - fw - 100
     d = ImageDraw.Draw(img)
-    tx_w = W - fw - 100
 
     def fit(tx, cap):
         fs = cap
@@ -349,18 +360,23 @@ def build(cfg):
     parts = []
     offs = []
     cum = 0.0
+    global SAFE_W, BASE_FS, HL_FS
+    wide = cfg.get("fit") == "wide"
+    if wide:
+        LAYOUT.update(W=1920, H=1080, fs=56, mv=70)
+        SAFE_W, BASE_FS, HL_FS = 1560, 56, 70
     fit_crop = cfg.get("fit") == "crop"
     for i, seg in enumerate(segs):
         vi, s, e = seg[:3]
         vf = LB
-        if fit_crop or len(seg) > 3:
+        if wide:
+            vf = "[0:v]scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080[v]"
+        elif fit_crop or len(seg) > 3:
             cx = float(seg[3]) if len(seg) > 3 else 0.5
             vf = (
                 "[0:v]scale=-2:1920,"
                 f"crop=1080:1920:'min(max(iw*{cx}-540,0),iw-1080)':0[v]"
             )
-        offs.append((cum, vi, s, e))
-        cum += e - s
         p = os.path.join(tmp, f"seg{i:03d}.mp4")
         subprocess.run(
             [
@@ -403,6 +419,16 @@ def build(cfg):
                 f"seg{i} 產出失敗（來源 {videos[vi]} 可能被 iCloud 回收，先 brctl download）"
             )
         parts.append(p)
+        # 用實際長度累加：每段都會比 e-s 多出一點（補滿影格／AAC 封包），
+        # 照設定值算的話段數一多字幕會越來越早（28 段累積到 2 秒）
+        real = float(
+            subprocess.run(
+                ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", p],
+                capture_output=True, text=True,
+            ).stdout.strip() or (e - s)
+        )
+        offs.append((cum, vi, s, e))
+        cum += real
         print(f"  seg {i+1}/{len(segs)} 完成 ({e-s:.1f}s)", flush=True)
     cc = os.path.join(tmp, "cc.txt")
     open(cc, "w").write("\n".join(f"file '{p}'" for p in parts))
@@ -421,6 +447,11 @@ def build(cfg):
                 return (cs + min(max(t - s, 0.0), e - s)) / speed
         return None
 
+    json.dump(
+        [[round(cs / speed, 3), os.path.basename(videos[svi]), s, e] for cs, svi, s, e in offs],
+        open(os.path.join(out_dir, f"{subject}_段落時間.json"), "w"),
+        ensure_ascii=False,
+    )
     cues_new = []
     for vi, s, e, txt, kw in caps:
         ns, ne = newt(vi, s), newt(vi, e)
@@ -476,14 +507,20 @@ def build(cfg):
     intro_dur = float(cfg.get("cover_intro", 1.0))
     if cov:
         card = os.path.join(out_dir, f"{subject}_封面.jpg")
-        make_intro_card_916(
+        if not wide:
+          make_intro_card_916(
             videos[cov["video_index"]],
             cov["time"],
             cov.get("main", subject),
             cov.get("sub", ""),
             card,
         )
-        if intro_dur > 0:
+        if wide:
+            make_cover_169(
+                videos[cov["video_index"]], cov["time"], cov.get("main", subject),
+                cov.get("sub", ""), os.path.join(out_dir, f"{subject}_封面_16x9.jpg"),
+            )
+        elif intro_dur > 0:
             prepend_intro(out_mp4, card, intro_dur)
             print(f"  封面卡已壓進開頭 {intro_dur:.0f} 秒", flush=True)
     if cfg.get("bgm"):
