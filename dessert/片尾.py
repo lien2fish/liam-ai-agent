@@ -27,8 +27,12 @@ ROOT = os.path.dirname(HERE)
 AVATAR = os.path.join(HERE, "avatar_round.png")
 ZHF = "/System/Library/Fonts/STHeiti Medium.ttc"
 CARD = os.path.join(HERE, "片尾卡.mp4")
+CARD_WIDE = os.path.join(HERE, "片尾卡_橫式.mp4")  # 16:9 長片用，append 依正片寬高自動挑
 
 W, H, FPS = 1080, 1920, 24
+# 版面：頭像邊長、頭像頂、主句／標語／金線／台名的 y
+L = {"side": 560, "top": 560, "main": 1240, "tag": 1380, "rule": 1480, "brand": 1510, "glow": (300, 1160)}
+L_WIDE = {"side": 400, "top": 150, "main": 610, "tag": 735, "rule": 820, "brand": 845, "glow": (60, 700)}
 DUR = 2.8
 CREAM = (250, 243, 233)
 GOLD = (199, 143, 60)
@@ -50,7 +54,7 @@ def background():
             [(0, y), (W, y)], fill=(int(44 - 14 * k), int(34 - 11 * k), int(28 - 9 * k))
         )
     glow = Image.new("L", (W, H), 0)
-    ImageDraw.Draw(glow).ellipse([W // 2 - 430, 300, W // 2 + 430, 1160], fill=90)
+    ImageDraw.Draw(glow).ellipse([W // 2 - 430, L["glow"][0], W // 2 + 430, L["glow"][1]], fill=90)
     glow = glow.filter(ImageFilter.GaussianBlur(150))
     return Image.composite(Image.new("RGB", (W, H), (92, 66, 40)), bg, glow)
 
@@ -75,7 +79,8 @@ def avatar_card(side):
 
 def frames():
     bg = background()
-    base = avatar_card(560)
+    S = L["side"]
+    base = avatar_card(S)
     f_main = ImageFont.truetype(ZHF, 92)
     f_tag = ImageFont.truetype(ZHF, 40)
     f_brand = ImageFont.truetype(ZHF, 52)
@@ -85,11 +90,11 @@ def frames():
         im = bg.copy()
         # 頭像卡：0~0.45 秒彈進來
         k = ease(min(1.0, t / 0.45))
-        side = int(560 * (0.86 + 0.14 * k))
+        side = int(S * (0.86 + 0.14 * k))
         card = base.resize((side, side), Image.LANCZOS)
         a = card.getchannel("A").point(lambda v: int(v * k))
         card.putalpha(a)
-        im.paste(card, ((W - side) // 2, 560 - (side - 560) // 2), card)
+        im.paste(card, ((W - side) // 2, L["top"] - (side - S) // 2), card)
 
         d = ImageDraw.Draw(im)
 
@@ -105,15 +110,20 @@ def frames():
             )
             im.paste(layer, (0, y), layer)
 
-        line(MAIN, f_main, 1240, CREAM, 0.25, 0.65)
-        line(TAG, f_tag, 1380, (214, 200, 182), 0.45, 0.85)
+        line(MAIN, f_main, L["main"], CREAM, 0.25, 0.65)
+        line(TAG, f_tag, L["tag"], (214, 200, 182), 0.45, 0.85)
         if t > 0.6:
             k = min(1.0, (t - 0.6) / 0.3)
             d.line(
-                [(W / 2 - 110 * k, 1480), (W / 2 + 110 * k, 1480)], fill=GOLD, width=3
+                [(W / 2 - 110 * k, L["rule"]), (W / 2 + 110 * k, L["rule"])], fill=GOLD, width=3
             )
-        line(BRAND, f_brand, 1510, GOLD, 0.7, 1.05)
+        line(BRAND, f_brand, L["brand"], GOLD, 0.7, 1.05)
         yield im
+
+
+def use_wide():
+    global W, H, L, CARD
+    W, H, L, CARD = 1920, 1080, L_WIDE, CARD_WIDE
 
 
 def make():
@@ -141,6 +151,13 @@ def make():
 
 
 def append(video):
+    w = subprocess.run(
+        ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
+         "stream=width,height", "-of", "csv=p=0", video],
+        capture_output=True, text=True,
+    ).stdout.strip().split(",")
+    if int(w[0]) > int(w[1]):
+        use_wide()
     if not os.path.exists(CARD):
         make()
     lst = tempfile.mktemp(suffix=".txt")
@@ -183,6 +200,8 @@ def append(video):
 
 if __name__ == "__main__":
     if sys.argv[1] == "make":
+        if "--wide" in sys.argv:
+            use_wide()
         make()
     else:
         for v in sys.argv[2:]:

@@ -5,6 +5,16 @@ TOP = 1470  # 字幕底緣約 y=1360，字卡放在字幕下方，不擋臉
 
 def mapper(cfg):
     sp = cfg.get("speed", 1.0)
+    real = f"{cfg['out_dir']}/{cfg['subject']}_段落時間.json"
+    if os.path.exists(real):  # build 寫出的實際段落起點，與字幕同一套時間
+        offs = json.load(open(real))
+        def m(n, t):
+            for cs, name, s, e in offs:
+                if name == f"IMG_{n}.MOV" and s <= t <= e:
+                    return round(cs + (t - s) / sp, 2)
+            raise ValueError(f"{n} {t} 不在任何段落")
+        last = offs[-1]
+        return m, round(last[0] + (last[3] - last[2]) / sp, 2)
     def m(n, t):
         cum = 0.0
         for seg in cfg["segments"]:
@@ -67,8 +77,20 @@ PLAN = {
 }
 for f in sorted(glob.glob(f"{ROOT}/dessert/可麗露_短*_config.json")):
     key = os.path.basename(f)[4:-12]
+    if key not in PLAN: continue
     cfg = json.load(open(f)); m, T = mapper(cfg)
     video = f"{cfg['out_dir']}/{cfg['subject']}.mp4"
     out = {"video": video, "out": video.replace(".mp4", "_疊圖.mp4"), "items": PLAN[key](m, T)}
-    json.dump(out, open(f"overlay_{key}.json", "w"), ensure_ascii=False, indent=1)
+    json.dump(out, open(f"{ROOT}/dessert/可麗露_工作檔/overlay_{key}.json", "w"), ensure_ascii=False, indent=1)
     print(key, round(T, 1), "秒", len(out["items"]), "層")
+
+steps = json.load(open(f"{ROOT}/dessert/可麗露_工作檔/steps_index.json"))
+cfg = json.load(open(f"{ROOT}/dessert/可麗露_短12_步驟_config.json")); m, T = mapper(cfg)
+items = [{"type": "label", "t": [m(n0, s0), m(n1, e1)], "xy": [540, 230], "text": lab, "fs": 68}
+         for lab, n0, s0, n1, e1 in steps]
+items[-1]["t"][1] = T - 1.8
+items.append(label([T - 1.6, T], "存起來，下次照著做"))
+video = f"{cfg['out_dir']}/{cfg['subject']}.mp4"
+json.dump({"video": video, "out": video.replace(".mp4", "_疊圖.mp4"), "items": items},
+          open(f"{ROOT}/dessert/可麗露_工作檔/overlay_短12_步驟.json", "w"), ensure_ascii=False, indent=1)
+print("短12_步驟", round(T, 1), "秒", len(items), "層")
