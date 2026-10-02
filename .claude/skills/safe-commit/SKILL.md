@@ -66,6 +66,30 @@ python3 .claude/skills/safe-commit/check_staged.py
 
 沒有 ❌ 才 commit。有 ❌ 就停下來問，不要自己判斷「應該還好」。
 
+🔴 **掃描要自己跑完一次，不可以跟 commit／push 串在同一條指令。**
+
+```bash
+# ⛔ 這樣等於沒檢查
+python3 .claude/skills/safe-commit/check_staged.py && git commit ... && git push
+
+# ✅ 分開跑，看過輸出再決定
+python3 .claude/skills/safe-commit/check_staged.py
+```
+
+**理由：⚠️ 的 exit code 是 0**（只有 ❌ 才非 0）。串起來的話 ⚠️ 會直接放行，
+而 ⚠️ 的定義就是「要人看過才算數」——自動化掉它等於把這一關拆了。
+2026-10-03 踩過一次：⚠️ 報「含 Email 位址」，整串照跑完才回頭查，
+所幸那是早就在檔案裡的公開信箱，不是這次新增的。
+
+**⚠️ 要怎麼看完**：確認它是不是**這次新增的**，而不是本來就在：
+
+```bash
+git show <commit> -- <檔案> | grep -n "<可疑字串>"   # 出現在 diff 內文才是新增
+git log --oneline -S "<可疑字串>" -- <檔案> | tail -3  # 本來就在就查得到更早的 commit
+```
+
+⚠️ `git show` 的 Author 欄位本身就含 Email，**第 2 行的 `Author:` 不算命中**。
+
 ⚠️ **判 ❌ 不可以只回一句「應該是誤判」就過。** 要逐檔看過，
 並用「真正的秘密值」去比對 staged diff 佐證：
 
