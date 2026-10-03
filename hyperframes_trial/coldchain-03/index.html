@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="zh-Hant" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>冷凍魚上那片冰，不是偷斤減兩</title>
+    <link rel="stylesheet" href="shared/brand.css" />
+    <script src="vendor/gsap.min.js"></script>
+    <script src="shared/brand.js"></script>
+    <style>
+      /* 魚肉剖面：中心 (540, 940)，外圈那層才是冰衣。
+         冰衣佔重量 6~10%，畫面上刻意畫得看得見，但魚肉本體大小全片不變
+         ——這支的重點就是「昇華掉的是冰，不是魚」。 */
+      #cut {
+        position: absolute; left: 240px; top: 760px;
+        width: 600px; height: 360px;
+      }
+      .glaze {
+        position: absolute; inset: 0;
+        border-radius: 46px;
+        background: rgba(122, 190, 226, 0.26);
+        border: 3px solid var(--cold);
+      }
+      .flesh {
+        position: absolute; left: 54px; top: 54px; right: 54px; bottom: 54px;
+        border-radius: 26px;
+        background: linear-gradient(160deg, #3c4f60 0%, #273747 100%);
+        border: 3px solid #51708a;
+      }
+      .cutlabel {
+        position: absolute; font-size: 38px; color: var(--cold); letter-spacing: 0.04em;
+      }
+      .fleshlabel {
+        position: absolute; left: 0; right: 0; top: 152px;
+        text-align: center; font-size: 40px; color: var(--dim);
+      }
+
+      /* 昇華：從冰衣往上跑掉的水分 */
+      .subl {
+        position: absolute; width: 18px; height: 18px; border-radius: 50%;
+        background: var(--cold); opacity: 0;
+      }
+
+      /* 空氣裡的氧，被冰層擋在外面 */
+      .o2 {
+        position: absolute; font-size: 34px; color: var(--warn); opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="coldchain03"
+      data-start="0"
+      data-duration="27.6"
+      data-fps="24"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="27.6" data-track-index="0"></div>
+
+      <!-- 1. HOOK 0–4.6 -->
+      <section id="s1" class="clip" data-start="0" data-duration="4.6" data-track-index="1">
+        <div class="sin" id="s1-in">
+          <div id="hero">
+            <img id="hero-img" src="assets/frozen_fish.jpg" alt="" />
+            <div id="hero-veil"></div>
+          </div>
+          <div class="stack" id="s1-text" style="top: 1230px">
+            <span class="line l-hook">上面那片冰</span>
+            <span class="line l-hook gold">不是偷斤減兩</span>
+          </div>
+          <div class="tag" id="s1-tag" style="top: 1590px">冰 衣 在 做 什 麼</div>
+        </div>
+      </section>
+
+      <!-- 魚肉剖面自成一層，橫跨場景 2～5（冰衣會變薄，魚肉從頭到尾不變） -->
+      <div id="cutlayer" class="clip" data-start="4.6" data-duration="18.2" data-track-index="2">
+        <div class="sin" id="cut-in">
+          <div id="cut">
+            <div class="glaze" id="glaze"></div>
+            <div class="flesh"></div>
+            <div class="fleshlabel">魚 肉</div>
+            <div class="cutlabel" id="cut-cap" style="left: 0; top: -70px">冰衣　佔重量 6～10%</div>
+            <div class="subl" id="sb1" style="left: 120px; top: -20px"></div>
+            <div class="subl" id="sb2" style="left: 300px; top: -20px"></div>
+            <div class="subl" id="sb3" style="left: 470px; top: -20px"></div>
+            <div class="o2" id="o2a" style="left: -110px; top: 110px">O₂</div>
+            <div class="o2" id="o2b" style="left: 650px; top: 60px">O₂</div>
+            <div class="o2" id="o2c" style="left: 660px; top: 240px">O₂</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 冰衣是什麼 4.6–8.8 -->
+      <section id="s2" class="clip" data-start="4.6" data-duration="4.2" data-track-index="3">
+        <div class="sin" id="s2-in">
+          <div class="stack" id="s2-top" style="top: 470px">
+            <span class="line l-body">那叫</span>
+            <span class="line l-body cold">冰衣</span>
+          </div>
+          <div class="stack" id="s2-bottom" style="top: 1300px">
+            <span class="line l-body gold">大約佔六到一成</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. 昇華 8.8–13.8 -->
+      <section id="s3" class="clip" data-start="8.8" data-duration="5" data-track-index="4">
+        <div class="sin" id="s3-in">
+          <div class="tag" id="s3-tag" style="top: 430px">凍 燒 ＝ 脫 水 ＋ 氧 化</div>
+          <div class="stack" id="s3-text" style="top: 1300px">
+            <span class="line l-body">水分會慢慢</span>
+            <span class="line l-body cold">昇華跑掉</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. 昇華掉的是冰 13.8–18.6 -->
+      <section id="s4" class="clip" data-start="13.8" data-duration="4.8" data-track-index="5">
+        <div class="sin" id="s4-in">
+          <div class="tag" id="s4-tag" style="top: 430px">冰 衣 替 魚 擋 下 來</div>
+          <div class="stack" id="s4-text" style="top: 1300px">
+            <span class="line l-body">昇華掉的是那片冰</span>
+            <span class="line l-body gold">不是魚</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. 隔絕空氣 18.6–22.8 -->
+      <section id="s5" class="clip" data-start="18.6" data-duration="4.2" data-track-index="6">
+        <div class="sin" id="s5-in">
+          <div class="tag warn" id="s5-tag" style="top: 430px">氧 氣 進 不 來</div>
+          <div class="stack" id="s5-text" style="top: 1300px">
+            <span class="line l-body">冰層也隔絕空氣</span>
+            <span class="line l-body cold">減慢氧化</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. END 22.8–27.6 -->
+      <section id="s6" class="clip" data-start="22.8" data-duration="4.8" data-track-index="7">
+        <div class="sin" id="s6-in">
+          <div class="xtal" id="x6" style="left: 340px; top: 540px; width: 400px; height: 400px; opacity: 0.28"></div>
+          <div class="stack" id="s6-a" style="top: 940px">
+            <span class="line l-body dim">重點不是有沒有冰</span>
+          </div>
+          <div class="stack" id="s6-b" style="top: 1090px">
+            <span class="line l-hook gold">是冰衣做得對不對</span>
+          </div>
+          <div class="caption" id="s6-cap" style="top: 1330px">資料：Seafish、FAO</div>
+        </div>
+      </section>
+
+      <!-- 品牌標記獨立一層放最上面，才不會被開場照片的遮罩壓暗 -->
+      <div id="chrome" class="clip" data-start="0" data-duration="27.6" data-track-index="9"></div>
+
+      <!-- 旁白：Lien 克隆聲音（Qwen3-TTS），字卡逐字沿用旁白內容 -->
+      <audio id="vo-1" data-start="0.25" data-duration="3.6" src="audio/s1.mp3"></audio>
+      <audio id="vo-2" data-start="4.85" data-duration="2.8" src="audio/s2.mp3"></audio>
+      <audio id="vo-3" data-start="9.05" data-duration="3.6" src="audio/s3.mp3"></audio>
+      <audio id="vo-4" data-start="14.05" data-duration="3.36" src="audio/s4.mp3"></audio>
+      <audio id="vo-5" data-start="18.85" data-duration="2.8" src="audio/s5.mp3"></audio>
+      <audio id="vo-6" data-start="23.05" data-duration="3.36" src="audio/s6.mp3"></audio>
+    </div>
+
+    <script>
+      brandChrome("bg", "chrome");
+      document.getElementById("x6").innerHTML = crystalMarkup(3);
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // 1. HOOK：t=0 就要完整可讀
+      tl.fromTo("#hero-img", { scale: 1.03 }, { scale: 1.11, duration: 4.6, ease: "none" }, 0);
+      tl.fromTo("#s1-text", { scale: 1 }, { scale: 1.04, duration: 4.6, ease: "none" }, 0);
+      tl.fromTo("#s1-tag", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 0.5);
+      tl.to("#s1-in", { opacity: 0, duration: 0.35, ease: "power1.in" }, 4.25);
+      tl.set("#s1-in", { opacity: 0 }, 4.6);
+
+      // 2. 冰衣是什麼：剖面進場，冰衣邊框先亮起來
+      tl.fromTo("#cut", { autoAlpha: 0, scale: 0.93 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "power3.out" }, 4.7);
+      tl.fromTo("#s2-top", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 4.9);
+      tl.fromTo("#cut-cap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 5.6);
+      tl.fromTo("#s2-bottom", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 6.2);
+      tl.to("#s2-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 8.5);
+      tl.set("#s2-in", { opacity: 0 }, 8.8);
+
+      // 3. 昇華：水分一顆顆往上跑，冰衣跟著變薄
+      tl.fromTo("#s3-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 8.9);
+      tl.fromTo(
+        "#sb1, #sb2, #sb3",
+        { autoAlpha: 0, y: 0 },
+        { autoAlpha: 0.9, y: -150, duration: 1.8, ease: "power1.out", stagger: 0.45, repeat: 1 },
+        9.3
+      );
+      tl.to("#glaze", { scale: 0.965, transformOrigin: "50% 50%", duration: 3.4, ease: "power1.inOut" }, 9.6);
+      tl.fromTo("#s3-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 10.6);
+      tl.to("#s3-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 13.5);
+      tl.set("#s3-in", { opacity: 0 }, 13.8);
+
+      // 4. 昇華掉的是冰：冰衣再變薄一些，魚肉完全不動
+      tl.fromTo("#s4-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 13.9);
+      tl.to("#glaze", { scale: 0.93, duration: 2.2, ease: "power1.inOut" }, 14.2);
+      tl.fromTo("#s4-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 15.3);
+      tl.to("#s4-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 18.3);
+      tl.set("#s4-in", { opacity: 0 }, 18.6);
+
+      // 5. 隔絕空氣：氧往冰衣靠過去，停在外面
+      tl.fromTo("#s5-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 18.7);
+      tl.fromTo("#o2a", { autoAlpha: 0, x: -70 }, { autoAlpha: 1, x: 0, duration: 1.2, ease: "power2.out" }, 18.9);
+      tl.fromTo("#o2b", { autoAlpha: 0, x: 70 }, { autoAlpha: 1, x: 0, duration: 1.2, ease: "power2.out" }, 19.2);
+      tl.fromTo("#o2c", { autoAlpha: 0, x: 70 }, { autoAlpha: 1, x: 0, duration: 1.2, ease: "power2.out" }, 19.5);
+      tl.fromTo("#s5-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 20.1);
+      tl.to("#s5-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 22.5);
+      tl.set("#s5-in", { opacity: 0 }, 22.8);
+      tl.to("#cut-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 22.5);
+      tl.set("#cut-in", { opacity: 0 }, 22.8);
+
+      // 6. END
+      tl.fromTo("#x6", { scale: 0.72, rotation: -10 }, { scale: 1, rotation: 0, duration: 1.2, ease: "power3.out" }, 22.9);
+      tl.fromTo("#s6-a", { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 23.1);
+      tl.fromTo("#s6-b", { autoAlpha: 0, y: 34, scale: 0.9 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.7)" }, 23.8);
+      tl.fromTo("#s6-cap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 24.6);
+      tl.to("#x6", { opacity: 0.13, duration: 1.6, ease: "sine.inOut" }, 24.8);
+
+      window.__timelines["coldchain03"] = tl;
+    </script>
+  </body>
+</html>
