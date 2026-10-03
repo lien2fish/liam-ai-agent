@@ -12,27 +12,23 @@
          冰衣佔重量 6~10%，畫面上刻意畫得看得見，但魚肉本體大小全片不變
          ——這支的重點就是「昇華掉的是冰，不是魚」。 */
       #cut {
-        position: absolute; left: 240px; top: 760px;
-        width: 600px; height: 360px;
+        position: absolute; left: 150px; top: 780px;
+        width: 780px; height: 560px;
+      }
+      /* 寫實的帶冰衣魚塊照片；外圈那層發光邊代表冰衣，會隨昇華變薄 */
+      #cut-photo {
+        position: absolute; inset: 0;
+        width: 780px; height: 560px;
       }
       .glaze {
-        position: absolute; inset: 0;
+        position: absolute; inset: -22px;
         border-radius: 46px;
-        background: rgba(122, 190, 226, 0.26);
-        border: 3px solid var(--cold);
-      }
-      .flesh {
-        position: absolute; left: 54px; top: 54px; right: 54px; bottom: 54px;
-        border-radius: 26px;
-        background: linear-gradient(160deg, #3c4f60 0%, #273747 100%);
-        border: 3px solid #51708a;
+        border: 7px solid var(--cold);
+        box-shadow: 0 0 60px rgba(122, 190, 226, 0.75), inset 0 0 52px rgba(122, 190, 226, 0.42);
+        pointer-events: none;
       }
       .cutlabel {
         position: absolute; font-size: 38px; color: var(--cold); letter-spacing: 0.04em;
-      }
-      .fleshlabel {
-        position: absolute; left: 0; right: 0; top: 152px;
-        text-align: center; font-size: 40px; color: var(--dim);
       }
 
       /* 昇華：從冰衣往上跑掉的水分 */
@@ -78,16 +74,16 @@
       <div id="cutlayer" class="clip" data-start="4.6" data-duration="18.2" data-track-index="2">
         <div class="sin" id="cut-in">
           <div id="cut">
+            <div class="photo-frame" id="cut-photo">
+              <img src="assets/glazed_fish.jpg" alt="" />
+            </div>
             <div class="glaze" id="glaze"></div>
-            <div class="flesh"></div>
-            <div class="fleshlabel">魚 肉</div>
-            <div class="cutlabel" id="cut-cap" style="left: 0; top: -70px">冰衣　佔重量 6～10%</div>
-            <div class="subl" id="sb1" style="left: 120px; top: -20px"></div>
-            <div class="subl" id="sb2" style="left: 300px; top: -20px"></div>
-            <div class="subl" id="sb3" style="left: 470px; top: -20px"></div>
-            <div class="o2" id="o2a" style="left: -110px; top: 110px">O₂</div>
-            <div class="o2" id="o2b" style="left: 650px; top: 60px">O₂</div>
-            <div class="o2" id="o2c" style="left: 660px; top: 240px">O₂</div>
+            <div class="subl" id="sb1" style="left: 170px; top: -44px"></div>
+            <div class="subl" id="sb2" style="left: 390px; top: -44px"></div>
+            <div class="subl" id="sb3" style="left: 610px; top: -44px"></div>
+            <div class="o2" id="o2a" style="left: -108px; top: 180px">O₂</div>
+            <div class="o2" id="o2b" style="left: 822px; top: 110px">O₂</div>
+            <div class="o2" id="o2c" style="left: 828px; top: 400px">O₂</div>
           </div>
         </div>
       </div>
@@ -181,7 +177,6 @@
       // 2. 冰衣是什麼：剖面進場，冰衣邊框先亮起來
       tl.fromTo("#cut", { autoAlpha: 0, scale: 0.93 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "power3.out" }, 4.7);
       tl.fromTo("#s2-top", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 4.9);
-      tl.fromTo("#cut-cap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 5.6);
       tl.fromTo("#s2-bottom", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 6.2);
       tl.to("#s2-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 8.5);
       tl.set("#s2-in", { opacity: 0 }, 8.8);
@@ -194,14 +189,14 @@
         { autoAlpha: 0.9, y: -150, duration: 1.8, ease: "power1.out", stagger: 0.45, repeat: 1 },
         9.3
       );
-      tl.to("#glaze", { scale: 0.965, transformOrigin: "50% 50%", duration: 3.4, ease: "power1.inOut" }, 9.6);
+      tl.to("#glaze", { inset: -11, borderWidth: 4, opacity: 0.72, duration: 3.4, ease: "power1.inOut" }, 9.6);
       tl.fromTo("#s3-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 10.6);
       tl.to("#s3-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 13.5);
       tl.set("#s3-in", { opacity: 0 }, 13.8);
 
       // 4. 昇華掉的是冰：冰衣再變薄一些，魚肉完全不動
       tl.fromTo("#s4-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 13.9);
-      tl.to("#glaze", { scale: 0.93, duration: 2.2, ease: "power1.inOut" }, 14.2);
+      tl.to("#glaze", { inset: -3, borderWidth: 2, opacity: 0.5, duration: 2.2, ease: "power1.inOut" }, 14.2);
       tl.fromTo("#s4-text", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 15.3);
       tl.to("#s4-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 18.3);
       tl.set("#s4-in", { opacity: 0 }, 18.6);
