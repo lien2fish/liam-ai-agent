@@ -70,7 +70,7 @@ def _server_offset(upload_url, size):
         method="PUT",
     )
     try:
-        urllib.request.urlopen(req)
+        urllib.request.urlopen(req, timeout=60)
         return size  # 200/201＝其實已經收完了
     except urllib.error.HTTPError as e:
         if e.code != 308:
@@ -102,7 +102,8 @@ def _put_resumable(upload_url, path, size, tries=8):
             method="PUT",
         )
         try:
-            with urllib.request.urlopen(req) as r:
+            # 一定要有 timeout：連線卡住時 urlopen 會永遠等下去、不拋例外（2026-10-03 卡了 6 小時）
+            with urllib.request.urlopen(req, timeout=120) as r:
                 return json.loads(r.read())  # 最後一塊送完會回影片 JSON
         except urllib.error.HTTPError as e:
             if e.code == 308:  # Resume Incomplete＝這塊收下了，繼續送下一塊
