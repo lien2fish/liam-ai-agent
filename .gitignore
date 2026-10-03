@@ -117,6 +117,14 @@ proposal_video/*.備份_*
 # 轉錄稿含未剪輯的完整對話（第三方店家被檢舉、公司名、住址玩笑），
 # 公開 repo 不放。要重產 config 需先自行轉錄，成品字幕已在 config 裡。
 dessert/甜點_工作檔/
+# 可麗露工作檔：產生 config 的程式與 overlay 設定要留著（已在版控），
+# 但抽格圖、逐字稿、掃描圖是過程產物，不進公開 repo。
+# 規則只擋產物不擋程式，日後新增 .py／.sh／config 才不會被無聲忽略。
+dessert/可麗露_工作檔/*.jpg
+dessert/可麗露_工作檔/*.txt
+dessert/可麗露_工作檔/transcripts/
+dessert/可麗露_工作檔/scan*/
+dessert/可麗露_工作檔/驗收*/
 # 成品照的中繼檔由 dessert/成品照.py 從 素材/ 自動轉出
 dessert/工作檔_成品照/
 
