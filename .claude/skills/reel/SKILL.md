@@ -103,6 +103,9 @@ Whisper 已知錯法都在 `tools/whisper_corrections.json`，`reel_check` 會�
 | `shorts_crop` | 1080×1920 | 橫式素材裁中間 | 同 shorts |
 
 - **橫式素材出 Shorts 用 `shorts_crop`**，不要自己先跑 ffmpeg crop 再進產線（螃蟹季那批是手動裁的，現在不必了）。
+- 🔴 **`build` 每次都會把 `<主題>_發文案.md` 重寫成空模板**（`write_captions()`），
+  手寫的標題與文案會被無聲洗掉。改 config 重出之後要記得貼回來，
+  或把正本寫在別的檔案（韓國那批是寫在 `發布計畫.md`）。2026-10-04 踩到。
 - 封面卡的字級會依畫面高等比縮放，16:9 不會爆版。
 - ⛔ **改這幾個參數之前先跑回歸**：拿既有直式 config 的 cues 餵 `build_ass`，比對改動前後的 ASS 是否 byte-identical。
   2026-09-29 用 50 份 config、1474 條 cue 驗過零差異，濾鏡字串也相同。
