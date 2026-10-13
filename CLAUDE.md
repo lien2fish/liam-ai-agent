@@ -105,6 +105,7 @@
 - 封存專案與歷史紀錄見 `docs/archive/封存專案與歷史紀錄.md`（不主動提及）。
 - **找「以前講過什麼」先跑 `python3 scripts/find_context.py 關鍵字`**——一次搜記憶、skill、規則、知識庫、決策、工作日誌，附出處行號（`--in 記憶,日誌`、`--since 7`、`--full N`）。
 - **大量改記憶之後跑 `python3 scripts/memory_doctor.py --quiet`**，❌ 要歸零；報「不同步」就跑 `~/liam-workspace/sync_workspace.sh push`。
+- **Playwright 程序累積就跑 `python3 scripts/cleanup_mcp.py`**（`--dry-run` 先看、`--all` 連最新那組也清）。`npx @playwright/mcp` 每開一個 session 疊一份伺服器、舊的不退出，瀏覽器也常留著，一個月約累積 1GB（2026-09-11 與 10-08 各清過一次）。⚠️ **自己手動清的話一律比對 `comm` 不要比對 `args`**——Claude Code 的 `zsh -c` 命令字串只要提到 `ms-playwright/chromium` 就會被 grep 比對中，10-08 就是這樣殺掉自己的工作殼（exit code 144）。
 
 ---
 
