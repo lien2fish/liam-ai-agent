@@ -98,7 +98,15 @@ python3 tools/xuhe_product.py poster <slug> [起日]  # 節慶行銷圖＋IG 草
 
 ## 訂購
 
-`order.html`＋`design/xuhe_pages/functions/api/order.js`：表單送出 → 推 LINE（`/notify`），**不落地儲存**。
+`order.html`＋`design/xuhe_pages/functions/api/order.js`：表單送出 → 寫進 Notion → 推 LINE（`/notify`）。
+
+**Notion（2026-10-14 建）**：私人頁「旭和管理顧問」底下的「旭和客戶」（`9cb11bd8a1944a5099b82564f887ab21`）
+與「旭和訂單」（`7a048786067b4d30bf6822f1d0d98501`），**跟鉅鑫 CRM 完全分開**（Lien 選定）。
+- 同一支手機（去掉 `-` 與空白後比對）＝同一位客人：更新、不重建。累計訂單數／金額是 Notion rollup 自動算。
+- 「同意行銷」只在客人勾選時設為 true，表單**不會**把它改回 false；沒勾的客人不可做行銷聯繫。
+- 只要 Notion 或 LINE 其中一邊記到就回成功；Notion 失敗時 LINE 訊息會寫「請手動建檔」。
+- ⛔ `NOTION_TOKEN` 要用**只連「旭和管理顧問」頁面的新 integration**，不可用鉅鑫那把（它看得到整個鉅鑫 CRM，包含壽險名單）。
+- ⚠️ 2026-10-14 只用假 Notion 伺服器測過寫入格式；**第一次接上真正的 integration 時要實際送一張測試單、到 Notion 看過再刪掉**。
 價格以站上 `products.json` 為準，客人改不了；隱藏欄位擋機器人（不推播，避免吃掉每月 200 則額度）。
 匯款帳號不放網站，Lien 確認訂單後才給。
 
