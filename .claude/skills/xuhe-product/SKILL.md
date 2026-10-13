@@ -28,7 +28,7 @@ Lien 丟圖 → 辨識商品 → 上網查證（每條附出處）→ 寫 design
 
 | 不可以寫 | 為什麼 |
 |---|---|
-| 價格、促銷用語 | 酒依法不得線上販售；海鮮價格天天變 |
+| 自己估的價格、網路查到的售價、促銷用語 | 價格只能來自 Lien，放 `price` 欄位（見第 3 節） |
 | 產季、到貨時間、「現在有貨」 | 只有 Lien 知道 |
 | 「自家漁船」、船數、老闆出海 | 漁船是鉅鑫的資產；旭和只能寫「與龜吼在地共捕漁船長期合作」 |
 | 酒評分數、得獎紀錄 | 除非找得到原始出處且年份完全對上 |
@@ -64,6 +64,26 @@ slug 用英文小寫加連字號，例如 `flechas-gran-malbec-2019`。
 
 `category`：`seafood`／`wine`／`tea`／`gift`。
 
+### 價格與檔期（2026-10-14 加入）
+
+```json
+{
+  "price": 1280,
+  "mixed": false,
+  "campaigns": [
+    {"festival": "中秋節", "start": "2026-08-20", "end": "2026-09-25",
+     "title": "檔期標題", "copy": "檔期文案", "price": 1380,
+     "ig_caption": "可省略，省略就用 copy", "hashtags": ["#…"]}
+  ]
+}
+```
+
+- 🔴 **價格只能來自 Lien**。他丟照片沒講價格就問，**不准自己估、不准參考網路售價**。文案裡也不准寫價格數字（護欄會擋），價格只放 `price` 欄位。
+- `festival` 必須是 `festivals/festivals.json` 裡的名稱，決定行銷圖配色。
+- 檔期沒給 `price` 就沿用原價。官網由瀏覽器依台灣日期切換檔期，**換檔不必重新部署**；但新增檔期要重建＋部署。
+- 禮盒必填 `mixed`。混裝（例：海鮮＋茶）在 `MIXED_BOX_PRICING_CLEARED` 改成 True 之前不能標價——要等記帳士確認「併同銷售」。
+- 酒：不標價、不能訂購（菸酒管理法 §30）。
+
 ## 4. 指令
 
 ```bash
@@ -71,7 +91,18 @@ python3 tools/xuhe_product.py check <slug>     # 護欄
 python3 tools/xuhe_product.py preview <slug>   # 含草稿，Safari 開預覽（不動官網）
 python3 tools/xuhe_product.py publish <slug>   # 有＿＿或違規就擋；過了才改 published 並重建官網
 python3 tools/xuhe_product.py ig <slug>        # IG 草稿 → design/xuhe_products/ig/<slug>/（不進版控）
+python3 tools/xuhe_product.py poster <slug> [起日]  # 節慶行銷圖＋IG 草稿（預設：進行中或下一檔）
 ```
+
+行銷圖＝實拍照＋節日配色色塊＋檔期標題＋價格。**不用 AI 生圖**（2026-10-14 Lien 選定：商品圖不能跟實物不符）。
+
+## 訂購
+
+`order.html`＋`design/xuhe_pages/functions/api/order.js`：表單送出 → 推 LINE（`/notify`），**不落地儲存**。
+價格以站上 `products.json` 為準，客人改不了；隱藏欄位擋機器人（不推播，避免吃掉每月 200 則額度）。
+匯款帳號不放網站，Lien 確認訂單後才給。
+
+⛔ **上線前兩個關卡都要 Lien 點頭**：① 這是新的客戶個資流向（姓名／手機／地址 → LINE）② 公司還在籌備，用「旭和」名義收訂單前要確認登記狀態。
 
 護欄（寫在腳本裡，不靠記得）：價格與促銷字、「生食級」、「自家漁船」、船數、老闆出海；
 酒另擋「線上購買／下單／購物車／宅配／網購」。酒的商品頁與 IG 圖文**自動加上**「禁止酒駕　未滿十八歲禁止飲酒」。
@@ -82,8 +113,15 @@ python3 tools/xuhe_product.py ig <slug>        # IG 草稿 → design/xuhe_produ
 建好之後：
 
 ```bash
-npx wrangler pages deploy design/xuhe_site --project-name=<待定> --branch=main --commit-dirty=true
+cd design/xuhe_pages && npx wrangler pages deploy ../xuhe_site --project-name=<待定> --branch=main --commit-dirty=true
 ```
+
+⚠️ **一定要在 `design/xuhe_pages/` 裡執行**——wrangler 從「目前資料夾」找 `functions/`，在別處執行訂購 API 會整個不見。
+`functions/` 刻意不放進 `xuhe_site/`，否則原始碼會被當成網頁公開。
+Pages 專案要設兩個 secret：`LINE_NOTIFY_URL`、`LINE_NOTIFY_TOKEN`（值同 GitHub Secrets）。
+
+本機測試（2026-10-14 驗證過）：`cd design/xuhe_pages && npx wrangler pages dev <網站資料夾> --binding LINE_NOTIFY_URL=http://127.0.0.1:9999 --binding LINE_NOTIFY_TOKEN=test`，
+推播接到本機假接收端，不會真的發到 LINE。
 
 部署完要**把線上的商品頁抓回來確認**，不是看指令回 Success。
 
