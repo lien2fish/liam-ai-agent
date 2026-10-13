@@ -12,6 +12,7 @@ IG 草稿：design/xuhe_products/ig/<slug>/post.jpg＋caption.txt（不進版控
 """
 
 import html
+import platform
 import json
 import re
 import subprocess
@@ -24,7 +25,24 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "design" / "xuhe_products"
 SITE = ROOT / "design" / "xuhe_site"
-FONT = "/System/Library/Fonts/STHeiti Medium.ttc"
+
+
+def find_font():
+    # 雲端（claude.ai/code、GitHub Actions）是 Linux，沒有 macOS 的字型路徑。
+    if platform.system() == "Darwin":
+        return "/System/Library/Fonts/STHeiti Medium.ttc", 0
+    try:
+        out = subprocess.run(
+            ["fc-list", ":lang=zh", "--format=%{file}\n"], capture_output=True, text=True
+        ).stdout
+    except FileNotFoundError:
+        out = ""
+    noto = [l.strip() for l in out.splitlines() if "Noto" in l and "CJK" in l]
+    if not noto:
+        sys.exit(
+            "❌ 找不到中文字型。Linux 請先安裝：sudo apt-get install -y fonts-noto-cjk"
+        )
+    return noto[0], (3 if noto[0].endswith(".ttc") else 0)
 
 CATEGORIES = {"seafood": "海鮮", "wine": "葡萄酒", "tea": "台灣茶", "gift": "禮盒"}
 WINE_WARNING = "禁止酒駕　未滿十八歲禁止飲酒"
@@ -315,8 +333,9 @@ def ig(slug):
         ImageOps.exif_transpose(Image.open(source_image(slug))).convert("RGB"), (W, H)
     )
     draw = ImageDraw.Draw(img)
-    f_name = ImageFont.truetype(FONT, 58)
-    f_small = ImageFont.truetype(FONT, 30)
+    font, idx = find_font()
+    f_name = ImageFont.truetype(font, 58, index=idx)
+    f_small = ImageFont.truetype(font, 30, index=idx)
     name_lines = wrap_lines(draw, d["name"], f_name, W - 120)[:2]
     is_wine = d["category"] == "wine"
     bar_h = 48 + 74 * len(name_lines) + 50 + (64 if is_wine else 0) + 40
@@ -339,7 +358,8 @@ def ig(slug):
         caption += "\n\n" + " ".join(d["hashtags"])
     (out / "caption.txt").write_text(caption + "\n", encoding="utf-8")
     print(f"✅ IG 草稿 → {out}")
-    subprocess.run(["open", str(out / "post.jpg")])
+    if platform.system() == "Darwin":
+        subprocess.run(["open", str(out / "post.jpg")])
 
 
 def publish(slug):
