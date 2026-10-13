@@ -164,3 +164,29 @@ footer .legal{font-weight:700;color:var(--ink);letter-spacing:.08em}
 .pd-src ul{margin:0;padding-left:1.2em;font-size:13.5px;color:var(--ink-faint)}
 .pd-src a{color:var(--ink-soft);word-break:break-all}
 @media (max-width:720px){.pd-top{grid-template-columns:1fr;gap:24px}}
+
+/* 價格、檔期、訂購 */
+.pd-buy{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.pd-price{flex-basis:100%;font-family:var(--display);font-size:30px;font-weight:700;color:var(--deep);margin-bottom:4px}
+.pd-price:empty{display:none}
+.cmp-banner{border-left:4px solid var(--sun);background:var(--sun-soft);padding:14px 18px;margin-bottom:22px}
+.cmp-tag,.pc-tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--sun);font-style:normal}
+.cmp-title{font-family:var(--display);font-size:20px;font-weight:700;margin-top:4px}
+.cmp-copy{font-size:15px;color:var(--ink-soft);margin-top:6px}
+.pc-tag{display:block;margin-bottom:4px}
+.pc-price{display:block;margin-top:8px;font-family:var(--display);font-weight:700;color:var(--deep)}
+.od{max-width:680px}
+.od fieldset{border:none;border-top:1px solid var(--line);margin:0 0 28px;padding:20px 0 0}
+.od legend{font-family:var(--display);font-size:19px;font-weight:700;padding:0 0 8px}
+.od label{display:block;font-size:14px;color:var(--ink-soft);margin-bottom:16px}
+.od input,.od select,.od textarea{display:block;width:100%;margin-top:6px;padding:11px 12px;font:inherit;font-size:16px;
+  color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:0}
+.od input:focus,.od select:focus,.od textarea:focus{outline:2px solid var(--sun);outline-offset:0}
+.od-price{font-family:var(--display);font-size:20px;font-weight:700;color:var(--deep);margin:-4px 0 16px}
+.od-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.od-privacy{background:var(--surface);border:1px solid var(--line);padding:16px 18px;font-size:13.5px;color:var(--ink-soft);margin-bottom:24px}
+.od-privacy p+p{margin-top:8px}
+.od .od-check{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;color:var(--ink);font-size:14.5px}
+.od .od-check input{width:18px;height:18px;margin:4px 0 0;flex:none}
+.od button{cursor:pointer;font:inherit}
+.od-msg{margin-top:14px;color:var(--sun);font-size:14.5px}

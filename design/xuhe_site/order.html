@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>訂購｜旭和管理顧問</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<script src="campaign.js" defer></script>
+</head>
+<body>
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img class="mark" src="mark.svg" alt=""><b>旭和</b><small>XUHE CONSULTING</small></a>
+    <ul>
+      <li class="opt"><a href="index.html#about">關於</a></li>
+      <li><a href="index.html#services">服務</a></li>
+      <li><a href="products.html">商品</a></li>
+      <li><a href="index.html#contact">聯絡</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+<section class="pd">
+  <div class="wrap od">
+    <div class="sec-head">
+      <p class="eyebrow">Order</p>
+      <h1 class="pc-title">訂購</h1>
+      <p>送出後我們會以電話或 LINE 與您確認品項、數量與到貨日，<strong>確認後才提供匯款資訊</strong>。送出訂單不會立即扣款。</p>
+    </div>
+
+    <form id="order" novalidate>
+      <fieldset>
+        <legend>商品</legend>
+        <label>品項
+          <select name="slug" id="slug" required></select>
+        </label>
+        <p class="od-price" id="unit"></p>
+        <label>數量
+          <input name="qty" type="number" min="1" max="999" value="1" required>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>訂購人</legend>
+        <label>姓名<input name="name" maxlength="40" autocomplete="name" required></label>
+        <label>手機<input name="phone" type="tel" maxlength="20" autocomplete="tel" required placeholder="09xxxxxxxx"></label>
+        <label>Email（選填）<input name="email" type="email" maxlength="80" autocomplete="email"></label>
+        <label>公司抬頭／統一編號（企業訂購選填）<input name="company" maxlength="80"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>配送</legend>
+        <label>收件地址<input name="address" maxlength="120" autocomplete="street-address" required></label>
+        <label>希望到貨日（選填）<input name="date" type="date"></label>
+        <label>備註（選填）<textarea name="note" maxlength="500" rows="3" placeholder="送禮對象、卡片文字、分批寄送等"></textarea></label>
+      </fieldset>
+
+      <input class="od-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <div class="od-privacy">
+        <p><strong>個人資料蒐集告知</strong></p>
+        <p>旭和管理顧問（籌備中）蒐集您的姓名、聯絡方式與地址，僅用於本次訂單的聯繫、出貨與開立發票，除配送所需提供予物流業者外，不提供第三人。資料保存至交易完成及法定保存期間為止。您可依個人資料保護法第 3 條請求查詢、更正或刪除；不提供上述資料將無法完成訂購。</p>
+        <label class="od-check"><input type="checkbox" name="consent" required>我已閱讀並同意上述告知事項</label>
+      </div>
+
+      <button class="btn solid" type="submit" id="submit">送出訂單</button>
+      <p class="od-msg" id="msg" role="status"></p>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 旭和管理顧問（籌備中）</p>
+  </div>
+</footer>
+
+<script>
+(async () => {
+  const form = document.getElementById("order");
+  const select = document.getElementById("slug");
+  const unit = document.getElementById("unit");
+  const msg = document.getElementById("msg");
+  let products = [];
+  try {
+    products = await (await fetch("products.json", { cache: "no-store" })).json();
+  } catch (e) {}
+  const today = xuheToday();
+  const current = (p) => {
+    const c = xuheActive(p.campaigns, today);
+    return { price: (c && c.price) || p.price, festival: c ? c.festival : "" };
+  };
+  products = products.filter((p) => current(p).price);
+  if (!products.length) {
+    form.innerHTML = '<p>目前沒有開放線上訂購的商品，歡迎<a href="index.html#contact">直接聯絡我們</a>。</p>';
+    return;
+  }
+  for (const p of products) {
+    const o = document.createElement("option");
+    o.value = p.slug;
+    o.textContent = p.name;
+    select.append(o);
+  }
+  const want = new URLSearchParams(location.search).get("p");
+  if (products.some((p) => p.slug === want)) select.value = want;
+  const showPrice = () => {
+    const p = products.find((x) => x.slug === select.value);
+    const cur = current(p);
+    unit.textContent = (cur.festival ? cur.festival + "檔期　" : "") + "單價 " + xuhePrice(cur.price);
+  };
+  select.addEventListener("change", showPrice);
+  showPrice();
+
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    if (!form.reportValidity()) return;
+    const btn = document.getElementById("submit");
+    btn.disabled = true;
+    msg.textContent = "送出中…";
+    const data = Object.fromEntries(new FormData(form));
+    data.consent = form.consent.checked;
+    try {
+      const r = await fetch("api/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.error || "送出失敗");
+      form.innerHTML = "<p><strong>已收到您的訂單。</strong></p><p>我們會盡快以電話或 LINE 與您聯繫，確認內容後提供匯款資訊。</p>";
+    } catch (e) {
+      msg.textContent = e.message + "。請稍後再試，或直接聯絡我們。";
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>
