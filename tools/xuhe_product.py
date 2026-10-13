@@ -293,12 +293,12 @@ def preview(slug=None):
 
 def wrap_lines(draw, text, font, width):
     lines, line = [], ""
-    for ch in text:
-        if draw.textlength(line + ch, font=font) > width:
-            lines.append(line)
-            line = ch
+    for token in re.findall(r"[A-Za-z0-9.'%\-]+|\s|.", text):
+        if line and draw.textlength(line + token, font=font) > width:
+            lines.append(line.rstrip())
+            line = token.lstrip()
         else:
-            line += ch
+            line += token
     return lines + [line] if line else lines
 
 
@@ -314,19 +314,21 @@ def ig(slug):
     img = ImageOps.fit(
         ImageOps.exif_transpose(Image.open(source_image(slug))).convert("RGB"), (W, H)
     )
-    bar_h = 300 if d["category"] == "wine" else 250
-    overlay = Image.new("RGBA", (W, bar_h), (22, 32, 42, 225))
-    img.paste(overlay, (0, H - bar_h), overlay)
     draw = ImageDraw.Draw(img)
     f_name = ImageFont.truetype(FONT, 58)
     f_small = ImageFont.truetype(FONT, 30)
+    name_lines = wrap_lines(draw, d["name"], f_name, W - 120)[:2]
+    is_wine = d["category"] == "wine"
+    bar_h = 48 + 74 * len(name_lines) + 50 + (64 if is_wine else 0) + 40
+    overlay = Image.new("RGBA", (W, bar_h), (22, 32, 42, 225))
+    img.paste(overlay, (0, H - bar_h), overlay)
     y = H - bar_h + 48
-    for line in wrap_lines(draw, d["name"], f_name, W - 120)[:2]:
+    for line in name_lines:
         draw.text((60, y), line, font=f_name, fill=(246, 243, 236))
         y += 74
     draw.text((60, y + 6), "旭和管理顧問", font=f_small, fill=(224, 138, 92))
-    if d["category"] == "wine":
-        draw.text((60, H - 62), WINE_WARNING, font=f_small, fill=(246, 243, 236))
+    if is_wine:
+        draw.text((60, y + 70), WINE_WARNING, font=f_small, fill=(246, 243, 236))
     out = DATA / "ig" / slug
     out.mkdir(parents=True, exist_ok=True)
     img.save(out / "post.jpg", quality=90)
