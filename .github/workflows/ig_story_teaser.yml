@@ -6,9 +6,45 @@ on:
   # 而它的意義就是「Reels 18:00 發完，18:08 用限動導流」，遲到等於失效。
   # ⛔ 不要把 cron 加回來——兩邊都留會一天發兩則限動，IG 發出去 API 刪不掉。
   workflow_dispatch:
+    inputs:
+      force:
+        description: '忽略重複觸發防呆，強制執行'
+        type: boolean
+        default: false
 
 jobs:
+  # 🔴 Cloudflare 自 2026-10-12 起會把同一個 cron 事件送兩次（10/13 實測整天都是兩倍），
+  # 而 IG 限動發出去 API 刪不掉。這個 job 擋掉同一天第二次之後的觸發。
+  # 判斷用 run_id 比大小，不看前一次跑完沒有——兩次只差幾十秒，等狀態會有競態。
+  guard:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    outputs:
+      go: ${{ steps.check.outputs.go }}
+    steps:
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ inputs.force }}" = "true" ]; then
+            echo "go=yes" >> "$GITHUB_OUTPUT"
+            echo "::notice::force=true，略過重複觸發防呆"
+            exit 0
+          fi
+          n=$(gh api \
+            "repos/${{ github.repository }}/actions/workflows/ig_story_teaser.yml/runs?created=$(date -u +%F)&per_page=100" \
+            --jq "[.workflow_runs[] | select(.id < ${{ github.run_id }})] | length")
+          if [ "$n" -gt 0 ]; then
+            echo "go=no" >> "$GITHUB_OUTPUT"
+            echo "::notice::今天已經有 $n 次更早的觸發，這次跳過（Cloudflare 重複送 cron）"
+          else
+            echo "go=yes" >> "$GITHUB_OUTPUT"
+          fi
+
   teaser:
+    needs: guard
+    if: needs.guard.outputs.go == 'yes'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
