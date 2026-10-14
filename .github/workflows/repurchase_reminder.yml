@@ -29,10 +29,9 @@ jobs:
           NOTION_TOKEN:        ${{ secrets.NOTION_TOKEN }}
           GMAIL_APP_PASSWORD:  ${{ secrets.GMAIL_APP_PASSWORD }}
           REPURCHASE_DAYS:     '60'
-          # 每日行動隊列推 LINE（2026-10-13 新增）。每天最多 1 則、月約 30 則，
-          # 在輕用量方案 200 則／月內。未設這兩個時 notify() 靜默跳過，不會弄壞流程。
-          LINE_NOTIFY_URL:     ${{ secrets.LINE_NOTIFY_URL }}
-          LINE_NOTIFY_TOKEN:   ${{ secrets.LINE_NOTIFY_TOKEN }}
+          # ⏸️ 每日行動隊列推 LINE：2026-10-14 Lien 指示暫停，等新公司開始運作再恢復。
+          #    恢復時把 LINE_NOTIFY_URL、LINE_NOTIFY_TOKEN 兩個 secret 加回這裡的 env
+          #    （notify() 沒有這兩個變數就靜默跳過，Email 提醒不受影響）。
           QUEUE_LIMIT:         '3'
         run: python crm_unified/repurchase_reminder.py
 
