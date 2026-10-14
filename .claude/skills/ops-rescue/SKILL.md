@@ -96,6 +96,41 @@ gh workflow run <檔名>.yml        # 重跑
 | 剪片相關失敗、磁碟爆掉 | 暫存不自清（曾累積 23.7GB） | 只發生在本機，Actions 不受影響 | — |
 | `git push` 回 **HTTP 400** ＋ `send-pack: unexpected disconnect` | 改動量大，超過 git 預設的 HTTP 緩衝區 | **不是網路壞掉、不是權限問題，重試一樣會失敗。** 見下方「大包推送」 | ⚠️ 要開終端機 |
 
+| **同一支任務一天跑兩次、IG 發出兩則一模一樣的限動** | 🔴 **Cloudflare 的 cron 註冊殘留了重複的一份**，每個 tick 送兩次 scheduled 事件（2026-10-12 中午起，我方設定與程式都沒動過）| **把同樣幾條 cron 重新 PUT 一次**強迫重新註冊，見下方〈排程重複觸發〉。⛔ 不要在 workflow 加「今天跑過就跳過」的防堵——那是遮症狀，源頭沒修 | ❌ 要開終端機 |
+
+---
+
+## 排程重複觸發（2026-10-14 實際發生）
+
+**症狀**：10/12 中午起每支排程都跑兩次，兩次相隔 6~80 秒、`attempt` 都是 1。
+IG 因此一天發出兩則一模一樣的限動，**而 IG 發出去 API 刪不掉**。
+
+**先排除這四個**（這次全部是乾淨的，不要再從頭查一遍）：
+
+| 查什麼 | 怎麼查 |
+|---|---|
+| workflow 殘留 `schedule:` cron | `grep -l "^\s*schedule:" .github/workflows/*.yml` |
+| `worker.js` 一次事件 dispatch 兩次 | 高頻任務只在 `:00`／`:30`、`SCHEDULE[key]` 各一次，不重疊 |
+| 帳號裡有第二個掛 cron 的 Worker | 列 `workers/scripts`，再逐一查 `/schedules` |
+| 部署成多版本分流 | `workers/scripts/<name>/deployments`，看是不是單一版本 100% |
+
+**真正的判準是「Worker 被呼叫幾次」**，不是「GitHub 跑了幾次」——
+用 GraphQL 的 `workersInvocationsAdaptive`（維度是 `datetimeMinute` 與 `status`，
+⚠️ 沒有 `outcome` 這個欄位）。這次量到每個 tick **2 次、status 都是 success、errors 0**
+⇒ 既不是重試也不是我方程式，是 Cloudflare 送了兩次。
+
+**修法＝重新註冊 cron**（不必改任何程式、不必重新部署）：
+`PUT /accounts/{id}/workers/scripts/liam-scheduler/schedules`，body 就是原本那幾條
+`[{"cron": "..."}]`。⚠️ **送之前先讀出來備份、送之後讀回來比對條數與內容**，
+PUT 會整組覆蓋，少送一條就是那段排程直接消失。
+
+實測重新註冊後下一個 tick 就降回 1 次，連續兩個 tick 複驗通過。
+
+⚠️ **排程保證的是「至少送一次」不是「正好一次」。**
+真的再發生而 Cloudflare 那邊修不好時，正確做法是**讓發布本身冪等**
+（`daily_post` 先看今天的圖產過沒、`story_teaser` 先看 state 檔今天用過哪支），
+不是在觸發端擋。
+
 ---
 
 ## git push 回 HTTP 400（大包推送）
