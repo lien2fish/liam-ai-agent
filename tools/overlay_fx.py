@@ -173,8 +173,9 @@ def layer_image(img, it, W, H):
     cx, cy = it.get("xy", [W // 2, int(H * 0.42)])
     pad = it.get("pad", 10)
     plate = Image.new("RGBA", (w + pad * 2, h + pad * 2), (16, 22, 26, 235))
-    ImageDraw.Draw(plate).rectangle([0, 0, w + pad * 2 - 1, h + pad * 2 - 1],
-                                    outline=ORANGE + (255,), width=4)
+    ImageDraw.Draw(plate).rectangle(
+        [0, 0, w + pad * 2 - 1, h + pad * 2 - 1], outline=ORANGE + (255,), width=4
+    )
     plate.alpha_composite(src, (pad, pad))
     img.alpha_composite(plate, (int(cx - plate.width / 2), int(cy - plate.height / 2)))
 
@@ -224,6 +225,85 @@ LAYERS = {
 }
 
 
+# ---------- 跟蹤圖層：圈圈跟著物件跑 ----------
+# 軌跡直接吃 paper_mask.py 的 track.json（`flow` 指令產的）。那套本來是拿來「蓋住」
+# 不能入鏡的東西，同一份軌跡換個用途就是「標住」要講的部位——物件在手上轉動時，
+# 圈圈跟著走，不會像釘死的座標那樣標到旁邊去。
+
+TRACK_PAD = 1.3  # 圈比追蹤框大多少倍
+
+
+def ring_sticker(w, h, label, path, fs=56):
+    """畫一個橢圓圈環，有標籤就擺在圈的正上方。回傳 (圖寬, 圖高, 圈心在圖內的 y)。"""
+    from PIL import Image, ImageDraw
+
+    top = (fs + 26) if label else 0
+    img = Image.new("RGBA", (w, h + top), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    for lw, col in ((14, INK + (170,)), (8, ORANGE + (255,))):
+        o = lw // 2
+        d.ellipse([o, top + o, w - o - 1, h + top - o - 1], outline=col, width=lw)
+    if label:
+        draw_text(
+            d,
+            (w // 2, top // 2),
+            fix_glyph(label),
+            font(fs),
+            fs * 0.05,
+            ORANGE + (255,),
+        )
+    img.save(path)
+    return img.width, img.height, top + h // 2
+
+
+def track_plan(tj, vid_w, pad=TRACK_PAD):
+    """讀 track.json，算出每格圈心位置、要顯示的區間、貼紙尺寸。"""
+    d = json.load(open(tj))
+    scale = vid_w / d["proxy_w"]
+    fps, t0, boxes = d["fps"], d["t0"], d["boxes"]
+    pts, ws, hs = [], [], []
+    for i, b in enumerate(boxes):
+        if not b:
+            continue
+        pts.append((t0 + i / fps, (b[0] + b[2] / 2) * scale, (b[1] + b[3] / 2) * scale))
+        ws.append(b[2])
+        hs.append(b[3])
+    if not pts:
+        raise SystemExit(f"❌ {tj} 裡一個追蹤框都沒有")
+    # 換錨點時框會跳一下，滑動平均把跳動與逐格抖動抹平（與 paper_mask 同樣處理）
+    if len(pts) > 5:
+        sm = []
+        for i in range(len(pts)):
+            win = pts[max(0, i - 2) : i + 3]
+            sm.append(
+                (
+                    pts[i][0],
+                    sum(p[1] for p in win) / len(win),
+                    sum(p[2] for p in win) / len(win),
+                )
+            )
+        pts = sm
+    # 取最大不取平均：追蹤框不隨鏡頭遠近縮放，用平均會在鏡頭推近時圈不住
+    sw, sh = round(max(ws) * scale * pad), round(max(hs) * scale * pad)
+    sw, sh = sw + sw % 2, sh + sh % 2
+    # 物件不在鏡頭裡時 boxes 是 None，那幾段不能讓圈圈留在畫面上
+    runs, start, prev = [], None, None
+    for i, b in enumerate(boxes):
+        if b and start is None:
+            start = i
+        elif not b and start is not None:
+            runs.append((start, prev))
+            start = None
+        if b:
+            prev = i
+    if start is not None:
+        runs.append((start, prev))
+    en = "+".join(
+        f"between(t,{t0 + a / fps:.3f},{t0 + (b + 1) / fps:.3f})" for a, b in runs
+    )
+    return pts, en, sw, sh
+
+
 def check(cfg, W, H, dur):
     errs = []
     items = cfg.get("items", [])
@@ -237,6 +317,27 @@ def check(cfg, W, H, dur):
         tag = f"item{i}({it.get('type')})"
         if it.get("type") not in LAYERS:
             errs.append(f"{tag} type 不認得，只接受 {'／'.join(LAYERS)}")
+            continue
+        if it.get("track"):
+            # 跟蹤圖層的時間與位置都由 track.json 決定，不吃 t／xy
+            if it["type"] != "circle":
+                errs.append(f"{tag} 目前只有 circle 支援 track")
+            elif not os.path.exists(it["track"]):
+                errs.append(f"{tag} 找不到軌跡檔：{it['track']}")
+            else:
+                d = json.load(open(it["track"]))
+                n = sum(1 for b in d.get("boxes", []) if b)
+                if not n:
+                    errs.append(f"{tag} 軌跡檔裡一個追蹤框都沒有")
+                elif d["t1"] > dur + 0.5:
+                    errs.append(f"{tag} 軌跡迄 {d['t1']}s 超過影片長度 {dur:.1f}s")
+                else:
+                    thin = sum(1 for v in d.get("live", []) if v and v < 30)
+                    if thin > len(d.get("live", [1])) * 0.3:
+                        errs.append(
+                            f"⚠️ {tag} 有 {thin} 格特徵點不足(<30)，"
+                            f"先跑 paper_mask.py check 看追蹤有沒有跑掉"
+                        )
             continue
         t = it.get("t")
         if not (isinstance(t, list) and len(t) == 2 and t[1] > t[0]):
@@ -285,12 +386,27 @@ def build(cfg, path):
     tmp = os.path.join(os.path.dirname(os.path.abspath(path)), ".overlay_tmp")
     os.makedirs(tmp, exist_ok=True)
 
-    pngs = []
+    pngs, plans = [], {}
     for i, it in enumerate(cfg["items"], 1):
-        img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-        LAYERS[it["type"]](img, it, W, H)
         p = os.path.join(tmp, f"fx_{i:02d}.png")
-        img.save(p)
+        if it.get("track"):
+            # 跟蹤圖層：只畫一張小貼紙，位置交給 sendcmd 逐格驅動
+            pts, en, sw, sh = track_plan(it["track"], W, it.get("pad", TRACK_PAD))
+            _, _, cy = ring_sticker(sw, sh, it.get("label"), p, it.get("fs", 56))
+            cf = os.path.join(tmp, f"fx_{i:02d}.cmd")
+            open(cf, "w").write(
+                "\n".join(
+                    f"{t:.3f} overlay@tk{i} x {round(x - sw / 2)}, "
+                    f"overlay@tk{i} y {round(y - cy)};"
+                    for t, x, y in pts
+                )
+                + "\n"
+            )
+            plans[i] = (en, cf)
+        else:
+            img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            LAYERS[it["type"]](img, it, W, H)
+            img.save(p)
         pngs.append(p)
 
     cmd = ["ffmpeg", "-y", "-i", video]
@@ -298,16 +414,24 @@ def build(cfg, path):
         cmd += ["-loop", "1", "-framerate", f"{fps:.6f}", "-i", p]
     chain, last = [], "0:v"
     for i, it in enumerate(cfg["items"], 1):
-        s, e = it["t"]
-        d = min(FADE, (e - s) / 2)
-        chain.append(
-            f"[{i}:v]format=rgba,fade=t=in:st={s:.2f}:d={d:.2f}:alpha=1,"
-            f"fade=t=out:st={max(s, e-d):.2f}:d={d:.2f}:alpha=1[o{i}]"
-        )
         tag = f"v{i}" if i < len(cfg["items"]) else "vout"
-        chain.append(
-            f"[{last}][o{i}]overlay=0:0:enable='between(t,{s:.2f},{e:.2f})'[{tag}]"
-        )
+        if i in plans:
+            en, cf = plans[i]
+            # 初始位置丟到畫面外，整段都由 sendcmd 指定；enable 是「有追蹤框的區間」聯集
+            chain.append(f"[{last}]sendcmd=f='{cf}'[m{i}]")
+            chain.append(
+                f"[m{i}][{i}:v]overlay@tk{i}=x=-9999:y=-9999:enable='{en}'[{tag}]"
+            )
+        else:
+            s, e = it["t"]
+            d = min(FADE, (e - s) / 2)
+            chain.append(
+                f"[{i}:v]format=rgba,fade=t=in:st={s:.2f}:d={d:.2f}:alpha=1,"
+                f"fade=t=out:st={max(s, e-d):.2f}:d={d:.2f}:alpha=1[o{i}]"
+            )
+            chain.append(
+                f"[{last}][o{i}]overlay=0:0:enable='between(t,{s:.2f},{e:.2f})'[{tag}]"
+            )
         last = tag
     cmd += [
         "-filter_complex",
@@ -347,6 +471,54 @@ def build(cfg, path):
     return out
 
 
+def preview(cfg, path, at):
+    """抽一格把圖層套上去存成 jpg。跟蹤圖層的錨點只要差一點整支就偏掉，
+    渲染完整支才發現太慢——下完錨點先用這個看一眼。"""
+    from PIL import Image
+
+    video = cfg["video"]
+    W, H, dur, fps = probe(video)
+    tmp = os.path.join(os.path.dirname(os.path.abspath(path)), ".overlay_tmp")
+    os.makedirs(tmp, exist_ok=True)
+    raw = os.path.join(tmp, "preview_raw.png")
+    subprocess.run(
+        ["ffmpeg", "-y", "-ss", str(at), "-i", video, "-frames:v", "1", raw],
+        capture_output=True,
+    )
+    if not os.path.exists(raw):
+        raise SystemExit(f"❌ 抽不到 {at}s 的畫面")
+    base = Image.open(raw).convert("RGBA")
+
+    shown = []
+    for i, it in enumerate(cfg["items"], 1):
+        if it.get("track"):
+            pts, _, sw, sh = track_plan(it["track"], W, it.get("pad", TRACK_PAD))
+            near = min(pts, key=lambda p: abs(p[0] - at))
+            if abs(near[0] - at) > 0.5:
+                continue  # 這個時間點沒有追蹤框
+            sp = os.path.join(tmp, f"pv_{i:02d}.png")
+            _, _, cy = ring_sticker(sw, sh, it.get("label"), sp, it.get("fs", 56))
+            ring = Image.open(sp)
+            base.alpha_composite(ring, (round(near[1] - sw / 2), round(near[2] - cy)))
+            os.remove(sp)
+            shown.append(f"item{i} 跟蹤圈 @{near[0]:.2f}s")
+        else:
+            s, e = it["t"]
+            if not (s <= at <= e):
+                continue
+            img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            LAYERS[it["type"]](img, it, W, H)
+            base.alpha_composite(img)
+            shown.append(f"item{i} {it['type']}")
+
+    out = os.path.splitext(path)[0] + f"_預覽{at}s.jpg"
+    base.convert("RGB").save(out, quality=92)
+    os.remove(raw)
+    print(f"✅ {out}")
+    print("   這一格有：" + ("、".join(shown) if shown else "（沒有任何圖層）"))
+    return out
+
+
 def main():
     if len(sys.argv) < 2:
         raise SystemExit(__doc__)
@@ -364,6 +536,10 @@ def main():
     print("  ✅ 檢查通過")
     if "--check" in sys.argv:
         return
+    for a in sys.argv[2:]:
+        if a.startswith("--preview="):
+            preview(cfg, path, float(a.split("=", 1)[1]))
+            return
     build(cfg, path)
 
 
