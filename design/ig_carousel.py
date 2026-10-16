@@ -68,6 +68,61 @@ def grab_frame(video, t):
     return im
 
 
+def load_media(s):
+    """畫面來源：image＝圖片檔（相對 repo 或絕對路徑），video＋t＝從影片抽格。"""
+    if s.get("image"):
+        path = s["image"]
+        if not os.path.isabs(path):
+            path = os.path.join(REPO, path)
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"圖片不存在：{path}")
+        return Image.open(path).convert("RGB")
+    return grab_frame(s["video"], s["t"])
+
+
+def has_media(s):
+    return bool(s.get("image") or s.get("video"))
+
+
+def drop_white(im, tol=18):
+    """白底圖去背：從四角 flood fill，只吃連通的白色，不會咬掉魚身上的淺色。"""
+    from PIL import ImageDraw
+
+    im = im.convert("RGB")
+    mask = Image.new("L", (im.width + 2, im.height + 2), 0)
+    for xy in ((0, 0), (im.width - 1, 0), (0, im.height - 1), (im.width - 1, im.height - 1)):
+        ImageDraw.floodfill(im, xy, (0, 255, 0), thresh=tol)
+    px = im.load()
+    alpha = Image.new("L", im.size, 255)
+    ap = alpha.load()
+    for y in range(im.height):
+        for x in range(im.width):
+            if px[x, y] == (0, 255, 0):
+                ap[x, y] = 0
+                px[x, y] = (255, 255, 255)
+    out = im.convert("RGBA")
+    out.putalpha(alpha)
+    return out
+
+
+def contain(im, size, bg):
+    """等比縮到完整放得下，四周補 bg（去背圖用，不裁切）。"""
+    tw, th = size
+    scale = min(tw / im.width, th / im.height)
+    im = im.resize((max(1, round(im.width * scale)), max(1, round(im.height * scale))), Image.LANCZOS)
+    canvas = Image.new("RGB", size, bg)
+    pos = ((tw - im.width) // 2, (th - im.height) // 2)
+    canvas.paste(im, pos, im if im.mode == "RGBA" else None)
+    return canvas
+
+
+def fit_media(s, size, bg=DEEP):
+    im = load_media(s)
+    if s.get("cutout"):
+        return contain(drop_white(im), size, bg)
+    return cover_fit(im, s.get("crop"), size)
+
+
 def cover_fit(im, box, size):
     """box＝原始畫面上的裁切框 [x, y, w, h]；再等比放滿 size，多的從中間裁掉。"""
     if box:
@@ -120,7 +175,7 @@ def footer(draw, handle, idx, total):
 
 
 def slide_cover(s, handle, idx, total):
-    im = cover_fit(grab_frame(s["video"], s["t"]), s.get("crop"), (W, H))
+    im = fit_media(s, (W, H))
     shade = Image.new("RGB", (W, H), DEEP)
     im = Image.composite(shade, im, gradient((W, H), 0, 240, start=0.3, end=0.62))
     d = ImageDraw.Draw(im)
@@ -138,11 +193,9 @@ def slide_card(s, handle, idx, total):
     im = Image.new("RGB", (W, H), DEEP)
     d = ImageDraw.Draw(im)
     y = 110
-    if s.get("video"):
+    if has_media(s):
         band_h = 560
-        photo = cover_fit(
-            grab_frame(s["video"], s["t"]), s.get("crop"), (W - MARGIN * 2, band_h)
-        )
+        photo = fit_media(s, (W - MARGIN * 2, band_h))
         im.paste(photo, (MARGIN, y))
         y += band_h + 64
     f_label, f_title, f_body, f_note = (
@@ -151,7 +204,7 @@ def slide_card(s, handle, idx, total):
         font(REGULAR, 40),
         font(REGULAR, 28),
     )
-    if not s.get("video"):
+    if not has_media(s):
         content_h = 74 + block_h(s["title"], f_title, 14)
         if s.get("body"):
             content_h += 30 + block_h(s["body"], f_body, 16)
@@ -183,11 +236,9 @@ def slide_summary(s, handle, idx, total):
     im = Image.new("RGB", (W, H), DEEP)
     d = ImageDraw.Draw(im)
     y = 96
-    if s.get("video"):
+    if has_media(s):
         band_h = 340
-        photo = cover_fit(
-            grab_frame(s["video"], s["t"]), s.get("crop"), (W - MARGIN * 2, band_h)
-        )
+        photo = fit_media(s, (W - MARGIN * 2, band_h))
         im.paste(photo, (MARGIN, y))
         y += band_h + 52
     f_label, f_term, f_value, f_note, f_cta = (
@@ -220,7 +271,7 @@ def slide_summary(s, handle, idx, total):
 def render_story(s):
     """限時動態導流圖，1080×1920。上方約 250px、下方約 340px 會被 IG 介面蓋住，文字放中段。"""
     sw, sh = 1080, 1920
-    im = cover_fit(grab_frame(s["video"], s["t"]), s.get("crop"), (sw, sh))
+    im = fit_media(s, (sw, sh))
     shade = Image.new("RGB", (sw, sh), DEEP)
     im = Image.composite(shade, im, gradient((sw, sh), 0, 235, start=0.35, end=0.62))
     d = ImageDraw.Draw(im)
