@@ -1,4 +1,4 @@
-name: 每日股市分析報告
+name: 每日財金日報
 
 on:
   # 🕐 計時已於 2026-08-29 搬到 Cloudflare Worker `liam-scheduler`（UTC 04:07 = 台灣 12:07）。
@@ -24,23 +24,20 @@ jobs:
           restore-keys: |
             market-history-
 
-      - name: 執行每日市場分析
+      - name: 安裝 reportlab
+        run: pip install reportlab
+
+      - name: 產生財金日報（Notion＋Markdown＋PDF）
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           GEMINI_KEY:   ${{ secrets.GEMINI_KEY }}
         run: python3 market/market_report.py
 
-      - name: 產生 PDF 報告
-        run: |
-          pip install reportlab
-          rm -f day/市場日報_*.pdf
-          python3 scripts/md_to_pdf.py "day/市場日報_$(date +%Y-%m-%d).pdf" "reports/市場日報_$(date +%Y-%m-%d).md"
-
       - name: Commit 報告與歷史記錄
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add market/market_config.json market/market_history.json day/
+          git add market/market_config.json market/market_history.json market/allocation_history.json day/
           git add "reports/市場日報_$(date +%Y-%m-%d).md" 2>/dev/null || true
           git diff --staged --quiet || git commit -m "chore: 市場日報 $(date +%Y-%m-%d)"
           # ⚠️ pull 與 push 之間還有窗口讓別支任務插進來——2026-08-29 實測就中了：
@@ -50,3 +47,10 @@ jobs:
             sleep $((RANDOM % 8 + 3))
           done
           echo "::error::連 5 次都沒推上去"; exit 1
+
+      - name: 寄送 Email（內文＋PDF 附件）
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: |
+          D=$(date +%Y-%m-%d)
+          python3 market/send_report.py "reports/市場日報_$D.md" "day/市場日報_$D.pdf"

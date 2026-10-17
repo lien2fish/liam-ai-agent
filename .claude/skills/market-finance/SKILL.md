@@ -1,47 +1,38 @@
 ---
 name: market-finance
-description: 每日股市全面分析報告（market/market_report.py）與個人資產負債表更新（finance/update_balance_sheet.py）。含觀察股清單、Gemini 設定、Notion 頁面 ID、資產負債 DB 維護流程。要看市場、更新資產數字時載入。
+description: 每日財金日報（market/market_report.py，台股／美股／美債利率／匯率／黃金原物料走勢＋AI 資產配置比例＋波段訊號，Email 附 PDF）與個人資產負債表更新（finance/update_balance_sheet.py）。含追蹤標的清單、Gemini 設定、Notion 頁面 ID、資產負債 DB 維護流程。要看市場、更新資產數字時載入。
 ---
 
-## 每日股市全面分析報告系統（2026-06-02 建立）
+## 每日財金日報（2026-06-02 建立，2026-10-17 改版）
+
+**2026-10-17 改版**：Lien 股票全部清空，報告從「我的持股怎麼了」改成「錢接下來該放哪」。
+Lien 選的方向：中長期配置＋波段訊號兩者都要、**給具體百分比**、追美債利率／匯率／原物料、**Email 附 PDF**。
 
 ### 核心資訊
 | 項目 | 說明 |
 |------|------|
-| 腳本 | `market/market_report.py` |
-| 設定 | `market/market_config.json`（觀察股清單、Notion Page ID）|
-| 歷史 | `market/market_history.json`（90天，自動維護）|
-| 排程 | GitHub Actions，每天 12:00 台灣時間（UTC 04:00）|
-| Workflow | `.github/workflows/market_daily.yml` |
-| Notion | 固定頁面「每日市場日報」（每日覆寫，手機可查）|
-| Markdown | `reports/市場日報_YYYY-MM-DD.md`（每日 commit）|
+| 腳本 | `market/market_report.py`（產 Notion＋Markdown＋PDF）、`market/send_report.py`（寄信）|
+| 設定 | `market/market_config.json`——`groups` 七組追蹤標的，增刪直接改這裡 |
+| 配置歷史 | `market/allocation_history.json`（180 天，進版控）——讓 AI 知道上期配置，報告顯示「與上期比」|
+| 排程 | Worker 每天 12:07 台灣時間 dispatch `.github/workflows/market_daily.yml` |
+| 送達 | **Email 給 lien2fish@gmail.com，內文＝完整報告、附件＝PDF**；Notion「每日市場日報」頁面照樣覆寫 |
+| 檔名 | 沿用 `reports/市場日報_日期.md`、`day/市場日報_日期.pdf`（標題已改「財金日報」，檔名不改免得別處對不上）|
 
-### 資料來源（三層）
-| 層 | 來源 | 說明 |
-|----|------|------|
-| L1 | Yahoo Finance | 全球指數、宏觀指標、台灣觀察股（`urllib`，無需 key）|
-| L2 | Gemini 2.5-flash + Google Search | 今日新聞、外資動向、AI 預測 |
-| L3 | Gemini 知識庫 | L2 失敗時備援 |
+### 報告內容（由上而下）
+1. 今日重點一句話、市場階段、整體偏向
+2. **建議資產配置**：台股／美股／美債／黃金／原物料／現金六類百分比＋與上期比＋調整說明
+3. **各資產走勢判斷**：六類資產的趨勢、未來 1-3 個月、判斷依據
+4. **波段訊號** 2-4 個：標的、偏多／偏空／觀望、參考進場、失效條件
+5. 市場數據七張表（日／週／月／3 個月變動＋趨勢）＋殖利率曲線（10 年減 3 個月）
+6. 重要事件、未來一週要注意、可能出錯的地方、判斷信心
 
-### 報告內容
-1. 市場情緒（多頭/空頭/震盪）+ 樂觀指數 1-10
-2. 全球 6 大指數（台灣、美三大、日、港）
-3. 宏觀指標（VIX、USD/TWD、布蘭特油、黃金）
-4. 台灣觀察清單（8 支，含持有標記 ★）
-5. 今日市場新聞 + 外資動向（Gemini Search 即時搜尋）
-6. AI 一週展望 + 加權預估區間 + 主要風險
-
-### 觀察股清單（可在 market_config.json 增刪）
-| 代號 | 名稱 | 持有 |
-|------|------|------|
-| 2330.TW | 台積電 | — |
-| 0050.TW | 元大台灣50 ETF | — |
-| 006208.TW | 富邦台灣50 ETF | — |
-| 009816.TW | 凱基優選ETF | ★ |
-| 2610.TW | 華航 | ★ |
-| 2303.TW | 聯電 | — |
-| 2454.TW | 聯發科 | — |
-| 2317.TW | 鴻海 | — |
+### 設計重點
+- **走勢與均線由程式從 Yahoo 一年日線自己算**，不讓 AI 算：趨勢＝現價與 50／200 日均線相對位置
+- 殖利率類（`kind: yield`）變動單位是 bp，不是 %
+- AI 給的配置加總常常不是 100，`normalize_allocation` 會等比例修正；六類缺項或非數字就整段不顯示
+- prompt 限制每項跟上期差距 ≤5 個百分點（除非有明確新事件），避免配置每天翻來翻去
+- Markdown **不放 emoji**——PDF 字型沒有 emoji 字形會變方框；AI 文字經 `clean()` 換掉 `< > & |`，裸的 `<` 會讓 reportlab 整份 PDF 建不出來
+- 寄信步驟排在 commit 之後；缺 `GMAIL_APP_PASSWORD` 或寄信失敗會讓 run 變紅
 
 ### Gemini 設定（重要）
 - **模型**：`gemini-2.5-flash`（`claude-workspace-495009` 專案，**實為免費額度，非付費**——2026-06-23實測證實）

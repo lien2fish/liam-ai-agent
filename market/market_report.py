@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-每日股市全面分析報告
-每日 09:00 由 GitHub Actions 執行，結果寫入 Notion 頁面 + reports/ Markdown
+每日財金日報：台股、美股、美債利率、匯率、黃金與原物料的走勢，
+加上 AI 的中長期資產配置比例與波段訊號。
+輸出：Notion 頁面＋reports/ Markdown＋day/ PDF（Email 由 market/send_report.py 寄出）。
 資料來源：
-  Layer 1 — Yahoo Finance（指數、個股、宏觀指標）
-  Layer 2 — Gemini + Google Search grounding（新聞、外資動向、AI 預測）
+  Layer 1 — Yahoo Finance 一年日線（走勢與均線自己算，不靠 AI）
+  Layer 2 — Gemini + Google Search grounding（新聞、事件、配置判斷）
   Layer 3 — Gemini 知識庫分析（備援）
 """
 
@@ -24,7 +25,9 @@ WORKSPACE = Path(
 )
 CONFIG_FILE = WORKSPACE / "market/market_config.json"
 HISTORY_FILE = WORKSPACE / "market/market_history.json"
+ALLOC_FILE = WORKSPACE / "market/allocation_history.json"
 REPORTS_DIR = WORKSPACE / "reports"
+PDF_DIR = WORKSPACE / "day"
 
 NOTION_VER = "2022-06-28"
 NOTION_API = "https://api.notion.com/v1"
@@ -32,6 +35,9 @@ YF_CHART = "https://query1.finance.yahoo.com/v8/finance/chart"
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
 GEMINI_KEY = os.environ.get("GEMINI_KEY", "")
+
+ASSET_CLASSES = ["台股", "美股", "美債", "黃金", "原物料", "現金"]
+SECTIONS = ["台股", "美股", "美債與利率", "匯率", "黃金與原物料"]
 
 
 # ── Token ────────────────────────────────────────────────────────
@@ -83,11 +89,11 @@ def gemini_call(payload, retries=3):
             method="POST",
         )
         try:
-            with urllib.request.urlopen(req, timeout=45) as r:
+            with urllib.request.urlopen(req, timeout=90) as r:
                 return json.loads(r.read())
         except urllib.error.HTTPError as e:
             if e.code == 429 and attempt < retries - 1:
-                wait = 60 * (attempt + 1)  # 60s, 120s, 180s
+                wait = 60 * (attempt + 1)
                 log(f"  Gemini 429，等 {wait}s 後重試...")
                 time.sleep(wait)
             else:
@@ -107,262 +113,319 @@ def extract_json_obj(text):
         return {}
 
 
-# ── Yahoo Finance ────────────────────────────────────────────────
-def fetch_yf(symbol):
-    encoded = urllib.parse.quote(symbol, safe=".")
-    url = f"{YF_CHART}/{encoded}?interval=1d&range=5d"
+def clean(text):
+    # md_to_pdf 把內文丟進 reportlab Paragraph（迷你 XML），裸的 < & 會讓整份 PDF 建不出來
+    return (
+        str(text)
+        .replace("&", "＆")
+        .replace("<", "＜")
+        .replace(">", "＞")
+        .replace("|", "／")
+        .replace("\n", " ")
+        .strip()
+    )
+
+
+# ── Yahoo Finance：一年日線＋自算走勢 ─────────────────────────────
+def fetch_closes(symbol):
+    encoded = urllib.parse.quote(symbol, safe=".=")
+    url = f"{YF_CHART}/{encoded}?interval=1d&range=1y"
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    try:
-        with urllib.request.urlopen(req, timeout=12) as r:
-            data = json.loads(r.read())
-        meta = data["chart"]["result"][0]["meta"]
-        price = meta.get("regularMarketPrice")
-        prev = meta.get("chartPreviousClose") or meta.get("regularMarketPreviousClose")
-        change = round(price - prev, 4) if price is not None and prev else None
-        change_pct = (
-            round(change / prev * 100, 2) if change is not None and prev else None
-        )
-        return {
-            "price": price,
-            "change": change,
-            "change_pct": change_pct,
-            "ts": meta.get("regularMarketTime", 0),
-            "currency": meta.get("currency", ""),
-        }
-    except Exception as e:
-        log(f"  YF {symbol} 失敗：{e}")
-        return {
-            "price": None,
-            "change": None,
-            "change_pct": None,
-            "ts": 0,
-            "currency": "",
-        }
+    with urllib.request.urlopen(req, timeout=15) as r:
+        data = json.loads(r.read())
+    res = data["chart"]["result"][0]
+    ts = res.get("timestamp") or []
+    closes = res["indicators"]["quote"][0].get("close") or []
+    series = [(t, c) for t, c in zip(ts, closes) if c is not None]
+    live = res["meta"].get("regularMarketPrice")
+    live_ts = res["meta"].get("regularMarketTime", 0)
+    if live is not None and series and live_ts > series[-1][0]:
+        series.append((live_ts, live))
+    elif live is not None and series:
+        series[-1] = (series[-1][0], live)
+    return series
+
+
+def _pct(now, then):
+    return (now - then) / then * 100 if then else None
+
+
+def compute_stats(series, kind):
+    closes = [c for _, c in series]
+    price = closes[-1]
+
+    def back(n):
+        return closes[-1 - n] if len(closes) > n else None
+
+    def diff(then):
+        if then is None:
+            return None
+        return (price - then) * 100 if kind == "yield" else _pct(price, then)
+
+    ma50 = sum(closes[-50:]) / 50 if len(closes) >= 50 else None
+    ma200 = sum(closes[-200:]) / 200 if len(closes) >= 200 else None
+    hi, lo = max(closes), min(closes)
+
+    if ma50 and ma200:
+        if price > ma50 > ma200:
+            trend = "上升"
+        elif price < ma50 < ma200:
+            trend = "下降"
+        else:
+            trend = "盤整"
+    elif ma50:
+        trend = "上升" if price > ma50 else "下降"
+    else:
+        trend = "—"
+
+    return {
+        "price": price,
+        "d1": diff(back(1)),
+        "w1": diff(back(5)),
+        "m1": diff(back(21)),
+        "m3": diff(back(63)),
+        "ma50": ma50,
+        "ma200": ma200,
+        "hi": hi,
+        "lo": lo,
+        "from_hi": _pct(price, hi),
+        "trend": trend,
+        "ts": series[-1][0],
+    }
 
 
 def fetch_all_market_data(cfg):
-    indices_def = [
-        ("^TWII", "台灣加權指數", 0),
-        ("^GSPC", "S&P 500", 0),
-        ("^IXIC", "NASDAQ", 0),
-        ("^DJI", "道瓊斯", 0),
-        ("^N225", "日經225", 0),
-        ("^HSI", "恒生指數", 0),
-    ]
-    macro_def = [
-        ("^VIX", "VIX 恐慌指數", 2),
-        ("USDTWD=X", "美元/台幣", 3),
-        ("BZ=F", "布蘭特原油(USD/桶)", 2),
-        ("GC=F", "黃金(USD/oz)", 0),
-    ]
-    watch = cfg.get("watch_stocks", [])
-    us_watch = cfg.get("us_watch_stocks", [])
-
-    result = {"indices": [], "macro": [], "stocks": [], "us_stocks": []}
-
-    log("抓取全球指數...")
-    for code, name, dec in indices_def:
-        d = fetch_yf(code)
-        d.update({"code": code, "name": name, "dec": dec})
-        result["indices"].append(d)
-        time.sleep(0.3)
-
-    log("抓取宏觀指標...")
-    for code, name, dec in macro_def:
-        d = fetch_yf(code)
-        d.update({"code": code, "name": name, "dec": dec})
-        result["macro"].append(d)
-        time.sleep(0.3)
-
-    log("抓取台灣觀察清單...")
-    for s in watch:
-        d = fetch_yf(s["code"])
-        d.update(
-            {
-                "code": s["code"],
-                "name": s["name"],
-                "holding": s.get("holding", False),
-                "dec": 2,
+    groups = []
+    for g in cfg["groups"]:
+        log(f"抓取{g['title']}...")
+        rows = []
+        for it in g["items"]:
+            row = {
+                "code": it["code"],
+                "name": it["name"],
+                "kind": it.get("kind", "price"),
+                "dec": it.get("dec", 2),
+                "price": None,
             }
-        )
-        result["stocks"].append(d)
-        time.sleep(0.3)
+            try:
+                series = fetch_closes(it["code"])
+                if series:
+                    row.update(compute_stats(series, row["kind"]))
+            except Exception as e:
+                log(f"  YF {it['code']} 失敗：{e}")
+            rows.append(row)
+            time.sleep(0.3)
+        groups.append({"title": g["title"], "rows": rows})
 
-    log("抓取美股觀察清單...")
-    for s in us_watch:
-        d = fetch_yf(s["code"])
-        d.update(
-            {
-                "code": s["code"],
-                "name": s["name"],
-                "holding": s.get("holding", False),
-                "dec": 2,
-            }
-        )
-        result["us_stocks"].append(d)
-        time.sleep(0.3)
-
-    valid = sum(1 for g in result.values() for d in g if d["price"])
-    log(f"  共 {valid} 筆有效數據")
-    return result
+    valid = sum(1 for g in groups for r in g["rows"] if r["price"] is not None)
+    total = sum(len(g["rows"]) for g in groups)
+    log(f"  有效 {valid}/{total} 筆")
+    return groups
 
 
-# ── Gemini 分析 ──────────────────────────────────────────────────
-def _market_summary_str(md):
-    lines = ["【全球指數】"]
-    for d in md["indices"]:
-        p = f"{d['price']:,.0f}" if d["price"] else "N/A"
-        c = f"{d['change_pct']:+.2f}%" if d["change_pct"] is not None else "N/A"
-        lines.append(f"  {d['name']}: {p} ({c})")
-    lines.append("【宏觀指標】")
-    for d in md["macro"]:
-        p = f"{d['price']:.2f}" if d["price"] else "N/A"
-        c = f"{d['change_pct']:+.2f}%" if d["change_pct"] is not None else ""
-        lines.append(f"  {d['name']}: {p} {c}".strip())
-    lines.append("【台灣觀察股】")
-    for d in md["stocks"]:
-        p = f"{d['price']:.2f}" if d["price"] else "N/A"
-        c = f"{d['change_pct']:+.2f}%" if d["change_pct"] is not None else "N/A"
-        lines.append(f"  {d['name']} ({d['code']}): {p} ({c})")
-    if md.get("us_stocks"):
-        lines.append("【美股觀察股】")
-        for d in md["us_stocks"]:
-            p = f"{d['price']:.2f}" if d["price"] else "N/A"
-            c = f"{d['change_pct']:+.2f}%" if d["change_pct"] is not None else "N/A"
-            lines.append(f"  {d['name']} ({d['code']}): {p} USD ({c})")
+def find(groups, code):
+    return next((r for g in groups for r in g["rows"] if r["code"] == code), None)
+
+
+def yield_curve(groups):
+    """10 年減 3 個月利差（bp）。倒掛是景氣衰退的領先訊號。"""
+    t10, t3m = find(groups, "^TNX"), find(groups, "^IRX")
+    if not (t10 and t3m and t10["price"] is not None and t3m["price"] is not None):
+        return None
+    return round((t10["price"] - t3m["price"]) * 100)
+
+
+# ── 格式化 ────────────────────────────────────────────────────────
+def _chg(v, kind):
+    if v is None:
+        return "—"
+    if kind == "yield":
+        return f"{v:+.0f}bp"
+    return f"{v:+.2f}%"
+
+
+def fmt_row(r):
+    if r["price"] is None:
+        return [r["name"], "—", "—", "—", "—", "—", "—"]
+    k = r["kind"]
+    return [
+        r["name"],
+        f"{r['price']:,.{r['dec']}f}",
+        _chg(r.get("d1"), k),
+        _chg(r.get("w1"), k),
+        _chg(r.get("m1"), k),
+        _chg(r.get("m3"), k),
+        r.get("trend", "—"),
+    ]
+
+
+TABLE_HEAD = ["項目", "現值", "日", "週", "月", "3個月", "趨勢"]
+
+
+def market_summary_str(groups):
+    lines = []
+    for g in groups:
+        lines.append(f"【{g['title']}】")
+        for r in g["rows"]:
+            if r["price"] is None:
+                lines.append(f"  {r['name']}: 無資料")
+                continue
+            k, dec = r["kind"], r["dec"]
+            ma = []
+            if r.get("ma50"):
+                ma.append(f"50日均 {r['ma50']:,.{dec}f}")
+            if r.get("ma200"):
+                ma.append(f"200日均 {r['ma200']:,.{dec}f}")
+            lines.append(
+                f"  {r['name']}: {r['price']:,.{dec}f}｜日 {_chg(r.get('d1'), k)}"
+                f"｜週 {_chg(r.get('w1'), k)}｜月 {_chg(r.get('m1'), k)}"
+                f"｜3月 {_chg(r.get('m3'), k)}｜{'、'.join(ma)}"
+                f"｜距一年高點 {r['from_hi']:+.1f}%｜趨勢 {r['trend']}"
+            )
+    yc = yield_curve(groups)
+    if yc is not None:
+        lines.append(f"【殖利率曲線】10年減3個月 = {yc:+d}bp（負值＝倒掛）")
     return "\n".join(lines)
 
 
-def _get_holdings(cfg):
-    cfg = cfg or {}
-    return [
-        s
-        for s in cfg.get("watch_stocks", []) + cfg.get("us_watch_stocks", [])
-        if s.get("holding")
-    ]
+# ── 配置歷史 ─────────────────────────────────────────────────────
+def load_alloc_history():
+    if ALLOC_FILE.exists():
+        return json.loads(ALLOC_FILE.read_text(encoding="utf-8"))
+    return {}
 
 
-def analyze_with_gemini(md, cfg=None):
-    if not GEMINI_KEY:
-        return {}
-    today = datetime.now().strftime("%Y年%m月%d日")
-    market_str = _market_summary_str(md)
+def last_allocation(hist, today):
+    past = sorted(k for k in hist if k < today)
+    return (past[-1], hist[past[-1]]) if past else (None, None)
 
-    holdings = _get_holdings(cfg)
-    holdings_str = "、".join(f"{s['name']}（{s['code']}）" for s in holdings) or "無"
 
-    prompt = (
-        f"今天是 {today}。以下是 Yahoo Finance 最新市場數據（可能為前一交易日收盤）：\n"
-        f"{market_str}\n\n"
-        f"使用者目前持有：{holdings_str}\n\n"
-        f"請完成：\n"
-        f"1. 搜尋今日台灣股市重要新聞（外資買超/賣超金額、法說會、重大政策、美股影響）\n"
-        f"2. 根據市場數據與今日新聞，輸出 JSON 分析報告\n\n"
-        f"只回傳 JSON 物件（不含其他文字）：\n"
-        f'{{"sentiment":"多頭/空頭/震盪",'
-        f'"sentiment_score":1到10的整數（10最樂觀）,'
-        f'"key_news":["最重要新聞1","新聞2","新聞3"],'
-        f'"foreign_flow":"外資今日買超或賣超XX億元（查不到填N/A）",'
-        f'"week_outlook":"一週大盤展望，2到3句繁體中文",'
-        f'"risks":["主要風險1","風險2","風險3"],'
-        f'"taiex_range":"本週台灣加權預估區間（如：22000-23500）",'
-        f'"us_taiwan_impact":{{'
-        f'"summary":"美股昨日表現對台股今日的整體影響，2句繁體中文",'
-        f'"nasdaq_effect":"NASDAQ/費半漲跌對台灣半導體（台積電/聯發科/聯電）的直接傳導，1-2句",'
-        f'"sp500_effect":"S&P500走勢對外資進出台股的影響，1-2句",'
-        f'"sector_impact":["受美股影響最大的台股族群1（例：AI伺服器族群大跌）","族群2"],'
-        f'"hedge_suggestion":"面對美股壓力，台股操作建議，1句"'
-        f"}},"
-        f'"holdings_advice":[{{'
-        f'"code":"持有股代號",'
-        f'"name":"持有股名稱",'
-        f'"action":"持有/加碼/減碼/停損賣出",'
-        f'"target":"目標價或出場參考價（如：20.5）",'
-        f'"reason":"1-2句具體理由，含技術面或基本面依據"'
-        f"}}],"
-        f'"buy_candidates":[{{'
-        f'"code":"台灣股票代號.TW",'
-        f'"name":"股票名稱",'
-        f'"reason":"買進理由，含題材與催化劑，1-2句",'
-        f'"entry":"建議進場價位區間（如：150-160）",'
-        f'"stop":"停損參考價（如：140）"'
-        f"}}]}}"
+def save_alloc_history(hist, today, prediction):
+    alloc = prediction.get("allocation")
+    if not alloc:
+        return
+    hist[today] = {"allocation": alloc, "regime": prediction.get("regime", "")}
+    cutoff = (datetime.now() - timedelta(days=180)).strftime("%Y-%m-%d")
+    hist = {k: v for k, v in hist.items() if k >= cutoff}
+    ALLOC_FILE.write_text(
+        json.dumps(hist, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
+
+def normalize_allocation(raw):
+    """Gemini 給的比例常常加總不是 100 或漏類別，這裡修正；修不了就回 None。"""
+    if not isinstance(raw, dict):
+        return None
+    vals = {}
+    for k in ASSET_CLASSES:
+        try:
+            vals[k] = max(0, float(raw.get(k, 0)))
+        except (TypeError, ValueError):
+            return None
+    total = sum(vals.values())
+    if total <= 0:
+        return None
+    scaled = {k: round(v / total * 100) for k, v in vals.items()}
+    gap = 100 - sum(scaled.values())
+    if gap:
+        biggest = max(scaled, key=scaled.get)
+        scaled[biggest] += gap
+    return scaled
+
+
+# ── Gemini 分析 ──────────────────────────────────────────────────
+JSON_SCHEMA = (
+    '{"headline":"今天最重要的一件事，一句話",'
+    '"regime":"目前所處的市場／景氣階段（例：降息循環中段、通膨再起、衰退風險升高），一句",'
+    '"sentiment":"偏多/中性/偏空",'
+    '"key_events":[{"event":"今日或近期重要事件／數據（含具體數字）","impact":"影響哪類資產、方向如何"}],'
+    '"upcoming":["未來一週要注意的事件與日期（Fed、CPI、非農、央行、重要財報等）"],'
+    '"assets":[{"asset":"台股/美股/美債/黃金/原物料/美元與台幣（六項都要有）",'
+    '"trend":"上升/盤整/下降","outlook":"未來 1-3 個月判斷，1-2 句",'
+    '"basis":"判斷依據，必須引用上面提供的數據（漲跌幅、均線、殖利率、利差）或搜尋到的事件"}],'
+    '"allocation":{"台股":整數,"美股":整數,"美債":整數,"黃金":整數,"原物料":整數,"現金":整數},'
+    '"allocation_change":"跟上期配置比調了什麼、為什麼；沒有上期就說明這個起始配置的邏輯",'
+    '"allocation_basis":["支撐這個配置的關鍵理由1","理由2","理由3"],'
+    '"swing":[{"target":"標的（限上面數據有的指數／ETF／商品）","signal":"偏多/偏空/觀望",'
+    '"entry":"參考進場區間（以現值與均線推算）","invalidation":"判斷失效條件或停損位",'
+    '"reason":"1-2 句"}],'
+    '"taiex_range":"台灣加權本週預估區間",'
+    '"foreign_flow":"外資昨日買賣超台股金額（查不到填 N/A）",'
+    '"risks":["可能讓上述判斷出錯的風險1","風險2","風險3"],'
+    '"confidence":"高/中/低，與原因一句"}'
+)
+
+
+def build_prompt(groups, prev, with_search):
+    today = datetime.now().strftime("%Y年%m月%d日")
+    prev_str = (
+        f"上期（{prev[0]}）建議配置：{json.dumps(prev[1]['allocation'], ensure_ascii=False)}"
+        f"，當時判斷的階段：{prev[1].get('regime', '')}"
+        if prev[0]
+        else "沒有上期配置（這是第一次）。"
+    )
+    task = (
+        "1. 先搜尋今天與近一週影響全球資產價格的重要新聞：Fed 與台灣央行動向、美國通膨與就業數據、"
+        "美債殖利率、美元與台幣、地緣政治、能源與黃金、台股外資買賣超、AI 與半導體產業動態\n"
+        "2. 結合下面的市場數據與新聞，輸出 JSON\n"
+        if with_search
+        else "根據下面的市場數據與你的知識，輸出 JSON\n"
+    )
+    return (
+        f"今天是 {today}。你是一位替台灣個人投資者寫每日財金日報的資產配置顧問。\n"
+        f"投資者目前**全部是現金、沒有任何持股**，要的是兩件事：\n"
+        f"  (a) 中長期（1-3 個月調整一次）資產配置比例\n"
+        f"  (b) 幾週到幾個月的波段進出場訊號\n"
+        f"以台幣計價、可投資台股、美股、美債、黃金、原物料，現金可以是台幣或美元。\n\n"
+        f"以下是 Yahoo Finance 一年日線算出的數據（趨勢＝現價與 50／200 日均線的相對位置；殖利率的變動單位是 bp）：\n"
+        f"{market_summary_str(groups)}\n\n"
+        f"{prev_str}\n\n"
+        f"{task}\n"
+        f"規則：\n"
+        f"- 數字只能用上面提供的或搜尋到的，不可以自己編價格或數據\n"
+        f"- allocation 六項加總必須是 100，單一資產不超過 60\n"
+        f"- 配置不要每天大幅翻轉：除非有明確的新事件或趨勢改變，跟上期的差距每項不超過 5 個百分點\n"
+        f"- swing 給 2 到 4 個，沒有好機會就給「觀望」並說明在等什麼\n"
+        f"- 全部用繁體中文\n\n"
+        f"只回傳 JSON 物件（不含其他文字）：\n{JSON_SCHEMA}"
+    )
+
+
+def analyze(groups, prev, with_search):
+    if not GEMINI_KEY:
+        return {}
+    payload = {
+        "contents": [{"parts": [{"text": build_prompt(groups, prev, with_search)}]}],
+        "generationConfig": {
+            "maxOutputTokens": 6000,
+            "temperature": 0.3,
+            "thinkingConfig": {"thinkingBudget": 0},
+        },
+    }
+    if with_search:
+        payload["tools"] = [{"google_search": {}}]
+    label = "Gemini Search" if with_search else "Gemini 知識庫"
     try:
-        data = gemini_call(
-            {
-                "contents": [{"parts": [{"text": prompt}]}],
-                "tools": [{"google_search": {}}],
-                "generationConfig": {
-                    "maxOutputTokens": 3500,
-                    "temperature": 0.3,
-                    "thinkingConfig": {"thinkingBudget": 0},
-                },
-            }
-        )
+        data = gemini_call(payload)
         text = "".join(
             p.get("text", "") for p in data["candidates"][0]["content"].get("parts", [])
         )
         result = extract_json_obj(text)
-        if result:
-            log(
-                f"  情緒：{result.get('sentiment','?')}  score={result.get('sentiment_score','?')}"
-            )
-        else:
-            log(f"  Gemini Search 無法解析 JSON，回覆前200字：{text[:200]}")
+        if not result:
+            log(f"  {label} 無法解析 JSON，回覆前200字：{text[:200]}")
+            return {}
+        result["allocation"] = normalize_allocation(result.get("allocation"))
+        result["source"] = label
+        log(f"  {label}：{result.get('sentiment', '?')}｜配置 {result['allocation']}")
         return result
     except Exception as e:
-        log(f"  Gemini Search 失敗：{e}")
-        return {}
-
-
-def fallback_analysis(md, cfg=None):
-    if not GEMINI_KEY:
-        return {}
-    market_str = _market_summary_str(md)
-    holdings = _get_holdings(cfg)
-    holdings_str = "、".join(f"{s['name']}（{s['code']}）" for s in holdings) or "無"
-    prompt = (
-        f"根據以下市場數據，提供台灣股市與美股分析。使用者目前持有：{holdings_str}。只回傳 JSON，不含其他文字：\n"
-        f"{market_str}\n\n"
-        f'{{"sentiment":"多頭/空頭/震盪","sentiment_score":1到10,'
-        f'"key_news":["觀察點1","觀察點2","觀察點3"],'
-        f'"foreign_flow":"N/A",'
-        f'"week_outlook":"一週展望說明（2-3句）",'
-        f'"risks":["風險1","風險2","風險3"],'
-        f'"taiex_range":"預估區間",'
-        f'"us_taiwan_impact":{{'
-        f'"summary":"美股對台股整體影響，2句",'
-        f'"nasdaq_effect":"NASDAQ/費半對台灣半導體的傳導",'
-        f'"sp500_effect":"S&P500對外資進出的影響",'
-        f'"sector_impact":["受影響族群1","族群2"],'
-        f'"hedge_suggestion":"台股操作建議，1句"'
-        f"}},"
-        f'"holdings_advice":[{{"code":"持有股代號","name":"名稱","action":"持有/加碼/減碼/停損賣出","target":"參考價","reason":"理由"}}],'
-        f'"buy_candidates":[{{"code":"代號.TW","name":"名稱","reason":"理由","entry":"進場區間","stop":"停損價"}}]}}'
-    )
-    try:
-        data = gemini_call(
-            {
-                "contents": [{"parts": [{"text": prompt}]}],
-                "generationConfig": {
-                    "maxOutputTokens": 2048,
-                    "temperature": 0.3,
-                    "thinkingConfig": {"thinkingBudget": 0},
-                },
-            }
-        )
-        text = data["candidates"][0]["content"]["parts"][0]["text"]
-        return extract_json_obj(text)
-    except Exception as e:
-        log(f"  Gemini fallback 失敗：{e}")
+        log(f"  {label} 失敗：{e}")
         return {}
 
 
 # ── Notion Block 建構工具 ─────────────────────────────────────────
 def _rt(text, bold=False):
-    b = {"type": "text", "text": {"content": str(text)}}
+    b = {"type": "text", "text": {"content": str(text)[:1900]}}
     if bold:
         b["annotations"] = {"bold": True}
     return b
@@ -411,34 +474,16 @@ def _bullet(text):
     }
 
 
-def _toggle(text, children):
-    return {
-        "object": "block",
-        "type": "toggle",
-        "toggle": {"rich_text": [_rt(text, bold=True)], "children": children},
-    }
-
-
-def _cell(text):
-    return [{"type": "text", "text": {"content": str(text)}}]
-
-
 def _make_table(headers, rows):
-    table_rows = [
-        {
+    def row(cells):
+        return {
             "object": "block",
             "type": "table_row",
-            "table_row": {"cells": [_cell(h) for h in headers]},
+            "table_row": {
+                "cells": [[{"type": "text", "text": {"content": str(c)}}] for c in cells]
+            },
         }
-    ]
-    for row in rows:
-        table_rows.append(
-            {
-                "object": "block",
-                "type": "table_row",
-                "table_row": {"cells": [_cell(v) for v in row]},
-            }
-        )
+
     return {
         "object": "block",
         "type": "table",
@@ -446,174 +491,114 @@ def _make_table(headers, rows):
             "table_width": len(headers),
             "has_column_header": True,
             "has_row_header": False,
-            "children": table_rows,
+            "children": [row(headers)] + [row(r) for r in rows],
         },
     }
 
 
-def _fmt(d):
-    """格式化一個股票/指數資料，回傳 (現值, 漲跌, 漲跌幅)。"""
-    dec = d.get("dec", 2)
-    if d["price"] is None:
-        return "—", "—", "—"
-    price = f"{d['price']:,.{dec}f}"
-    if d["change"] is None:
-        return price, "—", "—"
-    sign = "▲" if d["change"] > 0 else ("▼" if d["change"] < 0 else "→")
-    change = f"{sign} {abs(d['change']):,.{dec}f}"
-    pct = f"{d['change_pct']:+.2f}%" if d["change_pct"] is not None else "—"
-    return price, change, pct
+def alloc_rows(prediction, prev):
+    alloc = prediction.get("allocation") or {}
+    prev_alloc = (prev[1] or {}).get("allocation", {}) if prev[0] else {}
+    rows = []
+    for k in ASSET_CLASSES:
+        if k not in alloc:
+            continue
+        if k in prev_alloc:
+            d = alloc[k] - prev_alloc[k]
+            delta = f"{d:+d}" if d else "持平"
+        else:
+            delta = "—"
+        rows.append([k, f"{alloc[k]}%", delta])
+    return rows
 
 
-# ── Notion 頁面內容 ───────────────────────────────────────────────
-def build_notion_blocks(md, prediction):
+def build_notion_blocks(groups, prediction, prev):
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M")
-    sentiment = prediction.get("sentiment", "震盪")
-    score = prediction.get("sentiment_score", 5)
-    color_map = {
-        "多頭": "green_background",
-        "空頭": "red_background",
-        "震盪": "yellow_background",
-    }
-    emoji_map = {"多頭": "📈", "空頭": "📉", "震盪": "↔️"}
-    sentiment_color = color_map.get(sentiment, "gray_background")
-    sentiment_emoji = emoji_map.get(sentiment, "📊")
-
+    color = {"偏多": "green_background", "偏空": "red_background"}.get(
+        prediction.get("sentiment"), "yellow_background"
+    )
     blocks = [
         _para(
-            f"更新時間：{now_str}｜來源：Yahoo Finance / Gemini Google Search", "gray"
-        ),
-        _callout(
-            sentiment_emoji,
-            f"市場情緒：{sentiment}　樂觀指數 {score}/10",
-            sentiment_color,
-        ),
-        _divider(),
-        _h2("🌏 全球指數"),
-        _make_table(
-            ["指數", "現值", "漲跌", "漲跌幅"],
-            [[d["name"]] + list(_fmt(d)) for d in md["indices"]],
-        ),
-        _divider(),
-        _h2("📊 宏觀指標"),
-        _make_table(
-            ["指標", "現值", "漲跌", "漲跌幅"],
-            [[d["name"]] + list(_fmt(d)) for d in md["macro"]],
-        ),
-        _divider(),
-        _h2("🇹🇼 台灣觀察清單"),
-        _make_table(
-            ["股票名稱", "代號", "現價", "漲跌", "漲跌幅", "持有"],
-            [
-                [d["name"], d["code"]]
-                + list(_fmt(d))
-                + ["★" if d.get("holding") else ""]
-                for d in md["stocks"]
-            ],
-        ),
-        _divider(),
+            f"更新時間：{now_str}｜數據：Yahoo Finance｜分析：{prediction.get('source', '無')}",
+            "gray",
+        )
     ]
+    if prediction.get("headline"):
+        blocks.append(_callout("📌", prediction["headline"], color))
+    if prediction.get("regime"):
+        blocks.append(_para(f"市場階段：{prediction['regime']}"))
+    blocks.append(_divider())
 
-    if md.get("us_stocks"):
-        blocks.append(_h2("🇺🇸 美股觀察清單"))
+    if prediction.get("allocation"):
+        blocks.append(_h2("💼 建議資產配置"))
+        blocks.append(
+            _make_table(["資產", "建議比例", "與上期比"], alloc_rows(prediction, prev))
+        )
+        if prediction.get("allocation_change"):
+            blocks.append(_callout("🔁", prediction["allocation_change"], "blue_background"))
+        for b in prediction.get("allocation_basis", []):
+            blocks.append(_bullet(b))
+        blocks.append(_divider())
+
+    if prediction.get("assets"):
+        blocks.append(_h2("🔭 各資產走勢判斷"))
         blocks.append(
             _make_table(
-                ["股票名稱", "代號", "現價(USD)", "漲跌", "漲跌幅", "持有"],
+                ["資產", "趨勢", "未來 1-3 個月", "依據"],
                 [
-                    [d["name"], d["code"]]
-                    + list(_fmt(d))
-                    + ["★" if d.get("holding") else ""]
-                    for d in md["us_stocks"]
+                    [a.get("asset", ""), a.get("trend", ""), a.get("outlook", ""), a.get("basis", "")]
+                    for a in prediction["assets"]
                 ],
             )
         )
         blocks.append(_divider())
 
-    if prediction.get("key_news"):
-        blocks.append(_h2("📰 今日市場新聞"))
-        for news in prediction["key_news"]:
-            blocks.append(_bullet(news))
+    if prediction.get("swing"):
+        blocks.append(_h2("🎯 波段訊號"))
+        blocks.append(
+            _make_table(
+                ["標的", "訊號", "參考進場", "失效條件", "理由"],
+                [
+                    [s.get("target", ""), s.get("signal", ""), s.get("entry", ""),
+                     s.get("invalidation", ""), s.get("reason", "")]
+                    for s in prediction["swing"]
+                ],
+            )
+        )
+        if prediction.get("taiex_range"):
+            blocks.append(_para(f"台灣加權本週預估區間：{prediction['taiex_range']}"))
+        blocks.append(_divider())
+
+    for g in groups:
+        blocks.append(_h2(f"📊 {g['title']}"))
+        blocks.append(_make_table(TABLE_HEAD, [fmt_row(r) for r in g["rows"]]))
+    yc = yield_curve(groups)
+    if yc is not None:
+        blocks.append(
+            _para(f"殖利率曲線（10年減3個月）：{yc:+d}bp" + ("　⚠️ 倒掛" if yc < 0 else ""))
+        )
+    blocks.append(_divider())
+
+    if prediction.get("key_events"):
+        blocks.append(_h2("📰 重要事件"))
+        for e in prediction["key_events"]:
+            blocks.append(_bullet(f"{e.get('event', '')} → {e.get('impact', '')}"))
         ff = prediction.get("foreign_flow", "")
         if ff and ff != "N/A":
-            blocks.append(_bullet(f"💹 外資動向：{ff}"))
-        blocks.append(_divider())
-
-    ust = prediction.get("us_taiwan_impact", {})
-    if ust:
-        blocks.append(_h2("🇺🇸 美股對台股影響分析"))
-        if ust.get("summary"):
-            blocks.append(_callout("📡", ust["summary"], "orange_background"))
-        if ust.get("nasdaq_effect"):
-            blocks.append(_para(f"🔵 NASDAQ／費半傳導：{ust['nasdaq_effect']}"))
-        if ust.get("sp500_effect"):
-            blocks.append(_para(f"🟢 S&P500外資效應：{ust['sp500_effect']}"))
-        if ust.get("sector_impact"):
-            blocks.append(
-                _toggle(
-                    "📊 受影響台股族群",
-                    [_bullet(s) for s in ust["sector_impact"]],
-                )
-            )
-        if ust.get("hedge_suggestion"):
-            blocks.append(_callout("💡", ust["hedge_suggestion"], "yellow_background"))
-        blocks.append(_divider())
-
-    action_color = {
-        "加碼": "green_background",
-        "持有": "blue_background",
-        "減碼": "yellow_background",
-        "停損賣出": "red_background",
-    }
-    holdings_advice = prediction.get("holdings_advice", [])
-    if holdings_advice:
-        blocks.append(_h2("💼 持有股票建議"))
-        for h in holdings_advice:
-            action = h.get("action", "持有")
-            color = action_color.get(action, "gray_background")
-            blocks.append(
-                _callout(
-                    "📌",
-                    f"{h.get('name','')}（{h.get('code','')}）｜{action}　目標價：{h.get('target','-')}",
-                    color,
-                )
-            )
-            if h.get("reason"):
-                blocks.append(_para(h["reason"], "gray"))
-        blocks.append(_divider())
-
-    buy_candidates = prediction.get("buy_candidates", [])
-    if buy_candidates:
-        blocks.append(_h2("🎯 潛力買進候選"))
-        for b in buy_candidates:
-            blocks.append(
-                _callout(
-                    "💡",
-                    f"{b.get('name','')}（{b.get('code','')}）｜進場：{b.get('entry','-')}　停損：{b.get('stop','-')}",
-                    "green_background",
-                )
-            )
-            if b.get("reason"):
-                blocks.append(_para(b["reason"], "gray"))
-        blocks.append(_divider())
-
-    blocks.append(_h2("🤖 AI 市場預估"))
-    if prediction.get("taiex_range"):
-        blocks.append(
-            _callout(
-                "📐",
-                f"本週台灣加權預估區間：{prediction['taiex_range']}",
-                "blue_background",
-            )
-        )
-    if prediction.get("week_outlook"):
-        blocks.append(_callout("🔭", prediction["week_outlook"], "gray_background"))
+            blocks.append(_bullet(f"外資動向：{ff}"))
+    if prediction.get("upcoming"):
+        blocks.append(_h2("🗓️ 未來一週要注意"))
+        for u in prediction["upcoming"]:
+            blocks.append(_bullet(u))
     if prediction.get("risks"):
-        blocks.append(
-            _toggle("⚠️ 主要風險提示", [_bullet(r) for r in prediction["risks"]])
-        )
+        blocks.append(_h2("⚠️ 可能出錯的地方"))
+        for r in prediction["risks"]:
+            blocks.append(_bullet(r))
+    if prediction.get("confidence"):
+        blocks.append(_para(f"判斷信心：{prediction['confidence']}", "gray"))
     if not prediction:
-        blocks.append(_callout("⚠️", "AI 分析暫時無法取得。", "red_background"))
-
+        blocks.append(_callout("⚠️", "AI 分析暫時無法取得，今天只有數據。", "red_background"))
+    blocks.append(_para("AI 依公開資料產生的參考意見，不構成投資建議。", "gray"))
     return blocks
 
 
@@ -625,7 +610,7 @@ def create_notion_page(parent_id):
         {
             "parent": {"page_id": parent_id},
             "icon": {"type": "emoji", "emoji": "📈"},
-            "properties": {"title": {"title": [{"text": {"content": "每日市場日報"}}]}},
+            "properties": {"title": {"title": [{"text": {"content": "每日財金日報"}}]}},
         },
     )
     return result["id"]
@@ -633,9 +618,8 @@ def create_notion_page(parent_id):
 
 def update_notion_page(page_id, blocks):
     existing = notion_req("GET", f"blocks/{page_id}/children?page_size=100")
-    # Notion 限流約 3 req/s，連打 DELETE 會被擋；原本失敗是 except: pass 靜默吞掉，
-    # 舊區塊就這樣留在頁面上，隔天「Notion 區塊 N/M」硬性驗證對不上而整支不交件
-    # （2026-09-01：8/31 的「外資動向」殘留一個，40/39 失敗）。
+    # Notion 限流約 3 req/s，連打 DELETE 會被擋；以前 except: pass 靜默吞掉，
+    # 舊區塊殘留導致隔天「Notion 區塊 N/M」驗證對不上（2026-09-01）。
     failed = []
     for b in existing.get("results", []):
         try:
@@ -643,7 +627,7 @@ def update_notion_page(page_id, blocks):
         except Exception:
             failed.append(b["id"])
         time.sleep(0.12)
-    for bid in failed:  # 重試一輪，仍失敗就講出來，不要靜默殘留
+    for bid in failed:
         try:
             notion_req("DELETE", f"blocks/{bid}")
         except Exception as e:
@@ -663,139 +647,98 @@ def load_history():
     return {}
 
 
-def save_history(history, md):
+def save_history(history, groups):
     today = datetime.now().strftime("%Y-%m-%d")
-    entry = {}
-    for group in md.values():
-        for d in group:
-            if d.get("price"):
-                entry[d["code"]] = d["price"]
-    history[today] = entry
+    history[today] = {
+        r["code"]: r["price"] for g in groups for r in g["rows"] if r["price"] is not None
+    }
     cutoff = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
     history = {k: v for k, v in history.items() if k >= cutoff}
     HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
     HISTORY_FILE.write_text(
         json.dumps(history, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    return history
 
 
-# ── Markdown 報告 ─────────────────────────────────────────────────
-def save_markdown_report(md, prediction, date_str):
+# ── Markdown 報告（PDF 與 Email 都從這份產生，不放 emoji：PDF 字型沒有）──
+def _md_table(head, rows):
+    out = ["| " + " | ".join(head) + " |", "|" + "---|" * len(head)]
+    out += ["| " + " | ".join(clean(c) for c in r) + " |" for r in rows]
+    return out
+
+
+def save_markdown_report(groups, prediction, prev, date_str):
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M")
-    sentiment = prediction.get("sentiment", "—")
-    score = prediction.get("sentiment_score", "—")
-
+    p = prediction
     lines = [
-        f"# 📈 每日市場日報 {date_str}",
-        f"",
-        f"> 更新時間：{now_str}｜來源：Yahoo Finance / Gemini Search",
-        f"",
-        f"**市場情緒：{sentiment}　樂觀指數 {score}/10**",
-        f"",
-        f"## 🌏 全球指數",
-        f"| 指數 | 現值 | 漲跌 | 漲跌幅 |",
-        f"|------|------|------|--------|",
-    ]
-    for d in md["indices"]:
-        p, ch, pct = _fmt(d)
-        lines.append(f"| {d['name']} | {p} | {ch} | {pct} |")
-
-    lines += [
+        f"# 財金日報 {date_str}",
         "",
-        "## 📊 宏觀指標",
-        "| 指標 | 現值 | 漲跌 | 漲跌幅 |",
-        "|------|------|------|--------|",
-    ]
-    for d in md["macro"]:
-        p, ch, pct = _fmt(d)
-        lines.append(f"| {d['name']} | {p} | {ch} | {pct} |")
-
-    lines += [
+        f"> 更新時間：{now_str}｜數據：Yahoo Finance｜分析：{p.get('source', '無')}",
         "",
-        "## 🇹🇼 台灣觀察清單",
-        "| 股票 | 代號 | 現價 | 漲跌 | 漲跌幅 |",
-        "|------|------|------|------|--------|",
     ]
-    for d in md["stocks"]:
-        p, ch, pct = _fmt(d)
-        tag = "★" if d.get("holding") else ""
-        lines.append(f"| {tag}{d['name']} | {d['code']} | {p} | {ch} | {pct} |")
-
-    if md.get("us_stocks"):
+    if p.get("headline"):
+        lines += [f"**今日重點：{clean(p['headline'])}**", ""]
+    if p.get("regime") or p.get("sentiment"):
         lines += [
+            f"市場階段：{clean(p.get('regime', '—'))}｜整體偏向：{clean(p.get('sentiment', '—'))}",
             "",
-            "## 🇺🇸 美股觀察清單",
-            "| 股票 | 代號 | 現價(USD) | 漲跌 | 漲跌幅 |",
-            "|------|------|------|------|--------|",
         ]
-        for d in md["us_stocks"]:
-            p, ch, pct = _fmt(d)
-            tag = "★" if d.get("holding") else ""
-            lines.append(f"| {tag}{d['name']} | {d['code']} | {p} | {ch} | {pct} |")
 
-    if prediction.get("key_news"):
-        lines += ["", "## 📰 今日市場新聞"]
-        for n in prediction["key_news"]:
-            lines.append(f"- {n}")
-        ff = prediction.get("foreign_flow", "")
+    if p.get("allocation"):
+        lines += ["## 建議資產配置"]
+        lines += _md_table(["資產", "建議比例", "與上期比"], alloc_rows(p, prev))
+        if p.get("allocation_change"):
+            lines += ["", f"**調整說明：** {clean(p['allocation_change'])}"]
+        for b in p.get("allocation_basis", []):
+            lines.append(f"- {clean(b)}")
+        lines.append("")
+
+    if p.get("assets"):
+        lines += ["## 各資產走勢判斷"]
+        lines += _md_table(
+            ["資產", "趨勢", "未來 1-3 個月", "依據"],
+            [[a.get("asset", ""), a.get("trend", ""), a.get("outlook", ""), a.get("basis", "")]
+             for a in p["assets"]],
+        )
+        lines.append("")
+
+    if p.get("swing"):
+        lines += ["## 波段訊號"]
+        lines += _md_table(
+            ["標的", "訊號", "參考進場", "失效條件", "理由"],
+            [[s.get("target", ""), s.get("signal", ""), s.get("entry", ""),
+              s.get("invalidation", ""), s.get("reason", "")] for s in p["swing"]],
+        )
+        if p.get("taiex_range"):
+            lines += ["", f"台灣加權本週預估區間：{clean(p['taiex_range'])}"]
+        lines.append("")
+
+    lines += ["## 市場數據", "> 趨勢：現價在 50 與 200 日均線之上＝上升、之下＝下降、其餘＝盤整。殖利率變動單位 bp。", ""]
+    for g in groups:
+        lines += [f"### {g['title']}"]
+        lines += _md_table(TABLE_HEAD, [fmt_row(r) for r in g["rows"]])
+        lines.append("")
+    yc = yield_curve(groups)
+    if yc is not None:
+        lines += [f"殖利率曲線（10年減3個月）：{yc:+d}bp" + ("（倒掛）" if yc < 0 else ""), ""]
+
+    if p.get("key_events"):
+        lines += ["## 重要事件"]
+        for e in p["key_events"]:
+            lines.append(f"- {clean(e.get('event', ''))} → {clean(e.get('impact', ''))}")
+        ff = p.get("foreign_flow", "")
         if ff and ff != "N/A":
-            lines.append(f"- 💹 外資動向：{ff}")
-
-    ust = prediction.get("us_taiwan_impact", {})
-    if ust:
-        lines += ["", "## 🇺🇸 美股對台股影響分析"]
-        if ust.get("summary"):
-            lines.append(f"> {ust['summary']}")
-        if ust.get("nasdaq_effect"):
-            lines.append(f"\n**🔵 NASDAQ／費半傳導：** {ust['nasdaq_effect']}")
-        if ust.get("sp500_effect"):
-            lines.append(f"\n**🟢 S&P500外資效應：** {ust['sp500_effect']}")
-        if ust.get("sector_impact"):
-            lines.append("\n**📊 受影響台股族群：**")
-            for s in ust["sector_impact"]:
-                lines.append(f"- {s}")
-        if ust.get("hedge_suggestion"):
-            lines.append(f"\n💡 **操作建議：** {ust['hedge_suggestion']}")
-
-    holdings_advice = prediction.get("holdings_advice", [])
-    if holdings_advice:
-        lines += ["", "## 💼 持有股票建議"]
-        action_icon = {"加碼": "🟢", "持有": "🔵", "減碼": "🟡", "停損賣出": "🔴"}
-        for h in holdings_advice:
-            icon = action_icon.get(h.get("action", "持有"), "⚪")
-            lines.append(
-                f"| {icon} {h.get('name','')} | {h.get('code','')} "
-                f"| **{h.get('action','')}** | 目標價 {h.get('target','-')} |"
-            )
-            if h.get("reason"):
-                lines.append(f"> {h['reason']}")
-            lines.append("")
-
-    buy_candidates = prediction.get("buy_candidates", [])
-    if buy_candidates:
-        lines += ["", "## 🎯 潛力買進候選"]
-        lines += [
-            "| 股票 | 代號 | 進場區間 | 停損 | 理由 |",
-            "|------|------|---------|------|------|",
-        ]
-        for b in buy_candidates:
-            lines.append(
-                f"| {b.get('name','')} | {b.get('code','')} "
-                f"| {b.get('entry','-')} | {b.get('stop','-')} "
-                f"| {b.get('reason','')} |"
-            )
-
-    if prediction.get("week_outlook"):
-        lines += ["", "## 🔭 一週展望", prediction["week_outlook"]]
-
-    if prediction.get("taiex_range"):
-        lines += ["", f"**本週台灣加權預估區間：{prediction['taiex_range']}**"]
-
-    if prediction.get("risks"):
-        lines += ["", "## ⚠️ 主要風險"]
-        for r in prediction["risks"]:
-            lines.append(f"- {r}")
+            lines.append(f"- 外資動向：{clean(ff)}")
+        lines.append("")
+    if p.get("upcoming"):
+        lines += ["## 未來一週要注意"] + [f"- {clean(u)}" for u in p["upcoming"]] + [""]
+    if p.get("risks"):
+        lines += ["## 可能出錯的地方"] + [f"- {clean(r)}" for r in p["risks"]] + [""]
+    if p.get("confidence"):
+        lines += [f"判斷信心：{clean(p['confidence'])}", ""]
+    if not p:
+        lines += ["**AI 分析暫時無法取得，今天只有數據。**", ""]
+    lines.append("> AI 依公開資料產生的參考意見，不構成投資建議。")
 
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     path = REPORTS_DIR / f"市場日報_{date_str}.md"
@@ -805,71 +748,48 @@ def save_markdown_report(md, prediction, date_str):
 
 
 # ── 產出驗證 ──────────────────────────────────────────────────────
-def verify(md, prediction, blocks, page_id, report_path):
+def verify(groups, prediction, blocks, page_id, report_path):
     """這支不會崩，只會安靜產出爛報告，所以驗的是「內容夠不夠格交件」。
 
-    硬性沒過 → 回傳 False，main 以 exit 1 收場，workflow 就不會 commit
-    半殘的報告；軟性只警告（Gemini 額度用罄是常態，不該天天擋掉整份日報）。
+    硬性沒過 → exit 1，workflow 不 commit、不寄信；軟性只警告
+    （Gemini 免費額度用罄是常態，不該天天擋掉整份日報）。
     """
     hard, soft = [], []
 
-    all_quotes = [d for g in md.values() for d in g]
-    valid = [d for d in all_quotes if d["price"]]
-    hard.append(
-        (
-            f"有效報價 {len(valid)}/{len(all_quotes)} 筆",
-            len(valid) * 2 >= len(all_quotes),
-        )
-    )
+    rows = [r for g in groups for r in g["rows"]]
+    valid = [r for r in rows if r["price"] is not None]
+    hard.append((f"有效報價 {len(valid)}/{len(rows)} 筆", len(valid) * 2 >= len(rows)))
 
-    taiex = next((d for d in md["indices"] if d["code"] == "^TWII"), None)
-    hard.append(("台灣加權指數有報價", bool(taiex and taiex["price"])))
+    taiex = find(groups, "^TWII")
+    hard.append(("台灣加權指數有報價", bool(taiex and taiex["price"] is not None)))
 
     text = report_path.read_text(encoding="utf-8") if report_path.exists() else ""
+    hard.append((f"Markdown 共 {len(text.splitlines())} 行", len(text.splitlines()) >= 20))
+
+    missing = [s for s in SECTIONS if f"### {s}" not in text]
     hard.append(
-        (f"Markdown 共 {len(text.splitlines())} 行", len(text.splitlines()) >= 20)
+        ("數據區塊齊全" + ("，缺 " + "、".join(missing) if missing else ""), not missing)
     )
 
-    missing = [s for s in ("全球指數", "宏觀指標", "台灣觀察清單") if s not in text]
-    hard.append(
-        (
-            "報告三大區塊齊全" + ("，缺 " + "、".join(missing) if missing else ""),
-            not missing,
-        )
-    )
-
-    # 分批 PATCH 中途失敗會留下半空白頁面，抓回來比對才看得出來
-    try:
-        got = len(
-            notion_req("GET", f"blocks/{page_id}/children?page_size=100").get(
-                "results", []
+    if page_id:
+        try:
+            got = len(
+                notion_req("GET", f"blocks/{page_id}/children?page_size=100").get(
+                    "results", []
+                )
             )
-        )
-        hard.append((f"Notion 區塊 {got}/{len(blocks)}", got == len(blocks)))
-    except Exception as e:
-        hard.append((f"Notion 頁面可讀取（{e}）", False))
+            hard.append((f"Notion 區塊 {got}/{len(blocks)}", got == len(blocks)))
+        except Exception as e:
+            hard.append((f"Notion 頁面可讀取（{e}）", False))
 
-    soft.append(("Gemini 分析已取得", bool(prediction)))
+    soft.append((f"AI 分析（{prediction.get('source', '無')}）", bool(prediction)))
+    soft.append(("配置比例有效", bool(prediction.get("allocation"))))
+    covered = {a.get("asset", "") for a in prediction.get("assets", [])}
+    soft.append((f"走勢判斷涵蓋 {len(covered)} 類資產", len(covered) >= 5))
 
-    ts = max((d["ts"] for d in valid), default=0)
+    ts = max((r["ts"] for r in valid), default=0)
     age = (datetime.now() - datetime.fromtimestamp(ts)).days if ts else 99
-    soft.append((f"報價新鮮度 {age} 天前", age <= 4))  # 連假可能超過，看到再判斷
-
-    def base(code):
-        return str(code).split(".")[0]
-
-    held = {base(d["code"]) for d in md["stocks"] + md["us_stocks"] if d.get("holding")}
-    if held:
-        advised = {
-            base(h.get("code", "")) for h in prediction.get("holdings_advice", [])
-        }
-        soft.append(
-            (f"持股建議涵蓋 {len(held & advised)}/{len(held)} 檔", held <= advised)
-        )
-
-    if prediction:
-        score = prediction.get("sentiment_score")
-        soft.append((f"樂觀指數 {score}", isinstance(score, int) and 1 <= score <= 10))
+    soft.append((f"報價新鮮度 {age} 天前", age <= 4))
 
     print("\n{:<40} {}".format("驗證項目", "結果"))
     print("-" * 52)
@@ -880,59 +800,59 @@ def verify(md, prediction, blocks, page_id, report_path):
     return all(p for _, p in hard)
 
 
-# ── Config ───────────────────────────────────────────────────────
-def load_config():
-    if CONFIG_FILE.exists():
-        return json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
-    return {
-        "notion_page_id": None,
-        "notion_parent_page_id": "36af4149-a6aa-8192-9065-f9e5f97ebabf",
-        "watch_stocks": [],
-        "us_watch_stocks": [],
-    }
-
-
-def save_config(cfg):
-    CONFIG_FILE.write_text(
-        json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-
-
 # ── 主流程 ────────────────────────────────────────────────────────
+def build_pdf(md_path, date_str):
+    sys.path.insert(0, str(WORKSPACE / "scripts"))
+    from md_to_pdf import build_pdf as _build
+
+    PDF_DIR.mkdir(exist_ok=True)
+    for old in PDF_DIR.glob("市場日報_*.pdf"):
+        old.unlink()
+    pdf = PDF_DIR / f"市場日報_{date_str}.pdf"
+    _build(str(pdf), [str(md_path)])
+    return pdf
+
+
 def main():
     today = datetime.now().strftime("%Y-%m-%d")
-    log(f"📈 每日市場日報開始 {today}")
+    log(f"📈 每日財金日報開始 {today}")
 
-    cfg = load_config()
+    cfg = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+    groups = fetch_all_market_data(cfg)
 
-    md = fetch_all_market_data(cfg)
+    alloc_hist = load_alloc_history()
+    prev = last_allocation(alloc_hist, today)
 
     log("Gemini Search 分析中...")
-    prediction = analyze_with_gemini(md, cfg)
+    prediction = analyze(groups, prev, with_search=True)
     if not prediction:
         log("  降級至 Gemini 知識庫分析...")
-        prediction = fallback_analysis(md, cfg)
+        prediction = analyze(groups, prev, with_search=False)
 
-    history = load_history()
-    save_history(history, md)
+    save_history(load_history(), groups)
+    save_alloc_history(alloc_hist, today, prediction)
 
     page_id = cfg.get("notion_page_id")
-    if not page_id:
-        log("建立 Notion 頁面...")
-        page_id = create_notion_page(cfg["notion_parent_page_id"])
-        cfg["notion_page_id"] = page_id
-        save_config(cfg)
-        log(f"  頁面 ID：{page_id}")
+    blocks = build_notion_blocks(groups, prediction, prev)
+    if NOTION_TOKEN:
+        if not page_id:
+            page_id = create_notion_page(cfg["notion_parent_page_id"])
+            cfg["notion_page_id"] = page_id
+            CONFIG_FILE.write_text(
+                json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
+        log(f"更新 Notion ({len(blocks)} blocks)...")
+        update_notion_page(page_id, blocks)
+    else:
+        log("⚠️ 沒有 NOTION_TOKEN，略過 Notion")
+        page_id = None
 
-    blocks = build_notion_blocks(md, prediction)
-    log(f"更新 Notion ({len(blocks)} blocks)...")
-    update_notion_page(page_id, blocks)
+    report_path = save_markdown_report(groups, prediction, prev, today)
+    pdf = build_pdf(report_path, today)
+    log(f"  PDF 已儲存：{pdf.name}")
 
-    report_path = save_markdown_report(md, prediction, today)
-
-    ok = verify(md, prediction, blocks, page_id, report_path)
+    ok = verify(groups, prediction, blocks, page_id, report_path)
     log("✅ 完成！" if ok else "❌ 硬性驗證未過，不交件")
-    log(f"   https://notion.so/{page_id.replace('-', '')}")
     if not ok:
         sys.exit(1)
 

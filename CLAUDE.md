@@ -157,7 +157,7 @@
 | `ig_story_teaser.yml` | IG 限動 Reels 預告（從已發布 Reels 剪 3 秒＋「Reels完整版～」，30 天不重複） | 每天 18:08（接 Reels 18:00） |
 | `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:13。**2026-09-03 起清理報告改寄 Email 不 commit**——報告列出各寄件者清了幾封，某銀行 >0 就等於對外證實是該行客戶，而 repo 是 public。只有新聞摘要與其 PDF 進版控 |
 | `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:57（**2026-07-02 修**：CRM 於 06-26 整併後，`notion_crm/monthly_report.py` 原引用不存在的 `DB["sales"]` 且欄位名對不上，已改讀「全品牌銷售紀錄」統一DB `38bf4149-a6aa-81db-9b89-c47410857a2c`，欄位＝金額/出貨日期/客戶名稱）|
-| `market_daily.yml` | 每日股市全面分析報告 | 每天 **12:07**（台灣），自動 commit 報告 |
+| `market_daily.yml` | **每日財金日報**（2026-10-17 改版：股票已清空，改報台股／美股／美債利率／匯率／黃金原物料走勢＋AI 建議配置百分比＋波段訊號，**Email 附 PDF**）。細節見 `market-finance` skill | 每天 **12:07**（台灣），自動 commit 報告 |
 | `seafood_prices.yml` | 漁獲市場行情追蹤 | 每天 09:37 |
 | ~~`yt_comment_monitor.yml`~~ | **2026-09-02 停用**：功能被 `yt_channel_report` 的留言區塊涵蓋（且日報看全部影片、不只 Shorts）。兩支各自通知同一批留言＝同一則收兩封信。保留 `workflow_dispatch` 當後路 | 已從 Worker 排程移除 |
 | `yt_comment_reply.yml` | **YouTube 留言自動回覆**（連老闆＋甜點頻道）。只回知識與閒聊，價格／訂購／到貨沿用 IG 的 `NEEDS_HUMAN` 護欄留給人工。⚠️ 判斷「回過沒有」是問 API 這串底下有沒有本頻道的回覆，**不用狀態檔**——狀態檔一遺失就整批重回，而 YouTube 回覆刪不掉。⚠️ 輸出端另有護欄：產季／價格／到貨黑名單、不得冒出留言沒提到的品項名、不得有數字（首次實測三則全部編產季）| **每小時一次**（掛在 `*/30` 的 `:00`）|
