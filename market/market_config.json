@@ -1,78 +1,65 @@
 {
   "notion_page_id": "373f4149-a6aa-81e9-8fd4-c97eb9a9fbeb",
   "notion_parent_page_id": "358f4149-a6aa-8088-9e6d-f5361d05cd12",
-  "watch_stocks": [
+  "groups": [
     {
-      "code": "2330.TW",
-      "name": "台積電",
-      "holding": false
+      "title": "台股",
+      "items": [
+        {"code": "^TWII", "name": "台灣加權指數", "dec": 0},
+        {"code": "0050.TW", "name": "元大台灣50"},
+        {"code": "2330.TW", "name": "台積電"}
+      ]
     },
     {
-      "code": "0050.TW",
-      "name": "元大台灣50 ETF",
-      "holding": false
+      "title": "美股",
+      "items": [
+        {"code": "^GSPC", "name": "S&P 500", "dec": 0},
+        {"code": "^IXIC", "name": "NASDAQ", "dec": 0},
+        {"code": "^DJI", "name": "道瓊", "dec": 0},
+        {"code": "^SOX", "name": "費城半導體", "dec": 0}
+      ]
     },
     {
-      "code": "006208.TW",
-      "name": "富邦台灣50 ETF",
-      "holding": false
+      "title": "亞洲",
+      "items": [
+        {"code": "^N225", "name": "日經225", "dec": 0},
+        {"code": "^HSI", "name": "恆生指數", "dec": 0}
+      ]
     },
     {
-      "code": "009816.TW",
-      "name": "凱基優選ETF",
-      "holding": false
+      "title": "美債與利率",
+      "items": [
+        {"code": "^IRX", "name": "美債 3 個月殖利率(%)", "kind": "yield"},
+        {"code": "^FVX", "name": "美債 5 年殖利率(%)", "kind": "yield"},
+        {"code": "^TNX", "name": "美債 10 年殖利率(%)", "kind": "yield"},
+        {"code": "^TYX", "name": "美債 30 年殖利率(%)", "kind": "yield"},
+        {"code": "TLT", "name": "長天期美債 ETF (TLT)"}
+      ]
     },
     {
-      "code": "2610.TW",
-      "name": "華航",
-      "holding": false
+      "title": "匯率",
+      "items": [
+        {"code": "DX-Y.NYB", "name": "美元指數"},
+        {"code": "USDTWD=X", "name": "美元/台幣", "dec": 3},
+        {"code": "JPY=X", "name": "美元/日圓"}
+      ]
     },
     {
-      "code": "2303.TW",
-      "name": "聯電",
-      "holding": false
+      "title": "黃金與原物料",
+      "items": [
+        {"code": "GC=F", "name": "黃金(USD/oz)", "dec": 0},
+        {"code": "SI=F", "name": "白銀(USD/oz)"},
+        {"code": "CL=F", "name": "WTI 原油(USD/桶)"},
+        {"code": "BZ=F", "name": "布蘭特原油(USD/桶)"},
+        {"code": "HG=F", "name": "銅(USD/磅)", "dec": 3},
+        {"code": "NG=F", "name": "天然氣(USD/MMBtu)", "dec": 3}
+      ]
     },
     {
-      "code": "2454.TW",
-      "name": "聯發科",
-      "holding": false
-    },
-    {
-      "code": "2317.TW",
-      "name": "鴻海",
-      "holding": false
-    },
-    {
-      "code": "2382.TW",
-      "name": "廣達",
-      "holding": false
-    },
-    {
-      "code": "3711.TW",
-      "name": "日月光投控",
-      "holding": false
-    },
-    {
-      "code": "3037.TW",
-      "name": "欣興",
-      "holding": false
-    },
-    {
-      "code": "3231.TW",
-      "name": "緯創",
-      "holding": false
-    },
-    {
-      "code": "2618.TW",
-      "name": "長榮航",
-      "holding": false
-    }
-  ],
-  "us_watch_stocks": [
-    {
-      "code": "SPCX",
-      "name": "SpaceX",
-      "holding": false
+      "title": "風險指標",
+      "items": [
+        {"code": "^VIX", "name": "VIX 恐慌指數"}
+      ]
     }
   ]
 }
