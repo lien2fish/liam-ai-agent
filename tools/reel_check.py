@@ -72,6 +72,92 @@ def timeline(segs, speed):
     return offs, newt, cum
 
 
+def used_spans(path):
+    """這份 config 用到哪些素材區間，以及各自落在成片的第幾秒。
+    回傳 [(影片絕對路徑, 起, 迄, 成片起點, 畫面還是聲音)]。"""
+    cfg = json.load(open(path, encoding="utf-8"))
+    videos, segs, _ = normalize(cfg)
+    speed = cfg.get("speed", 1.3)
+    offs, _, _ = timeline(segs, speed)
+    # 路徑跟 check_sources 一樣相對當前工作目錄解析，兩邊的判定才會一致
+    full = lambda v: os.path.abspath(os.path.expanduser(v))
+    out = []
+    for cs, vi, s, e, a in offs:
+        at = (cs / speed) + float(cfg.get("cover_intro", 1.0) or 0)
+        out.append((full(videos[vi]), s, e, at, "畫面"))
+        if a:  # 聲畫分離：借來的那段聲音也算用過
+            out.append((full(videos[a[0]]), a[1], a[2], at, "聲音"))
+    return out
+
+
+def check_cross(paths, min_overlap=3.0, head_sec=5.0, near_sec=15.0):
+    """同一批素材剪多支時，兩支共用同一段會被平台判成重複內容取消推廣。
+    2026-10 韓國那批踩到兩組：帝王蟹價差／正宗紅帝王蟹共用蟹缸畫面、
+    生章魚／海鞘共用攤販推薦開場。重疊發生在**開頭**最致命。
+
+    ⚠️ 只比「區間重疊」會漏掉真正的問題——實測生章魚用 IMG_5093 的 8~20、
+    海鞘用 0~8，緊鄰但零重疊，而那是同一個籃子同一個攤位，畫面幾乎一樣。
+    所以同一支素材只要區間相距 near_sec 以內就算「場景相似」。"""
+    spans = {}
+    for p in paths:
+        try:
+            spans[p] = used_spans(p)
+        except Exception as e:
+            print(f"  ⚠️ {os.path.basename(p)} 讀不出段落：{e}")
+    hits = []
+    names = list(spans)
+    for i, a in enumerate(names):
+        for b in names[i + 1 :]:
+            for va, sa, ea, ata, ka in spans[a]:
+                for vb, sb, eb, atb, kb in spans[b]:
+                    if va != vb:
+                        continue
+                    ov = min(ea, eb) - max(sa, sb)
+                    gap = -ov  # 不重疊時 ov 是負的，絕對值就是兩段相距多遠
+                    if ov >= min_overlap:
+                        kind = "共用同一段"
+                    elif gap <= near_sec:
+                        kind = "場景相似"  # 同素材的鄰近區間，畫面多半一樣
+                    else:
+                        continue
+                    head = ata <= head_sec and atb <= head_sec
+                    hits.append(
+                        (
+                            head,
+                            kind,
+                            max(ov, 0),
+                            gap,
+                            a,
+                            b,
+                            os.path.basename(va),
+                            (sa, ea, ata, ka),
+                            (sb, eb, atb, kb),
+                        )
+                    )
+    if not hits:
+        print(
+            f"\n{'='*66}\n✅ 跨檔比對：{len(spans)} 份 config 之間沒有共用或相鄰的素材區間"
+        )
+        return 0
+    hits.sort(key=lambda h: (not h[0], -h[2], h[3]))
+    print(f"\n{'='*66}\n跨檔比對：找到 {len(hits)} 處")
+    bad = 0
+    for head, kind, ov, gap, a, b, vid, (sa, ea, ata, ka), (sb, eb, atb, kb) in hits:
+        mark = "🔴 開頭" if head else "⚠️ 中段"
+        bad += 1 if head else 0
+        how = f"重疊 {ov:.1f} 秒" if ov else f"相距 {gap:.1f} 秒"
+        print(f"\n  {mark}　{kind}（{how}）　{vid}")
+        print(f"    {os.path.basename(a)}　{ka} {sa:.1f}~{ea:.1f}　成片 {ata:.1f}s 起")
+        print(f"    {os.path.basename(b)}　{kb} {sb:.1f}~{eb:.1f}　成片 {atb:.1f}s 起")
+    if bad:
+        print(
+            f"\n  🔴 {bad} 處落在兩支的開頭 {head_sec:.0f} 秒內——最容易被判重複內容，換掉。"
+        )
+    else:
+        print(f"\n  ⚠️ 都在中段，影響較小，但同一場景出現在多支仍要斟酌。")
+    return bad
+
+
 def check_sources(videos, issues):
     for i, v in enumerate(videos):
         p = os.path.expanduser(v)
@@ -382,6 +468,9 @@ def main():
         print(__doc__)
         return 1
     total_err = sum(check_config(p) for p in paths)
+    # 一次給多份就順便跨檔比對——同批素材剪多支，共用同一段會被判重複內容
+    if len(paths) > 1:
+        total_err += check_cross(paths)
     print(f"\n{'='*66}")
     print(
         f"❌ 共 {total_err} 項必修，修完再 build"

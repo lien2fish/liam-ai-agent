@@ -130,3 +130,13 @@ dessert/工作檔_成品照/
 
 # 片尾卡是 dessert/片尾.py make 產生的衍生檔
 dessert/片尾卡.mp4
+
+# 金融保險知識短片試做：建置產物與配音不進版控（build.py／tts.py 可重建）
+finance_shorts/*/audio/
+finance_shorts/*/renders/
+finance_shorts/*/shared/
+finance_shorts/*/vendor/
+finance_shorts/*/snapshots/
+finance_shorts/shared/chars/
+finance_shorts/試做成品/
+finance_shorts/*/lipsync/
