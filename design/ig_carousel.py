@@ -15,7 +15,7 @@ import subprocess
 import sys
 import tempfile
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 W, H = 1080, 1350
@@ -76,7 +76,8 @@ def load_media(s):
             path = os.path.join(REPO, path)
         if not os.path.exists(path):
             raise FileNotFoundError(f"圖片不存在：{path}")
-        return Image.open(path).convert("RGB")
+        im = Image.open(path)
+        return im if im.mode == "RGBA" else im.convert("RGB")
     return grab_frame(s["video"], s["t"])
 
 
@@ -105,11 +106,23 @@ def drop_white(im, tol=18):
     return out
 
 
+def sharpen_if_upscaled(im, scale):
+    if scale <= 1.02:
+        return im
+    if im.mode == "RGBA":
+        rgb, a = im.convert("RGB"), im.getchannel("A")
+        rgb = rgb.filter(ImageFilter.UnsharpMask(radius=1.2, percent=70, threshold=3))
+        rgb.putalpha(a)
+        return rgb
+    return im.filter(ImageFilter.UnsharpMask(radius=1.2, percent=70, threshold=3))
+
+
 def contain(im, size, bg):
     """等比縮到完整放得下，四周補 bg（去背圖用，不裁切）。"""
     tw, th = size
     scale = min(tw / im.width, th / im.height)
     im = im.resize((max(1, round(im.width * scale)), max(1, round(im.height * scale))), Image.LANCZOS)
+    im = sharpen_if_upscaled(im, scale)
     canvas = Image.new("RGB", size, bg)
     pos = ((tw - im.width) // 2, (th - im.height) // 2)
     canvas.paste(im, pos, im if im.mode == "RGBA" else None)
@@ -119,8 +132,13 @@ def contain(im, size, bg):
 def fit_media(s, size, bg=DEEP):
     im = load_media(s)
     if s.get("cutout"):
-        return contain(drop_white(im), size, bg)
-    return cover_fit(im, s.get("crop"), size)
+        if im.mode != "RGBA":
+            im = drop_white(im)
+        return contain(im, size, bg)
+    out = cover_fit(im, s.get("crop"), size)
+    if out.mode == "RGBA":
+        out = Image.alpha_composite(Image.new("RGBA", out.size, bg + (255,)), out).convert("RGB")
+    return out
 
 
 def cover_fit(im, box, size):
@@ -131,6 +149,7 @@ def cover_fit(im, box, size):
     tw, th = size
     scale = max(tw / im.width, th / im.height)
     im = im.resize((round(im.width * scale), round(im.height * scale)), Image.LANCZOS)
+    im = sharpen_if_upscaled(im, scale)
     left = (im.width - tw) // 2
     top = (im.height - th) // 2
     return im.crop((left, top, left + tw, top + th))
