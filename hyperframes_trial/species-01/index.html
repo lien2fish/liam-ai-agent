@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="zh-Hant" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>紅甘跟青甘不是同一種魚</title>
+    <link rel="stylesheet" href="shared/brand.css" />
+    <script src="vendor/gsap.min.js"></script>
+    <script src="shared/brand.js"></script>
+    <style>
+      /* 魚自成一層橫跨全片（除了片尾）。位置寫死：素材是 996×466 的去背圖，
+         1:1 擺在 left 42 / top 760，不縮放——來源只有這個解析度，放大會糊。
+         三個特徵標記的座標，是從農業部原圖上紅圈與箭頭的實際位置換算來的，
+         不是目測：黃帶 y=219、背鰭圈心 (485,35)、尾鰭圈心 (928,336)（素材內座標）。 */
+      #fish { position: absolute; left: 42px; top: 760px; width: 996px; height: 466px; }
+      #fish img { position: absolute; inset: 0; width: 996px; height: 466px; display: block; }
+
+      /* 黃色縱帶：畫在色帶正下方，不蓋住它 */
+      /* 色帶本身的光暈：只靠下方那條線，視線會被線吸走而不是看向色帶。
+         疊在色帶上（素材內 y 203-233），同樣斜 2.09°。 */
+      #band-glow {
+        position: absolute; left: 268px; top: 961px; width: 434px; height: 32px;
+        background: var(--gold); border-radius: 16px; filter: blur(10px);
+        opacity: 0; visibility: hidden; transform-origin: left center;
+      }
+
+      /* 黃帶是斜的（往尾端下降 2.09°），標記線要跟著斜，平的會看起來跟魚身無關。
+         下緣量到：x=226 時 y=217、x=660 時 y=233（素材內座標），往下讓 16px 不蓋住色帶。 */
+      #mark-band {
+        position: absolute; left: 268px; top: 990px; width: 434px; height: 6px;
+        background: var(--gold); border-radius: 3px; transform-origin: left center;
+        opacity: 0; visibility: hidden;
+      }
+      #mark-band::before, #mark-band::after {
+        content: ""; position: absolute; top: -11px; width: 6px; height: 28px;
+        background: var(--gold); border-radius: 3px;
+      }
+      #mark-band::before { left: 0; }
+      #mark-band::after { right: 0; }
+
+      /* 背鰭與尾鰭：沿用官方圈選的位置，顏色換成品牌金 */
+      .ring {
+        position: absolute; border: 6px solid var(--gold); border-radius: 50%;
+        box-shadow: 0 0 44px rgba(214, 168, 92, 0.5);
+        opacity: 0; visibility: hidden;
+      }
+      #ring-dorsal { left: 427px; top: 742px; width: 200px; height: 112px; }
+      /* 尾鰭下葉形心 (894,283)，範圍 x845-979 y232-327（素材內座標） */
+      #ring-tail   { left: 861px; top: 985px; width: 150px; height: 116px; }
+
+      /* 片尾的魚形圖元 */
+      #fishicon { display: block; position: absolute; color: var(--gold); }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="species01"
+      data-start="0"
+      data-duration="32"
+      data-fps="24"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="32" data-track-index="0"></div>
+
+      <!-- 魚層：場景 1～6 都在，片尾淡出 -->
+      <div id="fishlayer" class="clip" data-start="0" data-duration="29.2" data-track-index="1">
+        <div class="sin" id="fish-in">
+          <div id="fish">
+            <img src="assets/amberjack.png" alt="" />
+          </div>
+          <div id="band-glow"></div>
+          <div id="mark-band"></div>
+          <div class="ring" id="ring-dorsal"></div>
+          <div class="ring" id="ring-tail"></div>
+        </div>
+      </div>
+
+      <!-- 1. HOOK 0–3.7 -->
+      <section id="s1" class="clip" data-start="0" data-duration="3.7" data-track-index="2">
+        <div class="sin" id="s1-in">
+          <div class="tag" id="s1-tag" style="top: 600px">當 季 海 鮮 ・ 紅 甘</div>
+          <div class="stack" id="s1-text" style="top: 1300px">
+            <span class="line l-hook">紅甘和青甘</span>
+            <span class="line l-hook gold">不是同一種魚</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 兩個學名 3.7–8.2 -->
+      <section id="s2" class="clip" data-start="3.7" data-duration="4.5" data-track-index="3">
+        <div class="sin" id="s2-in">
+          <div class="stack" id="s2-a" style="top: 1300px">
+            <span class="line l-body">紅甘是 <span class="gold">杜氏鰤</span></span>
+          </div>
+          <div class="stack" id="s2-b" style="top: 1420px">
+            <span class="line l-body">青甘是 <span class="cold">五條鰤</span></span>
+          </div>
+          <div class="stack" id="s2-c" style="top: 1570px">
+            <span class="line l-small">同屬鰺科鰤屬，是兩種魚</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. 特徵一：黃色縱帶 8.2–14.7 -->
+      <section id="s3" class="clip" data-start="8.2" data-duration="6.5" data-track-index="4">
+        <div class="sin" id="s3-in">
+          <div class="tag" id="s3-tag" style="top: 600px">紅 甘 的 三 個 辨 識 特 徵</div>
+          <div class="stack" id="s3-text" style="top: 1340px">
+            <span class="line l-body dim">一</span>
+            <span class="line l-body gold">體中部　一條黃色縱帶</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. 特徵二：背鰭 14.7–18.7 -->
+      <section id="s4" class="clip" data-start="14.7" data-duration="4" data-track-index="5">
+        <div class="sin" id="s4-in">
+          <div class="stack" id="s4-text" style="top: 1340px">
+            <span class="line l-body dim">二</span>
+            <span class="line l-body gold">背鰭　不呈鐮刀狀</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. 特徵三：尾鰭 18.7–23.0 -->
+      <section id="s5" class="clip" data-start="18.7" data-duration="4.3" data-track-index="6">
+        <div class="sin" id="s5-in">
+          <div class="stack" id="s5-text" style="top: 1340px">
+            <span class="line l-body dim">三</span>
+            <span class="line l-body gold">尾鰭下葉　有白緣</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. 產季翻轉 23.0–29.2 -->
+      <section id="s6" class="clip" data-start="23" data-duration="6.2" data-track-index="7">
+        <div class="sin" id="s6-in">
+          <div class="tag" id="s6-tag" style="top: 600px">還 有 一 件 事</div>
+          <div class="stack" id="s6-a" style="top: 1320px">
+            <span class="line l-body">不是秋天才有</span>
+          </div>
+          <div class="stack" id="s6-b" style="top: 1440px">
+            <span class="line l-hook gold">是秋天才好吃</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. END 29.2–32.0 -->
+      <section id="s7" class="clip" data-start="29.2" data-duration="2.8" data-track-index="8">
+        <div class="sin" id="s7-in">
+          <div id="fishicon" style="left: 340px; top: 620px; width: 400px; height: 300px; opacity: 0.3"></div>
+          <div class="stack" id="s7-a" style="top: 1020px">
+            <span class="line l-body dim">全年皆產</span>
+          </div>
+          <div class="stack" id="s7-b" style="top: 1150px">
+            <span class="line l-hook gold">春、秋季味美</span>
+          </div>
+          <div class="caption" id="s7-cap" style="top: 1390px">資料：農業部・漁業署</div>
+        </div>
+      </section>
+
+      <div id="chrome" class="clip" data-start="0" data-duration="32" data-track-index="9"></div>
+
+      <!-- 旁白：Lien 克隆聲音（Qwen3-TTS）。每段都過 check_say.py 回聽，零發音錯誤。 -->
+      <audio id="vo-1" data-start="0.25" data-duration="3.04" src="audio/s1.mp3"></audio>
+      <audio id="vo-2" data-start="3.95" data-duration="3.92" src="audio/s2.mp3"></audio>
+      <audio id="vo-3" data-start="8.45" data-duration="6" src="audio/s3.mp3"></audio>
+      <audio id="vo-4" data-start="14.95" data-duration="3.44" src="audio/s4.mp3"></audio>
+      <audio id="vo-5" data-start="18.95" data-duration="3.84" src="audio/s5.mp3"></audio>
+      <audio id="vo-6" data-start="23.25" data-duration="5.68" src="audio/s6.mp3"></audio>
+    </div>
+
+    <script>
+      brandChrome("bg", "chrome");
+      document.getElementById("fishicon").innerHTML = fishMarkup(150, 66, 3);
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // 標記預設不顯示——初始隱藏寫在 CSS，不用 tl.set(…, 0)：
+      // 零秒設定在 playhead 正好停在 0 時不會 render，第一格會露出未隱藏的狀態。
+
+      // 1. HOOK：t=0 就要完整可讀，只做極緩推近
+      tl.fromTo("#fish", { scale: 1 }, { scale: 1.035, duration: 8.2, ease: "none" }, 0);
+      tl.fromTo("#s1-tag", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.4);
+      tl.to("#s1-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 3.4);
+      tl.set("#s1-in", { opacity: 0 }, 3.7);
+
+      // 2. 兩個學名
+      tl.fromTo("#s2-a", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: "power2.out" }, 4.0);
+      tl.fromTo("#s2-b", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: "power2.out" }, 5.3);
+      tl.fromTo("#s2-c", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 6.4);
+      tl.to("#s2-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 7.9);
+      tl.set("#s2-in", { opacity: 0 }, 8.2);
+
+      // 3. 特徵一：金線從左往右拉出來，對齊黃色縱帶
+      tl.fromTo("#s3-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 8.5);
+      tl.fromTo("#band-glow", { autoAlpha: 0, scaleX: 0, rotation: 2.09 }, { autoAlpha: 0.55, scaleX: 1, rotation: 2.09, duration: 1.1, ease: "power2.out" }, 10.2);
+      tl.fromTo("#mark-band", { autoAlpha: 0, scaleX: 0, rotation: 2.09 }, { autoAlpha: 1, scaleX: 1, rotation: 2.09, duration: 1.1, ease: "power2.out" }, 10.4);
+      tl.fromTo("#s3-text", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 11.0);
+      tl.to("#s3-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 14.4);
+      tl.set("#s3-in", { opacity: 0 }, 14.7);
+      tl.to("#mark-band, #band-glow", { autoAlpha: 0, duration: 0.3 }, 14.4);
+      tl.set("#mark-band, #band-glow", { autoAlpha: 0 }, 14.7);
+
+      // 4. 特徵二：背鰭圈起來
+      tl.fromTo("#ring-dorsal", { autoAlpha: 0, scale: 1.3 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 15.0);
+      tl.fromTo("#s4-text", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 15.4);
+      tl.to("#s4-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 18.4);
+      tl.set("#s4-in", { opacity: 0 }, 18.7);
+      tl.to("#ring-dorsal", { autoAlpha: 0, duration: 0.3 }, 18.4);
+      tl.set("#ring-dorsal", { autoAlpha: 0 }, 18.7);
+
+      // 5. 特徵三：尾鰭圈起來
+      tl.fromTo("#ring-tail", { autoAlpha: 0, scale: 1.3 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 19.0);
+      tl.fromTo("#s5-text", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 19.4);
+      tl.to("#s5-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 22.7);
+      tl.set("#s5-in", { opacity: 0 }, 23.0);
+      tl.to("#ring-tail", { autoAlpha: 0, duration: 0.3 }, 22.7);
+      tl.set("#ring-tail", { autoAlpha: 0 }, 23.0);
+
+      // 6. 產季翻轉
+      tl.fromTo("#s6-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 23.3);
+      tl.fromTo("#s6-a", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 24.4);
+      tl.fromTo("#s6-b", { autoAlpha: 0, y: 34, scale: 0.92 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.6)" }, 25.9);
+      tl.to("#s6-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 28.9);
+      tl.set("#s6-in", { opacity: 0 }, 29.2);
+      tl.to("#fish-in", { opacity: 0, duration: 0.35, ease: "power1.in" }, 28.85);
+      tl.set("#fish-in", { opacity: 0 }, 29.2);
+
+      // 7. END
+      tl.fromTo("#fishicon", { scale: 0.8 }, { scale: 1, duration: 1.1, ease: "power3.out" }, 29.3);
+      tl.fromTo("#s7-a", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 29.4);
+      tl.fromTo("#s7-b", { autoAlpha: 0, y: 30, scale: 0.92 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: "back.out(1.6)" }, 29.9);
+      tl.fromTo("#s7-cap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 30.5);
+
+      window.__timelines["species01"] = tl;
+    </script>
+  </body>
+</html>
