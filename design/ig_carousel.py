@@ -3,6 +3,7 @@
 
 用法：
   python3 design/ig_carousel.py design/ig_carousel/白帶魚看幾指.json
+  python3 design/ig_carousel.py <config> --story   # 另外輸出 1080x1920 限動版
 
 內容全部寫在 JSON：每張的畫面來源（影片＋秒數＋裁切框）與文字。
 文字一律手動斷行（中文自動斷行容易切在詞中間），超出安全寬度直接報錯。
@@ -302,6 +303,21 @@ def render_story(s):
     return im
 
 
+STORY_W, STORY_H = 1080, 1920
+STORY_TOP = 250  # IG 限動上方約 250px、下方約 250px 會被介面蓋住
+
+
+def to_story(card):
+    """把 1080x1350 的圖卡擺進 1080x1920 限動版面的安全區。
+
+    不重排版面——直接置入驗證過的圖卡，底色相同所以看不出接縫。
+    擺在 y=250，內容收在 1600，上下都落在安全區內。
+    """
+    im = Image.new("RGB", (STORY_W, STORY_H), DEEP)
+    im.paste(card, ((STORY_W - card.width) // 2, STORY_TOP))
+    return im
+
+
 RENDER = {
     "cover": slide_cover,
     "card": slide_card,
@@ -310,16 +326,23 @@ RENDER = {
 }
 
 
-def main(cfg_path):
+def main(cfg_path, story=False):
     cfg = json.load(open(cfg_path))
     out_dir = os.path.join(REPO, "成品", "IG輪播", cfg["name"])
     os.makedirs(out_dir, exist_ok=True)
+    story_dir = os.path.join(out_dir, "限動版")
+    if story:
+        os.makedirs(story_dir, exist_ok=True)
     total = len(cfg["slides"])
     for i, s in enumerate(cfg["slides"], 1):
         im = RENDER[s["type"]](s, cfg["handle"], i, total)
         path = os.path.join(out_dir, f"{i:02d}.jpg")
         im.save(path, quality=92, subsampling=0)
         print(f"  {path}")
+        if story:
+            sp = os.path.join(story_dir, f"{i:02d}.jpg")
+            to_story(im).save(sp, quality=92, subsampling=0)
+            print(f"  {sp}")
     if cfg.get("story"):
         story_path = os.path.join(out_dir, "限動.jpg")
         render_story(cfg["story"]).save(story_path, quality=92, subsampling=0)
@@ -331,6 +354,6 @@ def main(cfg_path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if not 2 <= len(sys.argv) <= 3:
         sys.exit(__doc__)
-    main(sys.argv[1])
+    main(sys.argv[1], story="--story" in sys.argv[2:])
