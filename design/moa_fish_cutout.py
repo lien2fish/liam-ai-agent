@@ -22,7 +22,12 @@ EDGE_K = 30.0  # 交界帶裡，離純白多遠算完全不透明
 
 def find_annotations(rgb):
     r, g, b = rgb[:, :, 0], rgb[:, :, 1], rgb[:, :, 2]
-    return (r > 90) & (r - g > 45) & (r - b > 45)
+    red = (r > 90) & (r - g > 45) & (r - b > 45)
+    core = ndimage.distance_transform_edt(red) > 6  # 箭頭與文字筆畫都比這細，紅色魚體比這粗
+    lab, cnt = ndimage.label(core)
+    big = np.isin(lab, np.flatnonzero(ndimage.sum(core, lab, range(1, cnt + 1)) > 2000) + 1)  # 排除箭頭的三角頭
+    body = ndimage.distance_transform_edt(~big) <= 7
+    return red & ~body
 
 
 def inpaint(rgb, mask, rounds=150):
