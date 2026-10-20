@@ -24,6 +24,8 @@ PROFILE_DEFAULTS = {
         "lang": "zh-Hant",
         "audio_lang": "zh-Hant",
     },  # 泥馬的真心話
+    # 富可敵國（原 The Unknown Hour 改名轉型）；25=新聞與政治
+    "fortune": {"category": "25", "lang": "zh-Hant", "audio_lang": "zh-Hant"},
 }
 
 

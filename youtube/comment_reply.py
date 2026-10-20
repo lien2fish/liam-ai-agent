@@ -26,7 +26,24 @@ PERSONA = {
 每天在碼頭看漁獲上岸。有人在你的 YouTube 影片下方留言。""",
     "dessert": """你是一位 2007 年入行的專業甜點師，在自己家的廚房做甜點給大家看，
 會講業界不太願意講的實話。有人在你的 YouTube 影片下方留言。""",
+    "fortune": """你是 YouTube 頻道「富可敵國」的主持人，頻道整理全世界跟錢有關的時事與冷知識，
+最後拉回台灣比較。你不是理財顧問，也不給任何人投資或保險建議。有人在你的影片下方留言。""",
 }
+
+FORTUNE_RULES = """
+用繁體中文回一句，像主持人跟觀眾聊天：
+- 字數 15～30 字之間，加 1 個相關 emoji
+- 只輸出回覆內容本身，不要加引號或任何前綴說明
+- 可以謝謝對方補充、認同對方的觀察、或反問一句讓討論繼續
+
+**絕對不要**（違反就整則作廢）：
+- 不要給任何投資、理財、保險、貸款、買房的建議，不說該買什麼、該不該買、該怎麼做
+- 不要預測利率、匯率、股價、房價會怎麼走
+- 不要提任何數字、百分比、日期——影片裡的數字都查證過，回覆裡的數字沒有，寧可不講
+- 不要提具體的股票、ETF、基金、保單、銀行名稱
+- 不要推銷、不要引導私訊、不要說「感謝您的留言」這種客服開場
+
+留言內容：{text}"""
 
 RULES = """
 用繁體中文回一句，**像在跟朋友分享，不是在做客服**：
@@ -69,6 +86,34 @@ ITEM_NAMES = [
     "透抽", "軟絲", "章魚", "海鱺", "真鯛", "吳郭魚", "台灣鯛", "虱目魚", "比目魚",
     "扁鱈", "圓鱈", "香螺", "螺肉", "九孔",
 ]
+
+
+# ── 富可敵國（財經）專用 ──────────────────────────────────────────
+# 主持人是真人，回覆等於他本人公開發言：
+# 一句「可以考慮」就可能被當成投資或保險招攬，所以問建議的一律不回、輸出端再擋一次。
+FORTUNE_HUMAN = [
+    "該買", "要買", "能買", "可以買", "要不要", "該不該", "適合買", "值得買", "推薦",
+    "建議", "怎麼投資", "怎麼理財", "怎麼存", "存什麼", "買什麼", "買哪", "哪一支", "哪支",
+    "進場", "出場", "停損", "加碼", "賣掉", "解約", "要保", "保單", "保險要", "房貸要",
+    "借錢", "貸款要", "我的", "我家", "我現在", "我有", "幫我", "私訊", "怎麼聯絡",
+    # 問走勢＝要我們預測，一樣不回
+    "會不會", "會漲嗎", "會跌嗎", "走勢", "預測", "怎麼走", "還會",
+]
+FORTUNE_BANNED_OUT = [
+    "建議你", "建議可以", "可以考慮", "不妨", "記得買", "趕快", "快買", "買進", "賣出",
+    "進場", "出場", "加碼", "減碼", "推薦", "保證", "穩賺", "必賺", "一定會", "肯定會",
+    "會漲", "會跌", "會升", "會降", "會貶", "看漲", "看跌", "看好", "看壞", "報酬",
+    "ETF", "etf", "股票", "基金", "保單", "投保", "定存", "私訊", "聯絡我",
+]
+
+
+def fortune_violates(reply):
+    for w in FORTUNE_BANNED_OUT:
+        if w in reply:
+            return f"提到「{w}」"
+    if any(ch.isdigit() for ch in reply) or any(ch in reply for ch in "%％"):
+        return "出現數字（回覆裡的數字沒查證過）"
+    return None
 
 
 def output_violates(reply, comment):
@@ -156,7 +201,9 @@ def main():
         if already_replied(t, me):
             skipped += 1
             continue
-        if ig.needs_human(text):
+        if ig.needs_human(text) or (
+            a.profile == "fortune" and any(k in text for k in FORTUNE_HUMAN)
+        ):
             human += 1
             log(f"  🙋 留給人工：{text[:34]}")
             continue
@@ -172,13 +219,18 @@ def main():
 
             reply = random.choice(SAFE_REPLIES)
         else:
-            prompt = PERSONA[a.profile] + RULES.format(text=text)
+            rules = FORTUNE_RULES if a.profile == "fortune" else RULES
+            prompt = PERSONA[a.profile] + rules.format(text=text)
             try:
                 reply = ig.gemini_reply(text, prompt=prompt)
             except Exception as e:
                 log(f"  ⚠️ 產不出回覆（{type(e).__name__}），跳過：{text[:24]}")
                 continue
-            bad = output_violates(reply, text)
+            bad = (
+                fortune_violates(reply)
+                if a.profile == "fortune"
+                else output_violates(reply, text)
+            )
             if bad:
                 log(f"  🚫 擋下（{bad}）：{reply}")
                 continue
