@@ -84,7 +84,7 @@ ART_ANIM = {
     "flow": """tl.fromTo("#{S}-art .fn", {{autoAlpha:0, scale:0.4, transformOrigin:"50% 50%"}}, {{autoAlpha:1, scale:1, duration:0.6, stagger:2.2, ease:"back.out(2)"}}, {T});
       tl.fromTo("#{S}-art .fe", {{strokeDashoffset:1000}}, {{strokeDashoffset:0, duration:1.5, stagger:2.2, ease:"power1.inOut"}}, {T}+0.7);
       tl.fromTo("#{S}-art .tok", {{autoAlpha:0, x:0}}, {{autoAlpha:1, x:0, duration:0.2}}, {T}+0.5);
-      tl.to("#{S}-art .tok", {{x:800, duration:8.8, ease:"none"}}, {T}+0.7);
+      tl.to("#{S}-art .tok", document.documentElement.dataset.fmt === "tall" ? {{y:680, duration:8.8, ease:"none"}} : {{x:800, duration:8.8, ease:"none"}}, {T}+0.7);
       tl.to("#{S}-art .tok", {{autoAlpha:0, duration:0.1}}, {T}+9.5);""",
     "cards": """tl.fromTo("#{S}-art .card", {{autoAlpha:0, y:40}}, {{autoAlpha:1, y:0, duration:0.7, stagger:0.9, ease:"power2.out"}}, {T});""",
 }
