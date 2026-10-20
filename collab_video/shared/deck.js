@@ -11,7 +11,7 @@ function brandChrome(hostId, markHostId) {
     .insertAdjacentHTML(
       "beforeend",
       '<div id="brand-top">鉅鑫管理顧問</div>' +
-        '<div id="brand-bottom">A I 導 入 服 務</div>'
+        '<div id="brand-bottom">A I 雙 人 協 作</div>'
     );
 }
 
@@ -153,7 +153,7 @@ function flowMarkup(strokeW) {
     }
     nodes.push('<g class="fn fn-' + i + '"' + (i === 3 ? ' style="color:var(--gold)"' : '') + '>' +
       '<circle cx="' + x + '" cy="0" r="68"/>' +
-      '<text x="' + x + '" y="0" dy="0.35em" text-anchor="middle" font-size="34" fill="currentColor" stroke="none">' +
+      '<text x="' + x + '" y="0" dy="0.35em" text-anchor="middle" font-size="' + (label.length > 2 ? 26 : 34) + '" fill="currentColor" stroke="none">' +
       label + '</text></g>');
   });
   return SVG("-100 -110 1000 240", G(edges.join("") + nodes.join(""), strokeW) +
