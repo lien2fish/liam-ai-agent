@@ -140,3 +140,10 @@ finance_shorts/*/snapshots/
 finance_shorts/shared/chars/
 finance_shorts/試做成品/
 finance_shorts/*/lipsync/
+
+# AI 雙人協作介紹影片（collab_video/）——比照 proposal_video：
+# 文案正本在 liam-workspace/collab_video/（pull_content.sh 取回），旁白是克隆聲音，產出含全文
+collab_video/content/
+collab_video/full-*/
+collab_video/short-*/
+collab_video/audio/
