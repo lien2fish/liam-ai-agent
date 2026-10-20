@@ -35,3 +35,12 @@ jobs:
           YT_DESSERT_OAUTH_CLIENT_SECRET: ${{ secrets.YT_DESSERT_OAUTH_CLIENT_SECRET }}
           YT_DESSERT_OAUTH_REFRESH_TOKEN: ${{ secrets.YT_DESSERT_OAUTH_REFRESH_TOKEN }}
         run: python3 youtube/comment_reply.py --profile dessert --max 5
+
+      # 財經頻道：問建議／走勢／個人狀況的一律留給人工，輸出端再擋數字與建議用語
+      - name: 富可敵國（財經）
+        env:
+          GEMINI_KEY:                     ${{ secrets.GEMINI_KEY }}
+          YT_FORTUNE_OAUTH_CLIENT_ID:     ${{ secrets.YT_FORTUNE_OAUTH_CLIENT_ID }}
+          YT_FORTUNE_OAUTH_CLIENT_SECRET: ${{ secrets.YT_FORTUNE_OAUTH_CLIENT_SECRET }}
+          YT_FORTUNE_OAUTH_REFRESH_TOKEN: ${{ secrets.YT_FORTUNE_OAUTH_REFRESH_TOKEN }}
+        run: python3 youtube/comment_reply.py --profile fortune --max 5
