@@ -142,22 +142,30 @@ function duoMarkup(strokeW) {
 
 // 五站流程。固定間距也供 tok 的 GSAP x 位移使用。
 function flowMarkup(strokeW) {
+  // 直式畫面寬度不夠放五個橫排節點，改成由上往下；tok 的位移方向在 build.py 跟著切換
+  const tall = document.documentElement.dataset.fmt === "tall";
+  const step = tall ? 170 : 200, r = tall ? 62 : 68;
   const labels = ['你', '總管', 'Codex', '驗收', '回報'];
   const edges = [], nodes = [];
   labels.forEach((label, i) => {
-    const x = i * 200;
+    const c = i * step, a = c + r + 4, b = c + step - r - 4;
+    const P = (u, v) => (tall ? v + ' ' + u : u + ' ' + v);
     if (i < 4) {
-      edges.push('<path class="fe fe-' + i + '" d="M ' + (x + 72) + ' 0 L ' + (x + 128) +
-        ' 0 M ' + (x + 116) + ' -10 L ' + (x + 128) + ' 0 L ' + (x + 116) +
-        ' 10" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>');
+      edges.push('<path class="fe fe-' + i + '" d="M ' + P(a, 0) + ' L ' + P(b, 0) +
+        ' M ' + P(b - 12, -10) + ' L ' + P(b, 0) + ' L ' + P(b - 12, 10) +
+        '" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>');
     }
+    const [x, y] = tall ? [0, c] : [c, 0];
+    const fs = tall ? (label.length > 2 ? 30 : 40) : (label.length > 2 ? 26 : 34);
     nodes.push('<g class="fn fn-' + i + '"' + (i === 3 ? ' style="color:var(--gold)"' : '') + '>' +
-      '<circle cx="' + x + '" cy="0" r="68"/>' +
-      '<text x="' + x + '" y="0" dy="0.35em" text-anchor="middle" font-size="' + (label.length > 2 ? 26 : 34) + '" fill="currentColor" stroke="none">' +
+      '<circle cx="' + x + '" cy="' + y + '" r="' + r + '"/>' +
+      '<text x="' + x + '" y="' + y + '" dy="0.35em" text-anchor="middle" font-size="' + fs + '" fill="currentColor" stroke="none">' +
       label + '</text></g>');
   });
-  return SVG("-100 -110 1000 240", G(edges.join("") + nodes.join(""), strokeW) +
-    '<circle class="tok" cx="0" cy="90" r="9" fill="currentColor"/>');
+  const box = tall ? "-150 -80 300 840" : "-100 -110 1000 240";
+  const tok = tall ? 'cx="-100" cy="0"' : 'cx="0" cy="90"';
+  return SVG(box, G(edges.join("") + nodes.join(""), strokeW) +
+    '<circle class="tok" ' + tok + ' r="9" fill="currentColor"/>');
 }
 
 // 一張紙／空白筆記，代表沒有被記下來的東西
