@@ -25,9 +25,9 @@ jobs:
 
       # 三個頻道依序跑在同一個 job：並行會在 commit 那步互相 rebase 打架。
       # 每個頻道的狀態檔與報告檔用 YT_REPORT_PROFILE 區隔，不給就是原本的檔名。
-      # 2026-10-20 The Unknown Hour 改名「富可敵國」、代碼改 @richasnations，
+      # 2026-10-20 The Unknown Hour 改名「富可敵國」→10-21 再改「金錢怪物」、代碼 @richasnations，
       # 舊代碼過一陣子會被釋出，所以改用不會變的頻道 ID 查。
-      - name: Run channel report — 富可敵國（原 The Unknown Hour）
+      - name: Run channel report — 金錢怪物（原 The Unknown Hour）
         env:
           YT_API_KEY:          ${{ secrets.YT_API_KEY }}
           YT_REPORT_CHANNEL_ID:  'UCav9f3O-glLbV-IpHZjqBHw'
