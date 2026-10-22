@@ -123,7 +123,7 @@ description: 用 Lien 的克隆聲音產生旁白（Qwen3-TTS 本機跑，不上
 | Louis Vuitton、Dior、Celine | 英文品牌名 | 中文音譯：路易威登、迪奧、思琳（字幕仍用原文）|
 | 英文旁白的數字 | 「September 16」被聽成「September 6」| 拼成單字：September sixteenth、three point seven five percent |
 
-**數字一定要用 large-v3 聽寫確認**，`check_say.py` 用的模型對數字不夠可靠。
+**數字一定要用 large-v3 聽寫確認**：`check_say.py` 預設是 small，對數字不夠可靠，有數字的句子加 `--model large-v3`。
 
 ---
 
