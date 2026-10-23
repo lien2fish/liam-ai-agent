@@ -1,0 +1,25 @@
+name: LINE 推播（本機觸發）
+
+# 本機腳本要推 LINE 時用 `gh workflow run line_notify.yml -f text="…"` 觸發，
+# 金鑰只留在 GitHub Secrets，不必複製到本機。
+# 推播計入 LINE 輕用量方案 200 則／月，只接需要 Lien 看的事。
+on:
+  workflow_dispatch:
+    inputs:
+      text:
+        description: 推播內容
+        required: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 送出
+        env:
+          LINE_NOTIFY_URL:   ${{ secrets.LINE_NOTIFY_URL }}
+          LINE_NOTIFY_TOKEN: ${{ secrets.LINE_NOTIFY_TOKEN }}
+          TEXT:              ${{ inputs.text }}
+        run: python3 -c "import os, sys; from line_assistant.notify import notify; sys.exit(0 if notify(os.environ['TEXT'], silent_fail=False) else 1)"
