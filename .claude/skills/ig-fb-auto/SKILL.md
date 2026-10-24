@@ -63,9 +63,16 @@ description: IG + FB 每日自動發文、IG 留言自動回覆、IG 限動 Reel
 - IG Token 有**三種死法，不要只盯 `expires_at`**：
   | 欄位／狀況 | 現況 | 意義 |
   |------|------|------|
-  | `expires_at` | **2026-10-24**（2026-08-25 換發） | token 字串本身失效 |
-  | `data_access_expires_at` | **2026-11-23**（2026-08-25 重新授權 +90 天） | 到期後 API 拒絕存取資料 |
+  | `expires_at` | **2026-12-23**（2026-10-24 換發） | token 字串本身失效 |
+  | `data_access_expires_at` | **2027-01-22**（2026-10-24 重新授權 +90 天） | 到期後 API 拒絕存取資料 |
   | session 被作廢 | **無預警，隨時** | 改 FB 密碼或 Meta 安全性重設就會發生 |
+
+  🔴 **改 FB 密碼就會弄死這三支自動化——改完當天順手跑一次 `ig_reauth.py`。**
+  已經發生兩次（2026-08-25、2026-10-24），兩次都是改密碼造成，而 Facebook
+  作廢的是整個 user session，所以 `IG_TOKEN` 與 `FB_PAGE_TOKEN` **一起死**。
+  ⚠️ **到期監控抓不到這種死法**（它只讀 `expires_at`，而這跟到期無關）——
+  2026-10-24 前一天還報「全部正常，且沒有接近到期」，隔天直接失效，
+  等隔天早上看監控信才知道，**當天的 IG 發文已經漏掉一則**。
 
   ⚠️ **「`expires_at`＝0 永不過期」已被推翻（2026-08-25）。**
   先前紀錄說 token 本身永不過期，但這次 `fb_exchange_token` 換出來的長效 token
@@ -131,8 +138,8 @@ description: IG + FB 每日自動發文、IG 留言自動回覆、IG 限動 Reel
 | 隱私政策頁 | https://lien2fish.github.io/liam-ai-agent/privacy.html |
 
 ### 重要到期日
-- **IG Token：`expires_at` 2026-10-24 先到期**，「資料存取權」2026-11-23 才到期
-  （2026-08-25 重新授權後 +90 天）。**以早的那個為準，10 月中就該重跑一次**上方〈IG Token 更新步驟〉。
+- **IG Token：`expires_at` 2026-12-23 先到期**，「資料存取權」2027-01-22 才到期
+  （2026-10-24 重新授權後 +90 天）。**以早的那個為準，12 月中就該重跑一次**上方〈IG Token 更新步驟〉。
   ⚠️ 也可能在到期前就因 session 被作廢而提前掛掉（見上方 190/460）
 - **FB Page Token：`expires_at`＝0，但不等於不會失效**——2026-08-25 隨 user session
   被作廢一起死（同 190/460）。重簽很快：拿新的 user token 打 `GET /{page-id}?fields=access_token`。
