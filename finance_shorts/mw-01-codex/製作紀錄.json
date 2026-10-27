@@ -1,0 +1,25 @@
+{
+  "title": "美國升息，你的房貸就會漲？",
+  "language": "zh-TW",
+  "format": "1920×1080",
+  "playback_speed": 1.3,
+  "structure": [
+    "生活問題開場",
+    "國際新聞背景",
+    "房貸傳遞機制",
+    "假設月付金試算",
+    "存款與美元",
+    "債券利率風險",
+    "生活檢查清單"
+  ],
+  "narration_seconds": 320.25600000000003,
+  "expected_final_seconds": 250.84307692307692,
+  "status": "已完成，未發布",
+  "notes": [
+    "保留原版，另做中文解釋版供比較",
+    "字幕依標點與字數估時計時",
+    "未對外發布"
+  ],
+  "final_file": "/Users/lien/Downloads/Liam AI agent/finance_shorts/試做成品/mw-01-codex_中文解釋版_美國升息你的房貸就會漲.mp4",
+  "final_duration_seconds": 250.958333
+}

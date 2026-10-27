@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>Is the World Raising Rates Again?</title>
+<link rel="stylesheet" href="shared/brand.css" />
+<style>
+html, body, #root { width: 1920px; height: 1080px; }
+#bg { background: radial-gradient(120% 90% at 20% 0%, #16294a 0%, #0b1426 55%, #070d1a 100%); }
+#grid { position: absolute; inset: 0; opacity: 0.08;
+  background-image: linear-gradient(#9fb3d1 1px, transparent 1px), linear-gradient(90deg, #9fb3d1 1px, transparent 1px);
+  background-size: 96px 96px; }
+.brand { position: absolute; left: 64px; top: 48px; font-size: 30px; color: var(--gold); letter-spacing: 0.12em; }
+.disc { position: absolute; right: 64px; top: 52px; font-size: 22px; color: var(--dim); }
+.pg { position: absolute; right: 64px; bottom: 34px; font-size: 24px; color: var(--dim); }
+.prog { position: absolute; left: 0; bottom: 0; height: 8px; width: 1920px; background: var(--gold); transform-origin: left center; }
+.sub2 { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); width: max-content; max-width: 1560px;
+  padding: 10px 30px; border-radius: 18px; background: rgba(7, 13, 26, 0.75); color: var(--ink);
+  font-size: 42px; line-height: 1.35; text-align: center; text-wrap: balance; }
+.h1 { position: absolute; left: 0; right: 0; text-align: center; color: var(--ink); font-weight: 800; }
+.chip { position: absolute; padding: 8px 26px; border-radius: 999px; border: 3px solid var(--gold); color: var(--gold); font-size: 40px; }
+.bank { position: absolute; left: 160px; top: 300px; font-size: 76px; font-weight: 800; color: var(--ink); }
+.rate { position: absolute; left: 960px; top: 330px; font-size: 190px; font-weight: 800; color: var(--gold); white-space: nowrap; }
+.rnote { position: absolute; left: 160px; top: 640px; font-size: 48px; color: var(--ink); }
+.arrow { position: absolute; color: var(--warn); }
+.card { position: absolute; border-radius: 30px; background: rgba(255,255,255,0.06); border: 3px solid var(--panel-line); }
+.bl { position: absolute; left: 220px; font-size: 46px; color: var(--ink); }
+.btrack { position: absolute; left: 480px; width: 1000px; height: 64px; border-radius: 32px; background: rgba(255,255,255,0.06); }
+.bfill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 32px; transform-origin: left center; }
+.bv { position: absolute; font-size: 42px; color: var(--ink); }
+</style>
+<script src="vendor/gsap.min.js"></script>
+</head>
+<body>
+<div id="root" data-composition-id="mw01en" data-start="0" data-duration="67.93" data-fps="24" data-width="1920" data-height="1080">
+<div id="bg" class="clip" data-start="0" data-duration="67.93" data-track-index="0"><div id="grid"></div></div>
+<section id="p1" class="clip" data-start="0.000" data-duration="6.567" data-track-index="1"><div class="sin" id="p1-in"><div class="h1" id="p1-h" style="top: 360px; font-size: 88px">Is the World Raising Rates Again?</div><div class="h1" id="p1-s" style="top: 560px; font-size: 46px; font-weight: 600; color: var(--gold)">September 2026 · 3 major central banks hiked</div><div class="arrow" id="p1-a" style="left: 1580px; top: 180px; width: 150px; height: 150px"><svg viewBox="0 0 100 100" width="100%" height="100%"><g fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><line x1="50" y1="88" x2="50" y2="14"/><polyline points="18,44 50,12 82,44"/></g></svg></div><div class="sub2" id="p1-sub">Is the whole world raising rates again? In just one month, the US, Europe and Japan all hiked.</div><div class="pg">1 / 9</div></div></section>
+<section id="p2" class="clip" data-start="6.567" data-duration="10.330" data-track-index="2"><div class="sin" id="p2-in"><div class="bank" id="p2-b" style="font-size: 76px">US Federal Reserve</div><div class="chip" id="p2-d" style="left: 160px; top: 430px">Sep 16</div><div class="rate" id="p2-r" style="font-size: 151px">3.75–4.00%</div><div class="arrow" id="p2-a" style="left: 860px; top: 380px; width: 110px; height: 110px"><svg viewBox="0 0 100 100" width="100%" height="100%"><g fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><line x1="50" y1="88" x2="50" y2="14"/><polyline points="18,44 50,12 82,44"/></g></svg></div><div class="rnote" id="p2-n">First hike since 2023</div><div class="sub2" id="p2-sub">First, the US. On September 16, the Fed raised rates by a quarter point to 3.75% to 4%, its first hike since 2023.</div><div class="pg">2 / 9</div></div></section>
+<section id="p3" class="clip" data-start="16.897" data-duration="8.266" data-track-index="3"><div class="sin" id="p3-in"><div class="bank" id="p3-b" style="font-size: 65px">European Central Bank</div><div class="chip" id="p3-d" style="left: 160px; top: 430px">Sep 10</div><div class="rate" id="p3-r" style="font-size: 190px">2.50%</div><div class="arrow" id="p3-a" style="left: 860px; top: 380px; width: 110px; height: 110px"><svg viewBox="0 0 100 100" width="100%" height="100%"><g fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><line x1="50" y1="88" x2="50" y2="14"/><polyline points="18,44 50,12 82,44"/></g></svg></div><div class="rnote" id="p3-n">2nd hike since June</div><div class="sub2" id="p3-sub">The European Central Bank hiked on September 10, taking its deposit rate to 2.5%. That&#x27;s its second hike since June.</div><div class="pg">3 / 9</div></div></section>
+<section id="p4" class="clip" data-start="25.163" data-duration="7.642" data-track-index="4"><div class="sin" id="p4-in"><div class="bank" id="p4-b" style="font-size: 76px">Bank of Japan</div><div class="chip" id="p4-d" style="left: 160px; top: 430px">Sep 18</div><div class="rate" id="p4-r" style="font-size: 190px">1.25%</div><div class="arrow" id="p4-a" style="left: 860px; top: 380px; width: 110px; height: 110px"><svg viewBox="0 0 100 100" width="100%" height="100%"><g fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><line x1="50" y1="88" x2="50" y2="14"/><polyline points="18,44 50,12 82,44"/></g></svg></div><div class="rnote" id="p4-n">31-year high</div><div class="sub2" id="p4-sub">Japan went even further. On September 18, it lifted rates to 1.25%, a 31-year high.</div><div class="pg">4 / 9</div></div></section>
+<section id="p5" class="clip" data-start="32.805" data-duration="8.266" data-track-index="5"><div class="sin" id="p5-in"><div class="h1" id="p5-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">US CPI, year over year</div><div class="h1" id="p5-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">3.7%</div><div class="h1" id="p5-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">Aug 3.4% → Sep 3.7% · Gasoline +34.2%</div><div class="sub2" id="p5-sub">Why now? US inflation jumped to 3.7% in September, with gasoline up 34.2% from a year ago.</div><div class="pg">5 / 9</div></div></section>
+<section id="p6" class="clip" data-start="41.071" data-duration="10.834" data-track-index="6"><div class="sin" id="p6-in"><div class="bank" id="p6-b" style="font-size: 72px">Taiwan Central Bank</div><div class="chip" id="p6-d" style="left: 160px; top: 430px">Sep 17</div><div class="rate" id="p6-r" style="font-size: 190px; color: var(--ink)">2%</div><div class="arrow" id="p6-a" style="left: 860px; top: 380px; width: 110px; height: 110px; color: var(--dim)"><svg viewBox="0 0 100 100" width="100%" height="100%"><g fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="50" x2="86" y2="50"/><polyline points="58,22 88,50 58,78"/></g></svg></div><div class="rnote" id="p6-n">10th hold in a row · 2026 CPI forecast 2.03%</div><div class="sub2" id="p6-sub">And Taiwan? Its central bank held at 2% on September 17, the 10th hold in a row, but raised this year&#x27;s inflation forecast to 2.03%.</div><div class="pg">6 / 9</div></div></section>
+<section id="p7" class="clip" data-start="51.905" data-duration="3.994" data-track-index="7"><div class="sin" id="p7-in"><div class="h1" id="p7-h" style="top: 170px; font-size: 54px; color: var(--gold)">Policy rates, September 2026</div><div class="bl" id="p7-l0" style="top: 304px">US</div><div class="btrack" id="p7-t0" style="top: 300px"><div class="bfill" id="p7-f0" style="right: 0.00%; background: var(--warn)"></div></div><div class="bv" id="p7-v0" style="top: 306px; left: 1504px">3.75–4.00%</div><div class="bl" id="p7-l1" style="top: 444px">Euro area</div><div class="btrack" id="p7-t1" style="top: 440px"><div class="bfill" id="p7-f1" style="right: 37.50%; background: var(--gold)"></div></div><div class="bv" id="p7-v1" style="top: 446px; left: 1129px">2.50%</div><div class="bl" id="p7-l2" style="top: 584px">Taiwan</div><div class="btrack" id="p7-t2" style="top: 580px"><div class="bfill" id="p7-f2" style="right: 50.00%; background: var(--ok)"></div></div><div class="bv" id="p7-v2" style="top: 586px; left: 1004px">2%</div><div class="bl" id="p7-l3" style="top: 724px">Japan</div><div class="btrack" id="p7-t3" style="top: 720px"><div class="bfill" id="p7-f3" style="right: 68.75%; background: #7abee2"></div></div><div class="bv" id="p7-v3" style="top: 726px; left: 816px">1.25%</div><div class="sub2" id="p7-sub">Put the four side by side, and the gap is clear.</div><div class="pg">7 / 9</div></div></section>
+<section id="p8" class="clip" data-start="55.899" data-duration="7.930" data-track-index="8"><div class="sin" id="p8-in"><div class="h1" id="p8-h" style="top: 180px; font-size: 64px; color: var(--gold)">Next week</div><div class="card" id="p8-c0" style="left: 260px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p8-cd0" style="left: 260px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">Oct 27–28</div><div class="h1" id="p8-cw0" style="left: 260px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">Fed meeting</div><div class="card" id="p8-c1" style="left: 980px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p8-cd1" style="left: 980px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">Oct 29</div><div class="h1" id="p8-cw1" style="left: 980px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">ECB decision</div><div class="sub2" id="p8-sub">Next week is key: the Fed meets October 27 and 28, and the ECB decides on October 29.</div><div class="pg">8 / 9</div></div></section>
+<section id="p9" class="clip" data-start="63.829" data-duration="4.101" data-track-index="9"><div class="sin" id="p9-in"><div class="h1" id="p9-a" style="top: 320px; font-size: 80px">Three major central banks are hiking</div><div class="h1" id="p9-b" style="top: 460px; font-size: 80px; color: var(--gold)">Taiwan is holding, for now</div><div class="h1" id="p9-c" style="top: 680px; font-size: 32px; font-weight: 500; color: var(--dim)">Sources: Federal Reserve, ECB, Bank of Japan, Taiwan CBC, US BLS</div><div class="pg">9 / 9</div></div></section>
+<div id="chrome" class="clip" data-start="0" data-duration="67.93" data-track-index="10">
+<div class="brand">Money Around the World</div>
+<div class="disc">For information only, not financial advice</div>
+<div class="prog"></div>
+</div>
+<audio id="vo-1" data-start="0.250" data-duration="6.192" src="audio/l1.mp3"></audio>
+<audio id="vo-2" data-start="6.692" data-duration="10.080" src="audio/l2.mp3"></audio>
+<audio id="vo-3" data-start="17.022" data-duration="8.016" src="audio/l3.mp3"></audio>
+<audio id="vo-4" data-start="25.288" data-duration="7.392" src="audio/l4.mp3"></audio>
+<audio id="vo-5" data-start="32.930" data-duration="8.016" src="audio/l5.mp3"></audio>
+<audio id="vo-6" data-start="41.196" data-duration="10.584" src="audio/l6.mp3"></audio>
+<audio id="vo-7" data-start="52.030" data-duration="3.744" src="audio/l7.mp3"></audio>
+<audio id="vo-8" data-start="56.024" data-duration="7.680" src="audio/l8.mp3"></audio>
+<audio id="vo-9" data-start="63.954" data-duration="2.376" src="audio/l9.mp3"></audio>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({ paused: true });
+tl.fromTo("#p1-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 0.000);
+tl.fromTo("#p1-h", { autoAlpha: 0, scale: 0.85 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "back.out(1.6)" }, 0.250);
+tl.fromTo("#p1-s", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 0.850);
+tl.fromTo("#p1-a", { autoAlpha: 0, x: 0, y: 80 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(2)" }, 1.150);
+tl.fromTo("#p1-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 0.250);
+tl.to("#p1-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 6.287);
+tl.set("#p1-in", { opacity: 0 }, 6.567);
+tl.fromTo("#p2-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 6.567);
+tl.fromTo("#p2-b", { autoAlpha: 0, x: -80, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 6.692);
+tl.fromTo("#p2-d", { autoAlpha: 0, x: -60, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 6.992);
+tl.fromTo("#p2-r", { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "back.out(1.8)" }, 7.392);
+tl.fromTo("#p2-a", { autoAlpha: 0, x: 0, y: 70 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(2)" }, 7.792);
+tl.fromTo("#p2-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 8.292);
+tl.fromTo("#p2-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 6.692);
+tl.to("#p2-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 16.617);
+tl.set("#p2-in", { opacity: 0 }, 16.897);
+tl.fromTo("#p3-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 16.897);
+tl.fromTo("#p3-b", { autoAlpha: 0, x: -80, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 17.022);
+tl.fromTo("#p3-d", { autoAlpha: 0, x: -60, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 17.322);
+tl.fromTo("#p3-r", { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "back.out(1.8)" }, 17.722);
+tl.fromTo("#p3-a", { autoAlpha: 0, x: 0, y: 70 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(2)" }, 18.122);
+tl.fromTo("#p3-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 18.622);
+tl.fromTo("#p3-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 17.022);
+tl.to("#p3-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 24.883);
+tl.set("#p3-in", { opacity: 0 }, 25.163);
+tl.fromTo("#p4-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 25.163);
+tl.fromTo("#p4-b", { autoAlpha: 0, x: -80, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 25.288);
+tl.fromTo("#p4-d", { autoAlpha: 0, x: -60, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 25.588);
+tl.fromTo("#p4-r", { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "back.out(1.8)" }, 25.988);
+tl.fromTo("#p4-a", { autoAlpha: 0, x: 0, y: 70 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(2)" }, 26.388);
+tl.fromTo("#p4-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 26.888);
+tl.fromTo("#p4-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 25.288);
+tl.to("#p4-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 32.525);
+tl.set("#p4-in", { opacity: 0 }, 32.805);
+tl.fromTo("#p5-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 32.805);
+tl.fromTo("#p5-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 32.930);
+tl.fromTo("#p5-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 33.330);
+tl.fromTo("#p5-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 34.230);
+tl.fromTo("#p5-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 32.930);
+tl.to("#p5-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 40.791);
+tl.set("#p5-in", { opacity: 0 }, 41.071);
+tl.fromTo("#p6-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 41.071);
+tl.fromTo("#p6-b", { autoAlpha: 0, x: -80, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 41.196);
+tl.fromTo("#p6-d", { autoAlpha: 0, x: -60, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 41.496);
+tl.fromTo("#p6-r", { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "back.out(1.8)" }, 41.896);
+tl.fromTo("#p6-a", { autoAlpha: 0, x: 0, y: 70 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(2)" }, 42.296);
+tl.fromTo("#p6-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 42.796);
+tl.fromTo("#p6-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 41.196);
+tl.to("#p6-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 51.625);
+tl.set("#p6-in", { opacity: 0 }, 51.905);
+tl.fromTo("#p7-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 51.905);
+tl.fromTo("#p7-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 52.030);
+tl.fromTo("#p7-l0", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 52.430);
+tl.fromTo("#p7-t0", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 52.430);
+tl.fromTo("#p7-f0", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 52.530);
+tl.fromTo("#p7-v0", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 53.030);
+tl.fromTo("#p7-l1", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 53.116);
+tl.fromTo("#p7-t1", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 53.116);
+tl.fromTo("#p7-f1", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 53.216);
+tl.fromTo("#p7-v1", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 53.716);
+tl.fromTo("#p7-l2", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 53.802);
+tl.fromTo("#p7-t2", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 53.802);
+tl.fromTo("#p7-f2", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 53.902);
+tl.fromTo("#p7-v2", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 54.402);
+tl.fromTo("#p7-l3", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 54.488);
+tl.fromTo("#p7-t3", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 54.488);
+tl.fromTo("#p7-f3", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 54.588);
+tl.fromTo("#p7-v3", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 55.088);
+tl.fromTo("#p7-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 52.030);
+tl.to("#p7-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 55.619);
+tl.set("#p7-in", { opacity: 0 }, 55.899);
+tl.fromTo("#p8-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 55.899);
+tl.fromTo("#p8-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 56.024);
+tl.fromTo("#p8-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 56.524);
+tl.fromTo("#p8-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 56.724);
+tl.fromTo("#p8-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 56.924);
+tl.fromTo("#p8-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 57.724);
+tl.fromTo("#p8-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 57.924);
+tl.fromTo("#p8-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 58.124);
+tl.fromTo("#p8-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 56.024);
+tl.to("#p8-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 63.549);
+tl.set("#p8-in", { opacity: 0 }, 63.829);
+tl.fromTo("#p9-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 63.829);
+tl.fromTo("#p9-a", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 63.954);
+tl.fromTo("#p9-b", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 64.454);
+tl.fromTo("#p9-c", { autoAlpha: 0, x: 0, y: 20 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 64.954);
+tl.to("#p9-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 67.650);
+tl.set("#p9-in", { opacity: 0 }, 67.930);
+tl.fromTo(".prog", { scaleX: 0 }, { scaleX: 1, duration: 67.93, ease: "none" }, 0);
+window.__timelines["mw01en"] = tl;
+</script>
+</body>
+</html>

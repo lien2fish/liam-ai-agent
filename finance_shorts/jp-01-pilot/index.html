@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-Hant" data-resolution="landscape">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>日本利率 31 年新高，日本人的房貸要爆了嗎？</title>
+<link rel="stylesheet" href="shared/brand.css" />
+<style>
+html, body, #root { width: 1920px; height: 1080px; }
+#bg { background: radial-gradient(120% 90% at 20% 0%, #16294a 0%, #0b1426 55%, #070d1a 100%); }
+#grid { position: absolute; inset: 0; opacity: 0.08;
+  background-image: linear-gradient(#9fb3d1 1px, transparent 1px), linear-gradient(90deg, #9fb3d1 1px, transparent 1px);
+  background-size: 96px 96px; }
+.brand { position: absolute; left: 64px; top: 48px; font-size: 30px; color: var(--gold); letter-spacing: 0.12em; text-shadow: 0 2px 8px rgba(0,0,0,0.95); }
+.disc { position: absolute; right: 64px; top: 52px; font-size: 22px; color: rgba(243,241,234,0.88); text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
+.pg { position: absolute; right: 64px; bottom: 34px; font-size: 24px; color: var(--dim); }
+.prog { position: absolute; left: 0; bottom: 0; height: 8px; width: 1920px; background: var(--gold); transform-origin: left center; }
+.sub2 { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); width: max-content; max-width: 1560px;
+  padding: 10px 30px; border-radius: 18px; background: rgba(7, 13, 26, 0.75); color: var(--ink);
+  font-size: 42px; line-height: 1.35; text-align: center; text-wrap: balance; }
+.h1 { position: absolute; left: 0; right: 0; text-align: center; color: var(--ink); font-weight: 800; }
+.chip { position: absolute; padding: 8px 26px; border-radius: 999px; border: 3px solid var(--gold); color: var(--gold); font-size: 40px; }
+.bank { position: absolute; left: 160px; top: 300px; font-size: 76px; font-weight: 800; color: var(--ink); }
+.rate { position: absolute; left: 960px; top: 330px; font-size: 190px; font-weight: 800; color: var(--gold); white-space: nowrap; }
+.rnote { position: absolute; left: 160px; top: 640px; font-size: 48px; color: var(--ink); }
+.arrow { position: absolute; color: var(--warn); }
+.card { position: absolute; border-radius: 30px; background: rgba(255,255,255,0.06); border: 3px solid var(--panel-line); }
+.bl { position: absolute; left: 220px; font-size: 46px; color: var(--ink); }
+.btrack { position: absolute; left: 480px; width: 1000px; height: 64px; border-radius: 32px; background: rgba(255,255,255,0.06); }
+.bfill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 32px; transform-origin: left center; }
+.bv { position: absolute; font-size: 42px; color: var(--ink); }
+.bgw { position: absolute; inset: 0; overflow: hidden; }
+.vclip { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; }
+.vshade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.7) 100%); }
+.callout { position: absolute; left: 96px; bottom: 210px; padding: 18px 34px 22px; border-radius: 18px;
+  background: rgba(7,13,26,0.82); border-left: 10px solid var(--gold); max-width: 900px; }
+.ctag, .cbig, .cnote { display: block; position: relative; }
+.ctag { font-size: 34px; line-height: 1.4; color: var(--gold); font-weight: 700; }
+.cbig { font-size: 120px; line-height: 1.25; margin: 4px 0; font-weight: 800; color: #ffd400; }
+.cnote { font-size: 30px; line-height: 1.4; color: var(--ink); margin-top: 6px; }
+.bgw img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 60% 40%; }
+.shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,10,20,0.66) 0%, rgba(5,10,20,0.60) 45%, rgba(5,10,20,0.86) 100%); }
+.sin .h1, .sin .bank, .sin .rate, .sin .rnote, .sin .bl, .sin .bv { text-shadow: 0 4px 18px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.9); }
+.card { background: rgba(7,13,26,0.70) !important; }
+.btrack { background: rgba(7,13,26,0.65) !important; }
+</style>
+<script src="vendor/gsap.min.js"></script>
+</head>
+<body>
+<div id="root" data-composition-id="jp01pilot" data-start="0" data-duration="36.6" data-fps="24" data-width="1920" data-height="1080">
+<div id="bg" class="clip" data-start="0" data-duration="36.6" data-track-index="0"><div id="grid"></div></div>
+<img class="clip vclip" id="c1_0" src="shared/bg/boj.jpg" data-start="0.000" data-duration="3.562" data-track-index="1" alt="" />
+<video class="clip vclip" id="c1_1" src="shared/broll/jp_aerial2.mp4" muted data-volume="0" data-start="3.562" data-duration="3.562" data-track-index="1"></video>
+<video class="clip vclip" id="c2_0" src="shared/broll/jp_street1.mp4" muted data-volume="0" data-start="7.125" data-duration="3.190" data-track-index="1"></video>
+<video class="clip vclip" id="c3_0" src="shared/broll/jp_aerial1.mp4" muted data-volume="0" data-start="10.315" data-duration="3.875" data-track-index="1"></video>
+<video class="clip vclip" id="c3_1" src="shared/broll/jp_street2.mp4" muted data-volume="0" data-start="14.190" data-duration="3.875" data-track-index="1"></video>
+<video class="clip vclip" id="c4_0" src="shared/broll/jp_street3.mp4" muted data-volume="0" data-start="18.065" data-duration="2.195" data-track-index="1"></video>
+<video class="clip vclip" id="c4_1" src="shared/broll/jp_aerial3.mp4" muted data-volume="0" data-start="20.260" data-duration="2.195" data-track-index="1"></video>
+<video class="clip vclip" id="c5_0" src="shared/broll/tw_101.mp4" muted data-volume="0" data-start="22.455" data-duration="6.310" data-track-index="1"></video>
+<video class="clip vclip" id="c6_0" src="shared/broll/tw_night.mp4" muted data-volume="0" data-start="28.765" data-duration="7.835" data-track-index="1"></video>
+<section id="p1" class="clip" data-start="0.000" data-duration="7.125" data-track-index="2"><div class="vshade"></div><div class="sin" id="p1-in"><div class="callout" id="p1-co"><span class="ctag">日本政策利率</span><span class="cbig">1.25%</span><span class="cnote">31 年新高・9/18</span></div><div class="sub2" id="p1-sub">日本央行 9 月 18 日把利率升到 1.25%，是 31 年來最高。</div><div class="pg">1 / 6</div></div></section>
+<section id="p2" class="clip" data-start="7.125" data-duration="3.190" data-track-index="3"><div class="vshade"></div><div class="sin" id="p2-in"><div class="sub2" id="p2-sub">最緊張的，是背著房貸的日本人。</div><div class="pg">2 / 6</div></div></section>
+<section id="p3" class="clip" data-start="10.315" data-duration="7.750" data-track-index="4"><div class="vshade"></div><div class="sin" id="p3-in"><div class="callout" id="p3-co"><span class="ctag">選浮動利率的房貸族</span><span class="cbig">75%</span><span class="cnote">住宅金融支援機構・2026 年 1 月調查</span></div><div class="sub2" id="p3-sub">根據日本官方今年 1 月的調查，最近申辦房貸的人，有 75% 選的是浮動利率。</div><div class="pg">3 / 6</div></div></section>
+<section id="p4" class="clip" data-start="18.065" data-duration="4.390" data-track-index="5"><div class="vshade"></div><div class="sin" id="p4-in"><div class="sub2" id="p4-sub">利率一往上調，這些人的房貸，也會跟著變貴。</div><div class="pg">4 / 6</div></div></section>
+<section id="p5" class="clip" data-start="22.455" data-duration="6.310" data-track-index="6"><div class="vshade"></div><div class="sin" id="p5-in"><div class="callout" id="p5-co"><span class="ctag">台灣政策利率</span><span class="cbig">2%</span><span class="cnote">連續 10 次不變・9/17</span></div><div class="sub2" id="p5-sub">台灣呢？央行 9 月 17 日維持 2% 不動，這已經是第 10 次按兵不動。</div><div class="pg">5 / 6</div></div></section>
+<section id="p6" class="clip" data-start="28.765" data-duration="7.835" data-track-index="7"><div class="vshade"></div><div class="sin" id="p6-in"><div class="sub2" id="p6-sub">日本的情況，台灣的房貸族該不該擔心？完整分析，我們下一集見。</div><div class="pg">6 / 6</div></div></section>
+<div id="chrome" class="clip" data-start="0" data-duration="36.6" data-track-index="8">
+<div class="brand">富可敵國</div>
+<div class="disc">資訊整理，非投資建議</div>
+<div class="prog"></div>
+</div>
+<audio id="vo-1" data-start="0.250" data-duration="6.800" src="audio/l1.mp3"></audio>
+<audio id="vo-2" data-start="7.200" data-duration="3.040" src="audio/l2.mp3"></audio>
+<audio id="vo-3" data-start="10.390" data-duration="7.600" src="audio/l3.mp3"></audio>
+<audio id="vo-4" data-start="18.140" data-duration="4.240" src="audio/l4.mp3"></audio>
+<audio id="vo-5" data-start="22.530" data-duration="6.160" src="audio/l5.mp3"></audio>
+<audio id="vo-6" data-start="28.840" data-duration="6.160" src="audio/l6.mp3"></audio>
+<audio id="bgm" data-start="0" data-duration="36.6" data-volume="0.12" src="audio/bgm.mp3"></audio>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({ paused: true });
+tl.fromTo("#p1-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 0.000);
+tl.fromTo("#p1-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 0.550);
+tl.fromTo("#p1-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 0.250);
+tl.to("#p1-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 6.845);
+tl.set("#p1-in", { opacity: 0 }, 7.125);
+tl.fromTo("#p2-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 7.125);
+tl.fromTo("#p2-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 7.200);
+tl.to("#p2-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 10.035);
+tl.set("#p2-in", { opacity: 0 }, 10.315);
+tl.fromTo("#p3-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 10.315);
+tl.fromTo("#p3-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 10.690);
+tl.fromTo("#p3-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 10.390);
+tl.to("#p3-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 17.785);
+tl.set("#p3-in", { opacity: 0 }, 18.065);
+tl.fromTo("#p4-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 18.065);
+tl.fromTo("#p4-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 18.140);
+tl.to("#p4-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 22.175);
+tl.set("#p4-in", { opacity: 0 }, 22.455);
+tl.fromTo("#p5-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 22.455);
+tl.fromTo("#p5-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 22.830);
+tl.fromTo("#p5-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 22.530);
+tl.to("#p5-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 28.485);
+tl.set("#p5-in", { opacity: 0 }, 28.765);
+tl.fromTo("#p6-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 28.765);
+tl.fromTo("#p6-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 28.840);
+tl.to("#p6-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 36.320);
+tl.set("#p6-in", { opacity: 0 }, 36.600);
+tl.fromTo(".prog", { scaleX: 0 }, { scaleX: 1, duration: 36.6, ease: "none" }, 0);
+tl.fromTo("#c1_0", { scale: 1.0 }, { scale: 1.08, duration: 3.562, ease: "none" }, 0.000);
+window.__timelines["jp01pilot"] = tl;
+</script>
+</body>
+</html>

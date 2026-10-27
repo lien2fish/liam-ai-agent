@@ -1,0 +1,32 @@
+{
+  "l1": {
+    "sig": "70a5866801dd19321b4e48bb983024e23cd653f4",
+    "request_id": "01a142f4-8bc4-7480-9f76-db992caff21d",
+    "status_url": "https://queue.fal.run/fal-ai/kling-video/requests/01a142f4-8bc4-7480-9f76-db992caff21d/status",
+    "response_url": "https://queue.fal.run/fal-ai/kling-video/requests/01a142f4-8bc4-7480-9f76-db992caff21d"
+  },
+  "l2": {
+    "sig": "107dc35ce1fab4e52ec189093ae1a55e2da5d1b8",
+    "request_id": "01a142f7-b25c-74a3-b948-4f5cefb3622c",
+    "status_url": "https://queue.fal.run/fal-ai/kling-video/requests/01a142f7-b25c-74a3-b948-4f5cefb3622c/status",
+    "response_url": "https://queue.fal.run/fal-ai/kling-video/requests/01a142f7-b25c-74a3-b948-4f5cefb3622c"
+  },
+  "l3": {
+    "sig": "54497d5848e7612b8fb36d75b8a4bd2720b31f25",
+    "request_id": "01a142f9-b6ec-7653-ba80-4e638a436f9e",
+    "status_url": "https://queue.fal.run/fal-ai/kling-video/requests/01a142f9-b6ec-7653-ba80-4e638a436f9e/status",
+    "response_url": "https://queue.fal.run/fal-ai/kling-video/requests/01a142f9-b6ec-7653-ba80-4e638a436f9e"
+  },
+  "l6": {
+    "sig": "8db4d5f92edb242c0fdf365f12468383eea41b4c",
+    "request_id": "01a142fb-d29a-7831-b796-0ffa2182d571",
+    "status_url": "https://queue.fal.run/fal-ai/kling-video/requests/01a142fb-d29a-7831-b796-0ffa2182d571/status",
+    "response_url": "https://queue.fal.run/fal-ai/kling-video/requests/01a142fb-d29a-7831-b796-0ffa2182d571"
+  },
+  "l8": {
+    "sig": "e63f806fc26dfe5e789208715821320715cd434c",
+    "request_id": "01a142fd-ef87-7bd0-956d-e1f007f0981d",
+    "status_url": "https://queue.fal.run/fal-ai/kling-video/requests/01a142fd-ef87-7bd0-956d-e1f007f0981d/status",
+    "response_url": "https://queue.fal.run/fal-ai/kling-video/requests/01a142fd-ef87-7bd0-956d-e1f007f0981d"
+  }
+}

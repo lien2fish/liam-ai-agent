@@ -1,0 +1,105 @@
+/* 保險冷知識 — 金融保險知識短片的設計系統（深藍＋金，與海鮮系列分開） */
+
+:root {
+  --ink: #f3f1ea;
+  --dim: #9aa6b8;
+  --gold: #d9b26a;
+  --warn: #e07a5f;
+  --ok: #7cc5a5;
+  --bg-top: #101c33;
+  --bg-bottom: #070d1a;
+  --panel: rgba(255, 255, 255, 0.06);
+  --panel-line: rgba(217, 178, 106, 0.45);
+}
+
+@font-face { font-family: "PingFang TC"; src: local("PingFang TC"); }
+@font-face { font-family: "Noto Sans CJK TC"; src: local("Noto Sans CJK TC"); }
+@font-face { font-family: "Noto Sans TC"; src: local("Noto Sans TC"); }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg-bottom); }
+body {
+  font-family: "PingFang TC", "Noto Sans CJK TC", "Noto Sans TC", sans-serif;
+  font-weight: 600; -webkit-font-smoothing: antialiased;
+}
+#root { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+.clip { position: absolute; inset: 0; }
+.sin  { position: absolute; inset: 0; }
+
+#bg { background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%); }
+#bg .glow {
+  position: absolute; left: 0; right: 0; top: 0; height: 1200px;
+  background: radial-gradient(60% 50% at 50% 32%, rgba(217, 178, 106, 0.10), rgba(217, 178, 106, 0) 70%);
+}
+
+#brand-top {
+  position: absolute; left: 0; right: 0; top: 250px; text-align: center;
+  font-size: 44px; color: var(--gold); letter-spacing: 0.12em;
+}
+#brand-bottom {
+  position: absolute; left: 0; right: 0; top: 1800px; text-align: center;
+  font-size: 32px; color: var(--dim); letter-spacing: 0.06em;
+}
+
+/* 文字 */
+.stack { position: absolute; left: 70px; right: 70px; text-align: center; }
+.line  { display: block; color: var(--ink); line-height: 1.32; text-wrap: balance; }
+.hook  { font-size: 84px; font-weight: 800; }
+.big   { font-size: 92px; font-weight: 800; }
+.mid   { font-size: 64px; }
+.gold { color: var(--gold); }
+.warn { color: var(--warn); }
+.dim  { color: var(--dim); }
+
+.tag {
+  position: absolute; left: 0; right: 0; text-align: center;
+  font-size: 46px; letter-spacing: 0.28em; color: var(--gold);
+}
+.tag.warn { color: var(--warn); }
+.cite {
+  position: absolute; left: 70px; right: 70px; text-align: center;
+  font-size: 38px; color: var(--dim);
+}
+.sub {
+  position: absolute; left: 80px; right: 80px; top: 1440px; text-align: center;
+  font-size: 46px; line-height: 1.4; color: var(--ink);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8); text-wrap: balance;
+}
+
+/* 開場對話 */
+.char { position: absolute; display: block; }
+.bubble {
+  position: absolute; left: 70px; right: 70px; padding: 30px 40px;
+  background: #fbf7ee; color: #1a2234; border-radius: 36px;
+  font-size: 54px; line-height: 1.38; text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45); text-wrap: balance;
+}
+.bubble .who { display: block; font-size: 34px; color: #a07b35; margin-bottom: 6px; letter-spacing: 0.1em; }
+.bubble::after {
+  content: ""; position: absolute; bottom: -34px; width: 0; height: 0;
+  border-left: 30px solid transparent; border-right: 30px solid transparent;
+  border-top: 36px solid #fbf7ee;
+}
+.bubble.left::after  { left: 210px; }
+.bubble.right::after { right: 210px; }
+
+/* 規則卡 */
+.panel {
+  position: absolute; left: 90px; right: 90px; border-radius: 34px;
+  background: var(--panel); border: 3px solid var(--panel-line);
+}
+.panel.warn { border-color: rgba(224, 122, 95, 0.6); }
+
+/* 特徵格 */
+.tile {
+  position: absolute; width: 430px; height: 150px; border-radius: 26px;
+  background: var(--panel); border: 3px solid var(--panel-line);
+  color: var(--ink); font-size: 60px; display: flex; align-items: center; justify-content: center;
+}
+
+/* 長條 */
+.barrow { position: absolute; left: 90px; right: 90px; height: 150px; }
+.barrow .lbl { position: absolute; left: 0; top: 0; font-size: 42px; color: var(--dim); }
+.barrow .track { position: absolute; left: 0; right: 0; top: 64px; height: 70px; border-radius: 35px; background: rgba(255,255,255,0.07); }
+.barrow .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 35px; transform-origin: left center; }
+.barrow .val { position: absolute; right: 0; top: 0; font-size: 46px; color: var(--ink); }
