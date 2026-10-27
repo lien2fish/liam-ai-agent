@@ -366,6 +366,21 @@ evict Desktop 上的檔案**（志工照片變 `.icloud` stub）、Bash 連寫 o
 你的口播影片  →  Python --insert  →  剪進去當示意圖（維持「人在現場講」的識別度）
 ```
 
+### 🔴 HyperFrames 本機渲染規則（2026-10-27 兩度記憶體耗盡、整台重開後定）
+
+HyperFrames 0.8.30 渲染會**對每段 `<video>` 同時開一個 ffmpeg 抽格、沒有上限**——金錢怪物 es-01（186 段 b-roll）開到 130 個、吃掉 36GB。
+Activity Monitor 會把子程序算在終端機頭上，看起來像「cmux 吃 30 多 GB」。跟 Codex 無關。
+
+| 規則 | 怎麼做 | 實測 |
+|---|---|---|
+| 抽格限流 | 環境變數 `HYPERFRAMES_FFMPEG_PATH` 指向 `finance_shorts/ffmpeg_gate.py`（只攔抽格：同時 ≤2、每個 2 核，其餘 ffmpeg 原樣放行）| 186 段 42.6 秒、0.5GB |
+| 強制 SDR | `render --sdr` | 素材只要混一段 HDR 就整支走 HDR 分層合成：1 小時 39 分→**17 分**，HDR 版畫面發灰 |
+| 限制 Chrome | `render --workers 3` | 不設是 auto 開滿核心，M5 Air 無風扇會過熱 |
+
+- 已套用：`finance_shorts/slides.py`。**尚未套用**：`finance_shorts/build.py`、`podcast.py`、`podcast_wide.py`、各集 `render.py`、`proposal_video/build.py`、`collab_video/build.py`——素材影片段數多（>~50）時要先比照改
+- 渲染一律背景跑；崩過一次不要原樣重跑；`pkill` 主程式殺不到 ffmpeg／Chrome 子程序
+- 雲端 workflow `hyperframes_trial.yml` 不受影響（GitHub runner 獨立）
+
 ⛔ **不要因為「看起來重複」就砍掉其中一套。**
 ⛔ **`knowledge_short.py` 的 `vessel-02` 已停用**——它把 AI 生成的「衛星風格」圖
 配上「這是從太空拍下來的」旁白。已由 HyperFrames 版（真實 NASA VIIRS 影像）取代。
