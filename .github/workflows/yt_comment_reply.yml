@@ -30,11 +30,4 @@ jobs:
 
       # 泥馬的真心話（甜點）2026-10-28 Lien 取消自動回覆；profile 保留在 comment_reply.py，要恢復把這步加回來
 
-      # 財經頻道：問建議／走勢／個人狀況的一律留給人工，輸出端再擋數字與建議用語
-      - name: 金錢怪物（財經）
-        env:
-          GEMINI_KEY:                     ${{ secrets.GEMINI_KEY }}
-          YT_FORTUNE_OAUTH_CLIENT_ID:     ${{ secrets.YT_FORTUNE_OAUTH_CLIENT_ID }}
-          YT_FORTUNE_OAUTH_CLIENT_SECRET: ${{ secrets.YT_FORTUNE_OAUTH_CLIENT_SECRET }}
-          YT_FORTUNE_OAUTH_REFRESH_TOKEN: ${{ secrets.YT_FORTUNE_OAUTH_REFRESH_TOKEN }}
-        run: python3 youtube/comment_reply.py --profile fortune --max 5
+      # 金錢怪物（財經）2026-10-28 Lien 取消自動回覆；profile 保留在 comment_reply.py，要恢復把這步加回來
