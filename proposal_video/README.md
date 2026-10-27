@@ -30,7 +30,7 @@ trash audio/full/s21.mp3
 # 5. 版面稽核
 cd full-wide && npx --yes hyperframes@0.8.30 check
 # 6. 渲染
-cd full-wide && npx --yes hyperframes@0.8.30 render
+cd full-wide && python3 ../../tools/hf_render.py   # 不要手打 npx render，規則見 CLAUDE.md「HyperFrames 本機渲染規則」
 ```
 
 ⚠️ **時間軸是算出來的，不要手改 index.html 的 `data-start`。**

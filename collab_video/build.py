@@ -285,7 +285,7 @@ def build(which, fmt, plan, total, timing, tag):
             "scripts": {
                 "dev": "npx --yes hyperframes@0.8.30 preview",
                 "check": "npx --yes hyperframes@0.8.30 check",
-                "render": "npx --yes hyperframes@0.8.30 render",
+                "render": "python3 ../../tools/hf_render.py",  # 規則見 CLAUDE.md「HyperFrames 本機渲染規則」
             },
         },
         open(f"{d}/package.json", "w"),
