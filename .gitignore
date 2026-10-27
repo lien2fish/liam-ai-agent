@@ -141,9 +141,25 @@ finance_shorts/shared/chars/
 finance_shorts/試做成品/
 finance_shorts/*/lipsync/
 
+# 中文克隆旁白的原音與修正備份只留本機
+finance_shorts/mw-01-codex-clone/備份/
+# 配音一律不進版控（mw-01-zc 是克隆聲音＝生物特徵）；測試與備份資料夾只留本機
+finance_shorts/**/*.mp3
+finance_shorts/*/v1_備份_*/
+finance_shorts/*/備份_*/
+finance_shorts/*/audio_backup_*/
+finance_shorts/*/同框測試_*/
+# 背景圖比照 b-roll 只留本機（來源與授權記在 credits.json，照它可重新下載）
+finance_shorts/shared/bg/_candidates/
+finance_shorts/shared/bg/*.jpg
+finance_shorts/shared/bg/*.png
+
 # AI 雙人協作介紹影片（collab_video/）——比照 proposal_video：
 # 文案正本在 liam-workspace/collab_video/（pull_content.sh 取回），旁白是克隆聲音，產出含全文
 collab_video/content/
 collab_video/full-*/
 collab_video/short-*/
 collab_video/audio/
+# YouTube 長片產線：build 腳本內含旁白原文，整個資料夾先不進公開 repo
+collab_video/yt/
+collab_video/yt2/

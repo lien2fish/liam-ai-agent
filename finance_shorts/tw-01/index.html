@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="zh-Hant" data-resolution="landscape">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>颱風假的錢誰付？放假一天少多少薪水，香港、日本、菲律賓怎麼算</title>
+<link rel="stylesheet" href="shared/brand.css" />
+<style>
+html, body, #root { width: 1920px; height: 1080px; }
+#bg { background: radial-gradient(120% 90% at 20% 0%, #16294a 0%, #0b1426 55%, #070d1a 100%); }
+#grid { position: absolute; inset: 0; opacity: 0.08;
+  background-image: linear-gradient(#9fb3d1 1px, transparent 1px), linear-gradient(90deg, #9fb3d1 1px, transparent 1px);
+  background-size: 96px 96px; }
+.brand { position: absolute; left: 64px; top: 48px; font-size: 30px; color: var(--gold); letter-spacing: 0.12em; text-shadow: 0 2px 8px rgba(0,0,0,0.95); }
+.disc { position: absolute; right: 64px; top: 52px; font-size: 22px; color: rgba(243,241,234,0.88); text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
+.pg { position: absolute; right: 64px; bottom: 34px; font-size: 24px; color: var(--dim); }
+.prog { position: absolute; left: 0; bottom: 0; height: 8px; width: 1920px; background: var(--gold); transform-origin: left center; }
+.sub2 { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); width: max-content; max-width: 1560px;
+  padding: 10px 30px; border-radius: 18px; background: rgba(7, 13, 26, 0.75); color: var(--ink);
+  font-size: 42px; line-height: 1.35; text-align: center; text-wrap: balance; }
+.h1 { position: absolute; left: 0; right: 0; text-align: center; color: var(--ink); font-weight: 800; }
+.chip { position: absolute; padding: 8px 26px; border-radius: 999px; border: 3px solid var(--gold); color: var(--gold); font-size: 40px; }
+.bank { position: absolute; left: 160px; top: 300px; font-size: 76px; font-weight: 800; color: var(--ink); }
+.rate { position: absolute; left: 960px; top: 330px; font-size: 190px; font-weight: 800; color: var(--gold); white-space: nowrap; }
+.rnote { position: absolute; left: 160px; top: 640px; font-size: 48px; color: var(--ink); }
+.arrow { position: absolute; color: var(--warn); }
+.card { position: absolute; border-radius: 30px; background: rgba(255,255,255,0.06); border: 3px solid var(--panel-line); }
+.bl { position: absolute; left: 220px; font-size: 46px; color: var(--ink); }
+.btrack { position: absolute; left: 480px; width: 1000px; height: 64px; border-radius: 32px; background: rgba(255,255,255,0.06); }
+.bfill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 32px; transform-origin: left center; }
+.bv { position: absolute; font-size: 42px; color: var(--ink); }
+.bgw { position: absolute; inset: 0; overflow: hidden; }
+.vclip { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; }
+.vshade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.7) 100%); }
+.callout { position: absolute; left: 96px; bottom: 210px; padding: 18px 34px 22px; border-radius: 18px;
+  background: rgba(7,13,26,0.82); border-left: 10px solid var(--gold); max-width: 900px; }
+.ctag, .cbig, .cnote { display: block; position: relative; }
+.ctag { font-size: 34px; line-height: 1.4; color: var(--gold); font-weight: 700; }
+.cbig { font-size: 120px; line-height: 1.25; margin: 4px 0; font-weight: 800; color: #ffd400; }
+.cnote { font-size: 30px; line-height: 1.4; color: var(--ink); margin-top: 6px; }
+.bgw img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 60% 40%; }
+.shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,10,20,0.66) 0%, rgba(5,10,20,0.60) 45%, rgba(5,10,20,0.86) 100%); }
+.sin .h1, .sin .bank, .sin .rate, .sin .rnote, .sin .bl, .sin .bv { text-shadow: 0 4px 18px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.9); }
+.card { background: rgba(7,13,26,0.70) !important; }
+.btrack { background: rgba(7,13,26,0.65) !important; }
+</style>
+<script src="vendor/gsap.min.js"></script>
+</head>
+<body>
+<div id="root" data-composition-id="tw01" data-start="0" data-duration="613.88" data-fps="24" data-width="1920" data-height="1080">
+<div id="bg" class="clip" data-start="0" data-duration="613.88" data-track-index="0"><div id="grid"></div></div>
+<video class="clip vclip" id="c1_0" src="shared/broll/ty_tw_00.mp4" muted data-volume="0" data-start="0.000" data-duration="3.125" data-track-index="1"></video>
+<video class="clip vclip" id="c2_0" src="shared/broll/ty_tw_01.mp4" muted data-volume="0" data-start="3.125" data-duration="4.075" data-track-index="1"></video>
+<video class="clip vclip" id="c2_1" src="shared/broll/ty_tw_02.mp4" muted data-volume="0" data-start="7.200" data-duration="4.075" data-track-index="1"></video>
+<video class="clip vclip" id="c3_0" src="shared/broll/tw_mrt_02.mp4" muted data-volume="0" data-start="11.275" data-duration="6.630" data-track-index="1"></video>
+<video class="clip vclip" id="c4_0" src="shared/broll/tw_mrt_03.mp4" muted data-volume="0" data-start="17.905" data-duration="4.609" data-track-index="1"></video>
+<video class="clip vclip" id="c4_1" src="shared/broll/tw_mrt_04.mp4" muted data-volume="0" data-start="22.514" data-duration="4.609" data-track-index="1"></video>
+<video class="clip vclip" id="c5_0" src="shared/broll/tw_mrt_06.mp4" muted data-volume="0" data-start="27.123" data-duration="5.510" data-track-index="1"></video>
+<video class="clip vclip" id="c6_0" src="shared/broll/tw_mrt_07.mp4" muted data-volume="0" data-start="32.633" data-duration="2.790" data-track-index="1"></video>
+<video class="clip vclip" id="c7_0" src="shared/broll/tw_mrt_08.mp4" muted data-volume="0" data-start="35.423" data-duration="3.110" data-track-index="1"></video>
+<video class="clip vclip" id="c8_0" src="shared/broll/ty_hk_00.mp4" muted data-volume="0" data-start="38.533" data-duration="4.915" data-track-index="1"></video>
+<video class="clip vclip" id="c8_1" src="shared/broll/ty_hk_01.mp4" muted data-volume="0" data-start="43.448" data-duration="4.915" data-track-index="1"></video>
+<video class="clip vclip" id="c9_0" src="shared/broll/tw_mrt_11.mp4" muted data-volume="0" data-start="48.363" data-duration="2.390" data-track-index="1"></video>
+<video class="clip vclip" id="c10_0" src="shared/broll/ty_tw_03.mp4" muted data-volume="0" data-start="50.753" data-duration="5.750" data-track-index="1"></video>
+<video class="clip vclip" id="c11_0" src="shared/broll/ty_tw_04.mp4" muted data-volume="0" data-start="56.503" data-duration="6.390" data-track-index="1"></video>
+<video class="clip vclip" id="c12_0" src="shared/broll/tw_city_08.mp4" muted data-volume="0" data-start="62.893" data-duration="3.190" data-track-index="1"></video>
+<video class="clip vclip" id="c13_0" src="shared/broll/tw_city_09.mp4" muted data-volume="0" data-start="66.083" data-duration="5.350" data-track-index="1"></video>
+<video class="clip vclip" id="c14_0" src="shared/broll/tw_city_10.mp4" muted data-volume="0" data-start="71.433" data-duration="4.390" data-track-index="1"></video>
+<video class="clip vclip" id="c15_0" src="shared/broll/tw_res_09.mp4" muted data-volume="0" data-start="75.823" data-duration="4.155" data-track-index="1"></video>
+<video class="clip vclip" id="c15_1" src="shared/broll/tw_res_10.mp4" muted data-volume="0" data-start="79.978" data-duration="4.155" data-track-index="1"></video>
+<video class="clip vclip" id="c16_0" src="shared/broll/tw_res_12.mp4" muted data-volume="0" data-start="84.133" data-duration="3.030" data-track-index="1"></video>
+<video class="clip vclip" id="c17_0" src="shared/broll/tw_res_18.mp4" muted data-volume="0" data-start="87.163" data-duration="4.555" data-track-index="1"></video>
+<video class="clip vclip" id="c17_1" src="shared/broll/tw_res_20.mp4" muted data-volume="0" data-start="91.718" data-duration="4.555" data-track-index="1"></video>
+<video class="clip vclip" id="c18_0" src="shared/broll/ty_tw_05.mp4" muted data-volume="0" data-start="96.273" data-duration="6.310" data-track-index="1"></video>
+<video class="clip vclip" id="c19_0" src="shared/broll/tw_res_21.mp4" muted data-volume="0" data-start="102.583" data-duration="6.470" data-track-index="1"></video>
+<video class="clip vclip" id="c20_0" src="shared/broll/tw_res_22.mp4" muted data-volume="0" data-start="109.053" data-duration="2.790" data-track-index="1"></video>
+<video class="clip vclip" id="c21_0" src="shared/broll/tw_res_23.mp4" muted data-volume="0" data-start="111.843" data-duration="4.355" data-track-index="1"></video>
+<video class="clip vclip" id="c21_1" src="shared/broll/tw_tm_00.mp4" muted data-volume="0" data-start="116.198" data-duration="4.355" data-track-index="1"></video>
+<video class="clip vclip" id="c22_0" src="shared/broll/tw_tm_01.mp4" muted data-volume="0" data-start="120.553" data-duration="5.510" data-track-index="1"></video>
+<video class="clip vclip" id="c23_0" src="shared/broll/tw_tm_02.mp4" muted data-volume="0" data-start="126.063" data-duration="3.430" data-track-index="1"></video>
+<video class="clip vclip" id="c24_0" src="shared/broll/tw_tm_03.mp4" muted data-volume="0" data-start="129.493" data-duration="4.555" data-track-index="1"></video>
+<video class="clip vclip" id="c24_1" src="shared/broll/tw_tm_04.mp4" muted data-volume="0" data-start="134.048" data-duration="4.555" data-track-index="1"></video>
+<video class="clip vclip" id="c25_0" src="shared/broll/tw_tm_05.mp4" muted data-volume="0" data-start="138.603" data-duration="4.630" data-track-index="1"></video>
+<video class="clip vclip" id="c26_0" src="shared/broll/tw_tm_06.mp4" muted data-volume="0" data-start="143.233" data-duration="7.110" data-track-index="1"></video>
+<video class="clip vclip" id="c27_0" src="shared/broll/ty_tw_06.mp4" muted data-volume="0" data-start="150.343" data-duration="5.866" data-track-index="1"></video>
+<video class="clip vclip" id="c28_0" src="shared/broll/tw_tm_07.mp4" muted data-volume="0" data-start="156.209" data-duration="4.475" data-track-index="1"></video>
+<video class="clip vclip" id="c28_1" src="shared/broll/tw_tm_08.mp4" muted data-volume="0" data-start="160.684" data-duration="4.475" data-track-index="1"></video>
+<video class="clip vclip" id="c29_0" src="shared/broll/tw_tm_09.mp4" muted data-volume="0" data-start="165.159" data-duration="5.430" data-track-index="1"></video>
+<video class="clip vclip" id="c30_0" src="shared/broll/tw_tm_10.mp4" muted data-volume="0" data-start="170.589" data-duration="7.110" data-track-index="1"></video>
+<video class="clip vclip" id="c31_0" src="shared/broll/tw_tm_11.mp4" muted data-volume="0" data-start="177.699" data-duration="4.630" data-track-index="1"></video>
+<video class="clip vclip" id="c32_0" src="shared/broll/tw_tm_12.mp4" muted data-volume="0" data-start="182.329" data-duration="3.755" data-track-index="1"></video>
+<video class="clip vclip" id="c32_1" src="shared/broll/tw_tm_13.mp4" muted data-volume="0" data-start="186.084" data-duration="3.755" data-track-index="1"></video>
+<video class="clip vclip" id="c33_0" src="shared/broll/tw_tm_15.mp4" muted data-volume="0" data-start="189.839" data-duration="4.475" data-track-index="1"></video>
+<video class="clip vclip" id="c33_1" src="shared/broll/tw_tm_16.mp4" muted data-volume="0" data-start="194.314" data-duration="4.475" data-track-index="1"></video>
+<video class="clip vclip" id="c34_0" src="shared/broll/tw_tm_17.mp4" muted data-volume="0" data-start="198.789" data-duration="3.990" data-track-index="1"></video>
+<video class="clip vclip" id="c35_0" src="shared/broll/ty_tw_07.mp4" muted data-volume="0" data-start="202.779" data-duration="3.270" data-track-index="1"></video>
+<video class="clip vclip" id="c36_0" src="shared/broll/ty_tw_08.mp4" muted data-volume="0" data-start="206.049" data-duration="4.555" data-track-index="1"></video>
+<video class="clip vclip" id="c36_1" src="shared/broll/ty_tw_13.mp4" muted data-volume="0" data-start="210.604" data-duration="4.555" data-track-index="1"></video>
+<video class="clip vclip" id="c37_0" src="shared/broll/ty_tw_16.mp4" muted data-volume="0" data-start="215.159" data-duration="4.795" data-track-index="1"></video>
+<video class="clip vclip" id="c37_1" src="shared/broll/ty_tw_17.mp4" muted data-volume="0" data-start="219.954" data-duration="4.795" data-track-index="1"></video>
+<video class="clip vclip" id="c38_0" src="shared/broll/ty_farm_00.mp4" muted data-volume="0" data-start="224.749" data-duration="3.270" data-track-index="1"></video>
+<video class="clip vclip" id="c39_0" src="shared/broll/ty_farm_01.mp4" muted data-volume="0" data-start="228.019" data-duration="3.675" data-track-index="1"></video>
+<video class="clip vclip" id="c39_1" src="shared/broll/ty_farm_02.mp4" muted data-volume="0" data-start="231.694" data-duration="3.675" data-track-index="1"></video>
+<video class="clip vclip" id="c40_0" src="shared/broll/ty_farm_03.mp4" muted data-volume="0" data-start="235.369" data-duration="6.550" data-track-index="1"></video>
+<video class="clip vclip" id="c41_0" src="shared/broll/ty_farm_04.mp4" muted data-volume="0" data-start="241.919" data-duration="4.550" data-track-index="1"></video>
+<video class="clip vclip" id="c42_0" src="shared/broll/ty_farm_05.mp4" muted data-volume="0" data-start="246.469" data-duration="4.070" data-track-index="1"></video>
+<video class="clip vclip" id="c43_0" src="shared/broll/ty_farm_06.mp4" muted data-volume="0" data-start="250.539" data-duration="6.230" data-track-index="1"></video>
+<video class="clip vclip" id="c44_0" src="shared/broll/ty_farm_07.mp4" muted data-volume="0" data-start="256.769" data-duration="4.155" data-track-index="1"></video>
+<video class="clip vclip" id="c44_1" src="shared/broll/ty_farm_08.mp4" muted data-volume="0" data-start="260.924" data-duration="4.155" data-track-index="1"></video>
+<video class="clip vclip" id="c45_0" src="shared/broll/tw_tm_18.mp4" muted data-volume="0" data-start="265.079" data-duration="2.950" data-track-index="1"></video>
+<video class="clip vclip" id="c46_0" src="shared/broll/tw_mrt_02.mp4" muted data-volume="0" data-start="268.029" data-duration="6.664" data-track-index="1"></video>
+<video class="clip vclip" id="c47_0" src="shared/broll/tw_mrt_03.mp4" muted data-volume="0" data-start="274.693" data-duration="5.590" data-track-index="1"></video>
+<video class="clip vclip" id="c48_0" src="shared/broll/tw_mrt_04.mp4" muted data-volume="0" data-start="280.283" data-duration="5.670" data-track-index="1"></video>
+<video class="clip vclip" id="c49_0" src="shared/broll/tw_mrt_06.mp4" muted data-volume="0" data-start="285.953" data-duration="3.915" data-track-index="1"></video>
+<video class="clip vclip" id="c49_1" src="shared/broll/tw_mrt_07.mp4" muted data-volume="0" data-start="289.868" data-duration="3.915" data-track-index="1"></video>
+<video class="clip vclip" id="c50_0" src="shared/broll/ty_tw_18.mp4" muted data-volume="0" data-start="293.783" data-duration="4.435" data-track-index="1"></video>
+<video class="clip vclip" id="c50_1" src="shared/broll/ty_tw_00.mp4" muted data-volume="0" data-start="298.218" data-duration="4.435" data-track-index="1"></video>
+<video class="clip vclip" id="c51_0" src="shared/broll/fr_fin_03.mp4" muted data-volume="0" data-start="302.653" data-duration="2.790" data-track-index="1"></video>
+<video class="clip vclip" id="c52_0" src="shared/broll/fr_fin_04.mp4" muted data-volume="0" data-start="305.443" data-duration="5.350" data-track-index="1"></video>
+<video class="clip vclip" id="c53_0" src="shared/broll/tw_stock_00.mp4" muted data-volume="0" data-start="310.793" data-duration="4.595" data-track-index="1"></video>
+<video class="clip vclip" id="c53_1" src="shared/broll/tw_stock_01.mp4" muted data-volume="0" data-start="315.388" data-duration="4.595" data-track-index="1"></video>
+<video class="clip vclip" id="c54_0" src="shared/broll/tw_stock_02.mp4" muted data-volume="0" data-start="319.983" data-duration="5.670" data-track-index="1"></video>
+<video class="clip vclip" id="c55_0" src="shared/broll/tw_stock_03.mp4" muted data-volume="0" data-start="325.653" data-duration="4.310" data-track-index="1"></video>
+<video class="clip vclip" id="c56_0" src="shared/broll/tw_stock_04.mp4" muted data-volume="0" data-start="329.963" data-duration="5.590" data-track-index="1"></video>
+<video class="clip vclip" id="c57_0" src="shared/broll/tw_stock_06.mp4" muted data-volume="0" data-start="335.553" data-duration="3.795" data-track-index="1"></video>
+<video class="clip vclip" id="c57_1" src="shared/broll/tw_stock_07.mp4" muted data-volume="0" data-start="339.348" data-duration="3.795" data-track-index="1"></video>
+<video class="clip vclip" id="c58_0" src="shared/broll/tw_stock_08.mp4" muted data-volume="0" data-start="343.143" data-duration="7.110" data-track-index="1"></video>
+<video class="clip vclip" id="c59_0" src="shared/broll/fr_fin_03.mp4" muted data-volume="0" data-start="350.253" data-duration="5.035" data-track-index="1"></video>
+<video class="clip vclip" id="c59_1" src="shared/broll/fr_fin_04.mp4" muted data-volume="0" data-start="355.288" data-duration="5.035" data-track-index="1"></video>
+<video class="clip vclip" id="c60_0" src="shared/broll/tw_stock_00.mp4" muted data-volume="0" data-start="360.323" data-duration="6.230" data-track-index="1"></video>
+<video class="clip vclip" id="c61_0" src="shared/broll/tw_stock_01.mp4" muted data-volume="0" data-start="366.553" data-duration="3.635" data-track-index="1"></video>
+<video class="clip vclip" id="c61_1" src="shared/broll/tw_stock_02.mp4" muted data-volume="0" data-start="370.188" data-duration="3.635" data-track-index="1"></video>
+<video class="clip vclip" id="c62_0" src="shared/broll/tw_stock_03.mp4" muted data-volume="0" data-start="373.823" data-duration="6.390" data-track-index="1"></video>
+<video class="clip vclip" id="c63_0" src="shared/broll/tw_stock_04.mp4" muted data-volume="0" data-start="380.213" data-duration="4.150" data-track-index="1"></video>
+<video class="clip vclip" id="c64_0" src="shared/broll/tw_stock_06.mp4" muted data-volume="0" data-start="384.363" data-duration="5.990" data-track-index="1"></video>
+<video class="clip vclip" id="c65_0" src="shared/broll/tw_stock_07.mp4" muted data-volume="0" data-start="390.353" data-duration="4.183" data-track-index="1"></video>
+<video class="clip vclip" id="c65_1" src="shared/broll/tw_stock_08.mp4" muted data-volume="0" data-start="394.536" data-duration="4.183" data-track-index="1"></video>
+<video class="clip vclip" id="c65_2" src="shared/broll/fr_fin_03.mp4" muted data-volume="0" data-start="398.720" data-duration="4.183" data-track-index="1"></video>
+<video class="clip vclip" id="c66_0" src="shared/broll/fr_fin_04.mp4" muted data-volume="0" data-start="402.903" data-duration="5.248" data-track-index="1"></video>
+<video class="clip vclip" id="c66_1" src="shared/broll/tw_stock_00.mp4" muted data-volume="0" data-start="408.151" data-duration="5.248" data-track-index="1"></video>
+<video class="clip vclip" id="c67_0" src="shared/broll/ty_hk_03.mp4" muted data-volume="0" data-start="413.398" data-duration="2.550" data-track-index="1"></video>
+<video class="clip vclip" id="c68_0" src="shared/broll/ty_hk_04.mp4" muted data-volume="0" data-start="415.948" data-duration="3.715" data-track-index="1"></video>
+<video class="clip vclip" id="c68_1" src="shared/broll/ty_hk_05.mp4" muted data-volume="0" data-start="419.663" data-duration="3.715" data-track-index="1"></video>
+<video class="clip vclip" id="c69_0" src="shared/broll/ty_hk_06.mp4" muted data-volume="0" data-start="423.378" data-duration="3.915" data-track-index="1"></video>
+<video class="clip vclip" id="c69_1" src="shared/broll/ty_hk_07.mp4" muted data-volume="0" data-start="427.293" data-duration="3.915" data-track-index="1"></video>
+<video class="clip vclip" id="c70_0" src="shared/broll/ty_hk_08.mp4" muted data-volume="0" data-start="431.208" data-duration="5.395" data-track-index="1"></video>
+<video class="clip vclip" id="c70_1" src="shared/broll/ty_hk_09.mp4" muted data-volume="0" data-start="436.603" data-duration="5.395" data-track-index="1"></video>
+<video class="clip vclip" id="c71_0" src="shared/broll/ty_hk_10.mp4" muted data-volume="0" data-start="441.998" data-duration="4.075" data-track-index="1"></video>
+<video class="clip vclip" id="c71_1" src="shared/broll/ty_hk_11.mp4" muted data-volume="0" data-start="446.073" data-duration="4.075" data-track-index="1"></video>
+<video class="clip vclip" id="c72_0" src="shared/broll/ty_hk_12.mp4" muted data-volume="0" data-start="450.148" data-duration="4.409" data-track-index="1"></video>
+<video class="clip vclip" id="c72_1" src="shared/broll/ty_hk_13.mp4" muted data-volume="0" data-start="454.557" data-duration="4.409" data-track-index="1"></video>
+<video class="clip vclip" id="c73_0" src="shared/broll/ty_hk_14.mp4" muted data-volume="0" data-start="458.966" data-duration="4.070" data-track-index="1"></video>
+<video class="clip vclip" id="c74_0" src="shared/broll/ty_hk_15.mp4" muted data-volume="0" data-start="463.036" data-duration="7.063" data-track-index="1"></video>
+<video class="clip vclip" id="c75_0" src="shared/broll/ty_jp_00.mp4" muted data-volume="0" data-start="470.099" data-duration="0.790" data-track-index="1"></video>
+<video class="clip vclip" id="c76_0" src="shared/broll/ty_jp_01.mp4" muted data-volume="0" data-start="470.889" data-duration="4.275" data-track-index="1"></video>
+<video class="clip vclip" id="c76_1" src="shared/broll/ty_jp_02.mp4" muted data-volume="0" data-start="475.164" data-duration="4.275" data-track-index="1"></video>
+<video class="clip vclip" id="c77_0" src="shared/broll/ty_jp_03.mp4" muted data-volume="0" data-start="479.439" data-duration="4.235" data-track-index="1"></video>
+<video class="clip vclip" id="c77_1" src="shared/broll/ty_jp_04.mp4" muted data-volume="0" data-start="483.674" data-duration="4.235" data-track-index="1"></video>
+<video class="clip vclip" id="c78_0" src="shared/broll/ty_jp_05.mp4" muted data-volume="0" data-start="487.909" data-duration="4.115" data-track-index="1"></video>
+<video class="clip vclip" id="c78_1" src="shared/broll/ty_jp_07.mp4" muted data-volume="0" data-start="492.024" data-duration="4.115" data-track-index="1"></video>
+<video class="clip vclip" id="c79_0" src="shared/broll/ty_jp_08.mp4" muted data-volume="0" data-start="496.139" data-duration="4.915" data-track-index="1"></video>
+<video class="clip vclip" id="c79_1" src="shared/broll/ty_jp_09.mp4" muted data-volume="0" data-start="501.054" data-duration="4.915" data-track-index="1"></video>
+<video class="clip vclip" id="c80_0" src="shared/broll/ty_jp_10.mp4" muted data-volume="0" data-start="505.969" data-duration="7.190" data-track-index="1"></video>
+<video class="clip vclip" id="c81_0" src="shared/broll/ty_ph_00.mp4" muted data-volume="0" data-start="513.159" data-duration="1.670" data-track-index="1"></video>
+<video class="clip vclip" id="c82_0" src="shared/broll/ty_ph_01.mp4" muted data-volume="0" data-start="514.829" data-duration="4.315" data-track-index="1"></video>
+<video class="clip vclip" id="c82_1" src="shared/broll/ty_ph_02.mp4" muted data-volume="0" data-start="519.144" data-duration="4.315" data-track-index="1"></video>
+<video class="clip vclip" id="c83_0" src="shared/broll/ty_ph_03.mp4" muted data-volume="0" data-start="523.459" data-duration="4.635" data-track-index="1"></video>
+<video class="clip vclip" id="c83_1" src="shared/broll/ty_ph_04.mp4" muted data-volume="0" data-start="528.094" data-duration="4.635" data-track-index="1"></video>
+<video class="clip vclip" id="c84_0" src="shared/broll/ty_ph_05.mp4" muted data-volume="0" data-start="532.729" data-duration="3.755" data-track-index="1"></video>
+<video class="clip vclip" id="c84_1" src="shared/broll/ty_ph_06.mp4" muted data-volume="0" data-start="536.484" data-duration="3.755" data-track-index="1"></video>
+<video class="clip vclip" id="c85_0" src="shared/broll/ty_ph_07.mp4" muted data-volume="0" data-start="540.239" data-duration="6.230" data-track-index="1"></video>
+<video class="clip vclip" id="c86_0" src="shared/broll/ty_hk_16.mp4" muted data-volume="0" data-start="546.469" data-duration="0.870" data-track-index="1"></video>
+<video class="clip vclip" id="c87_0" src="shared/broll/ty_hk_17.mp4" muted data-volume="0" data-start="547.339" data-duration="4.075" data-track-index="1"></video>
+<video class="clip vclip" id="c87_1" src="shared/broll/ty_hk_18.mp4" muted data-volume="0" data-start="551.414" data-duration="4.075" data-track-index="1"></video>
+<video class="clip vclip" id="c88_0" src="shared/broll/ty_jp_00.mp4" muted data-volume="0" data-start="555.489" data-duration="4.075" data-track-index="1"></video>
+<video class="clip vclip" id="c88_1" src="shared/broll/ty_jp_01.mp4" muted data-volume="0" data-start="559.564" data-duration="4.075" data-track-index="1"></video>
+<video class="clip vclip" id="c89_0" src="shared/broll/tw_mrt_08.mp4" muted data-volume="0" data-start="563.639" data-duration="5.430" data-track-index="1"></video>
+<video class="clip vclip" id="c90_0" src="shared/broll/tw_mrt_11.mp4" muted data-volume="0" data-start="569.069" data-duration="6.550" data-track-index="1"></video>
+<video class="clip vclip" id="c91_0" src="shared/broll/tw_city_08.mp4" muted data-volume="0" data-start="575.619" data-duration="5.910" data-track-index="1"></video>
+<video class="clip vclip" id="c92_0" src="shared/broll/tw_city_09.mp4" muted data-volume="0" data-start="581.529" data-duration="6.630" data-track-index="1"></video>
+<video class="clip vclip" id="c93_0" src="shared/broll/tw_city_10.mp4" muted data-volume="0" data-start="588.159" data-duration="5.350" data-track-index="1"></video>
+<video class="clip vclip" id="c94_0" src="shared/broll/ty_tw_01.mp4" muted data-volume="0" data-start="593.509" data-duration="4.435" data-track-index="1"></video>
+<video class="clip vclip" id="c94_1" src="shared/broll/ty_tw_02.mp4" muted data-volume="0" data-start="597.944" data-duration="4.435" data-track-index="1"></video>
+<video class="clip vclip" id="c95_0" src="shared/broll/tw_res_09.mp4" muted data-volume="0" data-start="602.379" data-duration="7.190" data-track-index="1"></video>
+<section id="p1" class="clip" data-start="0.000" data-duration="3.125" data-track-index="2"><div class="vshade"></div><div class="sin" id="p1-in"><div class="sub2" id="p1-sub">金錢怪物，一睜眼就是錢的世界。</div><div class="pg">1 / 96</div></div></section>
+<section id="p2" class="clip" data-start="3.125" data-duration="8.150" data-track-index="3"><div class="vshade"></div><div class="sin" id="p2-in"><div class="callout" id="p2-co"><span class="ctag">10/23 薔琵颱風</span><span class="cbig">全台停班停課</span><span class="cnote">除金門外・人事行政總處</span></div><div class="sub2" id="p2-sub">2026 年 10 月 23 號，薔琵颱風來襲，除了金門，台灣各縣市全部停班停課。</div><div class="pg">2 / 96</div></div></section>
+<section id="p3" class="clip" data-start="11.275" data-duration="6.630" data-track-index="4"><div class="vshade"></div><div class="sin" id="p3-in"><div class="sub2" id="p3-sub">據媒體報導，連台灣股市、櫃買市場、期貨和外匯市場，都跟著休市一天。</div><div class="pg">3 / 96</div></div></section>
+<section id="p4" class="clip" data-start="17.905" data-duration="9.218" data-track-index="5"><div class="vshade"></div><div class="sin" id="p4-in"><div class="callout" id="p4-co"><span class="ctag">10/23 航班取消</span><span class="cbig">近 1,000 班</span><span class="cnote">國內 262・國際 717｜交通部數字・媒體報導</span></div><div class="sub2" id="p4-sub">另據媒體報導，交通部統計，國內航班 262 班全部取消，飛國外的航班也取消了 717 班。</div><div class="pg">4 / 96</div></div></section>
+<section id="p5" class="clip" data-start="27.123" data-duration="5.510" data-track-index="6"><div class="vshade"></div><div class="sin" id="p5-in"><div class="sub2" id="p5-sub">對很多上班族來說，這一天最在意的，其實是一個很簡單的問題。</div><div class="pg">5 / 96</div></div></section>
+<section id="p6" class="clip" data-start="32.633" data-duration="2.790" data-track-index="7"><div class="vshade"></div><div class="sin" id="p6-in"><div class="sub2" id="p6-sub">颱風假那天，薪水到底有沒有？</div><div class="pg">6 / 96</div></div></section>
+<section id="p7" class="clip" data-start="35.423" data-duration="3.110" data-track-index="8"><div class="vshade"></div><div class="sin" id="p7-in"><div class="sub2" id="p7-sub">如果老闆叫你照常上班，又能多拿多少？</div><div class="pg">7 / 96</div></div></section>
+<section id="p8" class="clip" data-start="38.533" data-duration="9.830" data-track-index="9"><div class="vshade"></div><div class="sin" id="p8-in"><div class="sub2" id="p8-sub">今天就來算一算，颱風假的錢到底是誰在付，股市休市又影響了什麼，再看看香港、日本、菲律賓，又是怎麼規定的。</div><div class="pg">8 / 96</div></div></section>
+<section id="p9" class="clip" data-start="48.363" data-duration="2.390" data-track-index="10"><div class="vshade"></div><div class="sin" id="p9-in"><div class="sub2" id="p9-sub">先講，颱風假是怎麼放的。</div><div class="pg">9 / 96</div></div></section>
+<section id="p10" class="clip" data-start="50.753" data-duration="5.750" data-track-index="11"><div class="vshade"></div><div class="sin" id="p10-in"><div class="sub2" id="p10-sub">依照政府的停班停課辦法，颱風暴風圈預計 4 小時內會經過，</div><div class="pg">10 / 96</div></div></section>
+<section id="p11" class="clip" data-start="56.503" data-duration="6.390" data-track-index="12"><div class="vshade"></div><div class="sin" id="p11-in"><div class="callout" id="p11-co"><span class="ctag">停班停課標準</span><span class="cbig">7 級 / 10 級</span><span class="cnote">平均風力 7 級或陣風 10 級・4 小時內</span></div><div class="sub2" id="p11-sub">平均風力可達 7 級以上，或陣風可達 10 級以上，就達到停班停課的標準。</div><div class="pg">11 / 96</div></div></section>
+<section id="p12" class="clip" data-start="62.893" data-duration="3.190" data-track-index="13"><div class="vshade"></div><div class="sin" id="p12-in"><div class="sub2" id="p12-sub">要不要宣布，由各縣市的首長決定。</div><div class="pg">12 / 96</div></div></section>
+<section id="p13" class="clip" data-start="66.083" data-duration="5.350" data-track-index="14"><div class="vshade"></div><div class="sin" id="p13-in"><div class="sub2" id="p13-sub">但很多人不知道，這套標準，管的是政府機關和學校。</div><div class="pg">13 / 96</div></div></section>
+<section id="p14" class="clip" data-start="71.433" data-duration="4.390" data-track-index="15"><div class="vshade"></div><div class="sin" id="p14-in"><div class="sub2" id="p14-sub">民間公司的勞工，要看的是勞動部另外一份規定。</div><div class="pg">14 / 96</div></div></section>
+<section id="p15" class="clip" data-start="75.823" data-duration="8.310" data-track-index="16"><div class="vshade"></div><div class="sin" id="p15-in"><div class="sub2" id="p15-sub">它的全名很長，叫做天然災害發生事業單位勞工出勤管理及工資給付要點。</div><div class="pg">15 / 96</div></div></section>
+<section id="p16" class="clip" data-start="84.133" data-duration="3.030" data-track-index="17"><div class="vshade"></div><div class="sin" id="p16-in"><div class="sub2" id="p16-sub">這份要點的重點，可以分成三件事。</div><div class="pg">16 / 96</div></div></section>
+<section id="p17" class="clip" data-start="87.163" data-duration="9.110" data-track-index="18"><div class="vshade"></div><div class="sin" id="p17-in"><div class="sub2" id="p17-sub">第一，如果你工作的地方、住的地方，或是上下班一定會經過的地方宣布停班，你沒去上班，公司不能算你曠職或遲到。</div><div class="pg">17 / 96</div></div></section>
+<section id="p18" class="clip" data-start="96.273" data-duration="6.310" data-track-index="19"><div class="vshade"></div><div class="sin" id="p18-in"><div class="callout" id="p18-co"><span class="ctag">勞動部要點 第 6 點</span><span class="cbig">不能這樣做</span><span class="cnote">算曠職・逼請假・扣全勤・要補班・開除</span></div><div class="sub2" id="p18-sub">也不能逼你請事假、扣你的全勤獎金、要你之後補班，更不能因為這樣開除你。</div><div class="pg">18 / 96</div></div></section>
+<section id="p19" class="clip" data-start="102.583" data-duration="6.470" data-track-index="20"><div class="vshade"></div><div class="sin" id="p19-in"><div class="callout" id="p19-co"><span class="ctag">勞動部要點 第 7 點</span><span class="cbig">「宜」不扣薪</span><span class="cnote">是建議，不是強制</span></div><div class="sub2" id="p19-sub">第二，那天沒上班的薪水呢？要點的寫法是：公司「宜」不扣發工資。</div><div class="pg">19 / 96</div></div></section>
+<section id="p20" class="clip" data-start="109.053" data-duration="2.790" data-track-index="21"><div class="vshade"></div><div class="sin" id="p20-in"><div class="sub2" id="p20-sub">「宜」這個字，是建議，不是強制。</div><div class="pg">20 / 96</div></div></section>
+<section id="p21" class="clip" data-start="111.843" data-duration="8.710" data-track-index="22"><div class="vshade"></div><div class="sin" id="p21-in"><div class="sub2" id="p21-sub">勞動部的問答也寫得很清楚，工資怎麼算，要看公司的內部規定、勞動契約，或是過去的慣例。</div><div class="pg">21 / 96</div></div></section>
+<section id="p22" class="clip" data-start="120.553" data-duration="5.510" data-track-index="23"><div class="vshade"></div><div class="sin" id="p22-in"><div class="sub2" id="p22-sub">所以，颱風假有沒有薪水，答案是：要看你的公司怎麼規定。</div><div class="pg">22 / 96</div></div></section>
+<section id="p23" class="clip" data-start="126.063" data-duration="3.430" data-track-index="24"><div class="vshade"></div><div class="sin" id="p23-in"><div class="sub2" id="p23-sub">第三，如果公司要你那天照常上班呢？</div><div class="pg">23 / 96</div></div></section>
+<section id="p24" class="clip" data-start="129.493" data-duration="9.110" data-track-index="25"><div class="vshade"></div><div class="sin" id="p24-in"><div class="sub2" id="p24-sub">要點寫的是：當天的工資照給，而且「宜」加給工資。至於加多少，並沒有寫死。</div><div class="pg">24 / 96</div></div></section>
+<section id="p25" class="clip" data-start="138.603" data-duration="4.630" data-track-index="26"><div class="vshade"></div><div class="sin" id="p25-in"><div class="sub2" id="p25-sub">另外，2025 年 9 月 19 號，勞動部又新增了一條規定。</div><div class="pg">25 / 96</div></div></section>
+<section id="p26" class="clip" data-start="143.233" data-duration="7.110" data-track-index="27"><div class="vshade"></div><div class="sin" id="p26-in"><div class="sub2" id="p26-sub">公司要人在停班的時候出勤，必須提供通勤協助，像是交通工具或交通津貼。</div><div class="pg">26 / 96</div></div></section>
+<section id="p27" class="clip" data-start="150.343" data-duration="5.866" data-track-index="28"><div class="vshade"></div><div class="sin" id="p27-in"><div class="callout" id="p27-co"><span class="ctag">2025/9/19 新增</span><span class="cbig">公司付車資</span><span class="cnote">停班仍要求出勤・計程車錢由公司付</span></div><div class="sub2" id="p27-sub">如果原本的通勤方式有困難、必須搭計程車，計程車錢由公司付。</div><div class="pg">27 / 96</div></div></section>
+<section id="p28" class="clip" data-start="156.209" data-duration="8.950" data-track-index="29"><div class="vshade"></div><div class="sin" id="p28-in"><div class="sub2" id="p28-sub">還有，哪些人颱風天要出勤，要事先講好。有工會的要工會同意，沒有工會的，要經過勞資會議同意。</div><div class="pg">28 / 96</div></div></section>
+<section id="p29" class="clip" data-start="165.159" data-duration="5.430" data-track-index="30"><div class="vshade"></div><div class="sin" id="p29-in"><div class="sub2" id="p29-sub">那如果真的被扣薪，一天會少多少？我們用最低工資來算。</div><div class="pg">29 / 96</div></div></section>
+<section id="p30" class="clip" data-start="170.589" data-duration="7.110" data-track-index="31"><div class="vshade"></div><div class="sin" id="p30-in"><div class="callout" id="p30-co"><span class="ctag">2026 最低工資</span><span class="cbig">時薪 196 元</span><span class="cnote">月薪 29,500 元・勞動部</span></div><div class="sub2" id="p30-sub">2026 年台灣的最低工資，月薪 29,500 元，時薪 196 元。</div><div class="pg">30 / 96</div></div></section>
+<section id="p31" class="clip" data-start="177.699" data-duration="4.630" data-track-index="32"><div class="vshade"></div><div class="sin" id="p31-in"><div class="callout" id="p31-co"><span class="ctag">本頻道試算</span><span class="cbig">1,568 元</span><span class="cnote">時薪 196 元 × 8 小時</span></div><div class="sub2" id="p31-sub">用時薪算，一天上班 8 小時，就是 1,568 元。</div><div class="pg">31 / 96</div></div></section>
+<section id="p32" class="clip" data-start="182.329" data-duration="7.510" data-track-index="33"><div class="vshade"></div><div class="sin" id="p32-in"><div class="sub2" id="p32-sub">也就是說，對領時薪的人，一天颱風假如果沒有薪水，就是少了一千五百多元。</div><div class="pg">32 / 96</div></div></section>
+<section id="p33" class="clip" data-start="189.839" data-duration="8.950" data-track-index="34"><div class="vshade"></div><div class="sin" id="p33-in"><div class="sub2" id="p33-sub">最低工資審議會也已經決定，2027 年月薪要調到 30,900 元、時薪 205 元，還要等行政院核定。</div><div class="pg">33 / 96</div></div></section>
+<section id="p34" class="clip" data-start="198.789" data-duration="3.990" data-track-index="35"><div class="vshade"></div><div class="sin" id="p34-in"><div class="sub2" id="p34-sub">如果通過，同樣一天，就是 1,640 元。</div><div class="pg">34 / 96</div></div></section>
+<section id="p35" class="clip" data-start="202.779" data-duration="3.270" data-track-index="36"><div class="vshade"></div><div class="sin" id="p35-in"><div class="sub2" id="p35-sub">那這一次的颱風，台灣一共付出了多少？</div><div class="pg">35 / 96</div></div></section>
+<section id="p36" class="clip" data-start="206.049" data-duration="9.110" data-track-index="37"><div class="vshade"></div><div class="sin" id="p36-in"><div class="callout" id="p36-co"><span class="ctag">10/24 下午統計</span><span class="cbig">1 死 616 傷</span><span class="cnote">中央災害應變中心・媒體報導</span></div><div class="sub2" id="p36-sub">據媒體報導，中央災害應變中心統計，到 10 月 24 號下午，薔琵颱風造成 1 人死亡、616 人受傷。</div><div class="pg">36 / 96</div></div></section>
+<section id="p37" class="clip" data-start="215.159" data-duration="9.590" data-track-index="38"><div class="vshade"></div><div class="sin" id="p37-in"><div class="sub2" id="p37-sub">同樣據媒體報導，全台災情通報有 9,027 件，最多的是路樹倒塌，而且一度有超過 34 萬戶停電。</div><div class="pg">37 / 96</div></div></section>
+<section id="p38" class="clip" data-start="224.749" data-duration="3.270" data-track-index="39"><div class="vshade"></div><div class="sin" id="p38-in"><div class="sub2" id="p38-sub">農業的損失，則是最直接看得到的錢。</div><div class="pg">38 / 96</div></div></section>
+<section id="p39" class="clip" data-start="228.019" data-duration="7.350" data-track-index="40"><div class="vshade"></div><div class="sin" id="p39-in"><div class="callout" id="p39-co"><span class="ctag">農業部 10/24 17 時</span><span class="cbig">1 億 3,336 萬</span><span class="cnote">元・農業產物及民間設施估計損失</span></div><div class="sub2" id="p39-sub">農業部統計，到 10 月 24 號下午 5 點，農業損失大約 1 億 3,336 萬元。</div><div class="pg">39 / 96</div></div></section>
+<section id="p40" class="clip" data-start="235.369" data-duration="6.550" data-track-index="41"><div class="vshade"></div><div class="sin" id="p40-in"><div class="sub2" id="p40-sub">其中光是雲林縣，就損失了 1 億 960 萬元，占全台八成以上。</div><div class="pg">40 / 96</div></div></section>
+<section id="p41" class="clip" data-start="241.919" data-duration="4.550" data-track-index="42"><div class="vshade"></div><div class="sin" id="p41-in"><div class="callout" id="p41-co"><span class="ctag">損失最多的作物</span><span class="cbig">蒜頭</span><span class="cnote">約 5,307 萬元・農業部</span></div><div class="sub2" id="p41-sub">損失最多的作物是蒜頭，大約 5,307 萬元。</div><div class="pg">41 / 96</div></div></section>
+<section id="p42" class="clip" data-start="246.469" data-duration="4.070" data-track-index="43"><div class="vshade"></div><div class="sin" id="p42-in"><div class="sub2" id="p42-sub">受害的農作物面積，大約 2,405 公頃。</div><div class="pg">42 / 96</div></div></section>
+<section id="p43" class="clip" data-start="250.539" data-duration="6.230" data-track-index="44"><div class="vshade"></div><div class="sin" id="p43-in"><div class="sub2" id="p43-sub">農業部提醒，受災的農民要向公所通報，後續才能申請天然災害救助。</div><div class="pg">43 / 96</div></div></section>
+<section id="p44" class="clip" data-start="256.769" data-duration="8.310" data-track-index="45"><div class="vshade"></div><div class="sin" id="p44-in"><div class="sub2" id="p44-sub">這些損失，最後有多少由農民自己吸收、多少靠救助，會不會反映到菜價上，都還要再觀察。</div><div class="pg">44 / 96</div></div></section>
+<section id="p45" class="clip" data-start="265.079" data-duration="2.950" data-track-index="46"><div class="vshade"></div><div class="sin" id="p45-in"><div class="sub2" id="p45-sub">如果把眼光拉到整個台灣經濟呢？</div><div class="pg">45 / 96</div></div></section>
+<section id="p46" class="clip" data-start="268.029" data-duration="6.664" data-track-index="47"><div class="vshade"></div><div class="sin" id="p46-in"><div class="callout" id="p46-co"><span class="ctag">主計總處預測</span><span class="cbig">33.7 兆元</span><span class="cnote">2026 年名目 GDP</span></div><div class="sub2" id="p46-sub">主計總處預測，2026 年台灣的名目 GDP，大約是 33.7 兆元。</div><div class="pg">46 / 96</div></div></section>
+<section id="p47" class="clip" data-start="274.693" data-duration="5.590" data-track-index="48"><div class="vshade"></div><div class="sin" id="p47-in"><div class="callout" id="p47-co"><span class="ctag">本頻道試算</span><span class="cbig">每天 923 億元</span><span class="cnote">33.7 兆 ÷ 365 天・僅示意規模</span></div><div class="sub2" id="p47-sub">平均分到一年 365 天，每天大約是 923 億元的經濟產出。</div><div class="pg">47 / 96</div></div></section>
+<section id="p48" class="clip" data-start="280.283" data-duration="5.670" data-track-index="49"><div class="vshade"></div><div class="sin" id="p48-in"><div class="sub2" id="p48-sub">但這不代表，放一天颱風假，這 923 億元就全部不見了。</div><div class="pg">48 / 96</div></div></section>
+<section id="p49" class="clip" data-start="285.953" data-duration="7.830" data-track-index="50"><div class="vshade"></div><div class="sin" id="p49-in"><div class="sub2" id="p49-sub">一般來說，很多消費只是往後延，有些工廠照常運轉，有些工作也改成在家做。</div><div class="pg">49 / 96</div></div></section>
+<section id="p50" class="clip" data-start="293.783" data-duration="8.870" data-track-index="51"><div class="vshade"></div><div class="sin" id="p50-in"><div class="sub2" id="p50-sub">我們的看法是，真正拿不回來的，是泡水倒伏的作物、被吹壞的設施，還有那一天沒有收入的時薪工作者。</div><div class="pg">50 / 96</div></div></section>
+<section id="p51" class="clip" data-start="302.653" data-duration="2.790" data-track-index="52"><div class="vshade"></div><div class="sin" id="p51-in"><div class="sub2" id="p51-sub">颱風假的帳，還有一筆在股市。</div><div class="pg">51 / 96</div></div></section>
+<section id="p52" class="clip" data-start="305.443" data-duration="5.350" data-track-index="53"><div class="vshade"></div><div class="sin" id="p52-in"><div class="callout" id="p52-co"><span class="ctag">證交所規定</span><span class="cbig">看台北市</span><span class="cnote">不是看你住的縣市</span></div><div class="sub2" id="p52-sub">10 月 23 號這天台股休市，看的其實不是全台停班，而是台北市。</div><div class="pg">52 / 96</div></div></section>
+<section id="p53" class="clip" data-start="310.793" data-duration="9.190" data-track-index="54"><div class="vshade"></div><div class="sin" id="p53-in"><div class="callout" id="p53-co"><span class="ctag">證交所規定</span><span class="cbig">全天休市</span><span class="cnote">台北市當天或上午停止上班</span></div><div class="sub2" id="p53-sub">證交所的規定是：台北市長宣布當天，或當天上午，台北市公教機關停止上班，台股就全天休市。</div><div class="pg">53 / 96</div></div></section>
+<section id="p54" class="clip" data-start="319.983" data-duration="5.670" data-track-index="55"><div class="vshade"></div><div class="sin" id="p54-in"><div class="sub2" id="p54-sub">如果只有下午停班，台股照常交易，只是收盤後的其他交易停止。</div><div class="pg">54 / 96</div></div></section>
+<section id="p55" class="clip" data-start="325.653" data-duration="4.310" data-track-index="56"><div class="vshade"></div><div class="sin" id="p55-in"><div class="sub2" id="p55-sub">那天原本該交割的錢和股票，會順延到下一個營業日。</div><div class="pg">55 / 96</div></div></section>
+<section id="p56" class="clip" data-start="329.963" data-duration="5.590" data-track-index="57"><div class="vshade"></div><div class="sin" id="p56-in"><div class="sub2" id="p56-sub">權證的到期日、新股申購的扣款和抽籤，也都跟著往後延。</div><div class="pg">56 / 96</div></div></section>
+<section id="p57" class="clip" data-start="335.553" data-duration="7.590" data-track-index="58"><div class="vshade"></div><div class="sin" id="p57-in"><div class="h1" id="p57-h" style="top: 180px; font-size: 64px; color: var(--gold)">台股連 4 天沒交易</div><div class="card" id="p57-c0" style="left: 260px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p57-cd0" style="left: 260px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">10/23（五）</div><div class="h1" id="p57-cw0" style="left: 260px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">颱風・台北停班</div><div class="card" id="p57-c1" style="left: 980px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p57-cd1" style="left: 980px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">10/26（一）</div><div class="h1" id="p57-cw1" style="left: 980px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">光復節補假</div><div class="sub2" id="p57-sub">這次又剛好碰上光復節。10 月 25 號是星期日，26 號星期一補假，股市同樣休市。</div><div class="pg">57 / 96</div></div></section>
+<section id="p58" class="clip" data-start="343.143" data-duration="7.110" data-track-index="59"><div class="vshade"></div><div class="sin" id="p58-in"><div class="h1" id="p58-h" style="top: 180px; font-size: 64px; color: var(--gold)">台股連 4 天沒交易</div><div class="card" id="p58-c0" style="left: 260px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p58-cd0" style="left: 260px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">10/23（五）</div><div class="h1" id="p58-cw0" style="left: 260px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">颱風・台北停班</div><div class="card" id="p58-c1" style="left: 980px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p58-cd1" style="left: 980px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">10/26（一）</div><div class="h1" id="p58-cw1" style="left: 980px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">光復節補假</div><div class="sub2" id="p58-sub">等於從 10 月 23 號到 26 號，台股連續 4 天沒有交易，要到 27 號才重新開盤。</div><div class="pg">58 / 96</div></div></section>
+<section id="p59" class="clip" data-start="350.253" data-duration="10.070" data-track-index="60"><div class="vshade"></div><div class="sin" id="p59-in"><div class="callout" id="p59-co"><span class="ctag">證交所 10/22 收盤</span><span class="cbig">46,041 點</span><span class="cnote">成交金額約 9,334 億元</span></div><div class="sub2" id="p59-sub">休市前最後一個交易日，10 月 22 號，加權指數收在 46,041 點，成交金額大約 9,334 億元。</div><div class="pg">59 / 96</div></div></section>
+<section id="p60" class="clip" data-start="360.323" data-duration="6.230" data-track-index="61"><div class="vshade"></div><div class="sin" id="p60-in"><div class="sub2" id="p60-sub">買賣股票，賣出的人要繳證券交易稅，稅率是千分之三。</div><div class="pg">60 / 96</div></div></section>
+<section id="p61" class="clip" data-start="366.553" data-duration="7.270" data-track-index="62"><div class="vshade"></div><div class="sin" id="p61-in"><div class="callout" id="p61-co"><span class="ctag">本頻道試算</span><span class="cbig">約 28 億元</span><span class="cnote">9,334 億 × 千分之三・上限估算</span></div><div class="sub2" id="p61-sub">用這個稅率粗略算，一天九千多億元的成交，證交稅最多大約 28 億元。</div><div class="pg">61 / 96</div></div></section>
+<section id="p62" class="clip" data-start="373.823" data-duration="6.390" data-track-index="63"><div class="vshade"></div><div class="sin" id="p62-in"><div class="sub2" id="p62-sub">實際上 ETF 和當沖的稅率比較低，真正收到的會再少一些。</div><div class="pg">62 / 96</div></div></section>
+<section id="p63" class="clip" data-start="380.213" data-duration="4.150" data-track-index="64"><div class="vshade"></div><div class="sin" id="p63-in"><div class="sub2" id="p63-sub">颱風天股市要不要照常開，最近又被拿出來討論。</div><div class="pg">63 / 96</div></div></section>
+<section id="p64" class="clip" data-start="384.363" data-duration="5.990" data-track-index="65"><div class="vshade"></div><div class="sin" id="p64-in"><div class="sub2" id="p64-sub">據媒體報導，金管會表示，目前還在蒐集各界意見，還沒有時間表。</div><div class="pg">64 / 96</div></div></section>
+<section id="p65" class="clip" data-start="390.353" data-duration="12.550" data-track-index="66"><div class="vshade"></div><div class="sin" id="p65-in"><div class="sub2" id="p65-sub">媒體報導也提到，支持的人認為，現在多半是網路下單；反對的人擔心，券商和銀行的員工得冒著風雨上班，交割和結算也要有人處理。</div><div class="pg">65 / 96</div></div></section>
+<section id="p66" class="clip" data-start="402.903" data-duration="10.495" data-track-index="67"><div class="vshade"></div><div class="sin" id="p66-in"><div class="sub2" id="p66-sub">我們的看法是，股市休幾天，交易只是延後，對長期持有的人影響不大；真正要留意的，是剛好碰上交割、扣款日期的人。</div><div class="pg">66 / 96</div></div></section>
+<section id="p67" class="clip" data-start="413.398" data-duration="2.550" data-track-index="68"><div class="vshade"></div><div class="sin" id="p67-in"><div class="sub2" id="p67-sub">那其他地方是怎麼做的？先看香港。</div><div class="pg">67 / 96</div></div></section>
+<section id="p68" class="clip" data-start="415.948" data-duration="7.430" data-track-index="69"><div class="vshade"></div><div class="sin" id="p68-in"><div class="callout" id="p68-co"><span class="ctag">香港</span><span class="cbig">8 號風球</span><span class="cnote">或黑色暴雨警告</span></div><div class="sub2" id="p68-sub">香港用的是颱風信號。掛到 8 號風球以上，或是黑色暴雨警告，就有一套工作安排。</div><div class="pg">68 / 96</div></div></section>
+<section id="p69" class="clip" data-start="423.378" data-duration="7.830" data-track-index="70"><div class="vshade"></div><div class="sin" id="p69-in"><div class="sub2" id="p69-sub">香港勞工處的工作守則寫，如果 8 號風球在上班前已經掛起，公司不應該要求員工回到工作地點。</div><div class="pg">69 / 96</div></div></section>
+<section id="p70" class="clip" data-start="431.208" data-duration="10.790" data-track-index="71"><div class="vshade"></div><div class="sin" id="p70-in"><div class="callout" id="p70-co"><span class="ctag">香港勞工處 工作守則</span><span class="cbig">不應扣薪</span><span class="cnote">工資・勤工獎・津貼都不扣</span></div><div class="sub2" id="p70-sub">薪水的部分，守則寫：因為惡劣天氣不用上班、提早下班，或是沒辦法準時上班，公司不應該扣工資、勤工獎或津貼。</div><div class="pg">70 / 96</div></div></section>
+<section id="p71" class="clip" data-start="441.998" data-duration="8.150" data-track-index="72"><div class="vshade"></div><div class="sin" id="p71-in"><div class="sub2" id="p71-sub">也不應該要員工之後把工時補回來，更不能拿年假、法定假日或休息日來抵。</div><div class="pg">71 / 96</div></div></section>
+<section id="p72" class="clip" data-start="450.148" data-duration="8.818" data-track-index="73"><div class="vshade"></div><div class="sin" id="p72-in"><div class="sub2" id="p72-sub">至於必須上班的指定員工，公司要安排交通，沒有交通工具，就要付計程車錢，或給額外的交通津貼。</div><div class="pg">72 / 96</div></div></section>
+<section id="p73" class="clip" data-start="458.966" data-duration="4.070" data-track-index="74"><div class="vshade"></div><div class="sin" id="p73-in"><div class="sub2" id="p73-sub">另外，還應該再發一筆額外的當值津貼。</div><div class="pg">73 / 96</div></div></section>
+<section id="p74" class="clip" data-start="463.036" data-duration="7.063" data-track-index="75"><div class="vshade"></div><div class="sin" id="p74-in"><div class="sub2" id="p74-sub">守則也一再強調，這些安排要在颱風季之前就先講好，才能避免不必要的勞資爭議。</div><div class="pg">74 / 96</div></div></section>
+<section id="p75" class="clip" data-start="470.099" data-duration="0.790" data-track-index="76"><div class="vshade"></div><div class="sin" id="p75-in"><div class="sub2" id="p75-sub">再看日本。</div><div class="pg">75 / 96</div></div></section>
+<section id="p76" class="clip" data-start="470.889" data-duration="8.550" data-track-index="77"><div class="vshade"></div><div class="sin" id="p76-in"><div class="callout" id="p76-co"><span class="ctag">日本勞動基準法 第 26 條</span><span class="cbig">6 成以上</span><span class="cnote">公司原因停工的停工津貼</span></div><div class="sub2" id="p76-sub">日本勞動基準法第 26 條規定，如果是公司的原因讓員工停工，要付平均工資 6 成以上的停工津貼。</div><div class="pg">76 / 96</div></div></section>
+<section id="p77" class="clip" data-start="479.439" data-duration="8.470" data-track-index="78"><div class="vshade"></div><div class="sin" id="p77-in"><div class="callout" id="p77-co"><span class="ctag">厚生勞動省</span><span class="cbig">天災不可抗力</span><span class="cnote">公司沒有義務付停工津貼</span></div><div class="sub2" id="p77-sub">但日本厚生勞動省的說明是，颱風這種天災造成的不可抗力，不算公司的原因，公司就沒有義務付這筆津貼。</div><div class="pg">77 / 96</div></div></section>
+<section id="p78" class="clip" data-start="487.909" data-duration="8.230" data-track-index="79"><div class="vshade"></div><div class="sin" id="p78-in"><div class="sub2" id="p78-sub">不過，要算是不可抗力，有兩個條件：原因來自公司外部，而且公司已經盡了最大的注意，還是避免不了。</div><div class="pg">78 / 96</div></div></section>
+<section id="p79" class="clip" data-start="496.139" data-duration="9.830" data-track-index="80"><div class="vshade"></div><div class="sin" id="p79-in"><div class="sub2" id="p79-sub">還有，如果公司過去遇到天災停工，薪水照發，這次突然不發，就屬於對員工不利的變更，不能自己說改就改。</div><div class="pg">79 / 96</div></div></section>
+<section id="p80" class="clip" data-start="505.969" data-duration="7.190" data-track-index="81"><div class="vshade"></div><div class="sin" id="p80-in"><div class="sub2" id="p80-sub">換句話說，在日本，颱風天的薪水，一樣要看公司的規定和過去的做法。</div><div class="pg">80 / 96</div></div></section>
+<section id="p81" class="clip" data-start="513.159" data-duration="1.670" data-track-index="82"><div class="vshade"></div><div class="sin" id="p81-in"><div class="sub2" id="p81-sub">最後看菲律賓。</div><div class="pg">81 / 96</div></div></section>
+<section id="p82" class="clip" data-start="514.829" data-duration="8.630" data-track-index="83"><div class="vshade"></div><div class="sin" id="p82-in"><div class="sub2" id="p82-sub">菲律賓勞動部在 2026 年 8 月 19 號，簽發了第 14 號勞動公告，專門講天氣不好時的停工。</div><div class="pg">82 / 96</div></div></section>
+<section id="p83" class="clip" data-start="523.459" data-duration="9.270" data-track-index="84"><div class="vshade"></div><div class="sin" id="p83-in"><div class="sub2" id="p83-sub">公告說，天氣有危險的時候，公司可以宣布停工；員工如果因為迫切的危險拒絕上班，不能被懲處。</div><div class="pg">83 / 96</div></div></section>
+<section id="p84" class="clip" data-start="532.729" data-duration="7.510" data-track-index="85"><div class="vshade"></div><div class="sin" id="p84-in"><div class="callout" id="p84-co"><span class="ctag">菲律賓勞動部 2026 第 14 號公告</span><span class="cbig">No work, no pay</span><span class="cnote">沒有工作，就沒有薪水</span></div><div class="sub2" id="p84-sub">但薪水的原則是：沒有工作，就沒有薪水。除非公司政策、慣例，或團體協約另外有規定。</div><div class="pg">84 / 96</div></div></section>
+<section id="p85" class="clip" data-start="540.239" data-duration="6.230" data-track-index="86"><div class="vshade"></div><div class="sin" id="p85-in"><div class="sub2" id="p85-sub">也就是說，照這份公告，颱風天沒上班，原則上那天就沒有薪水。</div><div class="pg">85 / 96</div></div></section>
+<section id="p86" class="clip" data-start="546.469" data-duration="0.870" data-track-index="87"><div class="vshade"></div><div class="sin" id="p86-in"><div class="h1" id="p86-h" style="top: 180px; font-size: 64px; color: var(--gold)">颱風天的薪水</div><div class="card" id="p86-c0" style="left: 260px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p86-cd0" style="left: 260px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">台灣</div><div class="h1" id="p86-cw0" style="left: 260px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">不能算曠職・薪水「宜」照給</div><div class="card" id="p86-c1" style="left: 980px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p86-cd1" style="left: 980px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">香港</div><div class="h1" id="p86-cw1" style="left: 980px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">守則：不應扣薪</div><div class="sub2" id="p86-sub">整理一下。</div><div class="pg">86 / 96</div></div></section>
+<section id="p87" class="clip" data-start="547.339" data-duration="8.150" data-track-index="88"><div class="vshade"></div><div class="sin" id="p87-in"><div class="h1" id="p87-h" style="top: 180px; font-size: 64px; color: var(--gold)">颱風天的薪水</div><div class="card" id="p87-c0" style="left: 260px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p87-cd0" style="left: 260px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">台灣</div><div class="h1" id="p87-cw0" style="left: 260px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">不能算曠職・薪水「宜」照給</div><div class="card" id="p87-c1" style="left: 980px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p87-cd1" style="left: 980px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">香港</div><div class="h1" id="p87-cw1" style="left: 980px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">守則：不應扣薪</div><div class="sub2" id="p87-sub">台灣，不能算曠職、不能扣全勤，薪水是建議照給；香港的守則，是不應該扣薪水。</div><div class="pg">87 / 96</div></div></section>
+<section id="p88" class="clip" data-start="555.489" data-duration="8.150" data-track-index="89"><div class="vshade"></div><div class="sin" id="p88-in"><div class="h1" id="p88-h" style="top: 180px; font-size: 64px; color: var(--gold)">颱風天的薪水</div><div class="card" id="p88-c0" style="left: 260px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p88-cd0" style="left: 260px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">日本</div><div class="h1" id="p88-cw0" style="left: 260px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">天災：沒有義務付津貼</div><div class="card" id="p88-c1" style="left: 980px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p88-cd1" style="left: 980px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">菲律賓</div><div class="h1" id="p88-cw1" style="left: 980px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">No work, no pay</div><div class="sub2" id="p88-sub">日本，天災不可抗力，公司沒有義務付停工津貼；菲律賓，原則上沒有工作，就沒有薪水。</div><div class="pg">88 / 96</div></div></section>
+<section id="p89" class="clip" data-start="563.639" data-duration="5.430" data-track-index="90"><div class="vshade"></div><div class="sin" id="p89-in"><div class="sub2" id="p89-sub">這幾個地方有個共同點：颱風那天的薪水，很大一部分要看公司事先怎麼約定。</div><div class="pg">89 / 96</div></div></section>
+<section id="p90" class="clip" data-start="569.069" data-duration="6.550" data-track-index="91"><div class="vshade"></div><div class="sin" id="p90-in"><div class="sub2" id="p90-sub">所以，如果你不確定自己的狀況，可以先翻一下勞動契約或工作規則。</div><div class="pg">90 / 96</div></div></section>
+<section id="p91" class="clip" data-start="575.619" data-duration="5.910" data-track-index="92"><div class="vshade"></div><div class="sin" id="p91-in"><div class="sub2" id="p91-sub">看看裡面有沒有寫，天災停班那天，薪水怎麼算、要不要出勤。</div><div class="pg">91 / 96</div></div></section>
+<section id="p92" class="clip" data-start="581.529" data-duration="6.630" data-track-index="93"><div class="vshade"></div><div class="sin" id="p92-in"><div class="callout" id="p92-co"><span class="ctag">勞動部免付費專線</span><span class="cbig">0800-085-151</span></div><div class="sub2" id="p92-sub">有疑問，也可以打勞動部的免付費專線，0800-085-151。</div><div class="pg">92 / 96</div></div></section>
+<section id="p93" class="clip" data-start="588.159" data-duration="5.350" data-track-index="94"><div class="vshade"></div><div class="sin" id="p93-in"><div class="sub2" id="p93-sub">如果你是老闆，把規則先講清楚，也能少掉很多颱風天的爭議。</div><div class="pg">93 / 96</div></div></section>
+<section id="p94" class="clip" data-start="593.509" data-duration="8.870" data-track-index="95"><div class="vshade"></div><div class="sin" id="p94-in"><div class="sub2" id="p94-sub">颱風假看起來只是一天休息，背後其實是一筆一筆的錢：員工的薪水、農民的收成，還有整個社會一天的產出。</div><div class="pg">94 / 96</div></div></section>
+<section id="p95" class="clip" data-start="602.379" data-duration="7.190" data-track-index="96"><div class="vshade"></div><div class="sin" id="p95-in"><div class="sub2" id="p95-sub">你颱風假那天，有被扣薪，或是被叫去上班嗎？歡迎在留言區，跟我們分享。</div><div class="pg">95 / 96</div></div></section>
+<section id="p96" class="clip" data-start="609.569" data-duration="4.311" data-track-index="97"><div class="sin" id="p96-in"><div class="h1" id="p96-a" style="top: 250px; font-size: 130px">關注我</div><div class="h1" id="p96-b" style="top: 440px; font-size: 64px; color: var(--gold)">給你更多錢的大小事</div><div id="p96-btn" style="position: absolute; left: 710px; top: 620px; width: 420px; height: 110px; border-radius: 22px; background: #e53935; color: #fff; font-size: 48px; font-weight: 800; letter-spacing: 0.08em; display: flex; align-items: center; justify-content: center">訂閱</div><div id="p96-bell" style="position: absolute; left: 1160px; top: 630px; width: 90px; height: 90px; color: var(--gold)"><svg viewBox="0 0 100 100" width="100%" height="100%"><g fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"><path d="M50 14 C30 14 26 32 26 46 L26 64 L16 76 L84 76 L74 64 L74 46 C74 32 70 14 50 14 Z"/><path d="M40 84 C42 92 58 92 60 84"/></g></svg></div><div class="sub2" id="p96-sub">關注我，給你更多錢的大小事。</div><div class="pg">96 / 96</div></div></section>
+<div id="chrome" class="clip" data-start="0" data-duration="613.88" data-track-index="98">
+<div class="brand">金錢怪物</div>
+<div class="disc">資訊整理，非法律意見｜颱風畫面含資料畫面</div>
+<div class="prog"></div>
+</div>
+<audio id="vo-1" data-start="0.250" data-duration="2.800" src="audio/l1.mp3"></audio>
+<audio id="vo-2" data-start="3.200" data-duration="8.000" src="audio/l2.mp3"></audio>
+<audio id="vo-3" data-start="11.350" data-duration="6.480" src="audio/l3.mp3"></audio>
+<audio id="vo-4" data-start="17.980" data-duration="9.068" src="audio/l4.mp3"></audio>
+<audio id="vo-5" data-start="27.198" data-duration="5.360" src="audio/l5.mp3"></audio>
+<audio id="vo-6" data-start="32.708" data-duration="2.640" src="audio/l6.mp3"></audio>
+<audio id="vo-7" data-start="35.498" data-duration="2.960" src="audio/l7.mp3"></audio>
+<audio id="vo-8" data-start="38.608" data-duration="9.680" src="audio/l8.mp3"></audio>
+<audio id="vo-9" data-start="48.438" data-duration="2.240" src="audio/l9.mp3"></audio>
+<audio id="vo-10" data-start="50.828" data-duration="5.600" src="audio/l10.mp3"></audio>
+<audio id="vo-11" data-start="56.578" data-duration="6.240" src="audio/l11.mp3"></audio>
+<audio id="vo-12" data-start="62.968" data-duration="3.040" src="audio/l12.mp3"></audio>
+<audio id="vo-13" data-start="66.158" data-duration="5.200" src="audio/l13.mp3"></audio>
+<audio id="vo-14" data-start="71.508" data-duration="4.240" src="audio/l14.mp3"></audio>
+<audio id="vo-15" data-start="75.898" data-duration="8.160" src="audio/l15.mp3"></audio>
+<audio id="vo-16" data-start="84.208" data-duration="2.880" src="audio/l16.mp3"></audio>
+<audio id="vo-17" data-start="87.238" data-duration="8.960" src="audio/l17.mp3"></audio>
+<audio id="vo-18" data-start="96.348" data-duration="6.160" src="audio/l18.mp3"></audio>
+<audio id="vo-19" data-start="102.658" data-duration="6.320" src="audio/l19.mp3"></audio>
+<audio id="vo-20" data-start="109.128" data-duration="2.640" src="audio/l20.mp3"></audio>
+<audio id="vo-21" data-start="111.918" data-duration="8.560" src="audio/l21.mp3"></audio>
+<audio id="vo-22" data-start="120.628" data-duration="5.360" src="audio/l22.mp3"></audio>
+<audio id="vo-23" data-start="126.138" data-duration="3.280" src="audio/l23.mp3"></audio>
+<audio id="vo-24" data-start="129.568" data-duration="8.960" src="audio/l24.mp3"></audio>
+<audio id="vo-25" data-start="138.678" data-duration="4.480" src="audio/l25.mp3"></audio>
+<audio id="vo-26" data-start="143.308" data-duration="6.960" src="audio/l26.mp3"></audio>
+<audio id="vo-27" data-start="150.418" data-duration="5.716" src="audio/l27.mp3"></audio>
+<audio id="vo-28" data-start="156.284" data-duration="8.800" src="audio/l28.mp3"></audio>
+<audio id="vo-29" data-start="165.234" data-duration="5.280" src="audio/l29.mp3"></audio>
+<audio id="vo-30" data-start="170.664" data-duration="6.960" src="audio/l30.mp3"></audio>
+<audio id="vo-31" data-start="177.774" data-duration="4.480" src="audio/l31.mp3"></audio>
+<audio id="vo-32" data-start="182.404" data-duration="7.360" src="audio/l32.mp3"></audio>
+<audio id="vo-33" data-start="189.914" data-duration="8.800" src="audio/l33.mp3"></audio>
+<audio id="vo-34" data-start="198.864" data-duration="3.840" src="audio/l34.mp3"></audio>
+<audio id="vo-35" data-start="202.854" data-duration="3.120" src="audio/l35.mp3"></audio>
+<audio id="vo-36" data-start="206.124" data-duration="8.960" src="audio/l36.mp3"></audio>
+<audio id="vo-37" data-start="215.234" data-duration="9.440" src="audio/l37.mp3"></audio>
+<audio id="vo-38" data-start="224.824" data-duration="3.120" src="audio/l38.mp3"></audio>
+<audio id="vo-39" data-start="228.094" data-duration="7.200" src="audio/l39.mp3"></audio>
+<audio id="vo-40" data-start="235.444" data-duration="6.400" src="audio/l40.mp3"></audio>
+<audio id="vo-41" data-start="241.994" data-duration="4.400" src="audio/l41.mp3"></audio>
+<audio id="vo-42" data-start="246.544" data-duration="3.920" src="audio/l42.mp3"></audio>
+<audio id="vo-43" data-start="250.614" data-duration="6.080" src="audio/l43.mp3"></audio>
+<audio id="vo-44" data-start="256.844" data-duration="8.160" src="audio/l44.mp3"></audio>
+<audio id="vo-45" data-start="265.154" data-duration="2.800" src="audio/l45.mp3"></audio>
+<audio id="vo-46" data-start="268.104" data-duration="6.514" src="audio/l46.mp3"></audio>
+<audio id="vo-47" data-start="274.768" data-duration="5.440" src="audio/l47.mp3"></audio>
+<audio id="vo-48" data-start="280.358" data-duration="5.520" src="audio/l48.mp3"></audio>
+<audio id="vo-49" data-start="286.028" data-duration="7.680" src="audio/l49.mp3"></audio>
+<audio id="vo-50" data-start="293.858" data-duration="8.720" src="audio/l50.mp3"></audio>
+<audio id="vo-51" data-start="302.728" data-duration="2.640" src="audio/l51.mp3"></audio>
+<audio id="vo-52" data-start="305.518" data-duration="5.200" src="audio/l52.mp3"></audio>
+<audio id="vo-53" data-start="310.868" data-duration="9.040" src="audio/l53.mp3"></audio>
+<audio id="vo-54" data-start="320.058" data-duration="5.520" src="audio/l54.mp3"></audio>
+<audio id="vo-55" data-start="325.728" data-duration="4.160" src="audio/l55.mp3"></audio>
+<audio id="vo-56" data-start="330.038" data-duration="5.440" src="audio/l56.mp3"></audio>
+<audio id="vo-57" data-start="335.628" data-duration="7.440" src="audio/l57.mp3"></audio>
+<audio id="vo-58" data-start="343.218" data-duration="6.960" src="audio/l58.mp3"></audio>
+<audio id="vo-59" data-start="350.328" data-duration="9.920" src="audio/l59.mp3"></audio>
+<audio id="vo-60" data-start="360.398" data-duration="6.080" src="audio/l60.mp3"></audio>
+<audio id="vo-61" data-start="366.628" data-duration="7.120" src="audio/l61.mp3"></audio>
+<audio id="vo-62" data-start="373.898" data-duration="6.240" src="audio/l62.mp3"></audio>
+<audio id="vo-63" data-start="380.288" data-duration="4.000" src="audio/l63.mp3"></audio>
+<audio id="vo-64" data-start="384.438" data-duration="5.840" src="audio/l64.mp3"></audio>
+<audio id="vo-65" data-start="390.428" data-duration="12.400" src="audio/l65.mp3"></audio>
+<audio id="vo-66" data-start="402.978" data-duration="10.345" src="audio/l66.mp3"></audio>
+<audio id="vo-67" data-start="413.473" data-duration="2.400" src="audio/l67.mp3"></audio>
+<audio id="vo-68" data-start="416.023" data-duration="7.280" src="audio/l68.mp3"></audio>
+<audio id="vo-69" data-start="423.453" data-duration="7.680" src="audio/l69.mp3"></audio>
+<audio id="vo-70" data-start="431.283" data-duration="10.640" src="audio/l70.mp3"></audio>
+<audio id="vo-71" data-start="442.073" data-duration="8.000" src="audio/l71.mp3"></audio>
+<audio id="vo-72" data-start="450.223" data-duration="8.668" src="audio/l72.mp3"></audio>
+<audio id="vo-73" data-start="459.041" data-duration="3.920" src="audio/l73.mp3"></audio>
+<audio id="vo-74" data-start="463.111" data-duration="6.913" src="audio/l74.mp3"></audio>
+<audio id="vo-75" data-start="470.174" data-duration="0.640" src="audio/l75.mp3"></audio>
+<audio id="vo-76" data-start="470.964" data-duration="8.400" src="audio/l76.mp3"></audio>
+<audio id="vo-77" data-start="479.514" data-duration="8.320" src="audio/l77.mp3"></audio>
+<audio id="vo-78" data-start="487.984" data-duration="8.080" src="audio/l78.mp3"></audio>
+<audio id="vo-79" data-start="496.214" data-duration="9.680" src="audio/l79.mp3"></audio>
+<audio id="vo-80" data-start="506.044" data-duration="7.040" src="audio/l80.mp3"></audio>
+<audio id="vo-81" data-start="513.234" data-duration="1.520" src="audio/l81.mp3"></audio>
+<audio id="vo-82" data-start="514.904" data-duration="8.480" src="audio/l82.mp3"></audio>
+<audio id="vo-83" data-start="523.534" data-duration="9.120" src="audio/l83.mp3"></audio>
+<audio id="vo-84" data-start="532.804" data-duration="7.360" src="audio/l84.mp3"></audio>
+<audio id="vo-85" data-start="540.314" data-duration="6.080" src="audio/l85.mp3"></audio>
+<audio id="vo-86" data-start="546.544" data-duration="0.720" src="audio/l86.mp3"></audio>
+<audio id="vo-87" data-start="547.414" data-duration="8.000" src="audio/l87.mp3"></audio>
+<audio id="vo-88" data-start="555.564" data-duration="8.000" src="audio/l88.mp3"></audio>
+<audio id="vo-89" data-start="563.714" data-duration="5.280" src="audio/l89.mp3"></audio>
+<audio id="vo-90" data-start="569.144" data-duration="6.400" src="audio/l90.mp3"></audio>
+<audio id="vo-91" data-start="575.694" data-duration="5.760" src="audio/l91.mp3"></audio>
+<audio id="vo-92" data-start="581.604" data-duration="6.480" src="audio/l92.mp3"></audio>
+<audio id="vo-93" data-start="588.234" data-duration="5.200" src="audio/l93.mp3"></audio>
+<audio id="vo-94" data-start="593.584" data-duration="8.720" src="audio/l94.mp3"></audio>
+<audio id="vo-95" data-start="602.454" data-duration="7.040" src="audio/l95.mp3"></audio>
+<audio id="vo-96" data-start="609.644" data-duration="2.640" src="audio/l96.mp3"></audio>
+<audio id="bgm" data-start="0" data-duration="613.88" data-volume="0.12" src="audio/bgm.mp3"></audio>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({ paused: true });
+tl.fromTo("#p1-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 0.000);
+tl.fromTo("#p1-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 0.250);
+tl.to("#p1-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 2.845);
+tl.set("#p1-in", { opacity: 0 }, 3.125);
+tl.fromTo("#p2-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 3.125);
+tl.fromTo("#p2-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 3.500);
+tl.fromTo("#p2-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 3.200);
+tl.to("#p2-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 10.995);
+tl.set("#p2-in", { opacity: 0 }, 11.275);
+tl.fromTo("#p3-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 11.275);
+tl.fromTo("#p3-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 11.350);
+tl.to("#p3-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 17.625);
+tl.set("#p3-in", { opacity: 0 }, 17.905);
+tl.fromTo("#p4-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 17.905);
+tl.fromTo("#p4-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 18.280);
+tl.fromTo("#p4-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 17.980);
+tl.to("#p4-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 26.843);
+tl.set("#p4-in", { opacity: 0 }, 27.123);
+tl.fromTo("#p5-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 27.123);
+tl.fromTo("#p5-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 27.198);
+tl.to("#p5-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 32.353);
+tl.set("#p5-in", { opacity: 0 }, 32.633);
+tl.fromTo("#p6-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 32.633);
+tl.fromTo("#p6-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 32.708);
+tl.to("#p6-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 35.143);
+tl.set("#p6-in", { opacity: 0 }, 35.423);
+tl.fromTo("#p7-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 35.423);
+tl.fromTo("#p7-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 35.498);
+tl.to("#p7-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 38.253);
+tl.set("#p7-in", { opacity: 0 }, 38.533);
+tl.fromTo("#p8-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 38.533);
+tl.fromTo("#p8-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 38.608);
+tl.to("#p8-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 48.083);
+tl.set("#p8-in", { opacity: 0 }, 48.363);
+tl.fromTo("#p9-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 48.363);
+tl.fromTo("#p9-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 48.438);
+tl.to("#p9-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 50.473);
+tl.set("#p9-in", { opacity: 0 }, 50.753);
+tl.fromTo("#p10-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 50.753);
+tl.fromTo("#p10-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 50.828);
+tl.to("#p10-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 56.223);
+tl.set("#p10-in", { opacity: 0 }, 56.503);
+tl.fromTo("#p11-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 56.503);
+tl.fromTo("#p11-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 56.878);
+tl.fromTo("#p11-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 56.578);
+tl.to("#p11-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 62.613);
+tl.set("#p11-in", { opacity: 0 }, 62.893);
+tl.fromTo("#p12-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 62.893);
+tl.fromTo("#p12-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 62.968);
+tl.to("#p12-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 65.803);
+tl.set("#p12-in", { opacity: 0 }, 66.083);
+tl.fromTo("#p13-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 66.083);
+tl.fromTo("#p13-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 66.158);
+tl.to("#p13-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 71.153);
+tl.set("#p13-in", { opacity: 0 }, 71.433);
+tl.fromTo("#p14-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 71.433);
+tl.fromTo("#p14-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 71.508);
+tl.to("#p14-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 75.543);
+tl.set("#p14-in", { opacity: 0 }, 75.823);
+tl.fromTo("#p15-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 75.823);
+tl.fromTo("#p15-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 75.898);
+tl.to("#p15-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 83.853);
+tl.set("#p15-in", { opacity: 0 }, 84.133);
+tl.fromTo("#p16-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 84.133);
+tl.fromTo("#p16-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 84.208);
+tl.to("#p16-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 86.883);
+tl.set("#p16-in", { opacity: 0 }, 87.163);
+tl.fromTo("#p17-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 87.163);
+tl.fromTo("#p17-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 87.238);
+tl.to("#p17-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 95.993);
+tl.set("#p17-in", { opacity: 0 }, 96.273);
+tl.fromTo("#p18-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 96.273);
+tl.fromTo("#p18-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 96.648);
+tl.fromTo("#p18-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 96.348);
+tl.to("#p18-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 102.303);
+tl.set("#p18-in", { opacity: 0 }, 102.583);
+tl.fromTo("#p19-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 102.583);
+tl.fromTo("#p19-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 102.958);
+tl.fromTo("#p19-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 102.658);
+tl.to("#p19-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 108.773);
+tl.set("#p19-in", { opacity: 0 }, 109.053);
+tl.fromTo("#p20-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 109.053);
+tl.fromTo("#p20-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 109.128);
+tl.to("#p20-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 111.563);
+tl.set("#p20-in", { opacity: 0 }, 111.843);
+tl.fromTo("#p21-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 111.843);
+tl.fromTo("#p21-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 111.918);
+tl.to("#p21-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 120.273);
+tl.set("#p21-in", { opacity: 0 }, 120.553);
+tl.fromTo("#p22-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 120.553);
+tl.fromTo("#p22-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 120.628);
+tl.to("#p22-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 125.783);
+tl.set("#p22-in", { opacity: 0 }, 126.063);
+tl.fromTo("#p23-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 126.063);
+tl.fromTo("#p23-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 126.138);
+tl.to("#p23-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 129.213);
+tl.set("#p23-in", { opacity: 0 }, 129.493);
+tl.fromTo("#p24-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 129.493);
+tl.fromTo("#p24-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 129.568);
+tl.to("#p24-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 138.323);
+tl.set("#p24-in", { opacity: 0 }, 138.603);
+tl.fromTo("#p25-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 138.603);
+tl.fromTo("#p25-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 138.678);
+tl.to("#p25-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 142.953);
+tl.set("#p25-in", { opacity: 0 }, 143.233);
+tl.fromTo("#p26-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 143.233);
+tl.fromTo("#p26-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 143.308);
+tl.to("#p26-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 150.063);
+tl.set("#p26-in", { opacity: 0 }, 150.343);
+tl.fromTo("#p27-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 150.343);
+tl.fromTo("#p27-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 150.718);
+tl.fromTo("#p27-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 150.418);
+tl.to("#p27-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 155.929);
+tl.set("#p27-in", { opacity: 0 }, 156.209);
+tl.fromTo("#p28-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 156.209);
+tl.fromTo("#p28-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 156.284);
+tl.to("#p28-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 164.879);
+tl.set("#p28-in", { opacity: 0 }, 165.159);
+tl.fromTo("#p29-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 165.159);
+tl.fromTo("#p29-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 165.234);
+tl.to("#p29-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 170.309);
+tl.set("#p29-in", { opacity: 0 }, 170.589);
+tl.fromTo("#p30-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 170.589);
+tl.fromTo("#p30-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 170.964);
+tl.fromTo("#p30-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 170.664);
+tl.to("#p30-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 177.419);
+tl.set("#p30-in", { opacity: 0 }, 177.699);
+tl.fromTo("#p31-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 177.699);
+tl.fromTo("#p31-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 178.074);
+tl.fromTo("#p31-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 177.774);
+tl.to("#p31-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 182.049);
+tl.set("#p31-in", { opacity: 0 }, 182.329);
+tl.fromTo("#p32-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 182.329);
+tl.fromTo("#p32-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 182.404);
+tl.to("#p32-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 189.559);
+tl.set("#p32-in", { opacity: 0 }, 189.839);
+tl.fromTo("#p33-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 189.839);
+tl.fromTo("#p33-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 189.914);
+tl.to("#p33-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 198.509);
+tl.set("#p33-in", { opacity: 0 }, 198.789);
+tl.fromTo("#p34-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 198.789);
+tl.fromTo("#p34-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 198.864);
+tl.to("#p34-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 202.499);
+tl.set("#p34-in", { opacity: 0 }, 202.779);
+tl.fromTo("#p35-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 202.779);
+tl.fromTo("#p35-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 202.854);
+tl.to("#p35-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 205.769);
+tl.set("#p35-in", { opacity: 0 }, 206.049);
+tl.fromTo("#p36-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 206.049);
+tl.fromTo("#p36-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 206.424);
+tl.fromTo("#p36-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 206.124);
+tl.to("#p36-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 214.879);
+tl.set("#p36-in", { opacity: 0 }, 215.159);
+tl.fromTo("#p37-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 215.159);
+tl.fromTo("#p37-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 215.234);
+tl.to("#p37-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 224.469);
+tl.set("#p37-in", { opacity: 0 }, 224.749);
+tl.fromTo("#p38-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 224.749);
+tl.fromTo("#p38-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 224.824);
+tl.to("#p38-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 227.739);
+tl.set("#p38-in", { opacity: 0 }, 228.019);
+tl.fromTo("#p39-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 228.019);
+tl.fromTo("#p39-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 228.394);
+tl.fromTo("#p39-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 228.094);
+tl.to("#p39-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 235.089);
+tl.set("#p39-in", { opacity: 0 }, 235.369);
+tl.fromTo("#p40-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 235.369);
+tl.fromTo("#p40-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 235.444);
+tl.to("#p40-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 241.639);
+tl.set("#p40-in", { opacity: 0 }, 241.919);
+tl.fromTo("#p41-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 241.919);
+tl.fromTo("#p41-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 242.294);
+tl.fromTo("#p41-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 241.994);
+tl.to("#p41-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 246.189);
+tl.set("#p41-in", { opacity: 0 }, 246.469);
+tl.fromTo("#p42-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 246.469);
+tl.fromTo("#p42-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 246.544);
+tl.to("#p42-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 250.259);
+tl.set("#p42-in", { opacity: 0 }, 250.539);
+tl.fromTo("#p43-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 250.539);
+tl.fromTo("#p43-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 250.614);
+tl.to("#p43-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 256.489);
+tl.set("#p43-in", { opacity: 0 }, 256.769);
+tl.fromTo("#p44-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 256.769);
+tl.fromTo("#p44-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 256.844);
+tl.to("#p44-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 264.799);
+tl.set("#p44-in", { opacity: 0 }, 265.079);
+tl.fromTo("#p45-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 265.079);
+tl.fromTo("#p45-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 265.154);
+tl.to("#p45-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 267.749);
+tl.set("#p45-in", { opacity: 0 }, 268.029);
+tl.fromTo("#p46-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 268.029);
+tl.fromTo("#p46-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 268.404);
+tl.fromTo("#p46-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 268.104);
+tl.to("#p46-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 274.413);
+tl.set("#p46-in", { opacity: 0 }, 274.693);
+tl.fromTo("#p47-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 274.693);
+tl.fromTo("#p47-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 275.068);
+tl.fromTo("#p47-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 274.768);
+tl.to("#p47-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 280.003);
+tl.set("#p47-in", { opacity: 0 }, 280.283);
+tl.fromTo("#p48-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 280.283);
+tl.fromTo("#p48-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 280.358);
+tl.to("#p48-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 285.673);
+tl.set("#p48-in", { opacity: 0 }, 285.953);
+tl.fromTo("#p49-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 285.953);
+tl.fromTo("#p49-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 286.028);
+tl.to("#p49-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 293.503);
+tl.set("#p49-in", { opacity: 0 }, 293.783);
+tl.fromTo("#p50-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 293.783);
+tl.fromTo("#p50-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 293.858);
+tl.to("#p50-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 302.373);
+tl.set("#p50-in", { opacity: 0 }, 302.653);
+tl.fromTo("#p51-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 302.653);
+tl.fromTo("#p51-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 302.728);
+tl.to("#p51-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 305.163);
+tl.set("#p51-in", { opacity: 0 }, 305.443);
+tl.fromTo("#p52-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 305.443);
+tl.fromTo("#p52-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 305.818);
+tl.fromTo("#p52-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 305.518);
+tl.to("#p52-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 310.513);
+tl.set("#p52-in", { opacity: 0 }, 310.793);
+tl.fromTo("#p53-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 310.793);
+tl.fromTo("#p53-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 311.168);
+tl.fromTo("#p53-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 310.868);
+tl.to("#p53-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 319.703);
+tl.set("#p53-in", { opacity: 0 }, 319.983);
+tl.fromTo("#p54-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 319.983);
+tl.fromTo("#p54-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 320.058);
+tl.to("#p54-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 325.373);
+tl.set("#p54-in", { opacity: 0 }, 325.653);
+tl.fromTo("#p55-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 325.653);
+tl.fromTo("#p55-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 325.728);
+tl.to("#p55-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 329.683);
+tl.set("#p55-in", { opacity: 0 }, 329.963);
+tl.fromTo("#p56-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 329.963);
+tl.fromTo("#p56-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 330.038);
+tl.to("#p56-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 335.273);
+tl.set("#p56-in", { opacity: 0 }, 335.553);
+tl.fromTo("#p57-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 335.553);
+tl.fromTo("#p57-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 335.628);
+tl.fromTo("#p57-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 336.128);
+tl.fromTo("#p57-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 336.328);
+tl.fromTo("#p57-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 336.528);
+tl.fromTo("#p57-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 337.328);
+tl.fromTo("#p57-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 337.528);
+tl.fromTo("#p57-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 337.728);
+tl.fromTo("#p57-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 335.628);
+tl.to("#p57-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 342.863);
+tl.set("#p57-in", { opacity: 0 }, 343.143);
+tl.fromTo("#p58-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 343.143);
+tl.fromTo("#p58-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 343.218);
+tl.fromTo("#p58-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 343.718);
+tl.fromTo("#p58-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 343.918);
+tl.fromTo("#p58-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 344.118);
+tl.fromTo("#p58-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 344.918);
+tl.fromTo("#p58-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 345.118);
+tl.fromTo("#p58-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 345.318);
+tl.fromTo("#p58-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 343.218);
+tl.to("#p58-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 349.973);
+tl.set("#p58-in", { opacity: 0 }, 350.253);
+tl.fromTo("#p59-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 350.253);
+tl.fromTo("#p59-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 350.628);
+tl.fromTo("#p59-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 350.328);
+tl.to("#p59-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 360.043);
+tl.set("#p59-in", { opacity: 0 }, 360.323);
+tl.fromTo("#p60-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 360.323);
+tl.fromTo("#p60-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 360.398);
+tl.to("#p60-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 366.273);
+tl.set("#p60-in", { opacity: 0 }, 366.553);
+tl.fromTo("#p61-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 366.553);
+tl.fromTo("#p61-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 366.928);
+tl.fromTo("#p61-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 366.628);
+tl.to("#p61-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 373.543);
+tl.set("#p61-in", { opacity: 0 }, 373.823);
+tl.fromTo("#p62-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 373.823);
+tl.fromTo("#p62-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 373.898);
+tl.to("#p62-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 379.933);
+tl.set("#p62-in", { opacity: 0 }, 380.213);
+tl.fromTo("#p63-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 380.213);
+tl.fromTo("#p63-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 380.288);
+tl.to("#p63-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 384.083);
+tl.set("#p63-in", { opacity: 0 }, 384.363);
+tl.fromTo("#p64-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 384.363);
+tl.fromTo("#p64-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 384.438);
+tl.to("#p64-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 390.073);
+tl.set("#p64-in", { opacity: 0 }, 390.353);
+tl.fromTo("#p65-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 390.353);
+tl.fromTo("#p65-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 390.428);
+tl.to("#p65-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 402.623);
+tl.set("#p65-in", { opacity: 0 }, 402.903);
+tl.fromTo("#p66-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 402.903);
+tl.fromTo("#p66-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 402.978);
+tl.to("#p66-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 413.118);
+tl.set("#p66-in", { opacity: 0 }, 413.398);
+tl.fromTo("#p67-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 413.398);
+tl.fromTo("#p67-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 413.473);
+tl.to("#p67-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 415.668);
+tl.set("#p67-in", { opacity: 0 }, 415.948);
+tl.fromTo("#p68-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 415.948);
+tl.fromTo("#p68-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 416.323);
+tl.fromTo("#p68-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 416.023);
+tl.to("#p68-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 423.098);
+tl.set("#p68-in", { opacity: 0 }, 423.378);
+tl.fromTo("#p69-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 423.378);
+tl.fromTo("#p69-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 423.453);
+tl.to("#p69-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 430.928);
+tl.set("#p69-in", { opacity: 0 }, 431.208);
+tl.fromTo("#p70-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 431.208);
+tl.fromTo("#p70-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 431.583);
+tl.fromTo("#p70-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 431.283);
+tl.to("#p70-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 441.718);
+tl.set("#p70-in", { opacity: 0 }, 441.998);
+tl.fromTo("#p71-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 441.998);
+tl.fromTo("#p71-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 442.073);
+tl.to("#p71-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 449.868);
+tl.set("#p71-in", { opacity: 0 }, 450.148);
+tl.fromTo("#p72-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 450.148);
+tl.fromTo("#p72-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 450.223);
+tl.to("#p72-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 458.686);
+tl.set("#p72-in", { opacity: 0 }, 458.966);
+tl.fromTo("#p73-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 458.966);
+tl.fromTo("#p73-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 459.041);
+tl.to("#p73-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 462.756);
+tl.set("#p73-in", { opacity: 0 }, 463.036);
+tl.fromTo("#p74-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 463.036);
+tl.fromTo("#p74-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 463.111);
+tl.to("#p74-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 469.819);
+tl.set("#p74-in", { opacity: 0 }, 470.099);
+tl.fromTo("#p75-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 470.099);
+tl.fromTo("#p75-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 470.174);
+tl.to("#p75-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 470.609);
+tl.set("#p75-in", { opacity: 0 }, 470.889);
+tl.fromTo("#p76-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 470.889);
+tl.fromTo("#p76-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 471.264);
+tl.fromTo("#p76-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 470.964);
+tl.to("#p76-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 479.159);
+tl.set("#p76-in", { opacity: 0 }, 479.439);
+tl.fromTo("#p77-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 479.439);
+tl.fromTo("#p77-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 479.814);
+tl.fromTo("#p77-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 479.514);
+tl.to("#p77-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 487.629);
+tl.set("#p77-in", { opacity: 0 }, 487.909);
+tl.fromTo("#p78-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 487.909);
+tl.fromTo("#p78-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 487.984);
+tl.to("#p78-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 495.859);
+tl.set("#p78-in", { opacity: 0 }, 496.139);
+tl.fromTo("#p79-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 496.139);
+tl.fromTo("#p79-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 496.214);
+tl.to("#p79-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 505.689);
+tl.set("#p79-in", { opacity: 0 }, 505.969);
+tl.fromTo("#p80-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 505.969);
+tl.fromTo("#p80-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 506.044);
+tl.to("#p80-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 512.879);
+tl.set("#p80-in", { opacity: 0 }, 513.159);
+tl.fromTo("#p81-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 513.159);
+tl.fromTo("#p81-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 513.234);
+tl.to("#p81-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 514.549);
+tl.set("#p81-in", { opacity: 0 }, 514.829);
+tl.fromTo("#p82-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 514.829);
+tl.fromTo("#p82-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 514.904);
+tl.to("#p82-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 523.179);
+tl.set("#p82-in", { opacity: 0 }, 523.459);
+tl.fromTo("#p83-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 523.459);
+tl.fromTo("#p83-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 523.534);
+tl.to("#p83-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 532.449);
+tl.set("#p83-in", { opacity: 0 }, 532.729);
+tl.fromTo("#p84-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 532.729);
+tl.fromTo("#p84-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 533.104);
+tl.fromTo("#p84-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 532.804);
+tl.to("#p84-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 539.959);
+tl.set("#p84-in", { opacity: 0 }, 540.239);
+tl.fromTo("#p85-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 540.239);
+tl.fromTo("#p85-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 540.314);
+tl.to("#p85-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 546.189);
+tl.set("#p85-in", { opacity: 0 }, 546.469);
+tl.fromTo("#p86-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 546.469);
+tl.fromTo("#p86-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 546.544);
+tl.fromTo("#p86-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 547.044);
+tl.fromTo("#p86-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 547.244);
+tl.fromTo("#p86-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 547.444);
+tl.fromTo("#p86-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 548.244);
+tl.fromTo("#p86-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 548.444);
+tl.fromTo("#p86-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 548.644);
+tl.fromTo("#p86-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 546.544);
+tl.to("#p86-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 547.059);
+tl.set("#p86-in", { opacity: 0 }, 547.339);
+tl.fromTo("#p87-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 547.339);
+tl.fromTo("#p87-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 547.414);
+tl.fromTo("#p87-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 547.914);
+tl.fromTo("#p87-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 548.114);
+tl.fromTo("#p87-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 548.314);
+tl.fromTo("#p87-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 549.114);
+tl.fromTo("#p87-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 549.314);
+tl.fromTo("#p87-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 549.514);
+tl.fromTo("#p87-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 547.414);
+tl.to("#p87-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 555.209);
+tl.set("#p87-in", { opacity: 0 }, 555.489);
+tl.fromTo("#p88-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 555.489);
+tl.fromTo("#p88-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 555.564);
+tl.fromTo("#p88-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 556.064);
+tl.fromTo("#p88-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 556.264);
+tl.fromTo("#p88-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 556.464);
+tl.fromTo("#p88-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 557.264);
+tl.fromTo("#p88-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 557.464);
+tl.fromTo("#p88-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 557.664);
+tl.fromTo("#p88-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 555.564);
+tl.to("#p88-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 563.359);
+tl.set("#p88-in", { opacity: 0 }, 563.639);
+tl.fromTo("#p89-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 563.639);
+tl.fromTo("#p89-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 563.714);
+tl.to("#p89-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 568.789);
+tl.set("#p89-in", { opacity: 0 }, 569.069);
+tl.fromTo("#p90-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 569.069);
+tl.fromTo("#p90-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 569.144);
+tl.to("#p90-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 575.339);
+tl.set("#p90-in", { opacity: 0 }, 575.619);
+tl.fromTo("#p91-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 575.619);
+tl.fromTo("#p91-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 575.694);
+tl.to("#p91-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 581.249);
+tl.set("#p91-in", { opacity: 0 }, 581.529);
+tl.fromTo("#p92-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 581.529);
+tl.fromTo("#p92-co", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 581.904);
+tl.fromTo("#p92-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 581.604);
+tl.to("#p92-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 587.879);
+tl.set("#p92-in", { opacity: 0 }, 588.159);
+tl.fromTo("#p93-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 588.159);
+tl.fromTo("#p93-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 588.234);
+tl.to("#p93-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 593.229);
+tl.set("#p93-in", { opacity: 0 }, 593.509);
+tl.fromTo("#p94-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 593.509);
+tl.fromTo("#p94-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 593.584);
+tl.to("#p94-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 602.099);
+tl.set("#p94-in", { opacity: 0 }, 602.379);
+tl.fromTo("#p95-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 602.379);
+tl.fromTo("#p95-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 602.454);
+tl.to("#p95-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 609.289);
+tl.set("#p95-in", { opacity: 0 }, 609.569);
+tl.fromTo("#p96-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 609.569);
+tl.fromTo("#p96-a", { autoAlpha: 0, scale: 0.8 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "back.out(1.6)" }, 609.644);
+tl.fromTo("#p96-b", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 610.144);
+tl.fromTo("#p96-btn", { autoAlpha: 0, scale: 0.4 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: "back.out(2.2)" }, 610.644);
+tl.fromTo("#p96-btn", { scale: 1 }, { scale: 1.06, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3 }, 611.244);
+tl.fromTo("#p96-bell", { autoAlpha: 0, rotation: 0 }, { autoAlpha: 1, rotation: 0, duration: 0.3 }, 611.044);
+tl.fromTo("#p96-bell", { rotation: -18 }, { rotation: 18, duration: 0.12, ease: "sine.inOut", yoyo: true, repeat: 7 }, 611.344);
+tl.fromTo("#p96-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 609.644);
+tl.to("#p96-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 613.600);
+tl.set("#p96-in", { opacity: 0 }, 613.880);
+tl.fromTo(".prog", { scaleX: 0 }, { scaleX: 1, duration: 613.88, ease: "none" }, 0);
+window.__timelines["tw01"] = tl;
+</script>
+</body>
+</html>

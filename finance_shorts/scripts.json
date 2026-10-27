@@ -1,0 +1,6825 @@
+{
+ "_說明": "三支試做短片的腳本。speaker：cat／dog（開場對話）、narr（旁白）。facts 指到 facts.json；screen 是畫面上的字，數字一律要能在對應 facts 的 tokens 找到。",
+ "episodes": {
+  "ins-01": {
+   "title": "保險金一定免遺產稅？",
+   "caption": "資料：財政部、全國法規資料庫",
+   "lines": [
+    {
+     "speaker": "cat",
+     "text": "聽說保險金不用繳遺產稅？那我把錢全部拿去買保險！",
+     "facts": [
+      "F01"
+     ]
+    },
+    {
+     "speaker": "dog",
+     "text": "這招，國稅局早就看過了。",
+     "facts": [
+      "F02"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "原則上沒錯，指定受益人的壽險身故保險金，不計入遺產總額。",
+     "facts": [
+      "F01"
+     ],
+     "screen": {
+      "kind": "rule",
+      "head": "指定受益人",
+      "body": "不計入遺產",
+      "cite": "遺產及贈與稅法 §16 ⑨ ・ 保險法 §112"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "但財政部整理過法院判決，列出會被盯上的特徵。",
+     "facts": [
+      "F02"
+     ],
+     "screen": {
+      "kind": "rule",
+      "head": "但是",
+      "body": "財政部列出參考特徵",
+      "cite": "財政部 109 年函・16 件判決案例",
+      "warn": true
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "高齡、帶病、躉繳、鉅額、短期、舉債、密集投保，還有理賠金跟保費差不多。",
+     "facts": [
+      "F02"
+     ],
+     "screen": {
+      "kind": "tiles",
+      "items": [
+       "高齡",
+       "帶病",
+       "躉繳",
+       "鉅額",
+       "短期",
+       "舉債",
+       "密集",
+       "理賠≈保費"
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "符合這類特徵，國稅局就可能依實質課稅原則，把保險金算回遺產課稅。",
+     "facts": [
+      "F02",
+      "F03"
+     ],
+     "screen": {
+      "kind": "rule",
+      "head": "實質課稅",
+      "body": "保險金可能算回遺產",
+      "cite": "由國稅局負舉證責任",
+      "warn": true
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "保險能做傳承，但不是臨終前的避稅工具。",
+     "facts": [
+      "F02"
+     ],
+     "screen": {
+      "kind": "end",
+      "a": "保險能做傳承",
+      "b": "不是臨終避稅工具"
+     }
+    }
+   ]
+  },
+  "ins-02": {
+   "title": "醫生說要住院，保險就一定賠？",
+   "caption": "資料：金融消費評議中心",
+   "lines": [
+    {
+     "speaker": "dog",
+     "text": "醫生叫我住院，保險公司竟然沒有全賠！",
+     "facts": []
+    },
+    {
+     "speaker": "cat",
+     "text": "因為要不要住院，不是只有你的醫生說了算。",
+     "facts": [
+      "F06"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "去年壽險理賠爭議有八千兩百多件，第一名是必要性醫療，超過四分之一。",
+     "facts": [
+      "F04"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "2025 壽險理賠爭議 8,238 件",
+      "big": "26.61%",
+      "body": "第一名：必要性醫療",
+      "pct": 26.61,
+      "cite": "必要性醫療 2,192 件"
+     },
+     "approx": {
+      "八千兩百多": "8,238",
+      "四分之一": "26.61%"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "評議中心有個案例，住院三十七天，保險公司只賠十四天。",
+     "facts": [
+      "F05"
+     ],
+     "screen": {
+      "kind": "days",
+      "bars": [
+       {
+        "label": "實際住院",
+        "days": 37
+       },
+       {
+        "label": "保險公司賠",
+        "days": 14
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "評議的標準是：相同專業的醫師，在相同情形下，通常會不會判斷要住院。",
+     "facts": [
+      "F06"
+     ],
+     "screen": {
+      "kind": "rule",
+      "head": "評議標準",
+      "body": "相同專業的醫師\n通常會不會判斷要住院",
+      "cite": "不只看主治醫師"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "最後認定合理住院二十一天，保險公司再補七天。",
+     "facts": [
+      "F05"
+     ],
+     "screen": {
+      "kind": "days",
+      "bars": [
+       {
+        "label": "實際住院",
+        "days": 37
+       },
+       {
+        "label": "保險公司賠",
+        "days": 14
+       },
+       {
+        "label": "評議認定",
+        "days": 21,
+        "note": "再補 7 天"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "法院見解也不一致，但有一件事一樣：病歷和護理紀錄，就是證據。",
+     "facts": [
+      "F06",
+      "F07"
+     ],
+     "screen": {
+      "kind": "end",
+      "a": "法院見解不一",
+      "b": "病歷和護理紀錄就是證據"
+     }
+    }
+   ]
+  },
+  "ins-03": {
+   "title": "分手了，保險金還是給前任？",
+   "caption": "資料：保險法、金融消費評議中心",
+   "lines": [
+    {
+     "speaker": "cat",
+     "text": "我的保單受益人寫前任，都分手三年了，應該自動失效吧？",
+     "facts": [
+      "F08"
+     ],
+     "fiction": [
+      "三年"
+     ]
+    },
+    {
+     "speaker": "dog",
+     "text": "不會喔。保險公司是照你填的受益人給付。",
+     "facts": [
+      "F08"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "受益人是要保人指定的，地位來自保險契約，不是來自感情或婚姻。",
+     "facts": [
+      "F08"
+     ],
+     "screen": {
+      "kind": "rule",
+      "head": "受益人",
+      "body": "來自契約上的指定",
+      "cite": "保險法 §110"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "所以離婚、分手，都不會讓指定自動失效。",
+     "facts": [
+      "F08"
+     ],
+     "screen": {
+      "kind": "rule",
+      "head": "離婚・分手",
+      "body": "指定不會自動失效",
+      "cite": "評議中心 109 年評字第 2632 號",
+      "warn": true
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "要改，得由要保人辦理變更，並且通知保險公司。",
+     "facts": [
+      "F09"
+     ],
+     "screen": {
+      "kind": "rule",
+      "head": "要改",
+      "body": "要保人變更＋通知保險公司",
+      "cite": "保險法 §111"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "反過來，如果根本沒指定受益人，保險金會變成遺產，要跟其他遺產一起分。",
+     "facts": [
+      "F10"
+     ],
+     "screen": {
+      "kind": "rule",
+      "head": "沒指定受益人",
+      "body": "保險金變成遺產",
+      "cite": "保險法 §113",
+      "warn": true
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "結婚、離婚、生小孩，都是該打開保單看一眼的時候。",
+     "facts": [],
+     "screen": {
+      "kind": "end",
+      "a": "結婚・離婚・生小孩",
+      "b": "打開保單看一眼"
+     }
+    }
+   ]
+  },
+  "ins-03p": {
+   "title": "分手了，保險金還是給前任？",
+   "caption": "資料：保險法、金融消費評議中心",
+   "format": "podcast",
+   "lines": [
+    {
+     "speaker": "cat",
+     "text": "我的保單受益人寫前任，都分手三年了，應該自動失效吧？",
+     "facts": [
+      "F08"
+     ],
+     "fiction": [
+      "三年"
+     ]
+    },
+    {
+     "speaker": "dog",
+     "text": "不會喔。保險公司是照你填的受益人給付。",
+     "facts": [
+      "F08"
+     ]
+    },
+    {
+     "speaker": "cat",
+     "text": "蛤？可是我們早就沒關係了耶！",
+     "facts": []
+    },
+    {
+     "speaker": "dog",
+     "text": "受益人是要保人指定的，地位來自保險契約，不是來自感情或婚姻。",
+     "facts": [
+      "F08"
+     ],
+     "screen": {
+      "kind": "note",
+      "head": "受益人",
+      "body": "來自契約上的指定",
+      "cite": "保險法 §110"
+     }
+    },
+    {
+     "speaker": "dog",
+     "text": "所以離婚、分手，都不會讓指定自動失效。",
+     "facts": [
+      "F08"
+     ],
+     "screen": {
+      "kind": "note",
+      "head": "離婚・分手",
+      "body": "指定不會自動失效",
+      "cite": "評議中心 109 年評字第 2632 號",
+      "warn": true
+     }
+    },
+    {
+     "speaker": "cat",
+     "text": "那我要怎麼改？",
+     "facts": []
+    },
+    {
+     "speaker": "dog",
+     "text": "由要保人辦理變更，並且通知保險公司。",
+     "facts": [
+      "F09"
+     ],
+     "screen": {
+      "kind": "note",
+      "head": "要改",
+      "body": "要保人變更＋通知保險公司",
+      "cite": "保險法 §111"
+     }
+    },
+    {
+     "speaker": "cat",
+     "text": "那我乾脆不要寫受益人好了。",
+     "facts": []
+    },
+    {
+     "speaker": "dog",
+     "text": "也不行。沒指定受益人，保險金會變成遺產，要跟其他遺產一起分。",
+     "facts": [
+      "F10"
+     ],
+     "screen": {
+      "kind": "note",
+      "head": "沒指定受益人",
+      "body": "保險金變成遺產",
+      "cite": "保險法 §113",
+      "warn": true
+     }
+    },
+    {
+     "speaker": "cat",
+     "text": "好啦，我今天就去改。",
+     "facts": []
+    },
+    {
+     "speaker": "dog",
+     "text": "結婚、離婚、生小孩，都是該打開保單看一眼的時候。",
+     "facts": [],
+     "screen": {
+      "kind": "note",
+      "head": "提醒",
+      "body": "結婚・離婚・生小孩\n打開保單看一眼"
+     }
+    }
+   ],
+   "rate": "+15%",
+   "gap": 0.1,
+   "shot": "two"
+  },
+  "ins-03L": {
+   "title": "分手了，保險金還是給前任？",
+   "caption": "資料：保險法、金融消費評議中心",
+   "format": "podcast",
+   "lines": [
+    {
+     "speaker": "cat",
+     "text": "欸，我保單受益人寫的是前任耶，都分手三年了，應該自動失效了吧？",
+     "facts": [
+      "F08"
+     ],
+     "fiction": [
+      "三年"
+     ]
+    },
+    {
+     "speaker": "dog",
+     "text": "蛤，沒有喔！保險公司是看你保單上填誰，就給誰。",
+     "facts": [
+      "F08"
+     ]
+    },
+    {
+     "speaker": "cat",
+     "text": "不會吧？我們早就沒關係了欸！",
+     "facts": []
+    },
+    {
+     "speaker": "dog",
+     "text": "受益人是要保人自己指定的啦，看的是保單寫什麼，跟你們還有沒有在一起沒關係。",
+     "facts": [
+      "F08"
+     ],
+     "screen": {
+      "kind": "note",
+      "head": "受益人",
+      "body": "來自契約上的指定",
+      "cite": "保險法 §110"
+     }
+    },
+    {
+     "speaker": "dog",
+     "text": "所以就算分手、離婚，也不會自己失效。",
+     "facts": [
+      "F08"
+     ],
+     "screen": {
+      "kind": "note",
+      "head": "離婚・分手",
+      "body": "指定不會自動失效",
+      "cite": "評議中心 109 年評字第 2632 號",
+      "warn": true
+     }
+    },
+    {
+     "speaker": "cat",
+     "text": "那我要怎麼改？",
+     "facts": []
+    },
+    {
+     "speaker": "dog",
+     "text": "要保人去跟保險公司辦變更，通知他們就好。",
+     "facts": [
+      "F09"
+     ],
+     "screen": {
+      "kind": "note",
+      "head": "要改",
+      "body": "要保人變更＋通知保險公司",
+      "cite": "保險法 §111"
+     }
+    },
+    {
+     "speaker": "cat",
+     "text": "那我乾脆什麼都不要寫好了。",
+     "facts": []
+    },
+    {
+     "speaker": "dog",
+     "text": "這樣更麻煩！沒指定受益人，保險金會變成遺產，要跟其他遺產一起分。",
+     "facts": [
+      "F10"
+     ],
+     "screen": {
+      "kind": "note",
+      "head": "沒指定受益人",
+      "body": "保險金變成遺產",
+      "cite": "保險法 §113",
+      "warn": true
+     }
+    },
+    {
+     "speaker": "cat",
+     "text": "好啦好啦，我今天就去改。",
+     "facts": []
+    },
+    {
+     "speaker": "dog",
+     "text": "記得喔，結婚、離婚、生小孩，都要打開保單看一下。",
+     "facts": [],
+     "screen": {
+      "kind": "note",
+      "head": "提醒",
+      "body": "結婚・離婚・生小孩\n打開保單看一眼"
+     }
+    }
+   ],
+   "gap": 0.1,
+   "shot": "two",
+   "aspect": "16:9",
+   "tts": "openai",
+   "speed": 1.3
+  },
+  "ins-01L": {
+   "title": "保險金一定免遺產稅？",
+   "caption": "資料：財政部、全國法規資料庫",
+   "format": "podcast",
+   "aspect": "16:9",
+   "tts": "openai",
+   "gap": 0.1,
+   "speed": 1.3,
+   "studio": "studio2",
+   "lines": [
+    {
+     "speaker": "cat",
+     "text": "欸，聽說保險金不用繳遺產稅耶？那我把錢全部拿去買保險就好啦！",
+     "facts": [
+      "F01"
+     ]
+    },
+    {
+     "speaker": "dog",
+     "text": "蛤，你想得太美了！這招國稅局早就看過了。",
+     "facts": [
+      "F02"
+     ]
+    },
+    {
+     "speaker": "cat",
+     "text": "什麼意思？不是說保險金不算遺產嗎？",
+     "facts": [
+      "F01"
+     ]
+    },
+    {
+     "speaker": "dog",
+     "text": "原則上沒錯啦，有指定受益人的壽險身故保險金，不計入遺產總額。",
+     "facts": [
+      "F01"
+     ],
+     "screen": {
+      "kind": "note",
+      "head": "指定受益人",
+      "body": "不計入遺產",
+      "cite": "遺產及贈與稅法 §16 ⑨ ・ 保險法 §112"
+     }
+    },
+    {
+     "speaker": "dog",
+     "text": "但財政部整理過法院判決，列出一堆會被盯上的特徵。",
+     "facts": [
+      "F02"
+     ],
+     "screen": {
+      "kind": "note",
+      "head": "但是",
+      "body": "財政部列出參考特徵",
+      "cite": "財政部 109 年函・16 件判決案例",
+      "warn": true
+     }
+    },
+    {
+     "speaker": "cat",
+     "text": "哪些特徵？",
+     "facts": []
+    },
+    {
+     "speaker": "dog",
+     "text": "像是高齡、帶病、躉繳、鉅額、短期、舉債、密集投保，還有理賠金跟保費差不多。",
+     "facts": [
+      "F02"
+     ],
+     "screen": {
+      "kind": "note",
+      "head": "參考特徵",
+      "body": "高齡・帶病・躉繳・鉅額\n短期・舉債・密集・理賠≈保費",
+      "warn": true
+     }
+    },
+    {
+     "speaker": "cat",
+     "text": "中了會怎樣？",
+     "facts": []
+    },
+    {
+     "speaker": "dog",
+     "text": "國稅局就可能用實質課稅原則，把保險金算回遺產課稅。",
+     "facts": [
+      "F02",
+      "F03"
+     ],
+     "screen": {
+      "kind": "note",
+      "head": "實質課稅",
+      "body": "保險金可能算回遺產",
+      "cite": "由國稅局負舉證責任",
+      "warn": true
+     }
+    },
+    {
+     "speaker": "cat",
+     "text": "好啦好啦，那保險到底能幹嘛？",
+     "facts": []
+    },
+    {
+     "speaker": "dog",
+     "text": "保險可以做傳承，但不是臨終前拿來避稅的工具啦。",
+     "facts": [
+      "F02"
+     ],
+     "screen": {
+      "kind": "note",
+      "head": "重點",
+      "body": "保險能做傳承\n不是臨終避稅工具"
+     }
+    }
+   ],
+   "close_box": {
+    "cat": [
+     0,
+     190,
+     880,
+     495
+    ],
+    "dog": [
+     640,
+     160,
+     896,
+     504
+    ]
+   },
+   "card": [
+    40,
+    500,
+    560
+   ]
+  },
+  "mw-01-zh": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "openai",
+   "gap": 0.25,
+   "title": "全世界又開始升息了？",
+   "caption": "資料：Fed、ECB、日本銀行、中央銀行、美國勞工統計局",
+   "lang": "zh",
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "全世界又開始升息了？過去一個月，美國、歐洲、日本三大央行，全都升息。",
+     "facts": [
+      "M01",
+      "M02",
+      "M03"
+     ],
+     "screen": {
+      "kind": "title",
+      "head": "全世界又開始升息了？",
+      "sub": "2026 年 9 月・三大央行同步升息"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "先看美國。聯準會 9 月 16 日升息一碼，利率區間來到 3.75% 到 4%，是 2023 年以來第一次升息。",
+     "facts": [
+      "M01"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "美國聯準會 Fed",
+      "date": "9/16",
+      "rate": "3.75–4.00%",
+      "note": "2023 年以來首次升息"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "歐洲央行 9 月 10 日也升息，存款利率來到 2.5%，這已經是 6 月以來的第二次。",
+     "facts": [
+      "M02"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "歐洲央行 ECB",
+      "date": "9/10",
+      "rate": "2.50%",
+      "note": "6 月以來第 2 次升息"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "日本更誇張，9 月 18 日把利率升到 1.25%，是 31 年來最高。",
+     "facts": [
+      "M03"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "日本央行 BoJ",
+      "date": "9/18",
+      "rate": "1.25%",
+      "note": "31 年新高"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "為什麼大家一起升？美國 9 月通膨跳到 3.7%，汽油一年漲了 34.2%。",
+     "facts": [
+      "M05"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "美國 9 月 CPI 年增率",
+      "big": "3.7%",
+      "note": "8 月 3.4% → 9 月 3.7%・汽油 +34.2%"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "那台灣呢？央行 9 月 17 日維持 2% 不動，已經連續 10 次沒調，但把今年通膨預測上修到 2.03%。",
+     "facts": [
+      "M04"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "台灣中央銀行",
+      "date": "9/17",
+      "rate": "2%",
+      "note": "連續 10 次不變・今年 CPI 預測 2.03%",
+      "held": true
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "把四家央行擺在一起，差距一目了然。",
+     "facts": [
+      "M01",
+      "M02",
+      "M03",
+      "M04"
+     ],
+     "screen": {
+      "kind": "bars",
+      "head": "政策利率比較（2026 年 9 月）",
+      "bars": [
+       {
+        "label": "美國",
+        "v": "4.00",
+        "show": "3.75–4.00%"
+       },
+       {
+        "label": "歐元區",
+        "v": "2.50",
+        "show": "2.50%"
+       },
+       {
+        "label": "台灣",
+        "v": "2",
+        "show": "2%"
+       },
+       {
+        "label": "日本",
+        "v": "1.25",
+        "show": "1.25%"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "下週是關鍵：聯準會 10 月 27、28 日開會，歐洲央行 10 月 29 日接著宣布。",
+     "facts": [
+      "M06"
+     ],
+     "screen": {
+      "kind": "calendar",
+      "head": "下週看點",
+      "items": [
+       {
+        "date": "10/27–28",
+        "what": "美國聯準會開會"
+       },
+       {
+        "date": "10/29",
+        "what": "歐洲央行宣布"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "結果出來，我們再幫你整理。",
+     "facts": [],
+     "screen": {
+      "kind": "end",
+      "a": "三大央行都在升息",
+      "b": "台灣暫時按兵不動"
+     }
+    }
+   ]
+  },
+  "mw-01-en": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "openai",
+   "gap": 0.25,
+   "title": "Is the World Raising Rates Again?",
+   "caption": "Sources: Federal Reserve, ECB, Bank of Japan, Taiwan CBC, US BLS",
+   "lang": "en",
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "Is the whole world raising rates again? In just one month, the US, Europe and Japan all hiked.",
+     "facts": [
+      "M01",
+      "M02",
+      "M03"
+     ],
+     "screen": {
+      "kind": "title",
+      "head": "Is the World Raising Rates Again?",
+      "sub": "September 2026 · 3 major central banks hiked"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "First, the US. On September 16, the Fed raised rates by a quarter point to 3.75% to 4%, its first hike since 2023.",
+     "facts": [
+      "M01"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "US Federal Reserve",
+      "date": "Sep 16",
+      "rate": "3.75–4.00%",
+      "note": "First hike since 2023"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "The European Central Bank hiked on September 10, taking its deposit rate to 2.5%. That's its second hike since June.",
+     "facts": [
+      "M02"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "European Central Bank",
+      "date": "Sep 10",
+      "rate": "2.50%",
+      "note": "2nd hike since June"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "Japan went even further. On September 18, it lifted rates to 1.25%, a 31-year high.",
+     "facts": [
+      "M03"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "Bank of Japan",
+      "date": "Sep 18",
+      "rate": "1.25%",
+      "note": "31-year high"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "Why now? US inflation jumped to 3.7% in September, with gasoline up 34.2% from a year ago.",
+     "facts": [
+      "M05"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "US CPI, year over year",
+      "big": "3.7%",
+      "note": "Aug 3.4% → Sep 3.7% · Gasoline +34.2%"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "And Taiwan? Its central bank held at 2% on September 17, the 10th hold in a row, but raised this year's inflation forecast to 2.03%.",
+     "facts": [
+      "M04"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "Taiwan Central Bank",
+      "date": "Sep 17",
+      "rate": "2%",
+      "note": "10th hold in a row · 2026 CPI forecast 2.03%",
+      "held": true
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "Put the four side by side, and the gap is clear.",
+     "facts": [
+      "M01",
+      "M02",
+      "M03",
+      "M04"
+     ],
+     "screen": {
+      "kind": "bars",
+      "head": "Policy rates, September 2026",
+      "bars": [
+       {
+        "label": "US",
+        "v": "4.00",
+        "show": "3.75–4.00%"
+       },
+       {
+        "label": "Euro area",
+        "v": "2.50",
+        "show": "2.50%"
+       },
+       {
+        "label": "Taiwan",
+        "v": "2",
+        "show": "2%"
+       },
+       {
+        "label": "Japan",
+        "v": "1.25",
+        "show": "1.25%"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "Next week is key: the Fed meets October 27 and 28, and the ECB decides on October 29.",
+     "facts": [
+      "M06"
+     ],
+     "screen": {
+      "kind": "calendar",
+      "head": "Next week",
+      "items": [
+       {
+        "date": "Oct 27–28",
+        "what": "Fed meeting"
+       },
+       {
+        "date": "Oct 29",
+        "what": "ECB decision"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "We'll break down the results once they're out.",
+     "facts": [],
+     "screen": {
+      "kind": "end",
+      "a": "Three major central banks are hiking",
+      "b": "Taiwan is holding, for now"
+     }
+    }
+   ]
+  },
+  "mw-01-cl": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "clone",
+   "gap": 0.25,
+   "speed": 1.3,
+   "lang": "en",
+   "ui": "en",
+   "title": "Is the World Raising Rates Again?",
+   "caption": "Sources: Federal Reserve, ECB, Bank of Japan, Taiwan CBC, US BLS",
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "Is the whole world raising rates again? In just one month, the US, Europe and Japan all hiked.",
+     "facts": [
+      "M01",
+      "M02",
+      "M03"
+     ],
+     "screen": {
+      "kind": "title",
+      "head": "Is the World Raising Rates Again?",
+      "sub": "September 2026 · 3 major central banks hiked"
+     },
+     "say": "Is the whole world raising interest rates again? In just one month, the U.S., Europe, and Japan all hiked.",
+     "sub": "全世界又開始升息了？過去一個月，美國、歐洲、日本三大央行，全都升息。"
+    },
+    {
+     "speaker": "narr",
+     "text": "First, the US. On September 16, the Fed raised rates by a quarter point to 3.75% to 4%, its first hike since 2023.",
+     "facts": [
+      "M01"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "US Federal Reserve",
+      "date": "Sep 16",
+      "rate": "3.75–4.00%",
+      "note": "First hike since 2023"
+     },
+     "say": "First, the U.S. On September sixteenth, the Fed raised interest rates by a quarter point, to three point seven five percent to four percent. Its first hike since twenty twenty-three.",
+     "sub": "先看美國。聯準會 9 月 16 日升息一碼，利率區間來到 3.75% 到 4%，是 2023 年以來第一次升息。"
+    },
+    {
+     "speaker": "narr",
+     "text": "The European Central Bank hiked on September 10, taking its deposit rate to 2.5%. That's its second hike since June.",
+     "facts": [
+      "M02"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "European Central Bank",
+      "date": "Sep 10",
+      "rate": "2.50%",
+      "note": "2nd hike since June"
+     },
+     "say": "The European Central Bank hiked on September tenth, taking its deposit rate to two point five percent. That's its second hike since June.",
+     "sub": "歐洲央行 9 月 10 日也升息，存款利率來到 2.5%，這已經是 6 月以來的第二次。"
+    },
+    {
+     "speaker": "narr",
+     "text": "Japan went even further. On September 18, it lifted rates to 1.25%, a 31-year high.",
+     "facts": [
+      "M03"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "Bank of Japan",
+      "date": "Sep 18",
+      "rate": "1.25%",
+      "note": "31-year high"
+     },
+     "say": "Japan went even further. On September eighteenth, it lifted rates to one point two five percent, a thirty-one-year high.",
+     "sub": "日本更誇張，9 月 18 日把利率升到 1.25%，是 31 年來最高。"
+    },
+    {
+     "speaker": "narr",
+     "text": "Why now? US inflation jumped to 3.7% in September, with gasoline up 34.2% from a year ago.",
+     "facts": [
+      "M05"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "US CPI, year over year",
+      "big": "3.7%",
+      "note": "Aug 3.4% → Sep 3.7% · Gasoline +34.2%"
+     },
+     "say": "Why now? U.S. inflation jumped to three point seven percent in September, with gasoline up thirty-four point two percent from a year ago.",
+     "sub": "為什麼大家一起升？美國 9 月通膨跳到 3.7%，汽油一年漲了 34.2%。"
+    },
+    {
+     "speaker": "narr",
+     "text": "And Taiwan? Its central bank held at 2% on September 17, the 10th hold in a row, but raised this year's inflation forecast to 2.03%.",
+     "facts": [
+      "M04"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "Taiwan Central Bank",
+      "date": "Sep 17",
+      "rate": "2%",
+      "note": "10th hold in a row · 2026 CPI forecast 2.03%",
+      "held": true
+     },
+     "say": "And Taiwan? Its central bank held at two percent on September seventeenth, the tenth hold in a row, but raised this year's inflation forecast to two point zero three percent.",
+     "sub": "那台灣呢？央行 9 月 17 日維持 2% 不動，已經連續 10 次沒調，但把今年通膨預測上修到 2.03%。"
+    },
+    {
+     "speaker": "narr",
+     "text": "Put the four side by side, and the gap is clear.",
+     "facts": [
+      "M01",
+      "M02",
+      "M03",
+      "M04"
+     ],
+     "screen": {
+      "kind": "bars",
+      "head": "Policy rates, September 2026",
+      "bars": [
+       {
+        "label": "US",
+        "v": "4.00",
+        "show": "3.75–4.00%"
+       },
+       {
+        "label": "Euro area",
+        "v": "2.50",
+        "show": "2.50%"
+       },
+       {
+        "label": "Taiwan",
+        "v": "2",
+        "show": "2%"
+       },
+       {
+        "label": "Japan",
+        "v": "1.25",
+        "show": "1.25%"
+       }
+      ]
+     },
+     "say": "Put the four side by side, and the gap is clear.",
+     "sub": "把四家央行擺在一起，差距一目了然。"
+    },
+    {
+     "speaker": "narr",
+     "text": "So what could this mean? First, borrowing gets more expensive. The average US 30-year mortgage rate is 7.40%, up from 6.27% a year ago.",
+     "say": "So what could this mean? First, borrowing gets more expensive. The average U.S. thirty-year mortgage rate is seven point four percent, up from six point two seven percent a year ago.",
+     "sub": "這會帶來什麼影響？首先，借錢變貴。美國 30 年房貸平均利率 7.40%，一年前是 6.27%。",
+     "facts": [
+      "E01",
+      "E02"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "Borrowing costs rise",
+      "big": "7.40%",
+      "note": "US 30-year mortgage rate (Oct 15) · a year ago 6.27%"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "Second, long-term rates climb. The US 10-year Treasury yield is now above 5%, at about 5.10%.",
+     "say": "Second, long-term interest rates are climbing. The U.S. ten-year Treasury yield is now above five percent, at about five point one percent.",
+     "sub": "再來，長期利率走高。美國 10 年期公債殖利率已經站上 5%，大約 5.10%。",
+     "facts": [
+      "E03"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "Long-term yields climb",
+      "big": "5.10%",
+      "note": "US 10-year Treasury yield (Oct 15)"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "For Taiwan, a wider gap with US rates is often seen as pressure on the NT dollar. But Taiwan's central bank says this week's slide, from 31.895 to 32.338 per US dollar, came mainly from foreign investors selling Taiwan stocks.",
+     "say": "For Taiwan, a wider gap with U.S. rates is often seen as pressure on the New Taiwan dollar. But Taiwan's central bank says this week's slide, from thirty-one point eight nine five to thirty-two point three three eight per U.S. dollar, came mainly from foreign investors selling Taiwan stocks.",
+     "sub": "對台灣來說，台美利差拉大，常被認為會讓新台幣承壓。不過央行說，這波新台幣從 31.895 貶到 32.338，主要是外資賣台股、匯出資金。",
+     "facts": [
+      "E04"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "Taiwan: pressure on the NT dollar",
+      "big": "32.338",
+      "note": "NT$ per US$ (Oct 16) · from 31.895 on Oct 12\nCentral bank: mainly foreign investors selling Taiwan stocks"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "Next week is key: the Fed meets October 27 and 28, and the ECB decides on October 29.",
+     "facts": [
+      "M06"
+     ],
+     "screen": {
+      "kind": "calendar",
+      "head": "Next week",
+      "items": [
+       {
+        "date": "Oct 27–28",
+        "what": "Fed meeting"
+       },
+       {
+        "date": "Oct 29",
+        "what": "ECB decision"
+       }
+      ]
+     },
+     "say": "Next week is key. The Fed meets on October twenty-seventh and twenty-eighth, and the E.C.B. decides on October twenty-ninth.",
+     "sub": "下週是關鍵：聯準會 10 月 27、28 日開會，歐洲央行 10 月 29 日接著宣布。"
+    },
+    {
+     "speaker": "narr",
+     "text": "We'll break down the results once they're out.",
+     "facts": [],
+     "screen": {
+      "kind": "end",
+      "a": "Three major central banks are hiking",
+      "b": "Taiwan is holding, for now"
+     },
+     "say": "We'll break down the results once they're out.",
+     "sub": "結果出來，我們再幫你整理。"
+    },
+    {
+     "speaker": "narr",
+     "text": "Follow me for more stories about money from around the world.",
+     "say": "Follow me for more stories about money, from around the world.",
+     "sub": "關注我，給你更多錢的大小事",
+     "facts": [],
+     "screen": {
+      "kind": "outro",
+      "a": "Follow for more",
+      "b": "Money Around the World",
+      "btn": "SUBSCRIBE"
+     }
+    }
+   ]
+  },
+  "mw-01-zc": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "clone",
+   "gap": 0.25,
+   "speed": 1.3,
+   "lang": "zh",
+   "ui": "zh",
+   "title": "美國房貸衝上7.4%！全世界又開始升息，台灣呢？",
+   "caption": "資料：Fed、ECB、日本銀行、中央銀行、美國勞工統計局、Freddie Mac、FRED",
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "美國人買房的利率，一年從 6.27% 衝上 7.40%。",
+     "say": "美國人買房的利率，一年從百分之六點二七，衝上百分之七點四。",
+     "facts": [
+      "E02"
+     ],
+     "bg": "hook1",
+     "screen": {
+      "kind": "stat",
+      "head": "美國 30 年房貸利率",
+      "big": "7.40%",
+      "note": "一年前 6.27%"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "日本利率，升到 31 年來最高。",
+     "say": "日本利率，升到三十一年來最高。",
+     "facts": [
+      "M03"
+     ],
+     "bg": "hook2",
+     "screen": {
+      "kind": "title",
+      "head": "日本利率 31 年新高",
+      "sub": "日本央行・9 月 18 日"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "台灣呢？這對你的錢，有什麼影響？",
+     "say": "台灣呢？這對你的錢，有什麼影響？",
+     "facts": [],
+     "bg": "hook3",
+     "screen": {
+      "kind": "title",
+      "head": "台灣呢？",
+      "sub": "這對你的錢，有什麼影響？",
+      "arrow": false
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "全世界又開始升息了。短短一個月，美國、歐洲、日本三大央行，全都升息。",
+     "say": "全世界又開始升息了。短短一個月，美國、歐洲、日本三大央行，全都升息。",
+     "facts": [
+      "M01",
+      "M02",
+      "M03"
+     ],
+     "screen": {
+      "kind": "title",
+      "head": "全世界又開始升息了？",
+      "sub": "2026 年 9 月・三大央行同步升息"
+     },
+     "bg": "world"
+    },
+    {
+     "speaker": "narr",
+     "text": "先看美國。聯準會 9 月 16 日升息一碼，利率區間來到 3.75% 到 4%，是 2023 年以來第一次升息。",
+     "say": "先看美國。聯準會九月十六號升息一碼，利率區間來到百分之三點七五到百分之四，是二零二三年以來第一次升息。",
+     "facts": [
+      "M01"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "美國聯準會 Fed",
+      "date": "9/16",
+      "rate": "3.75–4.00%",
+      "note": "2023 年以來首次升息"
+     },
+     "bg": "fed"
+    },
+    {
+     "speaker": "narr",
+     "text": "歐洲央行 9 月 10 日也升息，存款利率來到 2.5%，這已經是 6 月以來的第二次。",
+     "say": "歐洲央行九月十號也升息，存款利率來到百分之二點五，這已經是六月以來的第二次。",
+     "facts": [
+      "M02"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "歐洲央行 ECB",
+      "date": "9/10",
+      "rate": "2.50%",
+      "note": "6 月以來第 2 次升息"
+     },
+     "bg": "ecb"
+    },
+    {
+     "speaker": "narr",
+     "text": "日本動作更大，9 月 18 日把利率升到 1.25%，是 31 年來最高。",
+     "say": "日本動作更大，九月十八號把利率升到百分之一點二五，是三十一年來最高。",
+     "facts": [
+      "M03"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "日本央行 BoJ",
+      "date": "9/18",
+      "rate": "1.25%",
+      "note": "31 年新高"
+     },
+     "bg": "boj"
+    },
+    {
+     "speaker": "narr",
+     "text": "為什麼大家一起升？美國 9 月通膨跳到 3.7%，汽油一年漲了 34.2%。",
+     "say": "為什麼大家一起升？美國九月的通膨跳到百分之三點七，汽油一年漲了百分之三十四點二。",
+     "facts": [
+      "M05"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "美國 9 月 CPI 年增率",
+      "big": "3.7%",
+      "note": "8 月 3.4% → 9 月 3.7%・汽油 +34.2%"
+     },
+     "bg": "gas"
+    },
+    {
+     "speaker": "narr",
+     "text": "台灣呢？央行 9 月 17 日維持 2% 不動，這已經是第 10 次按兵不動，但把今年通膨預測上修到 2.03%。",
+     "say": "台灣呢？央行九月十七號維持百分之二不動，這已經是第十次按兵不動，但把今年的通膨預測，上修到百分之二點零三。",
+     "facts": [
+      "M04"
+     ],
+     "screen": {
+      "kind": "rate",
+      "bank": "台灣中央銀行",
+      "date": "9/17",
+      "rate": "2%",
+      "note": "連續 10 次不變・今年 CPI 預測 2.03%",
+      "held": true
+     },
+     "bg": "cbc"
+    },
+    {
+     "speaker": "narr",
+     "text": "把四家央行擺在一起，差距一目了然。",
+     "say": "把四家央行擺在一起，差距一目了然。",
+     "facts": [
+      "M01",
+      "M02",
+      "M03",
+      "M04"
+     ],
+     "screen": {
+      "kind": "bars",
+      "head": "政策利率比較（2026 年 9 月）",
+      "bars": [
+       {
+        "label": "美國",
+        "v": "4.00",
+        "show": "3.75–4.00%"
+       },
+       {
+        "label": "歐元區",
+        "v": "2.50",
+        "show": "2.50%"
+       },
+       {
+        "label": "台灣",
+        "v": "2",
+        "show": "2%"
+       },
+       {
+        "label": "日本",
+        "v": "1.25",
+        "show": "1.25%"
+       }
+      ]
+     },
+     "bg": "skyline"
+    },
+    {
+     "speaker": "narr",
+     "text": "這樣會帶來什麼影響？首先，貸款變貴。美國 30 年期房屋貸款平均利率 7.40%，一年前是 6.27%。",
+     "say": "這樣會帶來什麼影響？首先，代款變貴。美國三十年期房屋代款的平均利率是百分之七點四，一年前是百分之六點二七。",
+     "facts": [
+      "E01",
+      "E02"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "貸款變貴了",
+      "big": "7.40%",
+      "note": "美國 30 年房貸平均利率（10/15）・一年前 6.27%"
+     },
+     "bg": "house"
+    },
+    {
+     "speaker": "narr",
+     "text": "再來，長期利率走高。美國 10 年期公債殖利率已經站上 5%，大約 5.10%。",
+     "say": "再來，長期利率走高。美國十年期公債殖利率，已經站上百分之五，大約百分之五點一。",
+     "facts": [
+      "E03"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "長期利率走高",
+      "big": "5.10%",
+      "note": "美國 10 年期公債殖利率（10/15）"
+     },
+     "bg": "wall"
+    },
+    {
+     "speaker": "narr",
+     "text": "對台灣來說，台美利差拉大，常被認為會讓新台幣有壓力。不過央行說，10 月 12 日到 16 日新台幣從 31.895 跌到 32.338，主要是外資賣台股、把錢撤出。",
+     "say": "對台灣來說，台美利差拉大，常被認為會讓新台幣有壓力。不過央行說，十月十二號到十六號，新台幣從三十一點八九五，跌到三十二點三三八，主要是外資賣台股、把錢撤出。",
+     "facts": [
+      "E04"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "台灣：新台幣有壓力",
+      "big": "32.338",
+      "note": "新台幣兌 1 美元（10/16）・10/12 為 31.895\n央行：主要是外資賣台股、把錢撤出"
+     },
+     "bg": "taipei"
+    },
+    {
+     "speaker": "narr",
+     "text": "接下來的關鍵在月底：聯準會 10 月 27、28 日開會，歐洲央行 10 月 29 日接著宣布。",
+     "say": "接下來的關鍵在月底：聯準會十月二十七、二十八號開會，歐洲央行十月二十九號接著宣布。",
+     "facts": [
+      "M06"
+     ],
+     "screen": {
+      "kind": "calendar",
+      "head": "月底看點",
+      "items": [
+       {
+        "date": "10/27–28",
+        "what": "美國聯準會開會"
+       },
+       {
+        "date": "10/29",
+        "what": "歐洲央行宣布"
+       }
+      ]
+     },
+     "bg": "fomc"
+    },
+    {
+     "speaker": "narr",
+     "text": "結果出來，我們再幫你整理。",
+     "say": "結果出來，我們再幫你整理。",
+     "facts": [],
+     "screen": {
+      "kind": "end",
+      "a": "三大央行都在升息",
+      "b": "台灣暫時按兵不動"
+     },
+     "bg": "taipei2"
+    },
+    {
+     "speaker": "narr",
+     "text": "關注我，給你更多錢的大小事。",
+     "say": "關注我，給你更多錢的大小事。",
+     "facts": [],
+     "screen": {
+      "kind": "outro",
+      "a": "關注我",
+      "b": "給你更多錢的大小事",
+      "btn": "訂閱"
+     },
+     "bg": "night"
+    }
+   ],
+   "thumbs": [
+    {
+     "bg": "hook1",
+     "top": 60,
+     "lines": [
+      [
+       "美國房貸",
+       "white",
+       120
+      ],
+      [
+       "7.4%",
+       "yellow",
+       250
+      ]
+     ],
+     "tag": "全世界又開始升息"
+    },
+    {
+     "bg": "hook3",
+     "top": 60,
+     "lines": [
+      [
+       "全世界都在升息",
+       "white",
+       104
+      ],
+      [
+       "台灣呢？",
+       "yellow",
+       210
+      ]
+     ],
+     "tag": "日本 31 年新高・美國房貸 7.4%"
+    }
+   ]
+  },
+  "jp-01-pilot": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "clone",
+   "gap": 0.15,
+   "speed": 1.2,
+   "lang": "zh",
+   "ui": "zh",
+   "title": "日本利率 31 年新高，日本人的房貸要爆了嗎？",
+   "caption": "資料：日本銀行、住宅金融支援機構、中央銀行",
+   "bgm": {
+    "src": "~/liam-workspace/assets/bgm/night_music.mp3",
+    "volume": 0.12
+   },
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "日本央行 9 月 18 日把利率升到 1.25%，是 31 年來最高。",
+     "say": "日本央行九月十八號，把利率升到百分之一點二五，是三十一年來最高。",
+     "facts": [
+      "M03"
+     ],
+     "clips": [
+      "bg/boj",
+      "broll/jp_aerial2"
+     ],
+     "screen": {
+      "kind": "broll",
+      "tag": "日本政策利率",
+      "big": "1.25%",
+      "note": "31 年新高・9/18"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "最緊張的，是背著房貸的日本人。",
+     "say": "最緊張的，是背著房代的日本人。",
+     "facts": [],
+     "clips": [
+      "broll/jp_street1"
+     ],
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "根據日本官方今年 1 月的調查，最近申辦房貸的人，有 75% 選的是浮動利率。",
+     "say": "根據日本官方，今年一月的調查，最近申辦房代的人，有百分之七十五，選的是浮動利率。",
+     "facts": [
+      "J01"
+     ],
+     "clips": [
+      "broll/jp_aerial1",
+      "broll/jp_street2"
+     ],
+     "screen": {
+      "kind": "broll",
+      "tag": "選浮動利率的房貸族",
+      "big": "75%",
+      "note": "住宅金融支援機構・2026 年 1 月調查"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "利率一往上調，這些人的房貸，也會跟著變貴。",
+     "say": "利率一往上調，這些人的房代，也會跟著變貴。",
+     "facts": [],
+     "clips": [
+      "broll/jp_street3",
+      "broll/jp_aerial3"
+     ],
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "台灣呢？央行 9 月 17 日維持 2% 不動，這已經是第 10 次按兵不動。",
+     "say": "台灣呢？央行九月十七號維持百分之二不動，這已經是第十次按兵不動。",
+     "facts": [
+      "M04"
+     ],
+     "clips": [
+      "broll/tw_101"
+     ],
+     "screen": {
+      "kind": "broll",
+      "tag": "台灣政策利率",
+      "big": "2%",
+      "note": "連續 10 次不變・9/17"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "日本的情況，台灣的房貸族該不該擔心？完整分析，我們下一集見。",
+     "say": "日本的情況，台灣的房代族，該不該擔心？完整分析，我們下一集見。",
+     "facts": [],
+     "clips": [
+      "broll/tw_night"
+     ],
+     "screen": {
+      "kind": "broll"
+     }
+    }
+   ]
+  },
+  "jp-01": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "clone",
+   "gap": 0.15,
+   "speed": 1.2,
+   "lang": "zh",
+   "ui": "zh",
+   "title": "日本利率31年新高，日本人的房貸要爆了嗎？台灣呢？",
+   "caption": "資料：日本銀行、住宅金融支援機構、全國銀行協會、中央銀行",
+   "bgm": {
+    "src": "~/liam-workspace/assets/bgm/night_music.mp3",
+    "volume": 0.12
+   },
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "金錢怪物，一睜眼就是錢的世界。",
+     "say": "金錢怪物，一爭眼，就是錢的世界。",
+     "facts": [],
+     "pool": "tw_city",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "今年 9 月 18 日，日本央行把利率升到 1.25%，這是 31 年來最高。",
+     "say": "今年九月十八號，日本央行把利率升到百分之一點二五，這是三十一年來最高。",
+     "facts": [
+      "M03"
+     ],
+     "pool": "jp_city",
+     "screen": {
+      "kind": "broll",
+      "tag": "日本政策利率",
+      "big": "1.25%",
+      "note": "31 年新高・2026/9/18"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "對很多日本人來說，這不只是一則財經新聞。",
+     "say": "對很多日本人來說，這不只是一則財經新聞。",
+     "facts": [],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "因為最近申辦房貸的日本人，有 75% 選的是浮動利率。",
+     "say": "因為最近申辦房代的日本人，有百分之七十五，選的是浮動利率。",
+     "facts": [
+      "J01"
+     ],
+     "pool": "jp_aerial",
+     "screen": {
+      "kind": "broll",
+      "tag": "選浮動利率",
+      "big": "75%",
+      "note": "日本住宅金融支援機構・2026 年 1 月調查"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "利率一變，他們的房貸就會跟著變。",
+     "say": "利率一變，他們的房代就會跟著變。",
+     "facts": [],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "日本人的房貸，會不會就這樣爆掉？",
+     "say": "日本人的房代，會不會就這樣爆掉？",
+     "facts": [],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "台灣的房貸族，又該不該擔心？",
+     "say": "台灣的房代族，又該不該擔心？",
+     "facts": [],
+     "pool": "tw_city",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這一集，我們就來聊聊。",
+     "say": "這一集，我們就來聊聊。",
+     "facts": [],
+     "pool": "tw_city",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "先把時間拉回來。過去很長一段時間，日本幾乎是零利率，甚至是負利率。",
+     "say": "先把時間拉回來。過去很長一段時間，日本幾乎是零利率，甚至是負利率。",
+     "facts": [],
+     "pool": "jp_city",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "錢借出去幾乎不收利息，房貸當然也便宜得不可思議。",
+     "say": "錢借出去幾乎不收利息，房代當然也便宜得不可思議。",
+     "facts": [],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "直到 2024 年 3 月，日本央行終於告別負利率。",
+     "say": "直到二零二四年三月，日本央行終於告別負利率。",
+     "facts": [
+      "J02"
+     ],
+     "pool": "jp_city",
+     "screen": {
+      "kind": "broll",
+      "tag": "日本央行",
+      "big": "結束負利率",
+      "note": "2024 年 3 月"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "接下來兩年多，日本央行升息了 5 次。",
+     "say": "接下來兩年多，日本央行升息了五次。",
+     "facts": [
+      "J02"
+     ],
+     "pool": "jp_city",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "從 0.25%、0.5%、0.75%、1%，一路升到今年 9 月的 1.25%。",
+     "say": "從百分之零點二五、零點五、零點七五、百分之一，一路升到今年九月的，百分之一點二五。",
+     "facts": [
+      "J02"
+     ],
+     "screen": {
+      "kind": "bars",
+      "head": "日本政策利率一路往上",
+      "bars": [
+       {
+        "label": "2024/7",
+        "v": "0.25",
+        "show": "0.25%"
+       },
+       {
+        "label": "2025/1",
+        "v": "0.5",
+        "show": "0.5%"
+       },
+       {
+        "label": "2025/12",
+        "v": "0.75",
+        "show": "0.75%"
+       },
+       {
+        "label": "2026/6",
+        "v": "1.0",
+        "show": "1.0%"
+       },
+       {
+        "label": "2026/9",
+        "v": "1.25",
+        "show": "1.25%"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "日本央行的目標，是讓物價穩定在每年上漲 2% 左右。",
+     "say": "日本央行的目標，是讓物價穩定在每年上漲百分之二左右。",
+     "facts": [
+      "J07"
+     ],
+     "pool": "jp_city",
+     "screen": {
+      "kind": "broll",
+      "tag": "日本央行目標",
+      "big": "物價 2%"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "要達到這個目標，利率就不能一直停在零。",
+     "say": "要達到這個目標，利率就不能一直停在零。",
+     "facts": [],
+     "pool": "jp_city",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "那麼，日本人的房貸，到底長什麼樣子？",
+     "say": "那麼，日本人的房代，到底長什麼樣子？",
+     "facts": [],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "根據日本官方今年 1 月的調查，最近申辦房貸的人，有 75% 選浮動利率。",
+     "say": "根據日本官方，今年一月的調查，最近申辦房代的人，有百分之七十五，選浮動利率。",
+     "facts": [
+      "J01"
+     ],
+     "screen": {
+      "kind": "bars",
+      "head": "日本人選哪一種房貸？（2026 年 1 月調查）",
+      "bars": [
+       {
+        "label": "浮動利率",
+        "v": "75",
+        "show": "75.0%"
+       },
+       {
+        "label": "固定期間",
+        "v": "14.9",
+        "show": "14.9%"
+       },
+       {
+        "label": "全期固定",
+        "v": "10.1",
+        "show": "10.1%"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "為什麼這麼多人選浮動？答案很簡單：便宜。",
+     "say": "為什麼這麼多人選浮動？答案很簡單：便宜。",
+     "facts": [],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "選浮動利率的人裡面，有 53.4% 的利率，落在 0.5% 到 1% 之間。",
+     "say": "選浮動利率的人裡面，有百分之五十三點四的利率，落在百分之零點五，到百分之一之間。",
+     "facts": [
+      "J04"
+     ],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "浮動利率房貸族",
+      "big": "53.4%",
+      "note": "利率落在 0.5%～1%"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "同一時間，日本官方推的全期固定利率房貸，這個月最多人適用的利率是 3.83%。",
+     "say": "同一時間，日本官方推的，全期固定利率房代，這個月最多人適用的利率，是百分之三點八三。",
+     "facts": [
+      "J03"
+     ],
+     "pool": "jp_aerial",
+     "screen": {
+      "kind": "broll",
+      "tag": "全期固定（Flat 35）",
+      "big": "3.83%",
+      "note": "2026 年 10 月最多人適用"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "一種不到 1%，一種將近百分之四。換作是你，會怎麼選？",
+     "say": "一種不到百分之一，一種將近百分之四。換作是你，會怎麼選？",
+     "facts": [
+      "J03",
+      "J04"
+     ],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "將近百分之四": "3.83"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這就是日本人的選擇：先享受低利率，再承擔利率上升的風險。",
+     "say": "這就是日本人的選擇：先享受低利率，再承擔利率上升的風險。",
+     "facts": [],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "那現在利率升了，房貸會變多少？我們試算一下。",
+     "say": "那現在利率升了，房代會變多少？我們試算一下。",
+     "facts": [],
+     "pool": "jp_aerial",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "假設借 4000 萬日圓、35 年，用 0.75% 計算，每個月大約繳 十萬八千日圓。",
+     "say": "假設借四千萬日圓，三十五年，用百分之零點七五計算，每個月大約繳十萬八千日圓。",
+     "facts": [
+      "C02"
+     ],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "試算：4,000 萬日圓・35 年",
+      "big": "108,314 圓",
+      "note": "利率 0.75%"
+     },
+     "approx": {
+      "十萬八千日圓": "108314"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "如果利率升到 1.25%，每個月就要繳大約十一萬七千日圓，多了九千多。",
+     "say": "如果利率升到百分之一點二五，每個月就要繳大約十一萬七千日圓，多了九千多。",
+     "facts": [
+      "C02"
+     ],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "利率 1.25%",
+      "big": "117,635 圓",
+      "note": "每月多約 9,321 圓"
+     },
+     "approx": {
+      "十一萬七千日圓": "117635",
+      "九千多": "9321"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這樣聽起來，日本人的房貸好像要爆了？其實沒有那麼快。",
+     "say": "這樣聽起來，日本人的房代好像要爆了？其實沒有那麼快。",
+     "facts": [],
+     "pool": "jp_aerial",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "因為日本的浮動房貸，大多有兩個保護機制。",
+     "say": "因為日本的浮動房代，大多有兩個保護機制。",
+     "facts": [
+      "J05"
+     ],
+     "pool": "jp_city",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第一個，叫做 5 年規則。",
+     "say": "第一個，叫做五年規則。",
+     "facts": [
+      "J05"
+     ],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "保護機制 1",
+      "big": "5 年規則"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "利率大約半年調整一次，但每個月要繳的錢，5 年才重新計算一次。",
+     "say": "利率大約半年調整一次，但每個月要繳的錢，五年才重新計算一次。",
+     "facts": [
+      "J05"
+     ],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第二個，叫做 125% 規則。",
+     "say": "第二個，叫做百分之一百二十五規則。",
+     "facts": [
+      "J05"
+     ],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "保護機制 2",
+      "big": "125% 規則"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "就算 5 年後重新計算，新的月付金，最多只能是原本的 1.25 倍。",
+     "say": "就算五年後重新計算，新的月付金，最多只能是原本的一點二五倍。",
+     "facts": [
+      "J05"
+     ],
+     "pool": "jp_aerial",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "日本全國銀行協會舉例：原本每個月繳 8 萬日圓的人，之後最多漲到 10 萬日圓。",
+     "say": "日本全國銀行協會舉例，原本每個月繳八萬日圓的人，之後最多漲到十萬日圓。",
+     "facts": [
+      "J05"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "125% 規則：月付金漲幅有上限",
+      "big": "8 萬 → 10 萬",
+      "note": "單位：日圓／月・日本全國銀行協會舉例"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "聽起來很安心，對吧？但這兩個規則，其實是把問題往後延。",
+     "say": "聽起來很安心，對吧？但這兩個規則，其實是把問題往後延。",
+     "facts": [],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "雖然月付金沒變，但利息變多了，能拿去還本金的錢，就越來越少。",
+     "say": "雖然月付金沒變，但利息變多了，能拿去還本金的錢，就越來越少。",
+     "facts": [
+      "J06"
+     ],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "如果利率漲得太急，利息甚至會超過每個月繳的錢。",
+     "say": "如果利率漲得太急，利息甚至會超過每個月繳的錢。",
+     "facts": [
+      "J06"
+     ],
+     "pool": "jp_city",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "超出來的部分，叫做未付利息，會一直累積下去。",
+     "say": "超出來的部分，叫做未付利息，會一直累積下去。",
+     "facts": [
+      "J06"
+     ],
+     "pool": "jp_city",
+     "screen": {
+      "kind": "broll",
+      "tag": "風險",
+      "big": "未付利息"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "最壞的情況，房貸繳到最後一期，還剩下一筆利息，要一次付清。",
+     "say": "最壞的情況，房代繳到最後一期，還剩下一筆利息，要一次付清。",
+     "facts": [
+      "J06"
+     ],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "不過，這種情況通常要在利率急升的時候才會發生。",
+     "say": "不過，這種情況通常要在利率急升的時候才會發生。",
+     "facts": [
+      "J06"
+     ],
+     "pool": "jp_aerial",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "所以，日本的房貸不會一夕爆掉，但壓力會慢慢累積。",
+     "say": "所以，日本的房代不會一夕爆掉，但壓力會慢慢累積。",
+     "facts": [],
+     "pool": "jp_aerial",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "說完日本，回到台灣。",
+     "say": "說完日本，回到台灣。",
+     "facts": [],
+     "pool": "tw_city",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "台灣央行在 9 月 17 日決定，利率維持 2%，這已經是第 10 次按兵不動。",
+     "say": "台灣央行在九月十七號決定，利率維持百分之二，這已經是第十次按兵不動。",
+     "facts": [
+      "M04"
+     ],
+     "pool": "tw_city",
+     "screen": {
+      "kind": "broll",
+      "tag": "台灣政策利率",
+      "big": "2%",
+      "note": "第 10 次按兵不動・9/17"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "有趣的是，台灣人現在的房貸利率，其實比很多日本人還高。",
+     "say": "有趣的是，台灣人現在的房代利率，其實比很多日本人還高。",
+     "facts": [
+      "T01",
+      "J04"
+     ],
+     "pool": "tw_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "央行統計，今年 8 月，五大銀行新承做的房貸，平均利率是 2.321%。",
+     "say": "央行統計，今年八月，五大銀行新承做的房代，平均利率是百分之二點三二一。",
+     "facts": [
+      "T01"
+     ],
+     "pool": "tw_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "台灣新承做房貸平均利率",
+      "big": "2.321%",
+      "note": "五大銀行・2026 年 8 月"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "對照日本，選浮動利率的人，一半以上的利率還在 1% 以下。",
+     "say": "對照日本，選浮動利率的人，一半以上的利率，還在百分之一以下。",
+     "facts": [
+      "J04",
+      "T01"
+     ],
+     "screen": {
+      "kind": "bars",
+      "head": "房貸利率比一比",
+      "bars": [
+       {
+        "label": "台灣新承做",
+        "v": "2.321",
+        "show": "2.321%"
+       },
+       {
+        "label": "日本浮動",
+        "v": "1.0",
+        "show": "0.5%～1%"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "如果你的房貸是指數型，也就是浮動利率，央行只要調高一碼，月付金也會一起調整。",
+     "say": "如果你的房代是指數型，也就是浮動利率，央行只要調高一碼，月付金也會一起調整。",
+     "facts": [],
+     "pool": "tw_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "我們一樣來試算：貸款 1000 萬、30 年，每個月本金加利息一起繳。",
+     "say": "我們一樣來試算，代款一千萬，三十年，每個月本金加利息一起繳。",
+     "facts": [
+      "C01"
+     ],
+     "pool": "tw_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "用 2.321% 計算，每個月大約繳 38,588 元。",
+     "say": "用百分之二點三二一計算，每個月大約繳三萬八千五百八十八元。",
+     "facts": [
+      "C01"
+     ],
+     "pool": "tw_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "試算：1,000 萬・30 年",
+      "big": "38,588 元",
+      "note": "利率 2.321%"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "如果再加一碼，到 2.571%，每個月要繳 39,882 元，大約多 1,300 元。",
+     "say": "如果再加一碼，到百分之二點五七一，每個月要繳三萬九千八百八十二元，大約多一千三百元。",
+     "facts": [
+      "C01"
+     ],
+     "pool": "tw_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "升一碼 2.571%",
+      "big": "39,882 元",
+      "note": "每月多約 1,294 元"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "總結來說，日本的房貸不會馬上爆，但低利率的時代，確實結束了。",
+     "say": "總結來說，日本的房代不會馬上爆，但低利率的時代，確實結束了。",
+     "facts": [],
+     "pool": "jp_city",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "5 年規則和 125% 規則，買到的是時間，不是答案。",
+     "say": "五年規則和百分之一百二十五規則，買到的是時間，不是答案。",
+     "facts": [
+      "J05"
+     ],
+     "pool": "jp_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "台灣呢？央行目前按兵不動，但房貸利率已經不算低。",
+     "say": "台灣呢？央行目前按兵不動，但房代利率已經不算低。",
+     "facts": [
+      "M04",
+      "T01"
+     ],
+     "pool": "tw_city",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "利率接下來會怎麼走，沒有人說得準；但先算清楚，利率再加一碼，自己的月付金會多多少，會比較放心。",
+     "say": "利率接下來會怎麼走，沒有人說得準；但先算清楚，利率再加一碼，自己的月付金會多多少，會比較放心。",
+     "facts": [],
+     "pool": "tw_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "你覺得台灣的房貸族，該不該開始擔心？歡迎在留言區，跟我們分享你的想法。",
+     "say": "你覺得台灣的房代族，該不該開始擔心？歡迎在留言區，跟我們分享你的想法。",
+     "facts": [],
+     "pool": "tw_city",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "關注我，給你更多錢的大小事。",
+     "say": "關注我，給你更多錢的大小事。",
+     "facts": [],
+     "screen": {
+      "kind": "outro",
+      "a": "關注我",
+      "b": "給你更多錢的大小事",
+      "btn": "訂閱"
+     }
+    }
+   ],
+   "pool_extra": {
+    "jp_city": [
+     "bg/boj",
+     "bg/hook2"
+    ],
+    "tw_city": [
+     "bg/taipei"
+    ]
+   },
+   "reject": [
+    "broll/jp_res_00",
+    "broll/jp_res_09",
+    "broll/jp_city_05",
+    "broll/tw_city_11",
+    "broll/tw_res_01",
+    "broll/tw_res_03",
+    "broll/tw_res_06",
+    "broll/tw_res_07",
+    "broll/tw_res_08",
+    "broll/tw_res_11",
+    "broll/tw_res_12",
+    "broll/tw_res_13",
+    "broll/tw_res_19"
+   ]
+  },
+  "fr-01": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "clone",
+   "gap": 0.15,
+   "speed": 1.2,
+   "lang": "zh",
+   "ui": "zh",
+   "title": "法國又要大革命了？精品店被洗劫、國債利率破 5%，誰在買單？",
+   "caption": "資料：巴黎警察總局、法國經濟部、法國國債管理局、里昂市政府、LVMH、Morningstar DBRS、法國統計局",
+   "note": "資訊整理，非投資建議｜示威畫面含資料畫面",
+   "bgm": {
+    "src": "~/liam-workspace/assets/bgm/night_music.mp3",
+    "volume": 0.12
+   },
+   "pool_extra": {
+    "fr_fuel": [
+     "bg/gas"
+    ],
+    "fr_euro": [
+     "broll/fr_fin_00",
+     "broll/fr_fin_02",
+     "broll/fr_fin_03",
+     "broll/fr_fin_04",
+     "broll/fr_fin_01"
+    ]
+   },
+   "reject": [
+    "broll/fr_euro_00",
+    "broll/fr_euro_03",
+    "broll/fr_gj_00",
+    "broll/fr_fuel_01",
+    "broll/fr_fuel_02",
+    "broll/fr_paris_13",
+    "broll/fr_paris_14",
+    "broll/fr_protest_01",
+    "broll/fr_protest_05",
+    "broll/fr_protest_08",
+    "broll/fr_gj_10",
+    "broll/fr_gj_11",
+    "broll/fr_gj_12",
+    "broll/fr_gj_13",
+    "broll/fr_paris_24",
+    "broll/fr_paris_25",
+    "broll/fr_paris_26",
+    "broll/fr_paris_28",
+    "broll/fr_protest_10",
+    "broll/fr_protest_12",
+    "broll/fr_protest_13",
+    "broll/fr_protest_14",
+    "broll/fr_protest_15",
+    "broll/fr_protest_19",
+    "broll/fr_protest_20",
+    "broll/fr_lux_00",
+    "broll/fr_lux_01",
+    "broll/fr_lux_04",
+    "broll/fr_euro_06",
+    "broll/fr_euro_10",
+    "broll/fr_fin_00",
+    "broll/fr_fin_01",
+    "broll/fr_fin_02"
+   ],
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "金錢怪物，一睜眼就是錢的世界。",
+     "say": "金錢怪物，一爭眼，就是錢的世界。",
+     "facts": [],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "10 月 17 日，據法國當局統計、多家媒體報導，全法國約 55 萬人走上街頭。",
+     "say": "十月十七號，據法國當局統計、多家媒體報導，全法國大約五十五萬人，走上街頭。",
+     "facts": [
+      "FR01"
+     ],
+     "pool": "fr_protest",
+     "screen": {
+      "kind": "broll",
+      "tag": "10/17 全法示威",
+      "big": "55 萬人",
+      "note": "法國當局統計・多家媒體報導"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "同一天，全國將近 2,400 人被捕，這個數字同樣來自法國當局、經多家媒體報導。",
+     "say": "同一天，全國將近兩千四百人被捕，這個數字同樣來自法國當局、經多家媒體報導。",
+     "facts": [
+      "FR02"
+     ],
+     "pool": "fr_protest",
+     "screen": {
+      "kind": "broll",
+      "tag": "10/17 全國被捕",
+      "big": "近 2,400 人",
+      "note": "法國內政部數字・媒體報導"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據多家媒體報導，巴黎有精品店被砸、被洗劫，Louis Vuitton、Dior、Celine，都是被鎖定的品牌。",
+     "say": "據多家媒體報導，巴黎有精品店被砸、被洗劫，路易威登、迪奧、思琳，都是被鎖定的品牌。",
+     "facts": [
+      "FR13"
+     ],
+     "pool": "fr_protest",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "很多人第一個問題是：精品，會不會因此變貴？",
+     "say": "很多人第一個問題是：精品，會不會因此變貴？",
+     "facts": [],
+     "clips": [
+      "broll/fr_lux_11",
+      "broll/fr_lux_05"
+     ],
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這把火，到底燒到了誰的錢包？",
+     "say": "這把火，到底燒到了誰的錢包？",
+     "facts": [],
+     "pool": "fr_gj",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這一集，我們一個一個來看。",
+     "say": "這一集，我們一個一個來看。",
+     "facts": [],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "先快速講背景。根據巴黎警察總局的公告，這波運動的第一場行動，是在 9 月 29 日。",
+     "say": "先快速講背景。根據巴黎警察總局的公告，這波運動的第一場行動，是在九月二十九號。",
+     "facts": [
+      "FR03"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "一開始，只是高中生封鎖學校，抱怨老師請假，卻沒有人來代。",
+     "say": "一開始，只是高中生封鎖學校，抱怨老師請假，卻沒有人來代。",
+     "facts": [
+      "FR03",
+      "FR08"
+     ],
+     "pool": "fr_protest",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "後來，抗議的焦點，延伸到了生活成本。",
+     "say": "後來，抗議的焦點，延伸到了生活成本。",
+     "facts": [
+      "FR03"
+     ],
+     "pool": "fr_protest",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "法國統計局公布，9 月物價比一年前漲了 3.1%，柴油更是一年漲了 44.1%。",
+     "say": "法國統計局公布，九月物價比一年前漲了百分之三點一，柴油更是一年漲了百分之四十四點一。",
+     "facts": [
+      "FR04"
+     ],
+     "pool": "fr_fuel",
+     "screen": {
+      "kind": "broll",
+      "tag": "柴油一年漲",
+      "big": "44.1%",
+      "note": "9 月整體物價 +3.1%・INSEE"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "到了 10 月 17 日，自稱黃背心的團體和工會，也一起上街。",
+     "say": "到了十月十七號，自稱黃背心的團體和公會，也一起上街。",
+     "facts": [
+      "FR11"
+     ],
+     "pool": "fr_gj",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "網路上很多人說：法國，又要大革命了？",
+     "say": "網路上很多人說：法國，又要大革命了？",
+     "facts": [],
+     "pool": "fr_protest",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "法國人因為錢上街，其實不是第一次。",
+     "say": "法國人因為錢上街，其實不是第一次。",
+     "facts": [],
+     "clips": [
+      "broll/fr_vers_00"
+     ],
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "1789 年的大革命、2018 年的黃背心，背後都有生活成本的影子。",
+     "say": "一七八九年的大革命、二零一八年的黃背心，背後都有生活成本的影子。",
+     "facts": [
+      "FR06",
+      "FR07"
+     ],
+     "clips": [
+      "bg/fr_women",
+      "broll/fr_gj_01"
+     ],
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "不過這一次，在和平遊行之外，也出現了暴力和洗劫。",
+     "say": "不過這一次，在和平遊行之外，也出現了暴力和洗劫。",
+     "facts": [
+      "FR10"
+     ],
+     "pool": "fr_gj",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "巴黎警察總局統計，光是 10 月 17 日一天，巴黎就有 855 人被捕。",
+     "say": "巴黎警察總局統計，光是十月十七號一天，巴黎就有八百五十五人被捕。",
+     "facts": [
+      "FR10"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll",
+      "tag": "10/17 巴黎單日被捕",
+      "big": "855 人",
+      "note": "巴黎警察總局"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "之後，巴黎在共和廣場、大堂區一帶，開始夜間宵禁。",
+     "say": "之後，巴黎在共和廣場、大堂區一帶，開始夜間宵禁。",
+     "facts": [
+      "FR12"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "先看大家最好奇的精品店。",
+     "say": "先看大家最好奇的精品店。",
+     "facts": [],
+     "clips": [
+      "broll/fr_lux_08",
+      "broll/fr_lux_02"
+     ],
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據多家媒體報導，旺多姆廣場一帶，有數十家商店被洗劫。",
+     "say": "據多家媒體報導，旺多姆廣場一帶，有數十家商店被洗劫。",
+     "facts": [
+      "FR13"
+     ],
+     "clips": [
+      "broll/fr_lux_07",
+      "broll/fr_lux_06"
+     ],
+     "screen": {
+      "kind": "broll",
+      "tag": "旺多姆廣場一帶",
+      "big": "數十家商店",
+      "note": "被洗劫・多家媒體報導"
+     },
+     "approx": {
+      "數十家": "Dozens"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "旺多姆廣場，是巴黎頂級珠寶和精品店，最集中的地方之一。",
+     "say": "旺多姆廣場，是巴黎頂級珠寶和精品店，最集中的地方之一。",
+     "facts": [],
+     "clips": [
+      "broll/fr_lux_09",
+      "broll/fr_lux_06"
+     ],
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "多家媒體報導也指出，示威者還想衝進老佛爺百貨公司。",
+     "say": "多家媒體報導也指出，示威者還想衝進老佛爺百貨公司。",
+     "facts": [
+      "FR13"
+     ],
+     "pool": "fr_protest",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "更離譜的是，事發當晚，網路上就有人在轉賣疑似偷來的東西。",
+     "say": "更離譜的是，事發當晚，網路上就有人在轉賣疑似偷來的東西。",
+     "facts": [
+      "FR14"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "在二手平台上，有人用很低的價格，賣衣服、化妝品、香水。",
+     "say": "在二手平台上，有人用很低的價格，賣衣服、化妝品、香水。",
+     "facts": [
+      "FR14"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "平台說，已經下架可疑的商品，採取零容忍。",
+     "say": "平台說，已經下架可疑的商品，採取零容忍。",
+     "facts": [
+      "FR14"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "法國政府的公共服務官網也寫明，買賣偷來的東西，最重可以判 5 年，罰 37.5 萬歐元。",
+     "say": "法國政府的公共服務官網也寫明，買賣偷來的東西，最重可以判五年，罰三十七點五萬歐元。",
+     "facts": [
+      "FR14"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll",
+      "tag": "收贓罰則",
+      "big": "5 年・37.5 萬歐元",
+      "note": "法國政府公共服務網"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "那精品，會不會因此漲價？",
+     "say": "那精品，會不會因此漲價？",
+     "facts": [],
+     "clips": [
+      "broll/fr_lux_10",
+      "broll/fr_lux_03"
+     ],
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "先說我們的看法：從數字來看，這次的損失，很難直接推高精品的售價。",
+     "say": "先說我們的看法：從數字來看，這次的損失，很難直接推高精品的售價。",
+     "facts": [],
+     "clips": [
+      "broll/fr_lux_11",
+      "broll/fr_lux_05"
+     ],
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第一，看數字的大小。LVMH，也就是 Louis Vuitton 和 Dior 的母公司，2025 年營收是 808 億歐元。",
+     "say": "第一，看數字的大小。LVMH，也就是路易威登和迪奧的母公司，二零二五年營收，是八百零八億歐元。",
+     "facts": [
+      "FR15"
+     ],
+     "clips": [
+      "broll/fr_lux_10",
+      "broll/fr_lux_03"
+     ],
+     "screen": {
+      "kind": "broll",
+      "tag": "LVMH 2025 年營收",
+      "big": "808 億歐元",
+      "note": "LVMH 官方年報"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "而評級公司估計，這次全法國的保險損失，最多大約 12 億歐元。",
+     "say": "而評級公司估計，這次全法國的保險損失，最多大約十二億歐元。",
+     "facts": [
+      "FR16"
+     ],
+     "pool": "fr_euro",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這還是全法國所有商家加起來的數字，跟一家精品集團一年的營收比，差了六十多倍。",
+     "say": "這還是全法國所有商家加起來的數字，跟一家精品集團一年的營收比，差了六十多倍。",
+     "facts": [
+      "FR15"
+     ],
+     "clips": [
+      "broll/fr_lux_08",
+      "broll/fr_lux_02"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "六十多倍": "80.8"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第二，一般來說，精品品牌的定價，是放眼全球來決定的，主要看全球需求、成本，還有各國貨幣的強弱。",
+     "say": "第二，一般來說，精品品牌的定價，是放眼全球來決定的，主要看全球需求、成本，還有各國貨幣的強弱。",
+     "facts": [],
+     "clips": [
+      "broll/fr_lux_06",
+      "broll/fr_lux_09"
+     ],
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "所以，這次真正被影響的，比較不是精品的價格，而是別的地方。",
+     "say": "所以，這次真正被影響的，比較不是精品的價格，而是別的地方。",
+     "facts": [],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第一個要付錢的，是保險業。",
+     "say": "第一個要付錢的，是保險業。",
+     "facts": [],
+     "pool": "fr_euro",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "根據評級公司 DBRS 的估計，如果暴力不再升高，這次保險損失，大約是 10 億到 12 億歐元。",
+     "say": "根據評級公司DBRS的估計，如果暴力不再升高，這次寶險損失，大約是十億到十二億歐元。",
+     "facts": [
+      "FR16"
+     ],
+     "pool": "fr_euro",
+     "screen": {
+      "kind": "broll",
+      "tag": "保險損失估計",
+      "big": "10–12 億歐元",
+      "note": "評級機構 Morningstar DBRS"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "根據同一家評級公司的統計，2023 年法國那場暴動，保險損失大約是 7.3 億歐元。",
+     "say": "根據同一家評級公司的統計，二零二三年，法國那場暴動，保險損失大約是七點三億歐元。",
+     "facts": [
+      "FR16"
+     ],
+     "pool": "fr_protest",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "也就是說，這一次，可能比那一次還要多。",
+     "say": "也就是說，這一次，可能比那一次還要多。",
+     "facts": [],
+     "pool": "fr_gj",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這家評級公司也提醒，暴動這類風險，保險業應該要另外定價。",
+     "say": "這家評級公司也提醒，暴動這類風險，保險業應該要另外定價。",
+     "facts": [
+      "FR16"
+     ],
+     "pool": "fr_euro",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "換句話說，以後法國商家的暴動保險，保費有可能變貴。",
+     "say": "換句話說，以後法國商家的暴動寶險，保費有可能變貴。",
+     "facts": [],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第二個受傷的，是一般商家。",
+     "say": "第二個受傷的，是一般商家。",
+     "facts": [],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "法國經濟部說，數千家商店，在 10 月 17、18 日這兩天的暴力中受損。",
+     "say": "法國經濟部說，數千家商店，在十月十七、十八號這兩天的暴力中受損。",
+     "facts": [
+      "FR17"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "數千家": "plusieurs milliers"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據媒體報導，主管商業的部長估計，至少有 3,000 家。",
+     "say": "據媒體報導，主管商業的部長估計，至少有三千家。",
+     "facts": [
+      "FR17"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll",
+      "tag": "受損商店",
+      "big": "3,000+ 家",
+      "note": "部長估計・媒體報導"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "對小店來說，門被砸、貨被拿走，再加上好幾天不能開門，壓力特別大。",
+     "say": "對小店來說，門被砸、貨被拿走，再加上好幾天不能開門，壓力特別大。",
+     "facts": [],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "10 月 20 日，法國政府推出救助：員工不能上班，可以領到薪水的六成。",
+     "say": "十月二十號，法國政府推出救助：原工不能上班，可以領到薪水的六成。",
+     "facts": [
+      "FR17"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "六成": "60"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "250 人以下的公司，這筆錢由國家全額負擔。",
+     "say": "兩百五十人以下的公司，這筆錢由國家全額負擔。",
+     "facts": [
+      "FR17"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll",
+      "tag": "政府救助",
+      "big": "停工薪資六成",
+      "note": "250 人以下公司由國家全額負擔・法國經濟部"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "公司要付的社會保險費，可以延後最多 12 個月再付。",
+     "say": "公司要付的社會保險費，可以延後最多十二個月再付。",
+     "facts": [
+      "FR17"
+     ],
+     "pool": "fr_euro",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "還有最高 5 萬歐元、三年期的零利率貸款。",
+     "say": "還有最高五萬歐元、三年期的零利率代款。",
+     "facts": [
+      "FR17"
+     ],
+     "pool": "fr_euro",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第三個受傷的，是觀光。",
+     "say": "第三個受傷的，是觀光。",
+     "facts": [],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "10 月 17 日，里昂白萊果廣場上的遊客中心，被人蓄意縱火。",
+     "say": "十月十七號，里昂白萊果廣場上的遊客中心，被人蓄意縱火。",
+     "facts": [
+      "FR18"
+     ],
+     "clips": [
+      "bg/lyon_ot"
+     ],
+     "screen": {
+      "kind": "broll",
+      "tag": "里昂遊客中心",
+      "big": "遭縱火燒毀",
+      "note": "里昂市政府"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "里昂市政府形容，這是這座城市重大的文化資產損失。",
+     "say": "里昂市政府形容，這是這座城市重大的文化資產損失。",
+     "facts": [
+      "FR18"
+     ],
+     "clips": [
+      "bg/lyon_ot"
+     ],
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據業界媒體報導，巴黎、里昂、南特、波爾多，大約十五家旅行社的櫥窗被砸。",
+     "say": "據業界媒體報導，巴黎、里昂、南特、波爾多，大約十五家旅行社的櫥窗被砸。",
+     "facts": [
+      "FR19"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "十五家": "15"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "同一篇媒體報導中，觀光業者也擔心，交通受影響、店家關門，旅客可能取消行程，法國在國外的形象也受傷。",
+     "say": "同一篇媒體報導中，觀光業者也擔心，交通受影響、店家關門，旅客可能取消行程，法國在國外的形象也受傷。",
+     "facts": [
+      "FR19"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第四個，也是影響最大的：法國政府借錢，變貴了。",
+     "say": "第四個，也是影響最大的：法國政府介錢，變貴了。",
+     "facts": [],
+     "pool": "fr_euro",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "法國國債管理局公布，10 月 21 日，法國 10 年期公債殖利率是 4.99%。",
+     "say": "法國國債管理局公布，十月二十一號，法國十年期公債殖利率，是百分之四點九九。",
+     "facts": [
+      "FR20"
+     ],
+     "pool": "fr_euro",
+     "screen": {
+      "kind": "broll",
+      "tag": "法國 10 年期公債殖利率",
+      "big": "4.99%",
+      "note": "10/21・法國國債管理局"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "當天盤中一度突破 5%，是 2002 年以來第一次。",
+     "say": "當天盤中一度突破百分之五，是二零零二年以來第一次。",
+     "facts": [
+      "FR20"
+     ],
+     "pool": "fr_euro",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "殖利率，可以想成國家借錢要付的利息。",
+     "say": "殖利率，可以想成國家介錢要付的利息。",
+     "facts": [],
+     "pool": "fr_euro",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "殖利率越高，代表投資人要拿到更高的利息，才願意借錢給法國。",
+     "say": "殖利率越高，代表投資人要拿到更高的利息，才願意介錢給法國。",
+     "facts": [],
+     "pool": "fr_euro",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "而法國的公共債務，已經是一整年 GDP 的 119%。",
+     "say": "而法國的公共寨務，已經是一整年GDP的百分之一百一十九。",
+     "facts": [
+      "FR05"
+     ],
+     "pool": "fr_euro",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "債務這麼高，利息只要多一點，政府每年要付的錢，就多一大筆。",
+     "say": "寨務這麼高，利息只要多一點，政府每年要付的錢，就多一大筆。",
+     "facts": [],
+     "pool": "fr_euro",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "偏偏上街的人，要政府多花錢；市場要的，卻是政府少花錢。",
+     "say": "偏偏上街的人，要政府多花錢；市場要的，卻是政府少花錢。",
+     "facts": [
+      "FR20"
+     ],
+     "pool": "fr_protest",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "卡在中間的法國政府，怎麼做都很難。",
+     "say": "卡在中間的法國政府，怎麼做都很難。",
+     "facts": [],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "而且，這件事還沒結束。",
+     "say": "而且，這件事還沒結束。",
+     "facts": [],
+     "pool": "fr_gj",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "學生團體已經號召 10 月 24 日，再次上街。",
+     "say": "學生團體已經號召十月二十四號，再次上街。",
+     "facts": [
+      "FR21"
+     ],
+     "pool": "fr_protest",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "多個工會也號召 11 月 5 日，全國罷工和遊行。",
+     "say": "多個公會也號召十一月五號，全國爸工和遊行。",
+     "facts": [
+      "FR21"
+     ],
+     "pool": "fr_gj",
+     "screen": {
+      "kind": "broll",
+      "tag": "下一個關鍵日",
+      "big": "11/5",
+      "note": "全國罷工・工會公告"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "再加上總理答應的第一批學校改善決定，要在 10 月底前公布。",
+     "say": "再加上總理答應的第一批學校改善決定，要在十月底前公布。",
+     "facts": [
+      "FR09"
+     ],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "總結一下：精品店被洗劫，畫面很震撼，但對精品價格的直接影響，從數字看其實有限。",
+     "say": "總結一下：精品店被洗劫，畫面很震撼，但對精品價格的直接影響，從數字看其實有限。",
+     "facts": [],
+     "clips": [
+      "broll/fr_lux_09",
+      "broll/fr_lux_07"
+     ],
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "真正要付這筆錢的，是保險公司、小商家、觀光業，還有要用更高利息借錢的法國政府。",
+     "say": "真正要付這筆錢的，是寶險公司、小商家、觀光業，還有要用更高利息介錢的法國政府。",
+     "facts": [],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "你覺得，這場抗議最後會怎麼收場？歡迎在留言區，跟我們分享你的想法。",
+     "say": "你覺得，這場抗議最後會怎麼收場？歡迎在留言區，跟我們分享你的想法。",
+     "facts": [],
+     "pool": "fr_paris",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "關注我，給你更多錢的大小事。",
+     "say": "關注我，給你更多錢的大小事。",
+     "facts": [],
+     "screen": {
+      "kind": "outro",
+      "a": "關注我",
+      "b": "給你更多錢的大小事",
+      "btn": "訂閱"
+     }
+    }
+   ]
+  },
+  "uk-01": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "clone",
+   "gap": 0.15,
+   "speed": 1.2,
+   "lang": "zh",
+   "ui": "zh",
+   "title": "英國油價衝上 4 年最高！一般人的錢包撐得住嗎？",
+   "caption": "資料：英國統計局、Ofgem、英格蘭銀行、英國政府",
+   "note": "資訊整理，非投資建議",
+   "bgm": {
+    "src": "~/liam-workspace/assets/bgm/night_music.mp3",
+    "volume": 0.12
+   },
+   "pool_extra": {
+    "uk_home": [
+     "bg/uk_terrace_a",
+     "bg/uk_radiator",
+     "bg/uk_terrace_b",
+     "bg/uk_terrace_c",
+     "bg/uk_terrace_d",
+     "bg/uk_terrace_e"
+    ]
+   },
+   "reject": [
+    "broll/uk_fuel_01",
+    "broll/uk_fuel_05",
+    "broll/uk_fuel_06",
+    "broll/uk_home_00",
+    "broll/uk_home_08",
+    "broll/uk_food_04",
+    "broll/uk_food_05",
+    "broll/uk_london_07",
+    "broll/uk_london_08",
+    "broll/uk_london_02"
+   ],
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "金錢怪物，一睜眼就是錢的世界。",
+     "say": "金錢怪物，一爭眼，就是錢的世界。",
+     "facts": [],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "英國人最近去加油，可能會大吃一驚。",
+     "say": "英國人最近去加油，可能會大吃一驚。",
+     "facts": [],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "一公升汽油，平均要 169.5 便士，是 2022 年 8 月以來最貴。",
+     "say": "一公升汽油，平均要一百六十九點五便市，是二零二二年八月以來最貴。",
+     "facts": [
+      "UK02"
+     ],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll",
+      "tag": "英國汽油均價",
+      "big": "169.5 便士／公升",
+      "note": "2022 年 8 月以來最高・英國統計局"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "柴油更貴，一公升 192.5 便士。",
+     "say": "柴油更貴，一公升一百九十二點五便市。",
+     "facts": [
+      "UK02"
+     ],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "英國統計局 10 月 21 號公布，9 月物價比一年前漲了 3.5%。",
+     "say": "英國統計局十月二十一號公布，九月物價比一年前，漲了百分之三點五。",
+     "facts": [
+      "UK01"
+     ],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll",
+      "tag": "英國 9 月物價",
+      "big": "+3.5%",
+      "note": "2025 年 10 月以來最高・英國統計局"
+     },
+     "approx": {
+      "二十一": "21"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這是 2025 年 10 月以來最高。",
+     "say": "這是二零二五年十月以來最高。",
+     "facts": [
+      "UK01"
+     ],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "油錢、電費、瓦斯費，一起往上漲。",
+     "say": "油錢、電費、瓦斯費，一起往上漲。",
+     "facts": [],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "薪水追不追得上？政府又能幫多少？",
+     "say": "薪水追不追得上？政府又能幫多少？",
+     "facts": [],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這一集，我們用數字，一個一個來看。",
+     "say": "這一集，我們用數字，一個一個來看。",
+     "facts": [],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "先從最痛的開始：加油。",
+     "say": "先從最痛的開始：加油。",
+     "facts": [],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "英國統計局說，9 月物價會跳上來，最大的推手，就是車子用的油。",
+     "say": "英國統計局說，九月物價會跳上來，最大的推手，就是車子用的油。",
+     "facts": [
+      "UK02"
+     ],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "汽油一公升，一個月就漲了 8.2 便士。",
+     "say": "汽油一公升，一個月就漲了八點二便市。",
+     "facts": [
+      "UK02"
+     ],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "柴油漲得更多，一個月漲了 10.7 便士。",
+     "say": "柴油漲得更多，一個月漲了十點七便市。",
+     "facts": [
+      "UK02"
+     ],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "跟一年前比，車用燃料整整貴了 29.8%。",
+     "say": "跟一年前比，車用燃料，整整貴了百分之二十九點八。",
+     "facts": [
+      "UK02"
+     ],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll",
+      "tag": "車用燃料一年漲",
+      "big": "+29.8%",
+      "note": "2026 年 9 月・英國統計局"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這是什麼概念？我們用一台車來算。",
+     "say": "這是什麼概念？我們用一台車來算。",
+     "facts": [],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "假設油箱是 50 公升。",
+     "say": "假設油箱是五十公升。",
+     "facts": [
+      "UC01"
+     ],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "加滿一箱汽油，現在大約要 84.75 英鎊。",
+     "say": "加滿一箱汽油，現在大約要八十四點七五英磅。",
+     "facts": [
+      "UC01"
+     ],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll",
+      "tag": "加滿一箱汽油（50 公升）",
+      "big": "約 £84.75",
+      "note": "本頻道依英國統計局 9 月均價試算"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "光是 9 月這一個月，一箱就多付大約 4.1 英鎊。",
+     "say": "光是九月這一個月，一箱就多付大約四點一英磅。",
+     "facts": [
+      "UC01"
+     ],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "一個禮拜加一次的話，一個月光是汽油，就多付大約 16 英鎊。",
+     "say": "一個禮拜加一次的話，一個月光是汽油，就多付大約十六英磅。",
+     "facts": [
+      "UC01"
+     ],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "開柴油車的，加滿一箱大約 96.25 英鎊，一箱多了 5.35 英鎊。",
+     "say": "開柴油車的，加滿一箱大約九十六點二五英磅，一箱多了五點三五英磅。",
+     "facts": [
+      "UC01"
+     ],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "對每天開車上班的人，還有貨車司機、外送員來說，這筆錢躲不掉。",
+     "say": "對每天開車上班的人，還有貨車司機、外送員來說，這筆錢躲不掉。",
+     "facts": [],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "油為什麼這麼貴？",
+     "say": "油為什麼這麼貴？",
+     "facts": [],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "英國統計局提到，今年 2 月 28 號，中東爆發衝突。",
+     "say": "英國統計局提到，今年二月二十八號，中東爆發衝突。",
+     "facts": [
+      "UK03"
+     ],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "二十八": "28"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "根據英國廣播公司報導，荷莫茲這條運油的航道，實質上被封閉，全球的原油供應大受影響。",
+     "say": "根據英國廣播公司報導，荷莫茲這條運油的航道，實質上被封閉，全球的原油供應，大受影響。",
+     "facts": [
+      "UK03"
+     ],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "油價一漲，最先感受到的，就是每天要開車的人。",
+     "say": "油價一漲，最先感受到的，就是每天要開車的人。",
+     "facts": [],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "而且不只是油，同一場衝突，也把天然氣的價格推高了。",
+     "say": "而且不只是油，同一場衝突，也把天然氣的價格推高了。",
+     "facts": [
+      "UK04"
+     ],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這就要講到，英國人的第二筆大開銷：家裡的能源帳單。",
+     "say": "這就要講到，英國人的第二筆大開銷：家裡的能源帳單。",
+     "facts": [],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "英國有一個制度，叫做能源價格上限。",
+     "say": "英國有一個制度，叫做能源價格上限。",
+     "facts": [],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "由能源監管機關 Ofgem，每 3 個月調整一次，限制能源公司能收的最高價格。",
+     "say": "由英國的能源監管機關，每三個月調整一次，限制能源公司能收的最高價格。",
+     "facts": [
+      "UK04"
+     ],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "從 10 月 1 號開始，一般家庭一年的電費加瓦斯費，上限是 1,723 英鎊。",
+     "say": "從十月一號開始，一般家庭一年的電費加瓦斯費，上限是一千七百二十三英磅。",
+     "facts": [
+      "UK04"
+     ],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll",
+      "tag": "能源價格上限（10/1–12/31）",
+      "big": "£1,723／年",
+      "note": "一般家庭電＋瓦斯・Ofgem"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "比上一期多了 4%，一年多 60 英鎊，等於一個月多 5 英鎊。",
+     "say": "比上一期多了百分之四，一年多六十英磅，等於一個月多五英磅。",
+     "facts": [
+      "UK04"
+     ],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll",
+      "tag": "比上一期",
+      "big": "+£60／年",
+      "note": "約每月多 £5・Ofgem"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "換算下來，一個月大約 144 英鎊。",
+     "say": "換算下來，一個月大約一百四十四英磅。",
+     "facts": [
+      "UC02"
+     ],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "一個月多 5 英鎊，聽起來好像還好？",
+     "say": "一個月多五英磅，聽起來好像還好？",
+     "facts": [
+      "UK04"
+     ],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "但仔細看，漲的主要是瓦斯，瓦斯費漲了 8%。",
+     "say": "但仔細看，漲的主要是瓦斯，瓦斯費漲了百分之八。",
+     "facts": [
+      "UK04"
+     ],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "Ofgem 說，家裡沒有用瓦斯的，增加不到 1%。",
+     "say": "英國的能源監管機關說，家裡沒有用瓦斯的，增加不到百分之一。",
+     "facts": [
+      "UK04"
+     ],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "電費為什麼沒跟著漲？因為英國政府取消了家庭電費的增值稅。",
+     "say": "電費為什麼沒跟著漲？因為英國政府，取消了家庭電費的增值稅。",
+     "facts": [
+      "UK04"
+     ],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "Ofgem 估計，如果沒有這個措施，上限還會再多大約 45 英鎊。",
+     "say": "能源監管機關估計，如果沒有這個措施，上限還會再多大約四十五英磅。",
+     "facts": [
+      "UK04"
+     ],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "而且天氣越冷，用的瓦斯越多，冬天的帳單，才是真正的考驗。",
+     "say": "而且天氣越冷，用的瓦斯越多，冬天的帳單，才是真正的考驗。",
+     "facts": [],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "跟 2022 年能源危機最嚴重的時候比，現在還低了 52%。",
+     "say": "跟二零二二年，能源危機最嚴重的時候比，現在還低了百分之五十二。",
+     "facts": [
+      "UK04"
+     ],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "那一年，英國政府出手，把一般家庭的帳單上限壓在 2,500 英鎊。",
+     "say": "那一年，英國政府出手，把一般家庭的帳單上限，壓在兩千五百英磅。",
+     "facts": [
+      "UK04"
+     ],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "另外，大約 35% 的家庭簽的是固定費率，這一波暫時不受影響。",
+     "say": "另外，大約百分之三十五的家庭，簽的是固定費率，這一波暫時不受影響。",
+     "facts": [
+      "UK04"
+     ],
+     "pool": "uk_home",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "那吃的呢？這裡反而是比較好的消息。",
+     "say": "那吃的呢？這裡反而是比較好的消息。",
+     "facts": [],
+     "pool": "uk_food",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "9 月，食物和飲料的價格，一年只漲了 1.3%。",
+     "say": "九月，食物和飲料的價格，一年只漲了百分之一點三。",
+     "facts": [
+      "UK05"
+     ],
+     "pool": "uk_food",
+     "screen": {
+      "kind": "broll",
+      "tag": "食物與飲料一年漲",
+      "big": "+1.3%",
+      "note": "2021 年 9 月以來最低・英國統計局"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這是 2021 年 9 月以來最低。",
+     "say": "這是二零二一年九月以來最低。",
+     "facts": [
+      "UK05"
+     ],
+     "pool": "uk_food",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "但先別高興得太早。",
+     "say": "但先別高興得太早。",
+     "facts": [],
+     "pool": "uk_food",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "英國食品業者預期，這一波漲價，會晚一點才輪到食物，而且會持續更久。",
+     "say": "英國食品業者預期，這一波漲價，會晚一點才輪到食物，而且會持續更久。",
+     "facts": [
+      "UK05"
+     ],
+     "pool": "uk_food",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "英國廣播公司也提到，食物成本的變化，可能要一年，才會反映到超市的貨架上。",
+     "say": "英國廣播公司也提到，食物成本的變化，可能要一年，才會反映到超市的貨架上。",
+     "facts": [
+      "UK05"
+     ],
+     "pool": "uk_food",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "錢越花越多，那收入呢？",
+     "say": "錢越花越多，那收入呢？",
+     "facts": [],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "英國統計局 10 月 20 號公布，6 到 8 月，英國人的固定薪資，一年漲了 3.7%。",
+     "say": "英國統計局十月二十號公布，六到八月，英國人的固定薪資，一年漲了百分之三點七。",
+     "facts": [
+      "UK06"
+     ],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "扣掉通膨之後，實際多出來的，只有 0.8%。",
+     "say": "扣掉通膨之後，實際多出來的，只有百分之零點八。",
+     "facts": [
+      "UK06"
+     ],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll",
+      "tag": "扣掉通膨的實質薪資",
+      "big": "+0.8%",
+      "note": "2026 年 6–8 月・英國統計局"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "平均一個禮拜的固定薪水，大約是 707 英鎊。",
+     "say": "平均一個禮拜的固定薪水，大約是七百零七英磅。",
+     "facts": [
+      "UK06"
+     ],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "也就是說，薪水還是比物價跑得快一點點。",
+     "say": "也就是說，薪水還是比物價，跑得快一點點。",
+     "facts": [],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "但要注意，這是 6 到 8 月的數字。",
+     "say": "但要注意，這是六到八月的數字。",
+     "facts": [
+      "UK06"
+     ],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "9 月的物價一跳就是 3.5%，跟 3.7% 的薪資漲幅，已經非常接近。",
+     "say": "九月的物價，一跳就是百分之三點五，跟百分之三點七的加薪，已經非常接近。",
+     "facts": [
+      "UK01",
+      "UK06"
+     ],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "我們的看法是：如果油價和瓦斯繼續往上，很多人辛苦加到的薪水，可能就這樣被吃掉。",
+     "say": "我們的看法是：如果油價和瓦斯繼續往上，很多人辛苦加到的薪水，可能就這樣被吃掉。",
+     "facts": [],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這個 3.5%，還會影響另一件事：政府發的津貼。",
+     "say": "這個百分之三點五，還會影響另一件事：政府發的津貼。",
+     "facts": [
+      "UK01"
+     ],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "英國很多津貼，是照前一年 9 月的通膨，在隔年 4 月調整。",
+     "say": "英國很多津貼，是照前一年九月的通膨，在隔年四月調整。",
+     "facts": [
+      "UK08"
+     ],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "例如 2025 年 4 月，津貼調漲 1.7%，就是照 2024 年 9 月的通膨。",
+     "say": "例如二零二五年四月，津貼調漲百分之一點七，就是照二零二四年九月的通膨。",
+     "facts": [
+      "UK08"
+     ],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "所以這次 9 月的 3.5%，會牽動 2027 年 4 月，很多人能領到的錢。",
+     "say": "所以這次九月的百分之三點五，會牽動二零二七年四月，很多人能領到的錢。",
+     "facts": [
+      "UK08",
+      "UK01"
+     ],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll",
+      "tag": "9 月物價決定",
+      "big": "2027 年 4 月津貼",
+      "note": "依前一年 9 月通膨調整・英國政府"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "對靠津貼過日子的家庭，這是好消息；但對政府來說，又是一筆更大的支出。",
+     "say": "對靠津貼過日子的家庭，這是好消息；但對政府來說，又是一筆更大的支出。",
+     "facts": [],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "偏偏，英國政府自己也很缺錢。",
+     "say": "偏偏，英國政府自己，也很缺錢。",
+     "facts": [],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "英國統計局公布，光是 9 月，政府就借了 245 億英鎊。",
+     "say": "英國統計局公布，光是九月，政府就借了兩百四十五億英磅。",
+     "facts": [
+      "UK09"
+     ],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll",
+      "tag": "英國政府 9 月借款",
+      "big": "£245 億",
+      "note": "比去年同月多 £18 億・英國統計局"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "比去年同一個月，多借了 18 億。",
+     "say": "比去年同一個月，多借了十八億。",
+     "facts": [
+      "UK09"
+     ],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "其中光是付債務的利息，一個月就要 109 億英鎊，比去年多了 16.6%。",
+     "say": "其中光是付債務的利息，一個月就要一百零九億英磅，比去年多了百分之十六點六。",
+     "facts": [
+      "UK09"
+     ],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "通膨越高，要付的利息就越重。",
+     "say": "通膨越高，要付的利息就越重。",
+     "facts": [
+      "UK09"
+     ],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這個財政年度到目前為止，借的錢已經比官方預測，多了 60 億英鎊。",
+     "say": "這個財政年度到目前為止，借的錢，已經比官方預測，多了六十億英磅。",
+     "facts": [
+      "UK09"
+     ],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "而 10 月 28 號，英國財政大臣要公布他的第一份預算案。",
+     "say": "而十月二十八號，英國財政大臣，要公布他的第一份預算案。",
+     "facts": [
+      "UK10"
+     ],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll",
+      "tag": "下一個關鍵日",
+      "big": "10/28",
+      "note": "英國預算案公布・英國政府"
+     },
+     "approx": {
+      "二十八": "28"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "他說，要給企業和家庭一些喘息的機會。",
+     "say": "他說，要給企業和家庭，一些喘息的機會。",
+     "facts": [
+      "UK10"
+     ],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "問題是：口袋已經這麼緊，政府還能拿出多少錢來幫忙？",
+     "say": "問題是：口袋已經這麼緊，政府還能拿出多少錢來幫忙？",
+     "facts": [],
+     "pool": "uk_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這份預算，英國人可以說是又期待、又不安。",
+     "say": "這份預算，英國人可以說是又期待、又不安。",
+     "facts": [],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "最後幫大家整理一下。",
+     "say": "最後幫大家整理一下。",
+     "facts": [],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "英國的央行，目標是讓物價每年上漲 2%。",
+     "say": "英國的央行，目標是讓物價，每年上漲百分之二。",
+     "facts": [
+      "UK07"
+     ],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "2022 年 10 月，英國物價曾經漲到 11.1%，是 40 年來最高。",
+     "say": "二零二二年十月，英國物價曾經漲到百分之十一點一，是四十年來最高。",
+     "facts": [
+      "UK07"
+     ],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "現在的 3.5%，離那時候還很遠，但離目標，也越來越遠。",
+     "say": "現在的百分之三點五，離那時候還很遠，但離目標，也越來越遠。",
+     "facts": [
+      "UK01",
+      "UK07"
+     ],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "加一箱汽油，一個月就多 4 英鎊；家裡的能源帳單，一年多 60 英鎊。",
+     "say": "加一箱汽油，一個月就多四英磅；家裡的能源帳單，一年多六十英磅。",
+     "facts": [
+      "UC01",
+      "UK04"
+     ],
+     "pool": "uk_fuel",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "食物暫時還沒漲，但業者預期會晚一點來。",
+     "say": "食物暫時還沒漲，但業者預期，會晚一點來。",
+     "facts": [
+      "UK05"
+     ],
+     "pool": "uk_food",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "收入漲得還比物價快一點，但差距越來越小。",
+     "say": "收入漲得還比物價快一點，但差距越來越小。",
+     "facts": [],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "你覺得，英國這份預算，能幫到一般人嗎？歡迎在留言區，跟我們分享你的想法。",
+     "say": "你覺得，英國這份預算，能幫到一般人嗎？歡迎在留言區，跟我們分享你的想法。",
+     "facts": [],
+     "pool": "uk_london",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "關注我，給你更多錢的大小事。",
+     "say": "關注我，給你更多錢的大小事。",
+     "facts": [],
+     "screen": {
+      "kind": "outro",
+      "a": "關注我",
+      "b": "給你更多錢的大小事",
+      "btn": "訂閱"
+     }
+    }
+   ]
+  },
+  "tw-01": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "clone",
+   "gap": 0.15,
+   "speed": 1.2,
+   "lang": "zh",
+   "ui": "zh",
+   "title": "颱風假的錢誰付？放假一天少多少薪水，香港、日本、菲律賓怎麼算",
+   "caption": "資料：勞動部、行政院人事行政總處、農業部、主計總處、臺灣證券交易所、財政部、香港勞工處、日本厚生勞動省、菲律賓勞動部",
+   "note": "資訊整理，非法律意見｜颱風畫面含資料畫面",
+   "bgm": {
+    "src": "~/liam-workspace/assets/bgm/night_music.mp3",
+    "volume": 0.12
+   },
+   "pool_extra": {
+    "tw_tm": [
+     "broll/tw_mrt_02",
+     "broll/tw_mrt_03",
+     "broll/tw_mrt_04",
+     "broll/tw_mrt_06",
+     "broll/tw_mrt_07",
+     "broll/tw_mrt_08",
+     "broll/tw_mrt_11",
+     "broll/tw_city_08",
+     "broll/tw_city_09",
+     "broll/tw_city_10",
+     "broll/tw_res_09",
+     "broll/tw_res_10",
+     "broll/tw_res_12",
+     "broll/tw_res_18",
+     "broll/tw_res_20",
+     "broll/tw_res_21",
+     "broll/tw_res_22",
+     "broll/tw_res_23"
+    ],
+    "tw_stock": [
+     "broll/fr_fin_03",
+     "broll/fr_fin_04"
+    ]
+   },
+   "reject": [
+    "broll/ty_tw_09",
+    "broll/ty_tw_10",
+    "broll/ty_tw_11",
+    "broll/ty_hk_02",
+    "broll/tw_city_12",
+    "broll/ty_tw_12",
+    "broll/ty_tw_14",
+    "broll/ty_tw_15",
+    "broll/tw_tm_14",
+    "broll/tw_tm_19",
+    "broll/ty_jp_06",
+    "broll/tw_stock_05"
+   ],
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "金錢怪物，一睜眼就是錢的世界。",
+     "say": "金錢怪物，一爭眼，就是錢的世界。",
+     "facts": [],
+     "pool": "ty_tw",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "2026 年 10 月 23 號，薔琵颱風來襲，除了金門，台灣各縣市全部停班停課。",
+     "say": "二零二六年十月二十三號，強皮台風來襲，除了金門，台灣各縣市，全部停班停克。",
+     "facts": [
+      "TY01"
+     ],
+     "pool": "ty_tw",
+     "screen": {
+      "kind": "broll",
+      "tag": "10/23 薔琵颱風",
+      "big": "全台停班停課",
+      "note": "除金門外・人事行政總處"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據媒體報導，連台灣股市、櫃買市場、期貨和外匯市場，都跟著休市一天。",
+     "say": "據媒體報導，連台灣股市、貴買市場、期貨和外匯市場，都跟著休市一天。",
+     "facts": [
+      "TY02"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "另據媒體報導，交通部統計，國內航班 262 班全部取消，飛國外的航班也取消了 717 班。",
+     "say": "另據媒體報導，交通部統計，國內航班兩百六十二班全部取消，飛國外的航班也取消了七百一十七班。",
+     "facts": [
+      "TY03"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll",
+      "tag": "10/23 航班取消",
+      "big": "近 1,000 班",
+      "note": "國內 262・國際 717｜交通部數字・媒體報導"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "對很多上班族來說，這一天最在意的，其實是一個很簡單的問題。",
+     "say": "對很多上班族來說，這一天最在意的，其實是一個很簡單的問題。",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "颱風假那天，薪水到底有沒有？",
+     "say": "台風架那天，薪水到底有沒有？",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "如果老闆叫你照常上班，又能多拿多少？",
+     "say": "如果老版叫你照常上班，又能多拿多少？",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "今天就來算一算，颱風假的錢到底是誰在付，股市休市又影響了什麼，再看看香港、日本、菲律賓，又是怎麼規定的。",
+     "say": "今天就來算一算，台風架的錢到底是誰在付，股市休市又影響了什麼，再看看香港、日本、菲律賓，又是怎麼規定的。",
+     "facts": [],
+     "pool": "ty_hk",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "先講，颱風假是怎麼放的。",
+     "say": "先講，台風架是怎麼放的。",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "依照政府的停班停課辦法，颱風暴風圈預計 4 小時內會經過，",
+     "say": "依照政府的停班停克辦法，台風暴風圈預計四小時內會經過，",
+     "facts": [
+      "TY04"
+     ],
+     "pool": "ty_tw",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "平均風力可達 7 級以上，或陣風可達 10 級以上，就達到停班停課的標準。",
+     "say": "平均風力可達七級以上，或陣風可達十級以上，就達到停班停克的標準。",
+     "facts": [
+      "TY04"
+     ],
+     "pool": "ty_tw",
+     "screen": {
+      "kind": "broll",
+      "tag": "停班停課標準",
+      "big": "7 級 / 10 級",
+      "note": "平均風力 7 級或陣風 10 級・4 小時內"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "要不要宣布，由各縣市的首長決定。",
+     "say": "要不要宣布，由各縣市的首長決定。",
+     "facts": [
+      "TY04"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "但很多人不知道，這套標準，管的是政府機關和學校。",
+     "say": "但很多人不知道，這套標準，管的是政府機關和學校。",
+     "facts": [
+      "TY05"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "民間公司的勞工，要看的是勞動部另外一份規定。",
+     "say": "民堅公司的勞工，要看的是勞動部另外一份規定。",
+     "facts": [
+      "TY05"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "它的全名很長，叫做天然災害發生事業單位勞工出勤管理及工資給付要點。",
+     "say": "它的全名很長，叫做，天然災害發生，是業單位勞工出琴管理，及工資給付要點。",
+     "facts": [
+      "TY06"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這份要點的重點，可以分成三件事。",
+     "say": "這份要點的重點，可以分成三件事。",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第一，如果你工作的地方、住的地方，或是上下班一定會經過的地方宣布停班，你沒去上班，公司不能算你曠職或遲到。",
+     "say": "第一，如果你工作的地方、住的地方，或是上下班一定會經過的地方宣布停班，你沒去上班，公司不能算你況直或遲到。",
+     "facts": [
+      "TY06"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "也不能逼你請事假、扣你的全勤獎金、要你之後補班，更不能因為這樣開除你。",
+     "say": "也不能逼你請事架、扣你的全勤獎金、要你之後補班，更不能因為這樣開除你。",
+     "facts": [
+      "TY06"
+     ],
+     "pool": "ty_tw",
+     "screen": {
+      "kind": "broll",
+      "tag": "勞動部要點 第 6 點",
+      "big": "不能這樣做",
+      "note": "算曠職・逼請假・扣全勤・要補班・開除"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第二，那天沒上班的薪水呢？要點的寫法是：公司「宜」不扣發工資。",
+     "say": "第二，那天沒上班的薪水呢？要點的寫法是：公司，宜，不扣發工資。",
+     "facts": [
+      "TY07"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll",
+      "tag": "勞動部要點 第 7 點",
+      "big": "「宜」不扣薪",
+      "note": "是建議，不是強制"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "「宜」這個字，是建議，不是強制。",
+     "say": "宜這個字，是建議，不是強制。",
+     "facts": [
+      "TY07"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "勞動部的問答也寫得很清楚，工資怎麼算，要看公司的內部規定、勞動契約，或是過去的慣例。",
+     "say": "勞動部的問答也寫得很清楚，工資怎麼算，要看公司的內部規定、勞動契約，或是過去的慣例。",
+     "facts": [
+      "TY07"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "所以，颱風假有沒有薪水，答案是：要看你的公司怎麼規定。",
+     "say": "所以，台風架有沒有薪水，答案是：要看你的公司怎麼規定。",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第三，如果公司要你那天照常上班呢？",
+     "say": "第三，如果公司要你那天照常上班呢？",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "要點寫的是：當天的工資照給，而且「宜」加給工資。至於加多少，並沒有寫死。",
+     "say": "要點寫的是：當天的工資照給，而且，宜，加給工資。至於加多少，並沒有寫死。",
+     "facts": [
+      "TY07"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "另外，2025 年 9 月 19 號，勞動部又新增了一條規定。",
+     "say": "另外，二零二五年九月十九號，勞動部又新增了一條規定。",
+     "facts": [
+      "TY08"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "公司要人在停班的時候出勤，必須提供通勤協助，像是交通工具或交通津貼。",
+     "say": "公司要人在停班的時候出琴，必須提供通勤協助，像是交通工具，或交通津貼。",
+     "facts": [
+      "TY08"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "如果原本的通勤方式有困難、必須搭計程車，計程車錢由公司付。",
+     "say": "如果原本的通勤方式有困難、必須搭計程車，計程車錢由公司付。",
+     "facts": [
+      "TY08"
+     ],
+     "pool": "ty_tw",
+     "screen": {
+      "kind": "broll",
+      "tag": "2025/9/19 新增",
+      "big": "公司付車資",
+      "note": "停班仍要求出勤・計程車錢由公司付"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "還有，哪些人颱風天要出勤，要事先講好。有工會的要工會同意，沒有工會的，要經過勞資會議同意。",
+     "say": "還有，哪些人台風天要出琴，要事先講好。有公會的要公會同意，沒有公會的，要經過勞資會議同意。",
+     "facts": [
+      "TY06"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "那如果真的被扣薪，一天會少多少？我們用最低工資來算。",
+     "say": "那如果真的被扣薪，一天會少多少？我們用最低工資來算。",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "2026 年台灣的最低工資，月薪 29,500 元，時薪 196 元。",
+     "say": "二零二六年台灣的最低工資，月薪兩萬九千五百元，時薪一百九十六元。",
+     "facts": [
+      "TY09"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll",
+      "tag": "2026 最低工資",
+      "big": "時薪 196 元",
+      "note": "月薪 29,500 元・勞動部"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "用時薪算，一天上班 8 小時，就是 1,568 元。",
+     "say": "用時薪算，一天上班八小時，就是一千五百六十八元。",
+     "facts": [
+      "TC10"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll",
+      "tag": "本頻道試算",
+      "big": "1,568 元",
+      "note": "時薪 196 元 × 8 小時"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "也就是說，對領時薪的人，一天颱風假如果沒有薪水，就是少了一千五百多元。",
+     "say": "也就是說，對領時薪的人，一天台風架如果沒有薪水，就是少了一千五百多元。",
+     "facts": [
+      "TC10"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "一千五百多": "1568"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "最低工資審議會也已經決定，2027 年月薪要調到 30,900 元、時薪 205 元，還要等行政院核定。",
+     "say": "最低工資審議會也已經決定，二零二七年月薪要調到三萬零九百元、時薪兩百零五元，還要等行政院核定。",
+     "facts": [
+      "TY10"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "如果通過，同樣一天，就是 1,640 元。",
+     "say": "如果通過，同樣一天，就是一千六百四十元。",
+     "facts": [
+      "TC10"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "那這一次的颱風，台灣一共付出了多少？",
+     "say": "那這一次的台風，台灣一共付出了多少？",
+     "facts": [],
+     "pool": "ty_tw",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據媒體報導，中央災害應變中心統計，到 10 月 24 號下午，薔琵颱風造成 1 人死亡、616 人受傷。",
+     "say": "據媒體報導，中央災害應變中心統計，到十月二十四號下午，強皮台風造成一人死亡、六百一十六人受傷。",
+     "facts": [
+      "TY11"
+     ],
+     "pool": "ty_tw",
+     "screen": {
+      "kind": "broll",
+      "tag": "10/24 下午統計",
+      "big": "1 死 616 傷",
+      "note": "中央災害應變中心・媒體報導"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "同樣據媒體報導，全台災情通報有 9,027 件，最多的是路樹倒塌，而且一度有超過 34 萬戶停電。",
+     "say": "同樣據媒體報導，全台災情通報有九千零二十七件，最多的是路樹倒塌，而且一度有超過三十四萬戶停電。",
+     "facts": [
+      "TY11"
+     ],
+     "pool": "ty_tw",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "農業的損失，則是最直接看得到的錢。",
+     "say": "農業的損失，則是最直接看得到的錢。",
+     "facts": [],
+     "pool": "ty_farm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "農業部統計，到 10 月 24 號下午 5 點，農業損失大約 1 億 3,336 萬元。",
+     "say": "農業部統計，到十月二十四號下午五點，農業損失大約一億三千三百三十六萬元。",
+     "facts": [
+      "TY12"
+     ],
+     "pool": "ty_farm",
+     "screen": {
+      "kind": "broll",
+      "tag": "農業部 10/24 17 時",
+      "big": "1 億 3,336 萬",
+      "note": "元・農業產物及民間設施估計損失"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "其中光是雲林縣，就損失了 1 億 960 萬元，占全台八成以上。",
+     "say": "其中光是雲林縣，就損失了一億九百六十萬元，佔全台八成以上。",
+     "facts": [
+      "TY12"
+     ],
+     "pool": "ty_farm",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "八成": "82"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "損失最多的作物是蒜頭，大約 5,307 萬元。",
+     "say": "損失最多的作物是蒜頭，大約五千三百零七萬元。",
+     "facts": [
+      "TY12"
+     ],
+     "pool": "ty_farm",
+     "screen": {
+      "kind": "broll",
+      "tag": "損失最多的作物",
+      "big": "蒜頭",
+      "note": "約 5,307 萬元・農業部"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "受害的農作物面積，大約 2,405 公頃。",
+     "say": "受害的農作物面積，大約兩千四百零五公請。",
+     "facts": [
+      "TY12"
+     ],
+     "pool": "ty_farm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "農業部提醒，受災的農民要向公所通報，後續才能申請天然災害救助。",
+     "say": "農業部提醒，受災的農民要向公所通報，後續才能申請天然災害救助。",
+     "facts": [
+      "TY12"
+     ],
+     "pool": "ty_farm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這些損失，最後有多少由農民自己吸收、多少靠救助，會不會反映到菜價上，都還要再觀察。",
+     "say": "這些損失，最後有多少由農民自己吸收、多少靠救助，會不會反映到菜價上，都還要再觀察。",
+     "facts": [],
+     "pool": "ty_farm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "如果把眼光拉到整個台灣經濟呢？",
+     "say": "如果把眼光拉到整個台灣經濟呢？",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "主計總處預測，2026 年台灣的名目 GDP，大約是 33.7 兆元。",
+     "say": "主計總處預測，二零二六年台灣的名目 GDP，大約是三十三點七兆元。",
+     "facts": [
+      "TY13"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll",
+      "tag": "主計總處預測",
+      "big": "33.7 兆元",
+      "note": "2026 年名目 GDP"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "平均分到一年 365 天，每天大約是 923 億元的經濟產出。",
+     "say": "平均分到一年三百六十五天，每天大約是九百二十三億元的經濟產出。",
+     "facts": [
+      "TC11"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll",
+      "tag": "本頻道試算",
+      "big": "每天 923 億元",
+      "note": "33.7 兆 ÷ 365 天・僅示意規模"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "但這不代表，放一天颱風假，這 923 億元就全部不見了。",
+     "say": "但這不代表，放一天台風架，這九百二十三億元就全部不見了。",
+     "facts": [
+      "TC11"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "一般來說，很多消費只是往後延，有些工廠照常運轉，有些工作也改成在家做。",
+     "say": "一般來說，很多消費只是往後延，有些工廠照常運轉，有些工作，也改成在家做。",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "我們的看法是，真正拿不回來的，是泡水倒伏的作物、被吹壞的設施，還有那一天沒有收入的時薪工作者。",
+     "say": "我們的看法是，真正拿不回來的，是泡水倒伏的作物、被吹壞的設施，還有那一天沒有收入的時薪工作者。",
+     "facts": [],
+     "pool": "ty_tw",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "颱風假的帳，還有一筆在股市。",
+     "say": "台風架的帳，還有一筆在股市。",
+     "facts": [],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "10 月 23 號這天台股休市，看的其實不是全台停班，而是台北市。",
+     "say": "十月二十三號這天台股休市，看的其實不是全台停班，而是台北市。",
+     "facts": [
+      "TS01"
+     ],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll",
+      "tag": "證交所規定",
+      "big": "看台北市",
+      "note": "不是看你住的縣市"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "證交所的規定是：台北市長宣布當天，或當天上午，台北市公教機關停止上班，台股就全天休市。",
+     "say": "證交所的規定是：台北市長宣布當天，或當天上午，台北市公教機關停止上班，台股就全天休市。",
+     "facts": [
+      "TS01"
+     ],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll",
+      "tag": "證交所規定",
+      "big": "全天休市",
+      "note": "台北市當天或上午停止上班"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "如果只有下午停班，台股照常交易，只是收盤後的其他交易停止。",
+     "say": "如果只有下午停班，台股照常交易，只是收盤後的其他交易停止。",
+     "facts": [
+      "TS01"
+     ],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "那天原本該交割的錢和股票，會順延到下一個營業日。",
+     "say": "那天原本該交割的錢和股票，會順延到下一個營業日。",
+     "facts": [
+      "TS02"
+     ],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "權證的到期日、新股申購的扣款和抽籤，也都跟著往後延。",
+     "say": "權證的到期日、新股申夠的扣款，和抽千，也都跟著往後延。",
+     "facts": [
+      "TS02"
+     ],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這次又剛好碰上光復節。10 月 25 號是星期日，26 號星期一補假，股市同樣休市。",
+     "say": "這次又剛好碰上光復節。十月二十五號是星期日，二十六號星期一補架，股市同樣休市。",
+     "facts": [
+      "TS03"
+     ],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "calendar",
+      "head": "台股連 4 天沒交易",
+      "items": [
+       {
+        "date": "10/23（五）",
+        "what": "颱風・台北停班"
+       },
+       {
+        "date": "10/26（一）",
+        "what": "光復節補假"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "等於從 10 月 23 號到 26 號，台股連續 4 天沒有交易，要到 27 號才重新開盤。",
+     "say": "等於從十月二十三號到二十六號，台股聯續四天沒有交易，要到二十七號才重新開盤。",
+     "facts": [
+      "TS03"
+     ],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "calendar",
+      "head": "台股連 4 天沒交易",
+      "items": [
+       {
+        "date": "10/23（五）",
+        "what": "颱風・台北停班"
+       },
+       {
+        "date": "10/26（一）",
+        "what": "光復節補假"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "休市前最後一個交易日，10 月 22 號，加權指數收在 46,041 點，成交金額大約 9,334 億元。",
+     "say": "休市前最後一個交易日，十月二十二號，加權指數收在四萬六千零四十一點，成交金額大約九千三百三十四億元。",
+     "facts": [
+      "TS04"
+     ],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll",
+      "tag": "證交所 10/22 收盤",
+      "big": "46,041 點",
+      "note": "成交金額約 9,334 億元"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "買賣股票，賣出的人要繳證券交易稅，稅率是千分之三。",
+     "say": "買賣股票，賣出的人要繳證券交易稅，稅率是千分之三。",
+     "facts": [
+      "TS05"
+     ],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "千分之三": "3"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "用這個稅率粗略算，一天九千多億元的成交，證交稅最多大約 28 億元。",
+     "say": "用這個稅率粗略算，一天九千多億元的成交，證交稅最多大約二十八億元。",
+     "facts": [
+      "TC12"
+     ],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll",
+      "tag": "本頻道試算",
+      "big": "約 28 億元",
+      "note": "9,334 億 × 千分之三・上限估算"
+     },
+     "approx": {
+      "九千多億": "9,334",
+      "千分之三": "3"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "實際上 ETF 和當沖的稅率比較低，真正收到的會再少一些。",
+     "say": "實際上，E T F 和當沖的稅率比較低，真正收到的會再少一些。",
+     "facts": [
+      "TS05"
+     ],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "颱風天股市要不要照常開，最近又被拿出來討論。",
+     "say": "台風天股市要不要照常開，最近又被拿出來討論。",
+     "facts": [],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據媒體報導，金管會表示，目前還在蒐集各界意見，還沒有時間表。",
+     "say": "據媒體報導，今管會表示，目前還在收集各界意見，還沒有時間表。",
+     "facts": [
+      "TS06"
+     ],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "媒體報導也提到，支持的人認為，現在多半是網路下單；反對的人擔心，券商和銀行的員工得冒著風雨上班，交割和結算也要有人處理。",
+     "say": "媒體報導也提到，支持的人認為，現在多半是網路下單；反對的人擔心，券商和銀行的原工得冒著風雨上班，交割和結算也要有人處理。",
+     "facts": [
+      "TS06"
+     ],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "我們的看法是，股市休幾天，交易只是延後，對長期持有的人影響不大；真正要留意的，是剛好碰上交割、扣款日期的人。",
+     "say": "我們的看法是，股市休幾天，交易只是延後，對長期持有的人影響不大；真正要留意的，是剛好碰上交割、扣款日期的人。",
+     "facts": [],
+     "pool": "tw_stock",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "那其他地方是怎麼做的？先看香港。",
+     "say": "那其他地方是怎麼做的？先看香港。",
+     "facts": [],
+     "pool": "ty_hk",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "香港用的是颱風信號。掛到 8 號風球以上，或是黑色暴雨警告，就有一套工作安排。",
+     "say": "香港用的是台風信號。掛到八號風球以上，或是黑色暴雨警告，就有一套工作安排。",
+     "facts": [
+      "TY14"
+     ],
+     "pool": "ty_hk",
+     "screen": {
+      "kind": "broll",
+      "tag": "香港",
+      "big": "8 號風球",
+      "note": "或黑色暴雨警告"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "香港勞工處的工作守則寫，如果 8 號風球在上班前已經掛起，公司不應該要求員工回到工作地點。",
+     "say": "香港勞工處的工作守則寫，如果八號風球在上班前已經掛起，公司不應該要求原工回到工作地點。",
+     "facts": [
+      "TY14"
+     ],
+     "pool": "ty_hk",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "薪水的部分，守則寫：因為惡劣天氣不用上班、提早下班，或是沒辦法準時上班，公司不應該扣工資、勤工獎或津貼。",
+     "say": "薪水的部分，守則寫：因為惡劣天氣不用上班、提早下班，或是沒辦法準時上班，公司不應該扣工資、勤工獎，或津貼。",
+     "facts": [
+      "TY14"
+     ],
+     "pool": "ty_hk",
+     "screen": {
+      "kind": "broll",
+      "tag": "香港勞工處 工作守則",
+      "big": "不應扣薪",
+      "note": "工資・勤工獎・津貼都不扣"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "也不應該要員工之後把工時補回來，更不能拿年假、法定假日或休息日來抵。",
+     "say": "也不應該要原工之後把工時補回來，更不能拿年架、法定架日，或休息日來抵。",
+     "facts": [
+      "TY14"
+     ],
+     "pool": "ty_hk",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "至於必須上班的指定員工，公司要安排交通，沒有交通工具，就要付計程車錢，或給額外的交通津貼。",
+     "say": "至於必須上班的指定原工，公司要安排交通，沒有交通工具，就要付計程車錢，或給額外的交通津貼。",
+     "facts": [
+      "TY14"
+     ],
+     "pool": "ty_hk",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "另外，還應該再發一筆額外的當值津貼。",
+     "say": "另外，還應該再發一筆額外的當值津貼。",
+     "facts": [
+      "TY14"
+     ],
+     "pool": "ty_hk",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "守則也一再強調，這些安排要在颱風季之前就先講好，才能避免不必要的勞資爭議。",
+     "say": "守則也一再強調，這些安排要在台風季之前就先講好，才能避免不必要的勞資爭議。",
+     "facts": [
+      "TY14"
+     ],
+     "pool": "ty_hk",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "再看日本。",
+     "say": "再看日本。",
+     "facts": [],
+     "pool": "ty_jp",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "日本勞動基準法第 26 條規定，如果是公司的原因讓員工停工，要付平均工資 6 成以上的停工津貼。",
+     "say": "日本勞動基準法第二十六條規定，如果是公司的原因讓原工停工，要付平均工資六成以上的停工津貼。",
+     "facts": [
+      "TY15"
+     ],
+     "pool": "ty_jp",
+     "screen": {
+      "kind": "broll",
+      "tag": "日本勞動基準法 第 26 條",
+      "big": "6 成以上",
+      "note": "公司原因停工的停工津貼"
+     },
+     "approx": {
+      "6 成": "60"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "但日本厚生勞動省的說明是，颱風這種天災造成的不可抗力，不算公司的原因，公司就沒有義務付這筆津貼。",
+     "say": "但日本厚生勞動省的說明是，台風這種天災造成的不可抗力，不算公司的原因，公司就沒有義務付這筆津貼。",
+     "facts": [
+      "TY15"
+     ],
+     "pool": "ty_jp",
+     "screen": {
+      "kind": "broll",
+      "tag": "厚生勞動省",
+      "big": "天災不可抗力",
+      "note": "公司沒有義務付停工津貼"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "不過，要算是不可抗力，有兩個條件：原因來自公司外部，而且公司已經盡了最大的注意，還是避免不了。",
+     "say": "不過，要算是不可抗力，有兩個條件：原因來自公司外部，而且公司已經盡了最大的注意，還是避免不了。",
+     "facts": [
+      "TY15"
+     ],
+     "pool": "ty_jp",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "還有，如果公司過去遇到天災停工，薪水照發，這次突然不發，就屬於對員工不利的變更，不能自己說改就改。",
+     "say": "還有，如果公司過去遇到天災停工，薪水照發，這次突然不發，就屬於對原工不利的變更，不能自己說改就改。",
+     "facts": [
+      "TY15"
+     ],
+     "pool": "ty_jp",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "換句話說，在日本，颱風天的薪水，一樣要看公司的規定和過去的做法。",
+     "say": "換句話說，在日本，台風天的薪水，一樣要看公司的規定，和過去的做法。",
+     "facts": [],
+     "pool": "ty_jp",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "最後看菲律賓。",
+     "say": "最後看菲律賓。",
+     "facts": [],
+     "pool": "ty_ph",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "菲律賓勞動部在 2026 年 8 月 19 號，簽發了第 14 號勞動公告，專門講天氣不好時的停工。",
+     "say": "菲律賓勞動部在二零二六年八月十九號，簽發了第十四號勞動公告，專門講天氣不好時的停工。",
+     "facts": [
+      "TY16"
+     ],
+     "pool": "ty_ph",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "公告說，天氣有危險的時候，公司可以宣布停工；員工如果因為迫切的危險拒絕上班，不能被懲處。",
+     "say": "公告說，天氣有微險的時候，公司可以宣布停工；原工如果因為迫切的微險拒絕上班，不能被成處。",
+     "facts": [
+      "TY16"
+     ],
+     "pool": "ty_ph",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "但薪水的原則是：沒有工作，就沒有薪水。除非公司政策、慣例，或團體協約另外有規定。",
+     "say": "但薪水的原則是：沒有工作，就沒有薪水。除非公司政策、慣例，或團體協約另外有規定。",
+     "facts": [
+      "TY16"
+     ],
+     "pool": "ty_ph",
+     "screen": {
+      "kind": "broll",
+      "tag": "菲律賓勞動部 2026 第 14 號公告",
+      "big": "No work, no pay",
+      "note": "沒有工作，就沒有薪水"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "也就是說，照這份公告，颱風天沒上班，原則上那天就沒有薪水。",
+     "say": "也就是說，照這份公告，台風天沒上班，原則上那天就沒有薪水。",
+     "facts": [
+      "TY16"
+     ],
+     "pool": "ty_ph",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "整理一下。",
+     "say": "整理一下。",
+     "facts": [],
+     "pool": "ty_hk",
+     "screen": {
+      "kind": "calendar",
+      "head": "颱風天的薪水",
+      "items": [
+       {
+        "date": "台灣",
+        "what": "不能算曠職・薪水「宜」照給"
+       },
+       {
+        "date": "香港",
+        "what": "守則：不應扣薪"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "台灣，不能算曠職、不能扣全勤，薪水是建議照給；香港的守則，是不應該扣薪水。",
+     "say": "台灣，不能算況直、不能扣全勤，薪水是建議照給；香港的守則，是不應該扣薪水。",
+     "facts": [
+      "TY07",
+      "TY14"
+     ],
+     "pool": "ty_hk",
+     "screen": {
+      "kind": "calendar",
+      "head": "颱風天的薪水",
+      "items": [
+       {
+        "date": "台灣",
+        "what": "不能算曠職・薪水「宜」照給"
+       },
+       {
+        "date": "香港",
+        "what": "守則：不應扣薪"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "日本，天災不可抗力，公司沒有義務付停工津貼；菲律賓，原則上沒有工作，就沒有薪水。",
+     "say": "日本，天災不可抗力，公司沒有義務付停工津貼；菲律賓，原則上沒有工作，就沒有薪水。",
+     "facts": [
+      "TY15",
+      "TY16"
+     ],
+     "pool": "ty_jp",
+     "screen": {
+      "kind": "calendar",
+      "head": "颱風天的薪水",
+      "items": [
+       {
+        "date": "日本",
+        "what": "天災：沒有義務付津貼"
+       },
+       {
+        "date": "菲律賓",
+        "what": "No work, no pay"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這幾個地方有個共同點：颱風那天的薪水，很大一部分要看公司事先怎麼約定。",
+     "say": "這幾個地方有個共同點：台風那天的薪水，很大一部分，要看公司事先怎麼約定。",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "所以，如果你不確定自己的狀況，可以先翻一下勞動契約或工作規則。",
+     "say": "所以，如果你不確定自己的狀況，可以先翻一下勞動契約，或工作規則。",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "看看裡面有沒有寫，天災停班那天，薪水怎麼算、要不要出勤。",
+     "say": "看看裡面有沒有寫，天災停班那天，薪水怎麼算、要不要出琴。",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "有疑問，也可以打勞動部的免付費專線，0800-085-151。",
+     "say": "有疑問，也可以打勞動部的免付費專線，零八零零，零八五，一五一。",
+     "facts": [
+      "TY05"
+     ],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll",
+      "tag": "勞動部免付費專線",
+      "big": "0800-085-151"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "如果你是老闆，把規則先講清楚，也能少掉很多颱風天的爭議。",
+     "say": "如果你是老版，把規則先講清楚，也能少掉很多台風天的爭議。",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "颱風假看起來只是一天休息，背後其實是一筆一筆的錢：員工的薪水、農民的收成，還有整個社會一天的產出。",
+     "say": "台風架看起來只是一天休息，背後其實是一筆一筆的錢：原工的薪水、農民的收成，還有整個社會一天的產出。",
+     "facts": [],
+     "pool": "ty_tw",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "你颱風假那天，有被扣薪，或是被叫去上班嗎？歡迎在留言區，跟我們分享。",
+     "say": "你台風架那天，有被扣薪，或是被叫去上班嗎？歡迎在留言區，跟我們分享。",
+     "facts": [],
+     "pool": "tw_tm",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "關注我，給你更多錢的大小事。",
+     "say": "關注我，給你更多錢的大小事。",
+     "facts": [],
+     "screen": {
+      "kind": "outro",
+      "a": "關注我",
+      "b": "給你更多錢的大小事",
+      "btn": "訂閱"
+     }
+    }
+   ]
+  },
+  "es-01": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "clone",
+   "gap": 0.15,
+   "speed": 1.2,
+   "shot": 3.0,
+   "lang": "zh",
+   "ui": "zh",
+   "title": "87 歲奶奶被趕出家門，西班牙房租到底有多重？",
+   "caption": "資料：BOE 西班牙政府公報、西班牙統計局 INE、Eurostat、西班牙央行、臺灣銀行",
+   "note": "資訊整理，非投資建議｜示威畫面含資料畫面",
+   "bgm": {
+    "src": "~/liam-workspace/assets/bgm/night_music.mp3",
+    "volume": 0.12
+   },
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "金錢怪物，一睜眼就是錢的世界。",
+     "say": "金錢怪物，一爭眼，就是錢的世界。",
+     "facts": [],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據媒體報導，9 月 23 號，馬德里一位 87 歲的奶奶，被趕出她住了 70 多年的家。",
+     "say": "據媒體報導，九月二十三號，馬德里一位八十七歲的奶奶，被趕出她住了七十多年的家。",
+     "facts": [
+      "ES01"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "9/23 馬德里",
+      "big": "87 歲",
+      "note": "住了 70 多年・媒體報導"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "媒體報導，她每個月的房租加帳單，大約 500 歐元，差不多新台幣 1.8 萬元。",
+     "say": "媒體報導，她每個月的房租加帳單，大約五百歐元，差不多新台幣一萬八千元。",
+     "facts": [
+      "ES02",
+      "EC01"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "原本每月房租＋帳單",
+      "big": "約 500 歐元",
+      "note": "≈ 新台幣 1.8 萬（依臺銀 10/23 匯率試算）・媒體報導"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "但新屋主開的新房租，據媒體報導大約 1,600 歐元，比她每個月的退休金還多。",
+     "say": "但新屋主開的新房租，據媒體報導，大約一千六百歐元，比她每個月的退休金還多。",
+     "facts": [
+      "ES02",
+      "EC01"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "新屋主開價",
+      "big": "約 1,600 歐元",
+      "note": "≈ 新台幣 5.8 萬（依臺銀 10/23 匯率試算）・媒體報導"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這一集，我們就從她的故事，看西班牙人的房租有多重，還有這場住房法令的攻防。",
+     "say": "這一集，我們就從她的故事，看西班牙人的房租有多重，還有這場住房法令的攻防。",
+     "facts": [],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "媒體報導，兩個禮拜後的 10 月 7 號，她在醫院過世。",
+     "say": "媒體報導，兩個禮拜後的十月七號，她在醫院過世。",
+     "facts": [
+      "ES01"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "兩個禮拜": "7"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據媒體報導，她的事，引發了大規模的住房抗議。",
+     "say": "據媒體報導，她的事，引發了大規摸的住房抗議。",
+     "facts": [
+      "ES15"
+     ],
+     "pool": "es_protest",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "同一段時間，政府連發兩道住房法令，國會卻在 10 月 2 號全部否決。",
+     "say": "同一段時間，政府連發兩道住房法令，國會卻在十月二號，全部否決。",
+     "facts": [
+      "ES08"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "10 月 6 號國會解散，11 月 29 號提前大選；兩大工會也號召 11 月 11 號全國大罷工。",
+     "say": "十月六號國會解散，十一月二十九號提前大選；兩大公會，也號召十一月十一號，全國大爸工。",
+     "facts": [
+      "ES09",
+      "ES12"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "兩大": "2012"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "先把時間拉回來，看看瑪莉卡門發生了什麼事。",
+     "say": "先把時間拉回來，看看瑪莉卡門，發生了什麼事。",
+     "facts": [],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據媒體報導，她住的是一間大約 90 平方公尺的公寓。",
+     "say": "據媒體報導，她住的是一間，大約九十平方公尺的公寓。",
+     "facts": [
+      "ES18"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "媒體報導，大約 6 年前，一家不動產公司把這間公寓買了下來。",
+     "say": "媒體報導，大約六年前，一家不動產公司，把這間公寓買了下來。",
+     "facts": [
+      "ES02"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "同一篇媒體報導提到，公司曾經開價大約 25 萬歐元，要她把房子買下來。",
+     "say": "同一篇媒體報導提到，公司曾經開價大約二十五萬歐元，要她把房子買下來。",
+     "facts": [
+      "ES18"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "公司開價",
+      "big": "約 25 萬歐元",
+      "note": "要她買下・媒體報導"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "媒體報導也說，她一直都有繳房租。",
+     "say": "媒體報導也說，她一直都有交房租。",
+     "facts": [
+      "ES02"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "媒體報導，她靠的是每個月大約 1,400 歐元的退休金，依臺銀匯率換算，大約新台幣 5.1 萬元。",
+     "say": "媒體報導，她靠的，是每個月大約一千四百歐元的退休金，依臺銀匯率換算，大約新台幣五萬一千元。",
+     "facts": [
+      "ES02",
+      "EC01"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "每月退休金",
+      "big": "約 1,400 歐元",
+      "note": "≈ 新台幣 5.1 萬（依臺銀 10/23 匯率試算）・媒體報導"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "新房租 1,600 歐元，比她整份退休金還多，這是媒體報導中的數字。",
+     "say": "新房租一千六百歐元，比她整份退休金還多，這是媒體報導中的數字。",
+     "facts": [
+      "ES02"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據媒體報導，前後一共 4 次驅逐行動，9 月 23 號，已經是第四次。",
+     "say": "據媒體報導，前後一共四次區逐行動，九月二十三號，已經是第四次。",
+     "facts": [
+      "ES18"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據媒體報導，三天後的 9 月 26 號，馬德里出現大規模遊行，口號是：不要再有下一個瑪莉卡門。",
+     "say": "據媒體報導，三天後的九月二十六號，馬德里出現大規摸遊行，口號是：不要再有下一個瑪莉卡門。",
+     "facts": [
+      "ES15"
+     ],
+     "pool": "es_protest",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "三天後": "26"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "主辦單位說有 30 萬人，西班牙政府代表處的統計是 2.5 萬人，這兩個數字都來自媒體報導。",
+     "say": "主辦擔位說有三十萬人，西班牙政府代表處的統計，是兩萬五千人，這兩個數字，都來自媒體報導。",
+     "facts": [
+      "ES15"
+     ],
+     "pool": "es_protest",
+     "screen": {
+      "kind": "broll",
+      "tag": "9/26 馬德里遊行",
+      "big": "2.5 萬人",
+      "note": "政府代表處統計；主辦單位稱 30 萬・媒體報導"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "遊行之後，有人在馬德里市中心的太陽門廣場搭起帳篷；據媒體報導，一個禮拜就超過 1,200 頂。",
+     "say": "遊行之後，有人在馬德里市中心的太陽門廣場，搭起帳篷；據媒體報導，一個禮拜，就超過一千兩百頂。",
+     "facts": [
+      "ES15"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll",
+      "tag": "太陽門廣場抗議營地",
+      "big": "1,200 頂帳篷",
+      "note": "一週內・媒體報導"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "一個人的遭遇，後來還被寫進了國家法令。",
+     "say": "一個人的遭遇，後來，還被寫進了國家法令。",
+     "facts": [
+      "ES19"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     },
+     "fiction": [
+      "一個人"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "媒體報導，瑪莉卡門還從醫院錄了一段影片，請大家上街。",
+     "say": "媒體報導，瑪莉卡門還從醫院，錄了一段影片，請大家上街。",
+     "facts": [
+      "ES20"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "她說，希望她的遭遇，能讓更多人去爭取，改掉讓她被趕出家門的法律，這段話來自媒體報導。",
+     "say": "她說，希望她的遭遇，能讓更多人去爭取，改掉讓她被趕出家門的法律，這段話，來自媒體報導。",
+     "facts": [
+      "ES20"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據媒體報導，抗議的人提出幾個訴求：租約不要有期限、沒有地方住就不能驅逐，還有凍結房租。",
+     "say": "據媒體報導，抗議的人提出幾個訴求：租約不要有期限、沒有地方住，就不能區逐，還有，凍結房租。",
+     "facts": [
+      "ES20"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "西班牙政府 10 月公布的法令，序言就提到她：瑪莉卡門被驅逐，喚醒了社會的集體意識。",
+     "say": "西班牙政府十月公布的法令，序言就提到她：瑪莉卡門被區逐，換醒了社會的集體意是。",
+     "facts": [
+      "ES19"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "瑪莉卡門是個案，但房租的壓力不是。先看一個數字。",
+     "say": "瑪莉卡門是個案，但房租的壓力不是。先看一個數字。",
+     "facts": [],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     },
+     "fiction": [
+      "一個數字"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "歐盟統計局的資料，2025 年，西班牙以市價租房子的家庭，有 26.8% 房租超過收入的四成。",
+     "say": "歐盟統計局的姿料，二零二五年，西班牙以事價租房子的家庭，有百分之二十六點八，房租超過收入的四成。",
+     "facts": [
+      "ES03"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "房租超過收入 40% 的租屋家庭",
+      "big": "26.8%",
+      "note": "西班牙 2025・Eurostat"
+     },
+     "approx": {
+      "四成": "40"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "換句話說，在以市價租屋的家庭裡，大約每四戶就有一戶，房租超過收入的四成。",
+     "say": "換句話說，在以事價租屋的家庭裡，大約每四戶，就有一戶，房租超過收入的四成。",
+     "facts": [
+      "ES03"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "每四戶": "26.8",
+      "一戶": "26.8",
+      "四成": "40"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "歐盟的平均是 18.6%，西班牙高出大約 8 個百分點。",
+     "say": "歐盟的平均是百分之十八點六，西班牙高出大約八個百分點。",
+     "facts": [
+      "ES03"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll",
+      "tag": "歐盟平均",
+      "big": "18.6%",
+      "note": "西班牙高出約 8 個百分點"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "其實這已經比 2022 年好了，那一年是 39.4%。",
+     "say": "其實這已經比二零二二年好了，那一年是百分之三十九點四。",
+     "facts": [
+      "ES03"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "2022 年發生了什麼事？那年 7 月，西班牙物價一年漲了 10.8%，是 1984 年以來最高。",
+     "say": "二零二二年發生了什麼事？那年七月，西班牙物價一年漲了百分之十點八，是一九八四年以來最高。",
+     "facts": [
+      "ES16"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll",
+      "tag": "西班牙 2022 年 7 月物價",
+      "big": "+10.8%",
+      "note": "1984 年以來最高・INE"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "2022 到 2023 年間，核心物價也一度漲到 7.6%，這是西班牙政府在法令裡寫的數字。",
+     "say": "二零二二到二零二三年間，核心物價也一度漲到百分之七點六，這是西班牙政府在法令裡寫的數字。",
+     "facts": [
+      "ES16"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "再看收入。西班牙 2026 年的最低工資，每期 1,221 歐元，一年發 14 期，依臺銀匯率大約新台幣 4.4 萬元。",
+     "say": "再看收入。西班牙二零二六年的最低工資，每期一千兩百二十一歐元，一年發十四期，依臺銀匯率，大約新台幣四萬四千元。",
+     "facts": [
+      "ES13",
+      "EC01"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll",
+      "tag": "西班牙 2026 最低工資",
+      "big": "每期 1,221 歐元",
+      "note": "一年 14 期・≈ 新台幣 4.4 萬（依臺銀 10/23 匯率試算）"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "媒體報導中，瑪莉卡門被要求的新房租 1,600 歐元，比最低工資的單期金額還高。",
+     "say": "媒體報導中，瑪莉卡門被要求的新房租，一千六百歐元，比最低工資的單期金額還高。",
+     "facts": [
+      "ES02",
+      "ES13"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "再看年輕人。2025 年，西班牙年輕人平均 30.2 歲才離開父母家。",
+     "say": "再看年輕人。二零二五年，西班牙年輕人平均三十點二歲，才離開父母家。",
+     "facts": [
+      "ES07"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll",
+      "tag": "平均離家年齡",
+      "big": "30.2 歲",
+      "note": "西班牙 2025・Eurostat"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "歐盟的平均是 26.3 歲，西班牙晚了將近四年。",
+     "say": "歐盟的平均是二十六點三歲，西班牙晚了將近四年。",
+     "facts": [
+      "ES07"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "將近四年": "30.2"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "整個歐盟，最晚的是克羅埃西亞的 31.5 歲，最早的是芬蘭，21.3 歲。",
+     "say": "整個歐盟，最晚的是克羅埃西亞的三十一點五歲，最早的是芬蘭，二十一點三歲。",
+     "facts": [
+      "ES17"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "西班牙政府在法令裡也直接點名：有很多年輕人，沒辦法搬出去自立。",
+     "say": "西班牙政府在法令裡，也直接點名：有很多年輕人，沒辦法搬出去自立。",
+     "facts": [
+      "ES07"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "接下來，我們從三個角度看西班牙的房子：房價、觀光住宅，還有政府的法令。",
+     "say": "接下來，我們從三個角度，看西班牙的房子：房價、觀光住宅，還有政府的法令。",
+     "facts": [],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     },
+     "fiction": [
+      "三個角度"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "先看房價。",
+     "say": "先看房價。",
+     "facts": [],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "西班牙統計局公布，2026 年第二季，房價比一年前漲了 12.2%。",
+     "say": "西班牙統計局公布，二零二六年第二季，房價比一年前，漲了百分之十二點二。",
+     "facts": [
+      "ES05"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "西班牙房價 2026Q2",
+      "big": "+12.2%",
+      "note": "年增・INE"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "另外看 9 月的整體物價，一年漲 4.9%。",
+     "say": "另外看九月的整體物價，一年漲百分之四點九。",
+     "facts": [
+      "ES06"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll",
+      "tag": "2026 年 9 月物價",
+      "big": "+4.9%",
+      "note": "年增・INE"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "兩個數字的時間不同，但房價的年漲幅，是物價的兩倍多。",
+     "say": "兩個數字的時間不同，但房價的年漲幅，是物價的兩倍多。",
+     "facts": [
+      "ES05",
+      "ES06"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "兩倍多": "12.2"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "西班牙央行算過：2024 年，在馬德里、巴塞隆納和馬拉加租房子的家庭，大約要 10 年的淨收入，才買得起一間房子。",
+     "say": "西班牙央行算過：二零二四年，在馬德里、巴塞隆納和馬拉加租房子的家庭，大約要十年的淨收入，才買得起一間房子。",
+     "facts": [
+      "ES21"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "租屋家庭買一間房要",
+      "big": "10 年淨收入",
+      "note": "馬德里、巴塞隆納、馬拉加・西班牙央行"
+     },
+     "fiction": [
+      "一間"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "而且，這是不吃不喝、一毛錢都不花的算法。",
+     "say": "而且，這是不吃不喝、一毛錢都不花的算法。",
+     "facts": [],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     },
+     "fiction": [
+      "一毛錢"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "瑪莉卡門的公寓，也是被不動產公司買下之後，被要求搬走的，這是媒體報導的經過。",
+     "say": "瑪莉卡門的公寓，也是被不動產公司買下之後，被要求搬走的，這是媒體報導的經過。",
+     "facts": [
+      "ES02"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第二個面向，是觀光住宅。",
+     "say": "第二個面向，是觀光住宅。",
+     "facts": [],
+     "pool": "es_tour",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "如果你去過西班牙旅行，可能住過短租公寓或民宿。",
+     "say": "如果你去過西班牙旅行，可能住過短租公寓或民宿。",
+     "facts": [],
+     "pool": "es_tour",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "西班牙央行的年報指出，2025 年，這類觀光住宅占了全國租屋市場大約 10%。",
+     "say": "西班牙央行的年報指出，二零二五年，這類觀光住宅，占了全國租屋市場，大約百分之十。",
+     "facts": [
+      "ES04"
+     ],
+     "pool": "es_tour",
+     "screen": {
+      "kind": "broll",
+      "tag": "觀光住宅占租屋市場",
+      "big": "約 10%",
+      "note": "全西班牙・西班牙央行年報"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "2025 年，在塞維亞的舊城區，出租的房子裡，有 44.9% 是觀光住宅；馬拉加是 44.6%。",
+     "say": "二零二五年，在塞維亞的舊城區，出租的房子裡，有百分之四十四點九，是觀光住宅；馬拉加，是百分之四十四點六。",
+     "facts": [
+      "ES22"
+     ],
+     "pool": "es_tour",
+     "screen": {
+      "kind": "broll",
+      "tag": "舊城區出租房屋中的觀光住宅",
+      "big": "44.9%",
+      "note": "塞維亞；馬拉加 44.6%・西班牙央行"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "幾乎每兩間出租的房子，就有一間是給觀光客住的。",
+     "say": "幾乎每兩間出租的房子，就有一間，是給觀光客住的。",
+     "facts": [
+      "ES22"
+     ],
+     "pool": "es_tour",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "每兩間": "44.9",
+      "一間": "44.9"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "而且不只舊城區。整個馬拉加都會區，出租的房子也有 28.9% 是觀光住宅。",
+     "say": "而且不只舊城區。整個馬拉加都會區，出租的房子，也有百分之二十八點九，是觀光住宅。",
+     "facts": [
+      "ES22"
+     ],
+     "pool": "es_tour",
+     "screen": {
+      "kind": "broll",
+      "tag": "馬拉加整個都會區",
+      "big": "28.9%",
+      "note": "出租住宅是觀光住宅・西班牙央行"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "相比之下，巴塞隆納舊城區是 22.2%，馬德里是 14.9%。",
+     "say": "相比之下，巴塞隆納舊城區是百分之二十二點二，馬德里是百分之十四點九。",
+     "facts": [
+      "ES22"
+     ],
+     "pool": "es_tour",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "西班牙政府 10 月公布的法令序言也寫明：觀光住宅一直都還沒有專屬的稅制。",
+     "say": "西班牙政府十月公布的法令序言也寫明：觀光住宅，一直都還沒有專屬的稅制。",
+     "facts": [
+      "ES04",
+      "ES19"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第三個面向，是政府的法令，也是這次爭議的焦點。",
+     "say": "第三個面向，是政府的法令，也是這次爭議的焦點。",
+     "facts": [],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "9 月 29 號，政府一口氣通過兩道住房緊急法令。",
+     "say": "九月二十九號，政府一口氣通過兩道住房緊急法令。",
+     "facts": [
+      "ES08"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "在西班牙，這種緊急法令，必須在 30 天內交給國會表決，國會不同意就失效。",
+     "say": "在西班牙，這種緊急法令，必須在三十天內交給國會表決，國會不同意，就失效。",
+     "facts": [
+      "ES11"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "10 月 2 號國會表決，據媒體報導，第一道 172 票贊成、178 票反對；第二道 166 比 184。",
+     "say": "十月二號國會表決，據媒體報導，第一道，一百七十二票贊成、一百七十八票反對；第二道，一百六十六比一百八十四。",
+     "facts": [
+      "ES08"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll",
+      "tag": "10/2 國會表決",
+      "big": "172：178",
+      "note": "第二道 166：184・BOE、媒體報導"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "兩道法令，當天就在政府公報上宣告廢止。",
+     "say": "兩道法令，當天就在政府公報上，宣告廢止。",
+     "facts": [
+      "ES08"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     },
+     "clips": [
+      "bg/es_boe_derog"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "10 月 6 號，政府公報刊出解散國會的命令，11 月 29 號提前大選，比原定早了將近 8 個月。",
+     "say": "十月六號，政府公報刊出解散國會的命令，十一月二十九號提前大選，比原定早了將近八個月。",
+     "facts": [
+      "ES09"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll",
+      "tag": "提前大選",
+      "big": "11/29",
+      "note": "比原定早將近 8 個月・BOE"
+     },
+     "clips": [
+      "bg/es_boe806"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "同一天，政府又把住房法令重新通過一次，改成兩道新的法令。",
+     "say": "同一天，政府又把住房法令，重新通過一次，改成兩道新的法令。",
+     "facts": [
+      "ES10"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "這兩道新法令，對租房子的人來說，有三個重點。",
+     "say": "這兩道新法令，對租房子的人來說，有三個重點。",
+     "facts": [],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     },
+     "fiction": [
+      "三個重點",
+      "兩道"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "第一，目前已經在租、2028 年底前到期的主要住所租約，房客如果前 8 個月都按時繳清，可以申請逐年延長，最多 2 年；房東要自住等情況例外。",
+     "say": "第一，目前已經在租、二零二八年底前到期的主要住所租約，房客如果前八個月，都按時交清，可以申請逐年延長，最多兩年；房東要自住等情況，例外。",
+     "facts": [
+      "ES10"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "租約延長",
+      "big": "最多 2 年",
+      "note": "2028 年底前到期・條件不變・RDL 29"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第二，到 2027 年底前，年度調租如果雙方沒有新的協議，漲幅不能超過 2%；房租已經高於官方參考上限的，不能再漲。",
+     "say": "第二，到二零二七年底前，年度調租，如果雙方沒有新的協議，漲幅不能超過百分之二；房租已經高於官方餐考上限的，不能再漲。",
+     "facts": [
+      "ES10"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "年度調租上限",
+      "big": "2%",
+      "note": "到 2027 年底・RDL 29"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "舉例來說，月租 1,000 歐元，照 2% 的上限，最多調到 1,020 歐元。",
+     "say": "舉例來說，月租一千歐元，依照百分之二的上限，最多調到一千零二十歐元。",
+     "facts": [
+      "EC02"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第三，主要住所租約滿 5 年時，如果雙方沒有依規定提前通知不續約，就自動再續 5 年；房東是公司的話，是滿 7 年、再續 7 年。",
+     "say": "第三，主要住所租約滿五年時，如果雙方沒有依規定，提前通知要結束租約，就字動再延五年；房東是公司的話，是滿七年、再延七年。",
+     "facts": [
+      "ES14"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "自動續約",
+      "big": "5 年",
+      "note": "房東是公司：7 年・RDL 28"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "房東如果依規定不續約，原則上要補償房客，至少相當於 12 個月的官方參考租金，另有例外。",
+     "say": "房東如果依規定，要結束租約，元則上要補償房客，至少相檔於十二個月的官方餐考租金，另有例外。",
+     "facts": [
+      "ES14"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "房東不續約要補償",
+      "big": "≥ 12 個月參考租金",
+      "note": "另有例外・RDL 28"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "另外還有一個稅務誘因：到 2027 年底前，把房子賣給負責社會住宅的公家單位，賣價在 20 萬歐元以下，資本利得稅 100% 免。",
+     "say": "另外，還有一個稅務誘因：到二零二七年底前，把房子賣給婦責社會住宅的公家擔位，賣價在二十萬歐元以下，資本利得稅，百分之百免。",
+     "facts": [
+      "ES23"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll",
+      "tag": "賣房給公家社會住宅單位",
+      "big": "20 萬歐元以下全免",
+      "note": "資本利得稅・到 2027 年底・西班牙國稅局"
+     },
+     "fiction": [
+      "一個稅務"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "20 萬歐元，依臺銀匯率大約新台幣 728 萬元；賣價在 80 萬歐元以下，也能部分免稅。",
+     "say": "二十萬歐元，依臺銀匯率，大約新台幣七百二十八萬元；賣價在八十萬歐元以下，也能部分免稅。",
+     "facts": [
+      "ES23",
+      "EC01"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "政府在法令裡的說法是，買下的房子，要永久作為受保護的住宅。",
+     "say": "政府在法令裡的說法是，買下的房子，要永久作為受保護的住宅。",
+     "facts": [
+      "ES23"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "要注意的是，這兩道法令的效力不一樣。",
+     "say": "要注意的是，這兩道法令的效力，不一樣。",
+     "facts": [],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     },
+     "fiction": [
+      "兩道"
+     ],
+     "clips": [
+      "bg/es_boe29"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "延長租約和調租上限，10 月 8 號就已經生效；自動續約和補償，原定 11 月 15 號才生效。",
+     "say": "延長租約和調漲租金的上限，十月八號就已經生效；字動延約和補償，原定十一月十五號才生效。",
+     "facts": [
+      "ES10",
+      "ES14"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "calendar",
+      "head": "兩道法令的生效日",
+      "items": [
+       {
+        "date": "10/8",
+        "what": "延長租約、調租上限（RDL 29）"
+       },
+       {
+        "date": "11/15",
+        "what": "自動續約、不續約補償（RDL 28）"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "但國會已經解散，兩道法令都要由國會的常設委員會，在 30 天內表決要不要追認，沒通過就失效。",
+     "say": "但國會已經解散，兩道法令，都要由國會的常設委員會，在三十天內表決，要不要追認，沒通過，就失效。",
+     "facts": [
+      "ES11"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     },
+     "fiction": [
+      "兩道"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "據西班牙媒體 10 月 22 號報導，兩道法令都還在等表決。",
+     "say": "據西班牙媒體，十月二十二號報導，兩道法令，都還在等表決。",
+     "facts": [
+      "ES11"
+     ],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     },
+     "fiction": [
+      "兩道"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "所以，這些規定能不能繼續，還要看表決結果。",
+     "say": "所以，這些規定能不能繼序，還要看表決結果。",
+     "facts": [],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據媒體報導，到 10 月 25 號，太陽門廣場的抗議營地都還在。",
+     "say": "據媒體報導，到十月二十五號，太陽門廣場的抗議營地，都還在。",
+     "facts": [
+      "ES15"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "西班牙兩大工會，號召 11 月 11 號為了住房，舉行全國大罷工。",
+     "say": "西班牙兩大公會，號召十一月十一號，為了住房，舉行全國大爸工。",
+     "facts": [
+      "ES12",
+      "ES09"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "calendar",
+      "head": "接下來兩個關鍵日子",
+      "items": [
+       {
+        "date": "11/11",
+        "what": "全國大罷工（為住房）"
+       },
+       {
+        "date": "11/29",
+        "what": "國會提前大選"
+       }
+      ]
+     },
+     "approx": {
+      "兩大": "2012"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據媒體報導，這會是 2012 年以來第一次全國大罷工。",
+     "say": "據媒體報導，這會是二零一二年以來，第一次全國大爸工。",
+     "facts": [
+      "ES12"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "罷工和大選，只隔了十八天。",
+     "say": "爸工和大選，只隔了十八天。",
+     "facts": [
+      "ES12",
+      "ES09"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     },
+     "approx": {
+      "十八天": "29"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "回到開頭的瑪莉卡門。",
+     "say": "回到開頭的瑪莉卡門。",
+     "facts": [],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "據媒體報導，她一直都有繳房租，問題是，新的房租已經超過她每個月的退休金。",
+     "say": "據媒體報導，她一直都有交房租，問題是，新的房租，已經超過她每個月的退休金。",
+     "facts": [
+      "ES02"
+     ],
+     "pool": "es_res",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "我們的看法是：從這些官方數字來看，房價、觀光住宅和收入，同時都在對西班牙的租屋族形成壓力。",
+     "say": "我們的看法是：從這些官方數字來看，房價、觀光住宅和收入，同時都在對西班牙的租屋族，形成壓力。",
+     "facts": [],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "而法令通過、否決、再通過，房客到現在還在等一個確定的答案。",
+     "say": "而法令通過、否決、再通過，房客到現在，還在等一個確定的答案。",
+     "facts": [],
+     "pool": "es_gov",
+     "screen": {
+      "kind": "broll"
+     },
+     "fiction": [
+      "一個"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "接下來可以觀察兩件事：常設委員會的追認表決，還有 11 月 29 號大選後，新國會怎麼處理住房。",
+     "say": "接下來可以觀察兩件事：常設委員會的追認表決，還有十一月二十九號大選後，新國會怎麼處理住房。",
+     "facts": [
+      "ES09",
+      "ES11"
+     ],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     },
+     "fiction": [
+      "兩件事"
+     ]
+    },
+    {
+     "speaker": "narr",
+     "text": "你覺得，房租應該由政府來管嗎？歡迎在留言區，跟我們分享你的想法。",
+     "say": "你覺得，房租應該由政府來管嗎？歡迎在留言區，跟我們分享你的想法。",
+     "facts": [],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "關注我，給你更多錢的大小事。",
+     "say": "關注我，給你更多錢的大小事。",
+     "facts": [],
+     "pool": "es_madrid",
+     "screen": {
+      "kind": "broll"
+     }
+    }
+   ],
+   "pool_extra": {
+    "es_gov": [
+     "bg/es_congreso",
+     "bg/es_cortes",
+     "bg/es_hemi",
+     "bg/es_sol"
+    ]
+   },
+   "clip_max": 3.9
+  }
+ }
+}

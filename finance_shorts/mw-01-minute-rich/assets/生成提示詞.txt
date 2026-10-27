@@ -1,0 +1,11 @@
+共同提示詞：
+Use case: stylized-concept. Asset type: isolated transparent PNG illustration for a premium Taiwanese financial education motion graphic. Primary request: [subject] Style: high quality soft 3D editorial illustration, smooth matte ceramic-like materials, precise clean silhouette, restrained and mature, no cartoon face. Color palette: ivory #f3eee3, teal #8ed9c7, small gold #f1c778 accents. Lighting: soft neutral studio light, subtle ambient occlusion within the object. Composition: one centered object, occupy roughly 80 percent of a square canvas, generous transparent margins. Constraints: actual transparent background, no environment, no floor, no cast shadow outside the object, no text, no lettering, no watermark, no logo, no border. Do not include coins, currency, people or extra objects.
+
+house.png：
+A single miniature Taiwanese urban family townhouse, three floors, ivory facade, muted teal pitched roof, warm tiny windows, one understated front door, viewed three quarter isometric, no ground plane.
+
+bank.png：
+A single miniature generic bank building with a simple classical facade, three broad columns and a triangular pediment, ivory stone, muted teal roof, tiny tasteful warm gold accents, three quarter isometric. No writing on facade.
+
+contract.png：
+A single tidy mortgage loan agreement clipboard with blank paper, a large abstract teal check mark, and a refined gold pen resting beside it. Front three quarter view. Paper has only short pale decorative line strokes, absolutely no readable writing, digits or symbols other than the check mark.

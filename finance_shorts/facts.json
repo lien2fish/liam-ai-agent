@@ -1,0 +1,3184 @@
+{
+  "_說明": "金融保險知識短片的事實表。每條至少兩個獨立來源、其中一個 official=true（法規資料庫／財政部／金管會／評議中心原文）。腳本每句的 facts 欄位要指到這裡；verify.py 會檢查。查證日期 2026-10-15。",
+  "facts": {
+    "F01": {
+      "claim": "約定於被繼承人死亡時給付其所指定受益人之人壽保險金額，不計入遺產總額",
+      "tokens": [
+        "指定受益人",
+        "不計入遺產"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "遺產及贈與稅法第16條第9款",
+          "url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=G0340072&flno=16",
+          "quote": "約定於被繼承人死亡時，給付其所指定受益人之人壽保險金額…"
+        },
+        {
+          "official": true,
+          "name": "保險法第112條",
+          "url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=G0390002&flno=112",
+          "quote": "保險金額約定於被保險人死亡時給付於其所指定之受益人者，其金額不得作為被保險人之遺產。"
+        }
+      ]
+    },
+    "F02": {
+      "claim": "財政部整理判決，列出死亡人壽保險金可能依實質課稅原則核課遺產稅的參考特徵：躉繳、高齡、帶病（重病）、短期、鉅額、舉債、密集投保，以及保險給付相當於或低於已繳保費",
+      "tokens": [
+        "躉繳",
+        "高齡",
+        "帶病",
+        "短期",
+        "鉅額",
+        "舉債",
+        "密集",
+        "實質課稅"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "財政部109年7月1日台財稅字第10900520520號函附件「實務上死亡人壽保險金依實質課稅原則核課遺產稅案例及其參考特徵」",
+          "url": "https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=66cb1f563fba4010a1452dce6d51d68d",
+          "quote": "16 個判決案例，特徵欄出現：躉繳投保、高齡投保、帶病投保、短期投保、鉅額投保、舉債投保、密集投保、保險給付相當於已繳保險費（加計利息）／低於已繳保險費"
+        },
+        {
+          "official": true,
+          "name": "財政部102年1月18日台財稅字第10200501712號函",
+          "url": "https://laws.gov.taipei/law/Interpretation/Content/FE256122",
+          "quote": "有關被繼承人生前投保人壽保險案件，其死亡給付所涉遺產稅事宜，請參酌上開案例參考特徵辦理"
+        },
+        {
+          "official": false,
+          "name": "KPMG 安侯建業〈人壽保險實質課稅原則〉",
+          "url": "https://kpmg.com/tw/zh/home/insights/2022/07/life-insurance-tax-principle.html",
+          "quote": "八種態樣：高齡投保、鉅額投保、密集投保、短期投保、重(帶)病投保、躉繳投保、舉債投保、保額/保險給付少於或等於所繳保險費"
+        }
+      ]
+    },
+    "F03": {
+      "claim": "實質課稅的構成要件事實由稽徵機關負舉證責任（所以是『可能』被課，不是一律）",
+      "tokens": [
+        "可能"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "財政部102年1月18日台財稅字第10200501712號函（引稅捐稽徵法第12條之1）",
+          "url": "https://laws.gov.taipei/law/Interpretation/Content/FE256122",
+          "quote": "前項課徵租稅構成要件事實之認定，稅捐稽徵機關就其事實有舉證之責任。"
+        },
+        {
+          "official": false,
+          "name": "KPMG 安侯建業",
+          "url": "https://kpmg.com/tw/zh/home/insights/2022/07/life-insurance-tax-principle.html",
+          "quote": "稽徵機關對構成要件事實負舉證責任；各態樣沒有明確數字門檻"
+        }
+      ]
+    },
+    "F04": {
+      "claim": "2025 年評議中心受理的壽險理賠爭議（申訴＋評議）共 8,238 件，第一名「必要性醫療」2,192 件、佔 26.61%",
+      "tokens": [
+        "2025",
+        "8,238",
+        "2,192",
+        "26.61%",
+        "必要性醫療"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "金融消費評議中心〈114全年保險業-人壽保險公司-理賠-爭議類型統計表〉",
+          "url": "https://www.foi.org.tw/Article.aspx?Lang=1&Arti=11235&Role=1",
+          "quote": "必要性醫療 1123 1069 2192 26.61% … 總計 5269 2969 8238 100%"
+        },
+        {
+          "official": false,
+          "name": "《現代保險》雜誌〈壽險申訴件數創新高〉",
+          "url": "https://www.rmim.com.tw/news-detail-44289",
+          "quote": "前5名依序為「必要性醫療」2,192件（26.61％）…"
+        }
+      ]
+    },
+    "F05": {
+      "claim": "評議中心案例：住院 37 天，保險公司只賠 14 天；評議認定合理住院 21 天，保險公司應再給付 7 天",
+      "tokens": [
+        "37",
+        "14",
+        "21",
+        "7"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "金融消費評議中心 案例分享〈住院的必要性 誰來判斷？〉2025-11-26",
+          "url": "https://www.foi.org.tw/Article.aspx?Lang=1&Arti=11114&k=&ClassId=&p=1",
+          "quote": "住院接受治療共計37天…只有給付其中14天…小慧的合理必要住院期間為21天…應該再給付小慧7天的住院相關保險金"
+        },
+        {
+          "official": false,
+          "name": "查證方式：同一頁面內案情、判斷理由、結論三段數字互相吻合（37＝住院期間 113/8/13～9/18；21－14＝7）",
+          "url": "https://www.foi.org.tw/Article.aspx?Lang=1&Arti=11114&k=&ClassId=&p=1",
+          "quote": "113年8月13日到9月18日住院接受治療共計37天"
+        }
+      ]
+    },
+    "F06": {
+      "claim": "住院必要性不只看主治醫師判斷，而是看相同專業的醫師在相同情形通常會不會判斷要住院；但法院見解不一，也有判決尊重主治醫師",
+      "tokens": [
+        "相同專業",
+        "主治醫師"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "金融消費評議中心 案例分享〈住院的必要性 誰來判斷？〉",
+          "url": "https://www.foi.org.tw/Article.aspx?Lang=1&Arti=11114&k=&ClassId=&p=1",
+          "quote": "不應該只以實際治療的醫師判斷「有住院治療必要性」就認為符合保單條款的約定，而是應該以具有相同專業的醫師，在相同的情形，通常會診斷具有住院治療的必要性"
+        },
+        {
+          "official": false,
+          "name": "亮遠法律事務所〈醫師說要住院，保險公司說「無住院必要」拒賠怎麼辦？〉",
+          "url": "https://lylaw.tw/article-content.asp?ids=983",
+          "quote": "實務對認定標準有兩種走向：有判決尊重主治醫師專業判斷並由保險公司舉證，也有判決採「相同專業醫師通常會診斷有必要」的客觀標準"
+        }
+      ]
+    },
+    "F07": {
+      "claim": "病歷、護理紀錄是判斷住院必要性的關鍵證據",
+      "tokens": [
+        "病歷",
+        "護理紀錄"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "金融消費評議中心 案例分享（保險公司依護理紀錄與請假外出紀錄主張病情改善）",
+          "url": "https://www.foi.org.tw/Article.aspx?Lang=1&Arti=11114&k=&ClassId=&p=1",
+          "quote": "根據小慧住院的護理紀錄記載…而且小慧從113年8月28日起有數次請假外出的紀錄"
+        },
+        {
+          "official": false,
+          "name": "亮遠法律事務所",
+          "url": "https://lylaw.tw/article-content.asp?ids=983",
+          "quote": "本文依兩件判決說明標準差異、病歷紀錄完整性的決定性影響"
+        }
+      ]
+    },
+    "F08": {
+      "claim": "受益人由要保人指定；受益人的地位來自契約上的指定，離婚（分手）不會讓指定失效",
+      "tokens": [
+        "指定",
+        "離婚",
+        "分手",
+        "前任"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "保險法第110條第1項",
+          "url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=G0390002&flno=110",
+          "quote": "要保人得通知保險人，以保險金額之全部或一部，給付其所指定之受益人一人或數人。"
+        },
+        {
+          "official": true,
+          "name": "金融消費評議中心 109年評字第2632號評議決定書（引最高法院97年度台上字第2087號、103年度台上字第439號）",
+          "url": "https://ods.foi.org.tw/download.aspx?article=1090800418",
+          "quote": "於該保險契約簽訂時…為該契約受益人之地位，即告確定"
+        },
+        {
+          "official": false,
+          "name": "好險網 法律專區〈夫妻離婚是否構成受益權喪失之事由？〉",
+          "url": "https://www.phew.tw/law/case_cont/60",
+          "quote": "他妻子的受益權，乃是源自於要保書上的指定，並不是來自於婚姻關係…夫妻離婚並不會構成受益權喪失之事由"
+        },
+        {
+          "official": false,
+          "name": "公勝保險經紀人〈離婚後保單變更及權益處理實務指南〉",
+          "url": "https://www.goldennet.com.tw/tw/%E4%BF%9D%E9%9A%AA%E7%9F%A5%E8%AD%98%E5%AE%B6/%E8%BD%89%E8%BA%AB%E4%B9%8B%E5%BE%8C%E7%9A%84%E4%BF%9D%E9%9A%9C%E5%AE%88%E8%AD%B7_%E9%9B%A2%E5%A9%9A%E5%BE%8C%E4%BF%9D%E5%96%AE%E8%AE%8A%E6%9B%B4%E5%8F%8A%E6%AC%8A%E7%9B%8A%E8%99%95%E7%90%86%E5%AF%A6%E5%8B%99%E6%8C%87%E5%8D%97",
+          "quote": "離婚後，請務必主動向保險公司…變更"
+        }
+      ]
+    },
+    "F09": {
+      "claim": "要保人可以變更受益人，但要通知保險公司，否則不能對抗保險公司",
+      "tokens": [
+        "變更",
+        "通知"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "保險法第111條",
+          "url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=G0390002&flno=111",
+          "quote": "受益人經指定後，要保人對其保險利益，除聲明放棄處分權者外，仍得以契約或遺囑處分之。要保人行使前項處分權，非經通知，不得對抗保險人。"
+        },
+        {
+          "official": false,
+          "name": "公勝保險經紀人",
+          "url": "https://www.goldennet.com.tw/tw/%E4%BF%9D%E9%9A%AA%E7%9F%A5%E8%AD%98%E5%AE%B6/%E8%BD%89%E8%BA%AB%E4%B9%8B%E5%BE%8C%E7%9A%84%E4%BF%9D%E9%9A%9C%E5%AE%88%E8%AD%B7_%E9%9B%A2%E5%A9%9A%E5%BE%8C%E4%BF%9D%E5%96%AE%E8%AE%8A%E6%9B%B4%E5%8F%8A%E6%AC%8A%E7%9B%8A%E8%99%95%E7%90%86%E5%AF%A6%E5%8B%99%E6%8C%87%E5%8D%97",
+          "quote": "要保人擁有「單方變更權」。離婚後，請務必主動向保險公司…"
+        }
+      ]
+    },
+    "F10": {
+      "claim": "死亡保險契約未指定受益人，保險金作為被保險人的遺產（因而不適用遺贈稅法第16條第9款『指定受益人』的不計入規定）",
+      "tokens": [
+        "沒指定",
+        "遺產"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "保險法第113條",
+          "url": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=G0390002&flno=113",
+          "quote": "死亡保險契約未指定受益人者，其保險金額作為被保險人之遺產。"
+        },
+        {
+          "official": false,
+          "name": "律點通〈退休保險金傳承：受益人指定全攻略〉",
+          "url": "https://easy-law.net/blog/family/marital-property/insurance-beneficiary-guide-3/",
+          "quote": "如果死亡保險契約未指定受益人…其保險金額將會被視為被保險人的遺產，納入遺產總額"
+        },
+        {
+          "official": false,
+          "name": "龍辰保代〈保險金算不算遺產？〉",
+          "url": "https://www.lcia.com.tw/guide/insurance-payout-estate",
+          "quote": "沒有指定受益人的，依第113條作為遺產"
+        }
+      ]
+    },
+    "M01": {
+      "claim": "美國聯準會 2026-09-16 升息 1/4 個百分點，聯邦資金利率目標區間 3.75%–4.00%，2023 年以來首次升息；票數 12-0",
+      "tokens": [
+        "2026",
+        "9",
+        "16",
+        "3.75%",
+        "4.00%",
+        "4%",
+        "3.75",
+        "4",
+        "2023",
+        "12",
+        "0.25",
+        "25"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "Federal Reserve FOMC statement 2026-09-16",
+          "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+          "quote": "The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent"
+        },
+        {
+          "official": false,
+          "name": "CNBC 2026-09-16",
+          "url": "https://www.cnbc.com/2026/09/16/fed-rate-decision-september-2026.html",
+          "quote": "raised its benchmark interest rate by 25 basis points to a target range of 3.75%-4%, its first increase since 2023"
+        },
+        {
+          "official": false,
+          "name": "Reuters 2026-09-16",
+          "url": "https://www.reuters.com/business/warshs-words-may-matter-more-than-anticipated-fed-rate-hike-2026-09-16/",
+          "quote": "Fed raises rates in search of 'timelier' drop in inflation"
+        }
+      ]
+    },
+    "M02": {
+      "claim": "歐洲央行 2026-09-10 升息 25 個基點，存款利率 2.50%（9/16 生效）；6 月已升到 2.25%，6 月以來第二次升息",
+      "tokens": [
+        "2026",
+        "9",
+        "10",
+        "16",
+        "2.50%",
+        "2.5%",
+        "2.50",
+        "2.25%",
+        "6",
+        "25",
+        "0.25",
+        "2",
+        "2nd"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "ECB Monetary policy decisions 2026-09-10",
+          "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
+          "quote": "decided to raise the three key ECB interest rates by 25 basis points ... deposit facility ... 2.50% ... with effect from 16 September 2026"
+        },
+        {
+          "official": true,
+          "name": "ECB Monetary policy decisions 2026-06-11",
+          "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260611~4d41bd5e83.en.html",
+          "quote": "increased to 2.25%, 2.40% and 2.65% respectively, with effect from 17 June 2026"
+        },
+        {
+          "official": false,
+          "name": "Reuters 2026-09-10",
+          "url": "https://www.reuters.com/business/ecb-raises-interest-rates-fight-off-inflation-jump-2026-09-10/",
+          "quote": "Thursday's hike raises the ECB's benchmark deposit rate to 2.5%"
+        },
+        {
+          "official": true,
+          "name": "中央銀行理監事聯席會議決議新聞稿 2026-09-17",
+          "url": "https://www.cbc.gov.tw/tw/cp-302-192864-4319f-1.html",
+          "quote": "6月以來，歐洲央行(ECB)兩度升息"
+        }
+      ]
+    },
+    "M03": {
+      "claim": "日本央行 2026-09-18 把政策利率從約 1.0% 升到約 1.25%，31 年新高",
+      "tokens": [
+        "2026",
+        "9",
+        "18",
+        "1.25%",
+        "1.25",
+        "1.0%",
+        "1%",
+        "31",
+        "0.25",
+        "25"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "Bank of Japan, Change in the Guideline for Money Market Operations, 2026-09-18",
+          "url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
+          "quote": "The Bank will encourage the uncollateralized overnight call rate to remain at around 1.25 percent."
+        },
+        {
+          "official": false,
+          "name": "Reuters 2026-09",
+          "url": "https://www.reuters.com/world/asia-pacific/bank-japan-set-raise-interest-rates-31-year-high-2026-09-17/",
+          "quote": "BOJ lifts rates to 31-year high ... raises policy rate to 1.25% from 1%"
+        }
+      ]
+    },
+    "M04": {
+      "claim": "台灣央行 2026-09-17 重貼現率維持 2%（連續第 10 次不變），並上修今年 CPI 年增率預測到 2.03%",
+      "tokens": [
+        "2026",
+        "9",
+        "17",
+        "2%",
+        "2.0%",
+        "2",
+        "10",
+        "2.03%",
+        "2.03"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "中央銀行理監事聯席會議決議新聞稿 2026-09-17",
+          "url": "https://www.cbc.gov.tw/tw/cp-302-192864-4319f-1.html",
+          "quote": "本行重貼現率、擔保放款融通利率及短期融通利率，分別維持年息2%…上修本年台灣CPI及核心CPI年增率預測值分別至2.03%"
+        },
+        {
+          "official": false,
+          "name": "Business Insider 台灣",
+          "url": "https://www.businessinsider.tw/article/7213",
+          "quote": "政策利率連續第10次維持不變、重貼現率停在年息2.0%"
+        }
+      ]
+    },
+    "M05": {
+      "claim": "美國 2026 年 9 月 CPI 年增 3.7%（8 月 3.4%），汽油年漲 34.2%",
+      "tokens": [
+        "2026",
+        "9",
+        "3.7%",
+        "3.7",
+        "3.4%",
+        "8",
+        "34.2%",
+        "34.2"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "BLS CPI September 2026（2026-10-14 發布）",
+          "url": "https://www.bls.gov/news.release/cpi.nr0.htm",
+          "quote": "The all items index rose 3.7 percent for the 12 months ending September, a larger increase than the 3.4-percent increase ... Gasoline (all types) ... 34.2"
+        },
+        {
+          "official": false,
+          "name": "Trading Economics",
+          "url": "https://tradingeconomics.com/united-states/inflation-cpi/news/591934",
+          "quote": "The US annual inflation rate accelerated to 3.7% in September 2026, up from 3.4%"
+        }
+      ]
+    },
+    "M06": {
+      "claim": "下一次會議：聯準會 2026-10-27～28、歐洲央行 2026-10-29（第二天、會後記者會）",
+      "tokens": [
+        "10",
+        "27",
+        "28",
+        "29",
+        "2026"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "Federal Reserve FOMC meeting calendars",
+          "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+          "quote": "October 27-28"
+        },
+        {
+          "official": true,
+          "name": "ECB Governing Council meeting calendar",
+          "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html",
+          "quote": "29/10/2026 Governing Council of the ECB: monetary policy meeting in Frankfurt (Day 2), followed by press conference"
+        },
+        {
+          "official": false,
+          "name": "Trading Economics 轉述（聯準會 10/27–28 開會）",
+          "url": "https://tradingeconomics.com/united-states/inflation-cpi/news/591934",
+          "quote": "it meets again October 27–28"
+        }
+      ]
+    },
+    "E01": {
+      "claim": "升息會讓其他利率跟著上升，提高家庭與企業的借貸成本、抑制借貸",
+      "tokens": [
+        "借錢",
+        "borrowing"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "Federal Reserve FAQ: Why do interest rates matter?",
+          "url": "https://www.federalreserve.gov/faqs/why-do-interest-rates-matter.htm",
+          "quote": "Interest rates influence borrowing costs and spending decisions of households and businesses ... higher interest rates can restrain such borrowing by consumers and businesses"
+        },
+        {
+          "official": true,
+          "name": "The Fed Explained - Monetary Policy",
+          "url": "https://www.federalreserve.gov/aboutthefed/fedexplained/monetary-policy.htm",
+          "quote": "Raising the target range represents a \"tightening\" of monetary policy, which raises interest rates ... A change in the federal funds rate normally affects ... changes in other interest rates"
+        }
+      ]
+    },
+    "E02": {
+      "claim": "美國 30 年期固定房貸平均利率 2026-10-15 為 7.40%，一年前 6.27%",
+      "tokens": [
+        "7.40%",
+        "7.40",
+        "7.4",
+        "6.27%",
+        "6.27",
+        "30",
+        "15",
+        "10",
+        "2026"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "Freddie Mac Primary Mortgage Market Survey 2026-10-15",
+          "url": "https://www.freddiemac.com/pmms",
+          "quote": "The 30-year fixed-rate mortgage averaged 7.40% as of October 15, 2026 ... A year ago at this time, the 30-year FRM averaged 6.27%."
+        },
+        {
+          "official": true,
+          "name": "FRED（聖路易聯準銀行）MORTGAGE30US",
+          "url": "https://fred.stlouisfed.org/series/mortgage30us",
+          "quote": "2026-10-15: 7.40"
+        },
+        {
+          "official": false,
+          "name": "NBC Bay Area（AP）",
+          "url": "https://www.nbcbayarea.com/news/local/mortgage-rates-home-loans-october/4158665/",
+          "quote": "The benchmark 30-year fixed-rate mortgage was unchanged from last week at 7.40%"
+        },
+        {
+          "official": false,
+          "name": "Nick Rau（轉述 Freddie Mac）",
+          "url": "https://nickraure.com/blog/mortgage-rates-hold-740-october-15-2026",
+          "quote": "Freddie Mac's 30-year averaged 7.40% as of Oct. 15, 2026, versus 6.27% a year earlier"
+        }
+      ]
+    },
+    "E03": {
+      "claim": "美國 10 年期公債殖利率 2026-10-15 為 5.10%（站上 5%）",
+      "tokens": [
+        "5.10%",
+        "5.10",
+        "5.1",
+        "5%",
+        "5",
+        "10",
+        "15"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "FRED（聖路易聯準銀行）DGS10",
+          "url": "https://fred.stlouisfed.org/series/dgs10",
+          "quote": "2026-10-15: 5.10"
+        },
+        {
+          "official": false,
+          "name": "Macrotrends",
+          "url": "https://www.macrotrends.net/2016/10-year-treasury-bond-rate-yield-chart",
+          "quote": "The 10-year Treasury yield was 5.10% on October 15, 2026"
+        }
+      ]
+    },
+    "E04": {
+      "claim": "新台幣兌美元 10/12 收 31.895、10/16 收 32.338；台灣央行說明這波貶值主要反映國際股市動盪、外資賣超台股併同股利匯出；台美利差擴大通常被視為新台幣貶值因素",
+      "tokens": [
+        "31.895",
+        "32.338",
+        "10",
+        "12",
+        "16",
+        "1"
+      ],
+      "sources": [
+        {
+          "official": true,
+          "name": "中央銀行新聞稿〈近期新台幣匯率貶值之說明〉2026-10-19",
+          "url": "https://www.cbc.gov.tw/tw/cp-302-193046-bb130-1.html",
+          "quote": "近期新台幣對美元匯率由10月12日1美元兌換31.895元，貶值至10月16日之32.338元…主要反映國際股市動盪，外資賣超台股併同獲配股利匯出資金"
+        },
+        {
+          "official": false,
+          "name": "經濟日報 2026-10-12",
+          "url": "https://money.udn.com/money/story/5616/9810038",
+          "quote": "12日新台幣兌美元匯率收在31.895元"
+        },
+        {
+          "official": false,
+          "name": "中央社（Yahoo股市）2026-10-16",
+          "url": "https://tw.stock.yahoo.com/news/%E6%96%B0%E5%8F%B0%E5%B9%A3%E8%B2%B67-3%E5%88%86-%E6%94%B632-338%E5%85%83-080702810.html",
+          "quote": "台北外匯市場新台幣兌美元今天收盤收32.338元"
+        },
+        {
+          "official": false,
+          "name": "經濟日報〈美銀預期台灣9月升息半碼〉",
+          "url": "https://money.udn.com/money/story/5613/9735531",
+          "quote": "台灣央行同步調升利率，可避免台美利差擴大，減輕新台幣面臨新一波貶值壓力"
+        },
+        {
+          "official": false,
+          "name": "NOWnews 2026-10-16",
+          "url": "https://www.nownews.com/news/6884043",
+          "quote": "外資再砍台股461億！新台幣續貶收32.338元"
+        }
+      ]
+    },
+    "J01": {
+      "claim": "日本住宅金融支援機構《住宅ローン利用者の実態調査》2026年1月調查：利用的金利類型「變動型」75.0%、固定期間選擇型 14.9%、全期間固定型 10.1%",
+      "tokens": [
+        "75",
+        "75.0",
+        "14.9",
+        "10.1",
+        "2026",
+        "1"
+      ],
+      "sources": [
+        {
+          "name": "住宅金融支援機構〈住宅ローン利用者の実態調査【住宅ローン利用者調査（2026年1月調査）】〉PDF",
+          "url": "https://www.jhf.go.jp/files/topics/4955_ext_99_2.pdf",
+          "official": true,
+          "quote": "利用した金利タイプは、「変動型」が75.0％、「固定期間選択型」が14.9％、「全期間固定型」が10.1％"
+        },
+        {
+          "name": "Patience Realty〈住宅ローン調査2026 | 75％が変動金利を選択〉",
+          "url": "https://www.patiencerealty.com/ja/post/jutaku-loan-chousa-2026-75-percent-ga-hendou-kinri-wo-sentaku",
+          "official": false,
+          "quote": "住宅ローン調査2026 | 75％が変動金利を選択"
+        }
+      ]
+    },
+    "J02": {
+      "claim": "日銀 2024/3/19 解除負利率；2024/7/31 升至 0.25%；2025/1/24 0.5%；2025/12/19 0.75%；2026/6/16 1.0%；2026/9/18 1.25%",
+      "tokens": [
+        "2024",
+        "3",
+        "7",
+        "0.25",
+        "2025",
+        "1",
+        "0.5",
+        "12",
+        "0.75",
+        "2026",
+        "6",
+        "1",
+        "1.0",
+        "9",
+        "1.25",
+        "5"
+      ],
+      "sources": [
+        {
+          "name": "日本銀行〈金融市場調節方針の変更について〉2026-06-16",
+          "url": "https://www.boj.or.jp/mopo/mpmdeci/mpr_2026/k260616a.pdf",
+          "official": true,
+          "quote": "無担保コールレート（オーバーナイト物）を、１．０％程度で推移するよう促す"
+        },
+        {
+          "name": "日本銀行〈「2024年度の金融市場調節」の概要〉",
+          "url": "https://www.boj.or.jp/research/brp/mor/data/mor250604b.pdf",
+          "official": true,
+          "quote": "7月の金融政策決定会合では、同レートを0.25％程度で推移するよう促すこと、2025年1月の金融政策決定会合では、同レートを0.5％程度で推移"
+        },
+        {
+          "name": "三菱UFJ銀行〈住宅ローンの金利は今後どうなる？〉日銀の金融政策の推移表",
+          "url": "https://www.bk.mufg.jp/kariru/jutaku/column/032/index.html",
+          "official": false,
+          "quote": "2024年3月19日 マイナス金利解除／2024年7月31日 0.25%／2025年1月24日 0.5%／2025年12月19日 0.75%／2026年6月16日 1.0%／2026年9月18日 1.25%"
+        }
+      ]
+    },
+    "J03": {
+      "claim": "【フラット35】2026年10月、借入期間21〜35年・融資率9割以下の最も多い金利 3.830%（範圍 3.830%〜5.840%）",
+      "tokens": [
+        "3.83",
+        "3.830",
+        "2026",
+        "10",
+        "35"
+      ],
+      "sources": [
+        {
+          "name": "住宅金融支援機構【フラット35】最新の金利情報（2026年10月）",
+          "url": "https://www.simulation.jhf.go.jp/flat35/kinri/index.php/rates/top",
+          "official": true,
+          "quote": "借入期間：21年以上35年以下 融資率9割以下 年3.830％～年5.840％（最も多い金利 年3.830％）"
+        },
+        {
+          "name": "マーキュリー〈2026年10月の金利が3.830%に上昇〉",
+          "url": "https://mercury-realestate.co.jp/article/news/news-flat35-202610/",
+          "official": false,
+          "quote": "2026年10月適用金利は、最も多い金利が3.830％"
+        }
+      ]
+    },
+    "J04": {
+      "claim": "住宅金融支援機構 2026年1月調查（2026/1/7〜1/20, n=1,237）：変動型借入金利「年0.5%超〜1.0%以下」占 53.4% 最多",
+      "tokens": [
+        "53.4",
+        "0.5",
+        "1",
+        "1.0",
+        "2026"
+      ],
+      "sources": [
+        {
+          "name": "住宅金融支援機構〈住宅ローン利用者調査（2026年1月調査）〉PDF",
+          "url": "https://www.jhf.go.jp/files/topics/4955_ext_99_2.pdf",
+          "official": true,
+          "quote": "「年0.5％超～年1.0％以下」が53.4％と最も多く、割合も増加"
+        },
+        {
+          "name": "Patience Realty〈住宅ローン調査2026〉",
+          "url": "https://www.patiencerealty.com/ja/post/jutaku-loan-chousa-2026-75-percent-ga-hendou-kinri-wo-sentaku",
+          "official": false,
+          "quote": "借入金利では「0.5％以上1.0％未満」が53.4％と最も多く"
+        }
+      ]
+    },
+    "J05": {
+      "claim": "日本變動利率房貸常見 5年ルール（適用利率約半年調整、月付金5年才重算）與 125%ルール（重算後月付金上限為原本1.25倍；例：月付8萬→上限10萬）",
+      "tokens": [
+        "5",
+        "125",
+        "1.25",
+        "8",
+        "10",
+        "25",
+        "1",
+        "2"
+      ],
+      "sources": [
+        {
+          "name": "全國銀行協會〈変動金利住宅ローンの未払利息とは？〉",
+          "url": "https://www.zenginkyo.or.jp/article/tag-d/7824/",
+          "official": true,
+          "quote": "変動金利住宅ローンの金利は…通常半年ごとに見直されます。一方、元利均等返済の返済額の見直しは、通常5年毎です…返済額の増加はそれまでの返済額の25％アップが上限となります。例えば、毎月8万円の返済額の人なら、6年目以降の返済額は、毎月10万円が上限"
+        },
+        {
+          "name": "SBI新生銀行〈変動金利の5年ルールと125％ルールとは？〉",
+          "url": "https://www.sbishinseibank.co.jp/retail/housing/column/vol72.html",
+          "official": false,
+          "quote": "5年ルールは返済額の見直しを5年ごとに行う仕組みで、125％ルールは見直し時の返済額上昇を前回の125％までに抑える制度です"
+        },
+        {
+          "name": "三菱UFJ銀行〈住宅ローンの5年ルール・125％ルールとは？〉",
+          "url": "https://www.bk.mufg.jp/kariru/jutaku/column/008/index.html",
+          "official": false,
+          "quote": "5年ルール・125％ルール"
+        }
+      ]
+    },
+    "J06": {
+      "claim": "未払利息：返済額不変期間內利率急升、利息超過月付金時發生，累積到最後可能於返済終了時仍殘留需清償",
+      "tokens": [],
+      "sources": [
+        {
+          "name": "全國銀行協會〈変動金利住宅ローンの未払利息とは？〉",
+          "url": "https://www.zenginkyo.or.jp/article/tag-d/7824/",
+          "official": true,
+          "quote": "急激な金利上昇が起きた時に、毎月支払うべき利息の金額が返済額よりも多くなってしまうと未払利息が発生します…通常の返済が終わっても、未払利息分のローンが残ってしまう可能性もあります"
+        },
+        {
+          "name": "SBI新生銀行〈変動金利の5年ルールと125％ルール〉",
+          "url": "https://www.sbishinseibank.co.jp/retail/housing/column/vol72.html",
+          "official": false,
+          "quote": "未払利息と元金をローンの最終返済期日に一括で全額返済する必要がある"
+        }
+      ]
+    },
+    "J07": {
+      "claim": "日本銀行以 2% 的「物價安定目標」為政策目標",
+      "tokens": [
+        "2"
+      ],
+      "sources": [
+        {
+          "name": "日本銀行〈当面の金融政策運営について〉2025-09-19",
+          "url": "https://www.boj.or.jp/mopo/mpmdeci/state_2025/k250919a.htm",
+          "official": true,
+          "quote": "2％の「物価安定の目標」が持続的・安定的に実現していくことが見通せる状況に至った"
+        },
+        {
+          "name": "WEF〈日本のマイナス金利時代に幕〉",
+          "url": "https://jp.weforum.org/stories/financial-and-monetary-systems/nomainasu-ni-chi-fuekonomisutono",
+          "official": false,
+          "quote": "2024年3月、日本銀行は金利を引き上げ、日本の歴史的マイナス金利時代に終止符を打ちました"
+        }
+      ]
+    },
+    "T01": {
+      "claim": "中央銀行：115年(2026)8月五大銀行新承做購屋貸款平均利率 2.321%（7月 2.29%），金額 571.65 億元",
+      "tokens": [
+        "2.321",
+        "2.29",
+        "571.65",
+        "2026",
+        "8",
+        "5"
+      ],
+      "sources": [
+        {
+          "name": "中央銀行新聞稿〈115年8月五大銀行新承做放款平均利率〉附表 XLSX",
+          "url": "https://www.cbc.gov.tw/tw/cp-302-192906-992ea-1.html",
+          "official": true,
+          "quote": "購屋貸款 115年8月 金額57,165（百萬元） 利率2.321；7月 2.290"
+        },
+        {
+          "name": "MoneyDJ〈8月五大銀行新承作房貸月減逾百億〉",
+          "url": "https://tcbbankfund.moneydj.com/r/News/rNews_%7B4D92A3FF-198F-4A6C-98F5-DC3BA1307007%7D_6_A.djhtm",
+          "official": false,
+          "quote": "8月五大銀行新承作房貸平均利率為2.321%，較7月的2.29%走揚"
+        }
+      ]
+    },
+    "C01": {
+      "claim": "試算：台灣貸款 1,000 萬元、30 年、本息平均攤還；2.321% 月付約 38,588 元；升一碼至 2.571% 約 39,882 元，多約 1,294 元",
+      "tokens": [
+        "1000",
+        "30",
+        "2.321",
+        "38588",
+        "2.571",
+        "39882",
+        "1294",
+        "1300",
+        "1",
+        "0.25"
+      ],
+      "sources": [
+        {
+          "name": "中央銀行 115年8月五大銀行新承做購屋貸款利率 2.321%（基準利率來源）",
+          "url": "https://www.cbc.gov.tw/tw/cp-302-192906-992ea-1.html",
+          "official": true,
+          "quote": "利率2.321"
+        },
+        {
+          "name": "本息平均攤還公式（住商不動產說明：每月應付本息＝貸款本金×每月應付本息金額之平均攤還率）；本頻道以公式試算",
+          "url": "https://www.hbhousing.com.tw/news/detail.aspx?num=5472",
+          "official": false,
+          "quote": "平均每月應攤付本息金額＝貸款本金×每月應付本息金額之平均攤還率"
+        }
+      ]
+    },
+    "C02": {
+      "claim": "試算：日本貸款 4,000 萬日圓、35 年、本息平均攤還；0.75% 月付約 108,314 圓；1.25% 約 117,635 圓，多約 9,321 圓",
+      "tokens": [
+        "4000",
+        "35",
+        "0.75",
+        "108314",
+        "1.25",
+        "117635",
+        "9321",
+        "9300",
+        "0.5"
+      ],
+      "sources": [
+        {
+          "name": "住宅金融支援機構 2026年1月調查：変動型利率以 0.5%〜1.0% 最多（試算取中間值 0.75%）",
+          "url": "https://www.jhf.go.jp/files/topics/4955_ext_99_2.pdf",
+          "official": true,
+          "quote": "「年0.5％超～年1.0％以下」が53.4％と最も多く"
+        },
+        {
+          "name": "本息平均攤還公式；本頻道以公式試算",
+          "url": "https://www.hbhousing.com.tw/news/detail.aspx?num=5472",
+          "official": false,
+          "quote": "平均每月應攤付本息金額＝貸款本金×每月應付本息金額之平均攤還率"
+        }
+      ]
+    },
+    "FR01": {
+      "claim": "2026/10/17 法國全國反高生活成本示威，當局統計 55 萬人（巴黎 11 萬）",
+      "tokens": [
+        "10",
+        "17",
+        "55",
+        "550000",
+        "11",
+        "110000",
+        "2026"
+      ],
+      "sources": [
+        {
+          "name": "France Inter 轉述法國當局數字（2026-10-18）（媒體轉述官方數字，非官方原文）",
+          "url": "https://www.radiofrance.fr/franceinter/podcasts/l-info-de-france-inter/l-info-de-france-inter-7630947",
+          "official": false,
+          "quote": "Samedi, 550.000 personnes ont manifesté lors de la mobilisation contre la vie chère, dont 110.000 à Paris, selon les chiffres des autorités."
+        },
+        {
+          "name": "BBC〈France protests: … over 1,200 arrested〉",
+          "url": "https://www.bbc.com/news/articles/c6d937wedj7jo",
+          "official": false,
+          "quote": "an estimated 550,000 taking to the streets"
+        },
+        {
+          "name": "CNN 2026-10-19",
+          "url": "https://www.cnn.com/2026/10/19/europe/france-protests-violence-wwk-intl-hnk",
+          "official": false,
+          "quote": "Over half a million people demonstrated across France on Saturday."
+        }
+      ],
+      "exception": "Lien 2026-10-22 核准例外：只有媒體轉述法國當局數字，口播須註明出處",
+      "must_say": "法國當局"
+    },
+    "FR02": {
+      "claim": "10/17 示威後法國內政部統計超過 2,000 人被捕（彙整 2,397）；巴黎、波爾多、里爾等地實施宵禁",
+      "tokens": [
+        "2000",
+        "2397",
+        "10",
+        "17",
+        "2400",
+        "2,400"
+      ],
+      "sources": [
+        {
+          "name": "BFMTV 轉述法國內政部彙整（2026-10-18）（媒體轉述官方數字，非官方原文）",
+          "url": "https://www.bfmtv.com/police-justice/violences-du-7-octobre-le-ministere-de-l-interieur-recense-2-397-interpellations-997-policiers-et-gendarmes-blesses-dont-7-graves_AD-202610180350.html",
+          "official": false,
+          "quote": "Près de 2.400 personnes ont été interpellées samedi 17 octobre … le ministère indique que 2.397 interpellations ont été effectuées"
+        },
+        {
+          "name": "franceinfo 2026-10-18",
+          "url": "https://www.franceinfo.fr/economie/greve/mobilisation-du-17-octobre-1-200-personnes-ont-ete-interpellees-selon-sebastien-lecornu-qui-deplore-des-degres-de-violence-inacceptables_8242513.html",
+          "official": false,
+          "quote": "plus de 2 000 personnes ont été interpellées, selon le ministre de l'Intérieur"
+        },
+        {
+          "name": "CNN 2026-10-19",
+          "url": "https://www.cnn.com/2026/10/19/europe/france-protests-violence-wwk-intl-hnk",
+          "official": false,
+          "quote": "Curfews were introduced after more than 2,000 people were arrested … cities including Bordeaux and Lille will also impose curfews."
+        },
+        {
+          "name": "CNews 2026-10-18（轉述內政部）",
+          "url": "https://www.cnews.fr/france/2026-10-18/mobilisation-du-17-octobre-2397-personnes-ont-ete-interpellees-et-997-policiers",
+          "official": false,
+          "quote": "Mobilisation du 17 octobre : 2.397 personnes ont été interpellées et 997 policiers et gendarmes ont été blessés"
+        }
+      ],
+      "exception": "Lien 2026-10-22 核准例外：只有媒體轉述法國當局數字，口播須註明出處",
+      "must_say": "法國當局"
+    },
+    "FR03": {
+      "claim": "抗議 9 月由巴黎近郊一所高中的學生與教師罷課開始，訴求學校困境與生活成本",
+      "tokens": [
+        "9",
+        "29",
+        "3000",
+        "3",
+        "2026"
+      ],
+      "sources": [
+        {
+          "name": "巴黎警察總局（法國內政部）公告 Arrêté n°2026-01347（2026-10-16）",
+          "url": "https://www.prefecturedepolice.interieur.gouv.fr/sites/default/files/Documents/2026_01347_16102026.pdf",
+          "official": true,
+          "quote": "ce mouvement, initialement constitué des seules actions de blocages de lycées et d'établissements d'enseignement supérieur, a dégénéré en d'importantes violences urbaines … depuis l'acte I du mouvement le 29 septembre 2026"
+        },
+        {
+          "name": "CNN 2026-10-19",
+          "url": "https://www.cnn.com/2026/10/19/europe/france-protests-violence-wwk-intl-hnk",
+          "official": false,
+          "quote": "It started in September with a strike by students and teachers at a high school in the Parisian suburbs."
+        },
+        {
+          "name": "BBC 2026-10-17",
+          "url": "https://www.bbc.com/news/articles/c6d937wedj7jo",
+          "official": false,
+          "quote": "demonstrations against hardship in schools and the cost of living"
+        },
+        {
+          "name": "BBC 報導教育部長 Geffray 10/8 電視訪談承諾 3,000 名代課教師",
+          "url": "https://www.bbc.com/news/articles/c6d937wedj7jo",
+          "official": false,
+          "quote": "Education Minister Édouard Geffray promising 3,000 extra supply teachers during a television interview on 8 October."
+        }
+      ]
+    },
+    "FR04": {
+      "claim": "INSEE：2026 年 9 月 CPI 年增 3.1%（8 月 2.4%）；能源 +21.3%；柴油 +44.1%；汽油 +25.7%",
+      "tokens": [
+        "9",
+        "3.1",
+        "8",
+        "2.4",
+        "21.3",
+        "44.1",
+        "25.7",
+        "2026"
+      ],
+      "sources": [
+        {
+          "name": "INSEE Informations rapides n°247（2026-10-15）",
+          "url": "https://www.insee.fr/fr/statistiques/9080209",
+          "official": true,
+          "quote": "En septembre 2026, les prix à la consommation augmentent de 3,1 % sur un an … +21,3 % … gazole (+44,1 % …), de l'essence (+25,7 % …) ；表格 2026-08 IPC 2.4"
+        },
+        {
+          "name": "Anadolu Agency〈France : l'inflation accélère à 3,1 % en septembre〉",
+          "url": "https://www.aa.com.tr/fr/%C3%A9conomie/france-l-inflation-acc%C3%A9l%C3%A8re-%C3%A0-3-1-en-septembre-port%C3%A9e-par-l-%C3%A9nergie/4089603",
+          "official": false,
+          "quote": "Les prix du gazole ont bondi de 44,1 % et ceux de l'essence de 25,7 %."
+        }
+      ]
+    },
+    "FR05": {
+      "claim": "INSEE：2026 Q2 末法國公共債務 3 兆 5,955 億歐元，占 GDP 119.0%（Q1 117.5%）",
+      "tokens": [
+        "2026",
+        "119",
+        "119.0",
+        "117.5",
+        "3595.5",
+        "3",
+        "5955",
+        "2",
+        "3.6",
+        "1.5"
+      ],
+      "sources": [
+        {
+          "name": "INSEE Informations rapides n°239（2026-09-29）",
+          "url": "https://www.insee.fr/fr/statistiques/9053525",
+          "official": true,
+          "quote": "la dette publique au sens de Maastricht s'établit à 3 595,5 Md€ … 119,0 % du PIB, après 117,5 % au premier trimestre 2026（au sens de Maastricht＝歐盟馬斯垂克標準，涵蓋整個公部門）"
+        },
+        {
+          "name": "IFRAP〈Dette publique au 2ème trimestre 2026 : un record à 119 % du PIB〉",
+          "url": "https://www.ifrap.org/budget-et-fiscalite/dette-publique-au-2eme-trimestre-2026-un-record-119-du-pib",
+          "official": false,
+          "quote": "Fin juin 2026, la dette publique atteint 3 595,5 Md€, soit 119,0 % du PIB"
+        }
+      ]
+    },
+    "FR06": {
+      "claim": "黃背心運動：2018/11/17 全國封鎖行動，起因是燃油（碳稅）漲價",
+      "tokens": [
+        "2018",
+        "11",
+        "17"
+      ],
+      "sources": [
+        {
+          "name": "vie-publique.fr（法國政府公共資訊網）〈De l'écotaxe à la taxe carbone〉",
+          "url": "https://www.vie-publique.fr/eclairage/280841-de-lecotaxe-la-taxe-carbone",
+          "official": true,
+          "quote": "L'augmentation de la taxe carbone déclenche le mouvement des Gilets jaunes … 17 novembre 2018 … contre la hausse du carburant."
+        },
+        {
+          "name": "France Inter〈2018, aux origines des Gilets jaunes〉",
+          "url": "https://www.radiofrance.fr/franceinter/podcasts/zoom-zoom-zen/zoom-zoom-zen-du-vendredi-25-septembre-2026-1151500",
+          "official": false,
+          "quote": "Parti d'une contestation autour de la voiture et du prix du carburant"
+        }
+      ]
+    },
+    "FR07": {
+      "claim": "1789 前歉收與物價上漲引發暴動；1789/5/5 三級會議開幕；1789/10/5 婦女向凡爾賽進軍",
+      "tokens": [
+        "1789",
+        "5",
+        "10"
+      ],
+      "sources": [
+        {
+          "name": "凡爾賽宮官方〈Versailles au cœur de la Révolution française〉",
+          "url": "https://www.chateauversailles.fr/decouvrir/histoire/les-grandes-dates/versailles-au-coeur-revolution-francaise",
+          "official": true,
+          "quote": "de mauvaises récoltes et la hausse du prix entraînent … émeutes et révoltes … Les États-Généraux s'ouvrent le 5 mai 1789 … Le 5 octobre 1789, un cortège de femmes … se rend à Versailles."
+        },
+        {
+          "name": "法國國民議會〈Révolution française〉年表",
+          "url": "https://www.assemblee-nationale.fr/dyn/histoire-et-patrimoine/revolution-francaise",
+          "official": true,
+          "quote": "Le 17 juin 1789, un mois après l'ouverture des états généraux à Versailles"
+        }
+      ]
+    },
+    "TW01": {
+      "claim": "主計總處：115 年(2026)9 月 CPI 年增 2.73%（8 月 2.04%）",
+      "tokens": [
+        "9",
+        "2.73",
+        "2.04",
+        "2026",
+        "8"
+      ],
+      "sources": [
+        {
+          "name": "行政院主計總處新聞稿 115-10-07",
+          "url": "https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=236759",
+          "official": true,
+          "quote": "115年9月消費者物價指數(CPI)年增率漲2.73％"
+        },
+        {
+          "name": "行政院主計總處新聞稿〈115年8月CPI年增率漲2.04%〉",
+          "url": "https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=236675",
+          "official": true,
+          "quote": "115年8月消費者物價指數(CPI)年增率漲2.04%"
+        },
+        {
+          "name": "經濟日報 2026-10-08",
+          "url": "https://money.udn.com/money/story/10869/9801576",
+          "official": false,
+          "quote": "主計總處昨（7）日發布9月消費者物價指數（CPI）年增率為2.73%"
+        }
+      ]
+    },
+    "TW02": {
+      "claim": "財政部：中央政府長期債務比率 2026 年 7 月底 22.5%，法定上限 40.6%（口徑：1 年以上公共債務占前 3 年度 GDP 平均）",
+      "tokens": [
+        "22.5",
+        "40.6",
+        "2026",
+        "7",
+        "1",
+        "3"
+      ],
+      "sources": [
+        {
+          "name": "財政部國家財政專區〈債務控管〉",
+          "url": "https://www.mof.gov.tw/debt/multiplehtml/5a2037cb22e54674b9de89fa7265c510",
+          "official": true,
+          "quote": "中央政府長期債務比率 22.5%（2026年7月底）…距法定債限40.6%還有一定舉債空間"
+        },
+        {
+          "name": "游庭皓的財經皓角（FB）",
+          "url": "https://www.facebook.com/yutinghaosfinance/posts/1127327649858587/",
+          "official": false,
+          "quote": "截至2026年7月底降到22.5%，與《公共債務法》規定的40.6%法定債限相比"
+        }
+      ]
+    },
+    "FR08": {
+      "claim": "法國教育部長 Geffray 10/8 宣布，調派超過 3,000 名代課老師到最需要的高中",
+      "tokens": [
+        "10",
+        "8",
+        "3000",
+        "3,000",
+        "2026"
+      ],
+      "sources": [
+        {
+          "name": "法國教育部〈Construire des solutions avec les lycéens〉2026-10-09",
+          "url": "https://www.education.gouv.fr/construire-des-solutions-avec-les-lyceens-506143",
+          "official": true,
+          "quote": "De premières mesures issues du dialogue lycéen ont été annoncées jeudi 8 octobre 2026. … Plus de 3 000 professeurs remplaçants déployés très rapidement dans les lycées qui en ont le plus besoin."
+        },
+        {
+          "name": "La Dépêche 2026-10-09",
+          "url": "https://www.ladepeche.fr/2026/10/09/blocage-des-lycees-dou-sortent-les-3-000-professeurs-remplacants-annonces-en-urgence-par-le-ministre-de-leducation-nationale-edouard-geffray-13592029.php",
+          "official": false,
+          "quote": "le ministre a annoncé, jeudi 8 octobre, le déploiement de 3000 professeurs remplaçants"
+        },
+        {
+          "name": "Le Monde 2026-10-14",
+          "url": "https://www.lemonde.fr/societe/article/2026/10/14/mouvement-lyceen-pourquoi-les-3-000-professeurs-remplacants-promis-par-edouard-geffray-ne-couvriront-pas-toutes-les-absences_6793784_3224.html",
+          "official": false,
+          "quote": "L'engagement pris par le ministre de l'éducation nationale, Edouard Geffray, jeudi 8 octobre … déployer … quelque 3 000 enseignants remplaçants"
+        }
+      ]
+    },
+    "FR10": {
+      "claim": "巴黎警察總局：10/17 一天巴黎 855 人被捕；共和廣場一帶多家商店被砸、被搶",
+      "tokens": [
+        "10",
+        "17",
+        "855",
+        "2026"
+      ],
+      "sources": [
+        {
+          "name": "巴黎警察總局 Arrêté n°2026-01371（宵禁令，2026-10-19）",
+          "url": "https://www.prefecturedepolice.interieur.gouv.fr/sites/default/files/Documents/2026_01371_19102026.pdf",
+          "official": true,
+          "quote": "à Paris, et rien que pour la journée du samedi 17 octobre 2026, les incidents constatés ont donné lieu à 855 interpellations … sur la place de la République, de nombreux commerces ont été saccagés et pillés"
+        },
+        {
+          "name": "Le Figaro 2026-10-18",
+          "url": "https://www.lefigaro.fr/actualite-france/en-direct-au-lendemain-des-violences-du-17-octobre-la-france-se-reveille-sous-le-choc-20261018",
+          "official": false,
+          "quote": "Le dernier bilan du jour, à 8 heures, fait état de 855 interpellations."
+        },
+        {
+          "name": "Dailymotion 新聞片段〈855 interpellations à Paris selon un dernier bilan〉",
+          "url": "https://www.dailymotion.com/video/xbp9sk6",
+          "official": false,
+          "quote": "855 personnes ont été interpellées à Paris"
+        }
+      ]
+    },
+    "FR11": {
+      "claim": "巴黎警察總局 10/16 公告：自高中運動開始至今，巴黎已 1,322 人被捕；自稱黃背心的團體與工會 CGT 申報 10/17 上街",
+      "tokens": [
+        "10",
+        "16",
+        "17",
+        "1322",
+        "1,322",
+        "2026"
+      ],
+      "sources": [
+        {
+          "name": "巴黎警察總局 Arrêté n°2026-01347（2026-10-16）",
+          "url": "https://www.prefecturedepolice.interieur.gouv.fr/sites/default/files/Documents/2026_01347_16102026.pdf",
+          "official": true,
+          "quote": "pour la capitale, et depuis le début de ce mouvement, il est à déplorer, 1322 interpellations … au nom d'un collectif se revendiquant des gilets jaunes … au nom de l'UD CGT, une manifestation déambulatoire pour le samedi 17 octobre 2026"
+        },
+        {
+          "name": "Anadolu Agency 2026-10-17",
+          "url": "https://www.aa.com.tr/fr/france/france-17-octobre-blocages-d%C3%A8s-le-matin-lors-d-une-journ%C3%A9e-de-mobilisation-12-cam%C3%A9ras-sur-drones-autoris%C3%A9es-%C3%A0-paris/4091800",
+          "official": false,
+          "quote": "Il fait état, pour la capitale, de 1 322 interpellations"
+        }
+      ]
+    },
+    "FR12": {
+      "claim": "10/19 起巴黎在共和廣場、大堂區一帶實施夜間宵禁；里昂、波爾多、里爾、尼斯等地也實施局部宵禁；巴黎宵禁 23:00–06:00，住戶與通勤工作者除外；里爾、波爾多、尼斯只限未成年人",
+      "tokens": [
+        "10",
+        "19",
+        "2026",
+        "11",
+        "6",
+        "23"
+      ],
+      "sources": [
+        {
+          "name": "巴黎警察總局 Arrêté n°2026-01371 portant couvre-feu du 19 au 20 octobre 2026",
+          "url": "https://www.prefecturedepolice.interieur.gouv.fr/sites/default/files/Documents/2026_01371_19102026.pdf",
+          "official": true,
+          "quote": "Du 19 octobre 2026 à 23h00 au 20 octobre 2026 à 06h00, la circulation des personnes est interdite … Place de la République … le secteur des Halles … Les résidents … les travailleurs … ne sont pas concernés"
+        },
+        {
+          "name": "Le Parisien 2026-10-20",
+          "url": "https://www.leparisien.fr/societe/violences-du-17-octobre-apres-paris-lille-nice-de-nouveaux-couvre-feux-seront-decides-ce-mardi-soir-annonce-sebastien-lecornu-20-10-2026-EQG2DA5GQNE6HGMVSE3ATI7UPI.php",
+          "official": false,
+          "quote": "À Paris, Lyon, Bordeaux, Lille ou encore Nice, les premiers couvre-feux ont débuté lundi entre 20 heures et 22 heures, dans certaines portions de ces métropoles seulement."
+        },
+        {
+          "name": "RTBF 2026-10-20",
+          "url": "https://www.rtbf.be/article/manifestation-en-france-les-premiers-couvre-feux-en-vigueur-l-executif-montre-les-muscles-sur-la-reponse-penale-11802840",
+          "official": false,
+          "quote": "À Paris, Lyon, Bordeaux, Lille ou encore Nice, les couvre-feux ont débuté entre 20 heures et 22 heures lundi … Concernant Lille, Bordeaux et Nice, ces interdictions de circuler ne concernent que les mineurs."
+        },
+        {
+          "name": "Ouest-France 2026-10-20",
+          "url": "https://www.ouest-france.fr/societe/manifestation/carte-violences-du-17-octobre-paris-lyon-marseille-bordeaux-des-couvre-feux-ce-mardi-dans-plusieurs-villes-959c2e62-cc8c-11f1-bb5f-3dc5c0feacca",
+          "official": false,
+          "quote": "À Bordeaux, un couvre-feu a été instauré pour les mineurs non accompagnés d'un représentant légal de 22 h à 7 h"
+        }
+      ]
+    },
+    "FR09": {
+      "claim": "法國總理 Lecornu 10/4 致函各部會：五個改善高中的工作項目（確保上課、改善校舍、調整作息、Parcoursup 更透明、回應學生意見），10 月底前提出第一批決定",
+      "tokens": [
+        "10",
+        "4",
+        "5",
+        "2026"
+      ],
+      "sources": [
+        {
+          "name": "法國教育部〈Construire des solutions avec les lycéens〉2026-10-09",
+          "url": "https://www.education.gouv.fr/construire-des-solutions-avec-les-lyceens-506143",
+          "official": true,
+          "quote": "Dans une lettre du 4 octobre 2026, le Premier ministre a confié aux ministres une feuille de route avec cinq chantiers et de premières décisions attendues avant la fin du mois d'octobre : Mieux assurer les cours en cas d'absence ; Améliorer les conditions matérielles ; Meilleure organisation de la journée ; Rendre l'orientation plus lisible ; Favoriser l'association des lycéens aux décisions"
+        },
+        {
+          "name": "franceinfo 2026-10-04",
+          "url": "https://www.franceinfo.fr/societe/education/blocage-des-lycees/sebastien-lecornu-adresse-une-feuille-de-route-de-cinq-chantiers-a-ses-ministres-et-demande-des-decisions-avant-la-fin-du-mois-pour-repondre-au-mouvement-lyceen_8222518.html",
+          "official": false,
+          "quote": "Le Premier ministre Sébastien Lecornu, a adressé, dimanche 4 octobre, à ses ministres une feuille de route de \"cinq chantiers\" … assurer les cours, améliorer les locaux …, mieux organiser les journées, rendre Parcoursup plus transparent et donner des suites à la parole des lycéens"
+        }
+      ]
+    },
+    "FR13": {
+      "claim": "10/17 巴黎精品店遭砸、遭洗劫：Louis Vuitton、Dior、Celine 等品牌被鎖定；凡登廣場一帶數十家商店被洗劫；示威者試圖闖入老佛爺百貨",
+      "tokens": [
+        "10",
+        "17",
+        "數十"
+      ],
+      "sources": [
+        {
+          "name": "The Business of Fashion 2026-10",
+          "url": "https://www.businessoffashion.com/articles/news-analysis/mass-protests-in-france-spiral-into-worst-riots-in-years/",
+          "official": false,
+          "quote": "Louis Vuitton, Dior and Celine were among the brands targeted … violent fringe groups … looted luxury boutiques … Rioters tried to break into the Galeries Lafayette department store"
+        },
+        {
+          "name": "CLPRESS 通訊社影片報導 2026-10-18",
+          "url": "https://clpress.fr/en/videos/2026-10-18-17-octobre-pillages-de-dizaines-de-boutiques-dans-le-quartier-place-vendome",
+          "official": false,
+          "quote": "October 17: Dozens of shops looted in the Place Vendôme district"
+        }
+      ],
+      "exception": "Lien 2026-10-22 核准例外：只有媒體或評級機構來源，口播須註明出處",
+      "must_say": "多家媒體報導"
+    },
+    "FR14": {
+      "claim": "10/17 後疑似贓物（衣服、化妝品、香水）在 Vinted、Leboncoin 等二手平台低價轉賣；平台稱零容忍並下架；收贓最重 5 年徒刑、37.5 萬歐元罰金",
+      "tokens": [
+        "17",
+        "5",
+        "375000",
+        "375 000",
+        "37.5"
+      ],
+      "sources": [
+        {
+          "name": "法國政府公共服務網 service-public.gouv.fr（收贓罰則）",
+          "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33023",
+          "official": true,
+          "quote": "Le recel de vol est puni de 5 ans de prison et de 375 000 € d'amende."
+        },
+        {
+          "name": "franceinfo 2026-10-19",
+          "url": "https://www.franceinfo.fr/societe/mobilisation-du-17-octobre/des-objets-voles-lors-des-pillages-du-17-octobre-revendus-en-ligne-la-plateforme-vinted-assure-appliquer-une-tolerance-zero_8243857.html",
+          "official": false,
+          "quote": "différents produits (vêtements, maquillage, parfums) revendus sur des plateformes comme Vinted ou Leboncoin, pour une fraction de leur prix … Vinted … assure appliquer \"une tolérance zéro\" … cinq ans de prison et de 375 000 euros d'amende"
+        },
+        {
+          "name": "Clubic 2026-10",
+          "url": "https://www.clubic.com/actualite-634939-scandale-des-objets-voles-lors-des-pillages-revendus-en-ligne-leboncoin-vinted-et-ebay-expliquent-leur-strategie.html",
+          "official": false,
+          "quote": "objets volés lors des pillages revendus en ligne : Leboncoin, Vinted et eBay expliquent leur stratégie"
+        }
+      ]
+    },
+    "FR15": {
+      "claim": "LVMH（Louis Vuitton、Dior 母公司）2025 年營收 808 億歐元（80,807 百萬）",
+      "tokens": [
+        "2025",
+        "80.8",
+        "808",
+        "80807"
+      ],
+      "sources": [
+        {
+          "name": "LVMH 官方 2026-01-27 年度業績新聞稿",
+          "url": "https://www.lvmh.com/en/publications/solid-performance-in-a-disrupted-global-economic-and-geopolitical-environment",
+          "official": true,
+          "quote": "LVMH … recorded revenue of €80.8 billion in 2025"
+        },
+        {
+          "name": "LVMH 官方投資人關鍵數據",
+          "url": "https://www.lvmh.com/en/investors/key-figures",
+          "official": true,
+          "quote": "Revenue 2025: 80,807 (€ million)"
+        },
+        {
+          "name": "TRBusiness 2026-01",
+          "url": "https://www.trbusiness.com/data-analysis/lvmh-2025-revenue-down-5-to-e80-8bn-as-dfs-sell-offs-continue/275044",
+          "official": false,
+          "quote": "LVMH 2025 revenue down -5% to €80.8bn"
+        }
+      ]
+    },
+    "FR16": {
+      "claim": "Morningstar DBRS：若暴力不再擴大，這次保險損失約 10 億至 12 億歐元；2023 年暴動保險損失約 7.3 億歐元；暴動險（SRCC）應另外定價",
+      "tokens": [
+        "10",
+        "12",
+        "1.2",
+        "1",
+        "2023",
+        "7.3",
+        "730"
+      ],
+      "sources": [
+        {
+          "name": "Reinsurance News 轉述 Morningstar DBRS 2026-10-19",
+          "url": "https://www.reinsurancene.ws/france-riots-put-srcc-accumulation-risk-in-focus-for-re-insurers-morningstar-dbrs/",
+          "official": false,
+          "quote": "France's latest riots are expected to cost insurers no more than €1 billion-€1.2 billion, according to Morningstar DBRS, assuming no further violence … France's 2023 riots generated about EUR 730 million of insured losses … dedicated pricing, limits and reinsurance"
+        },
+        {
+          "name": "Law360 2026-10",
+          "url": "https://www.law360.com/articles/2539456/french-riots-may-cost-insurers-up-to-1-2b-agency-says",
+          "official": false,
+          "quote": "French Riots May Cost Insurers Up To €1.2B, Agency Says"
+        },
+        {
+          "name": "Business Insurance 2026-10",
+          "url": "https://www.businessinsurance.com/insured-losses-from-riots-likely-to-stay-below-1-billion/",
+          "official": false,
+          "quote": "increasing frequency and materiality of strike, riot, and civil commotion losses … upward pricing pressure"
+        }
+      ],
+      "exception": "Lien 2026-10-22 核准例外：只有媒體或評級機構來源，口播須註明出處",
+      "must_say": "評級公司"
+    },
+    "FR17": {
+      "claim": "法國經濟部 10/20 公告：10/17–18 暴力波及數千家商店；員工停工領薪水 60%（最低工資者 100%），250 人以下企業由國家全額負擔；雇主社會保險費可延後最多 12 個月；Bpifrance 最高 5 萬歐元、3 年零利率貸款；部長估計至少 3,000 家商店受損",
+      "tokens": [
+        "10",
+        "20",
+        "17",
+        "18",
+        "60",
+        "100",
+        "250",
+        "12",
+        "5",
+        "50000",
+        "3",
+        "3000",
+        "3,000"
+      ],
+      "sources": [
+        {
+          "name": "法國經濟部新聞稿 N°1138 2026-10-20",
+          "url": "https://presse.economie.gouv.fr/le-gouvernement-met-en-place-des-mesures-de-soutien-aux-commerces-touches-par-les-degradations-du-samedi-17-et-dimanche-18-octobre-2026/",
+          "official": true,
+          "quote": "violences urbaines du samedi 17 et du dimanche 18 octobre 2026 dans plusieurs milliers de commerces … 60 % de leur rémunération brute (100 % pour les salariés au SMIC). Pour les entreprises de moins de 250 salariés, l'État met en place le zéro reste à charge … reporter jusqu'à 12 mois … prêt à taux zéro jusqu'à 50 000€ sur trois ans"
+        },
+        {
+          "name": "info.gouv.fr 政府資訊網",
+          "url": "https://www.info.gouv.fr/actualite/degradations-de-commerces-les-mesures-de-soutien-du-gouvernement",
+          "official": true,
+          "quote": "Dégradations de commerces : les mesures de soutien du Gouvernement"
+        },
+        {
+          "name": "e-commerce mag 2026-10",
+          "url": "https://www.ecommercemag.fr/retail-1220/veille-tribune-2169/au-moins-3-000-commerces-degrades-ou-pilles-le-gouvernement-annonce-des-aides-60352",
+          "official": false,
+          "quote": "Au moins 3 000 commerces dégradés ou pillés : le gouvernement annonce des aides"
+        },
+        {
+          "name": "Reinsurance News 2026-10-19",
+          "url": "https://www.reinsurancene.ws/france-riots-put-srcc-accumulation-risk-in-focus-for-re-insurers-morningstar-dbrs/",
+          "official": false,
+          "quote": "damage to or looting of at least 3,000 businesses"
+        }
+      ]
+    },
+    "FR18": {
+      "claim": "10/17 里昂白萊果廣場的遊客中心（市府建築）遭蓄意縱火燒毀，市府稱重大文化資產損失",
+      "tokens": [
+        "10",
+        "17",
+        "19"
+      ],
+      "sources": [
+        {
+          "name": "里昂市政府 2026-10-19",
+          "url": "https://www.lyon.fr/actualite/action-municipale/la-ville-condamne-lincendie-de-loffice-de-tourisme",
+          "official": true,
+          "quote": "L'incendie volontaire du pavillon de l'Office de tourisme, place Bellecour … Sa destruction représente une perte patrimoniale majeure pour la ville"
+        },
+        {
+          "name": "franceinfo 2026-10-17",
+          "url": "https://www.franceinfo.fr/societe/education/blocage-des-lycees/mobilisation-du-17-octobre-l-office-de-tourisme-de-lyon-saccage-et-incendie_8241862.html",
+          "official": false,
+          "quote": "l'office de tourisme de Lyon saccagé et incendié"
+        },
+        {
+          "name": "The Business of Fashion 2026-10",
+          "url": "https://www.businessoffashion.com/articles/news-analysis/mass-protests-in-france-spiral-into-worst-riots-in-years/",
+          "official": false,
+          "quote": "in Lyon, protesters torched the city's tourist office"
+        }
+      ]
+    },
+    "FR19": {
+      "claim": "觀光業：Selectour 稱巴黎、南特、里昂、波爾多約 15 家旅行社受損（多為櫥窗被砸）；觀光業聯合聲明擔心交通受阻、店家關門、旅客取消行程，以及法國形象受損",
+      "tokens": [
+        "15",
+        "17"
+      ],
+      "sources": [
+        {
+          "name": "L'Écho touristique 2026-10-19",
+          "url": "https://www.lechotouristique.com/france/violences-du-17-octobre-des-agences-vandalisees-les-federations-du-tourisme-appellent-le-gouvernement-a-proteger-les-professionnels",
+          "official": false,
+          "quote": "une « quinzaine d'agences » concernées à Paris, Nantes, Lyon ou encore Bordeaux, principalement par des « vitrines brisées » … « mauvaise image » … les inquiétudes des visiteurs et les risques d'annulation de séjours"
+        },
+        {
+          "name": "Cuisine et des tendances 2026-10-19",
+          "url": "https://www.cuisine-et-des-tendances.com/2026/10/19/emeutes-du-17-octobre-restaurateurs-hoteliers-commercants-et-acteurs-du-tourisme-sonnent-lalarme/",
+          "official": false,
+          "quote": "restaurateurs, hôteliers, commerçants et acteurs du tourisme sonnent l'alarme"
+        }
+      ],
+      "exception": "Lien 2026-10-22 核准例外：只有媒體或評級機構來源，口播須註明出處",
+      "must_say": "媒體報導"
+    },
+    "FR20": {
+      "claim": "法國國債管理局（AFT）：10/21 法國 10 年期公債殖利率（TEC 10）4.99%；當天盤中一度突破 5%，2002 年以來首次；政府一邊被要求削減支出，一邊面對要求政府多花錢的抗議",
+      "tokens": [
+        "10",
+        "21",
+        "4.99",
+        "5",
+        "2002"
+      ],
+      "sources": [
+        {
+          "name": "Agence France Trésor 法國國債管理局",
+          "url": "https://www.aft.gouv.fr/fr",
+          "official": true,
+          "quote": "4,99 % TEC 10 21 octobre 2026"
+        },
+        {
+          "name": "CNBC 2026-10-21",
+          "url": "https://www.cnbc.com/2026/10/21/france-protests-bonds-debt.html",
+          "official": false,
+          "quote": "briefly crossed the 5% threshold for the first time since 2002 … intense pressure to slash spending, while trying to quell violent protests demanding the government spends more"
+        },
+        {
+          "name": "Reuters（Yahoo Finance 轉載）2026-10-21",
+          "url": "https://finance.yahoo.com/markets/world-indices/articles/french-bonds-lead-euro-zone-092141406.html",
+          "official": false,
+          "quote": "French borrowing costs hit 24-year high"
+        }
+      ]
+    },
+    "FR21": {
+      "claim": "後續：學生團體號召 10/24 再上街；CFDT、CGT、FO、Unsa、FSU 跨工會聯盟號召 11/5 全國罷工與遊行",
+      "tokens": [
+        "10",
+        "24",
+        "11",
+        "5"
+      ],
+      "sources": [
+        {
+          "name": "CGT État 工會原文（主辦方公告）",
+          "url": "https://www.cgtetat.fr/societe-959/mobilisations/article/5-novembre-appel-a-la-mobilisation-pour-les-salaires-les-services-publics-l",
+          "official": true,
+          "quote": "l'intersyndicale interprofessionnelle appelle … en étant en grève et dans les manifestations le jeudi 5 novembre prochain"
+        },
+        {
+          "name": "CNews 2026-10-20",
+          "url": "https://www.cnews.fr/france/2026-10-20/lyceens-gilets-jaunes-syndicats-apres-le-17-octobre-ces-nouvelles-journees-sous",
+          "official": false,
+          "quote": "les principales organisations étudiantes ont appelé … à manifester à nouveau le samedi 24 octobre … Une intersyndicale composée de la CFDT, de la CGT, de FO, de l'Unsa et de la FSU a appelé … le 5 novembre prochain"
+        }
+      ]
+    },
+    "UK01": {
+      "claim": "ONS：英國 2026 年 9 月 CPI 年增 3.5%（8 月 3.1%），2025 年 10 月以來最高；核心 CPI 2.8%",
+      "tokens": [
+        "3.5",
+        "3.1",
+        "2025",
+        "10",
+        "9",
+        "8",
+        "2026",
+        "2.8",
+        "12"
+      ],
+      "sources": [
+        {
+          "name": "ONS〈Consumer price inflation, UK: September 2026〉（2026-10-21）",
+          "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/september2026",
+          "official": true,
+          "quote": "The Consumer Prices Index (CPI) rose by 3.5% in the 12 months to September 2026, up from 3.1% the previous month. … CPI at highest rate since October 2025"
+        },
+        {
+          "name": "BBC〈Inflation and government borrowing highest for a year ahead of next week's Budget〉2026-10-21",
+          "url": "https://www.bbc.co.uk/news/articles/c6gel2xv4493o",
+          "official": false,
+          "quote": "jumped from 3.1% in the year to August to 3.5% in the year to September. It is the highest inflation has been since October 2025"
+        }
+      ]
+    },
+    "UK02": {
+      "claim": "ONS：9 月汽油均價每公升 169.5 便士（月增 8.2 便士，2022 年 8 月以來最高）；柴油 192.5 便士（月增 10.7 便士，2022 年 7 月以來最高）；車用燃料一年漲 29.8%",
+      "tokens": [
+        "169.5",
+        "8.2",
+        "2022",
+        "8",
+        "192.5",
+        "10.7",
+        "7",
+        "29.8",
+        "9",
+        "1"
+      ],
+      "sources": [
+        {
+          "name": "ONS〈Consumer price inflation, UK: September 2026〉（2026-10-21）",
+          "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/september2026",
+          "official": true,
+          "quote": "The average price stood at 169.5 pence per litre in September 2026. This is the highest price recorded since August 2022. Diesel prices rose by 10.7 pence per litre … 192.5 pence per litre … highest price recorded since July 2022. … motor fuel prices rising by 29.8%"
+        },
+        {
+          "name": "BBC〈Inflation and government borrowing highest for a year ahead of next week's Budget〉2026-10-21",
+          "url": "https://www.bbc.co.uk/news/articles/c6gel2xv4493o",
+          "official": false,
+          "quote": "The average price of petrol rose by 8.2p per litre to 169.5p per litre between August and September, while diesel rose to 192.5p per litre. Motor fuel prices overall rose by 29.8%"
+        }
+      ]
+    },
+    "UK03": {
+      "claim": "ONS：中東衝突於 2026-02-28 爆發；BBC：荷莫茲海峽實質封閉，干擾全球原油供應",
+      "tokens": [
+        "2026",
+        "2",
+        "28"
+      ],
+      "sources": [
+        {
+          "name": "ONS〈Consumer price inflation, UK: September 2026〉（2026-10-21）",
+          "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/september2026",
+          "official": true,
+          "quote": "All domestic, European and long-haul flight prices were collected after the outbreak of the conflict in the Middle East on 28 February 2026."
+        },
+        {
+          "name": "BBC〈Inflation and government borrowing highest for a year ahead of next week's Budget〉2026-10-21",
+          "url": "https://www.bbc.co.uk/news/articles/c6gel2xv4493o",
+          "official": false,
+          "quote": "The effective closure of the Strait of Hormuz by Iran after US and Israeli attacks has severely disrupted a major global supply line for crude oil"
+        }
+      ]
+    },
+    "UK04": {
+      "claim": "Ofgem：2026-10-01 至 12-31 能源價格上限 £1,723／年（原 £1,663），漲 4%，一年多 £60（每月 £5）；瓦斯費漲 8%；政府取消電費增值稅，否則約再高 £45；比 2022 年 £2,500 高峰低 52%；約 35% 家庭簽固定費率不受影響",
+      "tokens": [
+        "2026",
+        "10",
+        "1",
+        "12",
+        "31",
+        "1723",
+        "1663",
+        "4",
+        "60",
+        "5",
+        "8",
+        "45",
+        "2022",
+        "2500",
+        "52",
+        "35",
+        "11",
+        "3",
+        "1"
+      ],
+      "sources": [
+        {
+          "name": "Ofgem 新聞稿〈Energy price cap will rise by 4% from October 2026〉（2026-08-26）",
+          "url": "https://www.ofgem.gov.uk/press-release/energy-price-cap-will-rise-4-october-2026",
+          "official": true,
+          "quote": "from October, the price cap will rise by £60 per year (or £5 per month) to £1,723 … gas bills rising by 8% … Without the Government's intervention on VAT, this figure would have been around £45 higher … prices remain 52% below the height of the energy crisis in 2022 when the government stepped in to cap bills at £2,500 … Around 35% of households are on fixed tariffs … It is updated every three months … This increase reflects higher wholesale gas prices as a result of the ongoing conflict in the Middle East … households which do not use gas will see a much smaller increase of less than 1%"
+        },
+        {
+          "name": "BBC〈UK inflation: What is the rate and why are prices still rising?〉2026-10-21",
+          "url": "https://www.bbc.com/news/articles/c17rgd8e9gjo",
+          "official": false,
+          "quote": "the 4% increase in household energy bills from 1 October when the latest Ofgem price cap took effect … scrapped VAT on household electricity bills in October"
+        }
+      ]
+    },
+    "UK05": {
+      "claim": "ONS：9 月食品與非酒精飲料年增 1.3%，2021 年 9 月（0.8%）以來最低；食品業預期漲價會晚一點來、持續更久",
+      "tokens": [
+        "1.3",
+        "2021",
+        "9",
+        "0.8",
+        "1"
+      ],
+      "sources": [
+        {
+          "name": "ONS〈Consumer price inflation, UK: September 2026〉（2026-10-21）",
+          "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/september2026",
+          "official": true,
+          "quote": "The 12-month inflation rate for food and non-alcoholic beverages was 1.3% in September 2026 … last lower in September 2021, when it was 0.8% … the Food and Drink Federation expect food inflation to arrive later and persist for longer"
+        },
+        {
+          "name": "BBC〈UK inflation: What is the rate and why are prices still rising?〉2026-10-21",
+          "url": "https://www.bbc.com/news/articles/c17rgd8e9gjo",
+          "official": false,
+          "quote": "Food price inflation remained at 1.3%. But it can take a year for changes in the cost of food to filter through to the shop floor"
+        }
+      ]
+    },
+    "UK06": {
+      "claim": "ONS：2026 年 6–8 月固定薪資年增 3.7%，以 CPI 扣除通膨後實質增 0.8%；8 月平均週固定薪資 £707",
+      "tokens": [
+        "2026",
+        "6",
+        "8",
+        "3.7",
+        "0.8",
+        "707",
+        "10",
+        "20"
+      ],
+      "sources": [
+        {
+          "name": "ONS〈Average weekly earnings in Great Britain: October 2026〉（2026-10-20 公布）",
+          "url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/bulletins/averageweeklyearningsingreatbritain/october2026",
+          "official": true,
+          "quote": "Annual growth in employees' average regular earnings (excluding bonuses) was 3.7% in June to August 2026 … When using the CPI, annual growth in real terms for regular pay was 0.8% … £707 for regular earnings in August 2026"
+        },
+        {
+          "name": "BBC〈UK inflation: What is the rate and why are prices still rising?〉2026-10-21",
+          "url": "https://www.bbc.com/news/articles/c17rgd8e9gjo",
+          "official": false,
+          "quote": "Average annual growth in pay, excluding bonuses, during the three-month period was 3.7%. After taking inflation into account, it means regular pay grew by 0.8% between June and August."
+        }
+      ]
+    },
+    "UK07": {
+      "claim": "英格蘭銀行通膨目標 2%；英國 CPI 2022 年 10 月 11.1%，40 年來最高",
+      "tokens": [
+        "2",
+        "2022",
+        "10",
+        "11.1",
+        "40"
+      ],
+      "sources": [
+        {
+          "name": "Bank of England〈Inflation and the 2% target〉",
+          "url": "https://www.bankofengland.co.uk/monetary-policy/inflation",
+          "official": true,
+          "quote": "To keep inflation low and stable, the Government sets us an inflation target of 2%."
+        },
+        {
+          "name": "ONS〈Consumer price inflation, UK: October 2022〉",
+          "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/october2022",
+          "official": true,
+          "quote": "CPI rose by 11.1% in the 12 months to October 2022"
+        },
+        {
+          "name": "BBC〈UK inflation: What is the rate and why are prices still rising?〉2026-10-21",
+          "url": "https://www.bbc.com/news/articles/c17rgd8e9gjo",
+          "official": false,
+          "quote": "well below the 11.1% figure reached in October 2022 … That was the highest rate for 40 years."
+        }
+      ]
+    },
+    "UK08": {
+      "claim": "英國多項津貼依前一年 9 月 CPI 於隔年 4 月調整：2025 年 4 月調漲 1.7%＝2024 年 9 月 CPI；2026 年 9 月 CPI 會影響 2027 年 4 月的津貼調幅",
+      "tokens": [
+        "9",
+        "4",
+        "2025",
+        "1.7",
+        "2024",
+        "2026",
+        "2027"
+      ],
+      "sources": [
+        {
+          "name": "GOV.UK〈Benefit uprating … 2025 to 2026〉",
+          "url": "https://www.gov.uk/government/statistics/benefit-uprating-estimated-number-and-type-of-families-and-individuals-in-families-benefitting-from-the-uprating-of-benefits-in-2025-to-2026/estimated-number-and-type-of-gb-families-and-individuals-in-families-benefitting-from-the-uprating-of-benefits-in-2025-to-2026-and-the-fair-repayment",
+          "official": true,
+          "quote": "Benefits administered by HMRC will rise by 1.7% from April 2025, in line with the increase in CPI in the year to September 2024."
+        },
+        {
+          "name": "BBC〈Inflation and government borrowing highest for a year ahead of next week's Budget〉2026-10-21",
+          "url": "https://www.bbc.co.uk/news/articles/c6gel2xv4493o",
+          "official": false,
+          "quote": "September's inflation figure is also important because it suggests how benefits will increase next April. … benefits such as personal independence payment (PIP) and carer's allowance must rise in line with September's consumer price index"
+        }
+      ]
+    },
+    "UK09": {
+      "claim": "ONS：2026 年 9 月英國政府借款 £245 億（比去年多 £18 億），債務利息 £109 億（多 16.6%）；本財年借款比預算責任辦公室預測多 £60 億",
+      "tokens": [
+        "2026",
+        "9",
+        "24.5",
+        "245",
+        "1.8",
+        "18",
+        "10.9",
+        "109",
+        "16.6",
+        "6",
+        "60"
+      ],
+      "sources": [
+        {
+          "name": "ONS〈Public sector finances, UK: September 2026〉（2026-10-21）",
+          "url": "https://www.ons.gov.uk/economy/governmentpublicsectorandtaxes/publicsectorfinance/bulletins/publicsectorfinances/september2026",
+          "official": true,
+          "quote": "Borrowing … was £24.5 billion in September 2026; this was £1.8 billion (7.7%) more than in September 2025 … Central government debt interest payable was £10.9 billion … £1.6 billion (16.6%) more … £6.0 billion above the OBR forecast"
+        },
+        {
+          "name": "BBC〈Inflation and government borrowing highest for a year ahead of next week's Budget〉2026-10-21",
+          "url": "https://www.bbc.co.uk/news/articles/c6gel2xv4493o",
+          "official": false,
+          "quote": "the government borrowed £24.5bn in September, £1.8bn higher than a year earlier, as higher inflation helped to push up debt interest costs … borrowed £6bn more this year than the Office for Budget Responsibility"
+        }
+      ]
+    },
+    "UK10": {
+      "claim": "英國財政大臣第一份預算案於 2026-10-28 公布；財政大臣說要給企業和家庭「喘息空間」",
+      "tokens": [
+        "2026",
+        "10",
+        "28"
+      ],
+      "sources": [
+        {
+          "name": "GOV.UK〈Chancellor letter to the Treasury Select Committee – Budget 2026 date〉",
+          "url": "https://www.gov.uk/government/publications/chancellor-letter-to-the-treasury-select-committee-tsc-budget-2026-date",
+          "official": true,
+          "quote": "The Budget will be held on 28 October 2026."
+        },
+        {
+          "name": "BBC〈Inflation and government borrowing highest for a year ahead of next week's Budget〉2026-10-21",
+          "url": "https://www.bbc.co.uk/news/articles/c6gel2xv4493o",
+          "official": false,
+          "quote": "The Budget on 28 October will … giving businesses and families some breathing space"
+        }
+      ]
+    },
+    "UC01": {
+      "claim": "試算（依英國統計局 2026 年 9 月均價）：油箱 50 公升；汽油 169.5 便士／公升＝約 £84.75 一箱，月漲 8.2 便士＝一箱多約 £4.1；柴油 192.5 便士＝約 £96.25，月漲 10.7 便士＝一箱多約 £5.35；每週加一次＝每月 4 箱，汽油多約 £16.4",
+      "tokens": [
+        "50",
+        "169.5",
+        "84.75",
+        "85",
+        "8.2",
+        "4.1",
+        "4",
+        "192.5",
+        "96.25",
+        "96",
+        "10.7",
+        "5.35",
+        "5",
+        "16",
+        "16.4",
+        "9"
+      ],
+      "sources": [
+        {
+          "name": "ONS〈Consumer price inflation, UK: September 2026〉（2026-10-21）",
+          "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/september2026",
+          "official": true,
+          "quote": "169.5 pence per litre … 192.5 pence per litre … rose by 8.2 pence … rose by 10.7 pence"
+        },
+        {
+          "name": "本頻道試算：價格×50 公升",
+          "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/september2026",
+          "official": false,
+          "quote": "50×1.695＝84.75；50×0.082＝4.1；50×1.925＝96.25；50×0.107＝5.35；4×4.1＝16.4"
+        }
+      ]
+    },
+    "UC02": {
+      "claim": "試算：能源價格上限 £1,723／年 ÷ 12 ＝ 每月約 £144",
+      "tokens": [
+        "1723",
+        "12",
+        "143.6",
+        "144"
+      ],
+      "sources": [
+        {
+          "name": "Ofgem 新聞稿〈Energy price cap will rise by 4% from October 2026〉（2026-08-26）",
+          "url": "https://www.ofgem.gov.uk/press-release/energy-price-cap-will-rise-4-october-2026",
+          "official": true,
+          "quote": "£1,723 for the average household using both electricity and gas if this level was sustained for a year"
+        },
+        {
+          "name": "本頻道試算：1723÷12",
+          "url": "https://www.ofgem.gov.uk/press-release/energy-price-cap-will-rise-4-october-2026",
+          "official": false,
+          "quote": "1723÷12＝143.58"
+        }
+      ]
+    },
+    "TY01": {
+      "claim": "2026-10-23 薔琵颱風：除金門縣外，台灣各縣市停止上班上課",
+      "tokens": [
+        "2026",
+        "10",
+        "23"
+      ],
+      "sources": [
+        {
+          "name": "行政院人事行政總處 天然災害停止上班及上課情形（2026/10/22 19:08 更新）",
+          "url": "https://www.dgpa.gov.tw/",
+          "official": true,
+          "quote": "新竹市 明天停止上班、停止上課。…高雄市 明天停止上班、停止上課。…金門縣 明天照常上班、照常上課。"
+        },
+        {
+          "name": "Reuters 2026-10-23",
+          "url": "https://www.reuters.com/business/environment/taiwan-shuts-down-ahead-weakening-typhoon-champi-hundreds-flights-cancelled-2026-10-22/",
+          "official": false,
+          "quote": "only the Taiwan-controlled Kinmen islands … opened schools and offices as normal"
+        }
+      ]
+    },
+    "TY02": {
+      "claim": "10/23 台股集中市場、櫃買市場、期貨與台北外匯市場全日休市，交割順延",
+      "tokens": [
+        "10",
+        "23"
+      ],
+      "sources": [
+        {
+          "name": "鉅亨網 2026-10-22（引述臺灣證券交易所、櫃買中心）",
+          "url": "https://news.cnyes.com/news/id/6636138",
+          "official": false,
+          "quote": "臺灣證券交易所表示，因應臺北市停止上班，115年10月23日集中交易市場全日休市…期貨交易所及台北外匯市場明日同步休市一日"
+        },
+        {
+          "name": "Taiwan News 2026-10-23",
+          "url": "https://www.taiwannews.com.tw/zh/news/6464020",
+          "official": false,
+          "quote": "23日集中交易市場及櫃買市場全日休市，當日應屆交割款券順延辦理"
+        }
+      ],
+      "exception": "媒體轉述證交所公告；口播須講明出處",
+      "must_say": "媒體報導"
+    },
+    "TY03": {
+      "claim": "交通部：10/23 國內 262 班全部取消，國際 717 班取消（近 1,000 班）",
+      "tokens": [
+        "10",
+        "23",
+        "262",
+        "717",
+        "1000",
+        "1,000"
+      ],
+      "sources": [
+        {
+          "name": "Reuters 2026-10-23",
+          "url": "https://www.reuters.com/business/environment/taiwan-shuts-down-ahead-weakening-typhoon-champi-hundreds-flights-cancelled-2026-10-22/",
+          "official": false,
+          "quote": "The transport ministry said all 262 domestic flights were cancelled, along with 717 international ones"
+        },
+        {
+          "name": "The Straits Times 2026-10-23",
+          "url": "https://www.straitstimes.com/asia/east-asia/taiwan-shuts-down-ahead-of-weakening-typhoon-champi-hundreds-of-flights-cancelled",
+          "official": false,
+          "quote": "The transport ministry said all 262 domestic flights were cancelled for Oct 23, along with more than 700 international ones"
+        }
+      ],
+      "exception": "媒體轉述交通部數字；口播須講明出處",
+      "must_say": "媒體報導"
+    },
+    "TY04": {
+      "claim": "天然災害停止上班及上課作業辦法：颱風暴風半徑於 4 小時內可能經過之地區，平均風力可達 7 級以上或陣風可達 10 級以上，由轄區首長決定停止上班上課",
+      "tokens": [
+        "4",
+        "7",
+        "10"
+      ],
+      "sources": [
+        {
+          "name": "全國法規資料庫 天然災害停止上班及上課作業辦法",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=S0110022",
+          "official": true,
+          "quote": "依據氣象預報，颱風暴風半徑於四小時內可能經過之地區，其平均風力可達七級以上或陣風可達十級以上時。"
+        },
+        {
+          "name": "行政院人事行政總處 說明",
+          "url": "https://www.dgpa.gov.tw/information?uid=82&pid=1665",
+          "official": true,
+          "quote": "只要平均風力可達七級以上或陣風可達十級以上時，一律停止辦公及上課…由各直轄市長及縣（市）長"
+        },
+        {
+          "name": "Threads 引述作業辦法第 4 條",
+          "url": "https://www.threads.com/@meta.ai/post/DeyuKwSisSj/",
+          "official": false,
+          "quote": "標準是颱風暴風半徑4小時內可能經過，且平均風力達7級以上或陣風達10級以上，地方政府得發布停班"
+        }
+      ]
+    },
+    "TY05": {
+      "claim": "人事總處：停班停課適用各級政府機關及公私立學校；民間事業單位及勞工依勞動部要點處理，諮詢專線 0800-085-151",
+      "tokens": [
+        "0800",
+        "085",
+        "151",
+        "0800-085-151"
+      ],
+      "sources": [
+        {
+          "name": "行政院人事行政總處 天然災害停止上班及上課情形查詢 備註",
+          "url": "https://www.dgpa.gov.tw/typh/daily/nds.html",
+          "official": true,
+          "quote": "適用範圍為各級政府機關及公、私立學校…民間事業單位及勞工應依勞動部『天然災害發生事業單位勞工出勤管理及工資給付要點』處理…免付費電話專線：0800-085-151"
+        },
+        {
+          "name": "城市學 2026-10-23",
+          "url": "https://city.gvm.com.tw/article/133853",
+          "official": false,
+          "quote": "颱風期間若地方政府宣布停止上班、停止上課，勞工是否可以不出勤、雇主能否要求居家辦公，以及當天工資如何計算，仍須依勞動法規與實際勞動契約判斷。"
+        }
+      ]
+    },
+    "TY06": {
+      "claim": "勞動部要點第 4、6 點：特定勞工於天災時出勤須事前約定，有工會應徵得工會同意、無工會經勞資會議同意；工作地、居住地或必經地區經首長通報停止辦公而未出勤者，雇主不得視為曠工、遲到或強迫以事假或其他假別處理，不得強迫補行工作、扣發全勤獎金、解僱或為其他不利處分",
+      "tokens": [
+        "4",
+        "6"
+      ],
+      "sources": [
+        {
+          "name": "勞動部 天然災害發生事業單位勞工出勤管理及工資給付要點（114 年 9 月 19 日修正）",
+          "url": "https://www.mol.gov.tw/media/j2rlsucj/%E5%A4%A9%E7%84%B6%E7%81%BD%E5%AE%B3%E7%99%BC%E7%94%9F%E4%BA%8B%E6%A5%AD%E5%96%AE%E4%BD%8D%E5%8B%9E%E5%B7%A5%E5%87%BA%E5%8B%A4%E7%AE%A1%E7%90%86%E5%8F%8A%E5%B7%A5%E8%B3%87%E7%B5%A6%E4%BB%98%E8%A6%81%E9%BB%9E.pdf?mediaDL=true",
+          "official": true,
+          "quote": "雇主不得視為曠工、遲到或強迫勞工以事假或其他假別處理，且不得強迫勞工補行工作、扣發全勤獎金、解僱或為其他不利之處分…有工會者，應徵得工會同意，無工會者應經勞資會議同意"
+        },
+        {
+          "name": "新頭殼／民報 2026-10-22",
+          "url": "https://www.peoplenews.tw/articles/lifestyle/63094",
+          "official": false,
+          "quote": "勞動部強調，勞工在縣市首長宣布停班…"
+        }
+      ]
+    },
+    "TY07": {
+      "claim": "要點第 7 點：勞工因停班未出勤，雇主宜不扣發工資；應雇主要求出勤者，當日工資照給外，宜加給工資。勞動部 Q&A：工資如何計算，需視事業單位內部規定、勞動契約約定或過去慣習",
+      "tokens": [
+        "7"
+      ],
+      "sources": [
+        {
+          "name": "勞動部 要點第七點",
+          "url": "https://www.mol.gov.tw/media/j2rlsucj/%E5%A4%A9%E7%84%B6%E7%81%BD%E5%AE%B3%E7%99%BC%E7%94%9F%E4%BA%8B%E6%A5%AD%E5%96%AE%E4%BD%8D%E5%8B%9E%E5%B7%A5%E5%87%BA%E5%8B%A4%E7%AE%A1%E7%90%86%E5%8F%8A%E5%B7%A5%E8%B3%87%E7%B5%A6%E4%BB%98%E8%A6%81%E9%BB%9E.pdf?mediaDL=true",
+          "official": true,
+          "quote": "七、勞工因第六點所定情形無法出勤工作，雇主宜不扣發工資。但應雇主之要求而出勤，雇主除當日工資照給外，宜加給勞工工資。"
+        },
+        {
+          "name": "勞動部 要點 Q&A（114 年 9 月 19 日）",
+          "url": "https://www.mol.gov.tw/media/dxyf1awa/%E5%A4%A9%E7%84%B6%E7%81%BD%E5%AE%B3%E7%99%BC%E7%94%9F%E4%BA%8B%E6%A5%AD%E5%96%AE%E4%BD%8D%E5%8B%9E%E5%B7%A5%E5%87%BA%E5%8B%A4%E7%AE%A1%E7%90%86%E5%8F%8A%E5%B7%A5%E8%B3%87%E7%B5%A6%E4%BB%98%E8%A6%81%E9%BB%9Eqa-1140919.pdf?mediaDL=true",
+          "official": true,
+          "quote": "工資如何計算，需視事業單位內部規定、勞動契約約定或過去慣習"
+        },
+        {
+          "name": "三立新聞 2026-10-24",
+          "url": "https://www.setn.com/news/1927234",
+          "official": false,
+          "quote": "颱風天未出勤是否會影響薪水、雇主能不能要求員工…勞動部解答"
+        }
+      ]
+    },
+    "TY08": {
+      "claim": "要點 2025-09-19（114 年）新增第 6 點之 1：雇主要求勞工停班時出勤，應提供通勤協助（交通工具、交通津貼或其他必要協助）；需搭計程車者應支付相關費用",
+      "tokens": [
+        "2025",
+        "9",
+        "19",
+        "114",
+        "6",
+        "1"
+      ],
+      "sources": [
+        {
+          "name": "勞動部 要點第六點之一",
+          "url": "https://www.mol.gov.tw/media/j2rlsucj/%E5%A4%A9%E7%84%B6%E7%81%BD%E5%AE%B3%E7%99%BC%E7%94%9F%E4%BA%8B%E6%A5%AD%E5%96%AE%E4%BD%8D%E5%8B%9E%E5%B7%A5%E5%87%BA%E5%8B%A4%E7%AE%A1%E7%90%86%E5%8F%8A%E5%B7%A5%E8%B3%87%E7%B5%A6%E4%BB%98%E8%A6%81%E9%BB%9E.pdf?mediaDL=true",
+          "official": true,
+          "quote": "六之一、雇主於前點所定情形發生仍要求勞工出勤者，為確保安全，應提供通勤協助；如勞工依原定上、下班通勤方式有困難，而有搭乘計程車之必要者，應支付其相關費用。前項所定通勤協助，包括交通工具、交通津貼或其他必要之協助。"
+        },
+        {
+          "name": "臺北市勞動局 公告",
+          "url": "https://bola.gov.taipei/News_Content.aspx?n=4A519A52B9D376CD&sms=78D644F2755ACCAA&s=B01674A0FB26E2F4",
+          "official": true,
+          "quote": "勞動部修正「天然災害發生事業單位勞工出勤管理及工資給付要點」部分規定，並自114年9月19日生效。"
+        },
+        {
+          "name": "新頭殼／民報 2026-10-22",
+          "url": "https://www.peoplenews.tw/articles/lifestyle/63094",
+          "official": false,
+          "quote": "颱風假被要求上班？薪水、交通費、WFH規定一次看"
+        }
+      ]
+    },
+    "TY09": {
+      "claim": "2026 年（115 年）最低工資：每月 29,500 元、每小時 196 元",
+      "tokens": [
+        "2026",
+        "115",
+        "29500",
+        "29,500",
+        "196"
+      ],
+      "sources": [
+        {
+          "name": "勞動部勞動力發展署 公告（勞動條2字第1140148807號）",
+          "url": "https://www.bip.gov.tw/info.aspx?pageid=c3b87666cdb62f29&cid=705c2cdaacea07ee",
+          "official": true,
+          "quote": "自115年1月1日起，每月基本工資調整為新臺幣（以下同）29,500元；每小時基本工資調整為196元。"
+        },
+        {
+          "name": "JB 人力 2026",
+          "url": "https://www.jbjob.com.tw/",
+          "official": false,
+          "quote": "每月最低工資將由現行的28,590元調升至新臺幣29,500元,每小時最低工資則由190元調升至196元"
+        }
+      ]
+    },
+    "TY10": {
+      "claim": "最低工資審議會決定自 2027 年（116 年）1 月 1 日起每月 30,900 元、每小時 205 元，待行政院核定",
+      "tokens": [
+        "2027",
+        "116",
+        "30900",
+        "30,900",
+        "205"
+      ],
+      "sources": [
+        {
+          "name": "勞動部 新聞稿",
+          "url": "https://www.mol.gov.tw/1607/1632/1633/99195/post",
+          "official": true,
+          "quote": "審議會決定自116年1月1日起，每月最低工資調升至30,900元，每小時最低工資調升至205元。…若經行政院核定"
+        },
+        {
+          "name": "勞動部歷年最低工資頁",
+          "url": "https://www.mol.gov.tw/1607/28690/87756/87780/87783/lpsimplelist",
+          "official": true,
+          "quote": "歷年最低工資/基本工資調整"
+        },
+        {
+          "name": "Yahoo 股市 2026-10",
+          "url": "https://tw.stock.yahoo.com/",
+          "official": false,
+          "quote": "最低工資連11漲 每月30,900元"
+        }
+      ]
+    },
+    "TC10": {
+      "claim": "試算：時薪 196 元×8 小時＝1,568 元；205 元×8 小時＝1,640 元",
+      "tokens": [
+        "196",
+        "8",
+        "1568",
+        "1,568",
+        "205",
+        "1640",
+        "1,640"
+      ],
+      "sources": [
+        {
+          "name": "勞動部最低工資公告（時薪 196 元）",
+          "url": "https://www.bip.gov.tw/info.aspx?pageid=c3b87666cdb62f29&cid=705c2cdaacea07ee",
+          "official": true,
+          "quote": "每小時基本工資調整為196元"
+        },
+        {
+          "name": "本頻道試算（時薪×8 小時正常工時）",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0030001",
+          "official": true,
+          "quote": "勞工正常工作時間，每日不得超過八小時"
+        }
+      ]
+    },
+    "TY11": {
+      "claim": "中央災害應變中心 10/24 16:30 統計：薔琵颱風 1 人死亡、616 人受傷，災情通報 9,027 件（路樹 3,287 件最多），曾逾 34 萬戶停電",
+      "tokens": [
+        "10",
+        "24",
+        "1",
+        "616",
+        "9027",
+        "9,027",
+        "3287",
+        "34",
+        "16",
+        "30"
+      ],
+      "sources": [
+        {
+          "name": "中央廣播電臺 2026-10-24",
+          "url": "https://www.rti.org.tw/news?uid=3&pid=239626",
+          "official": false,
+          "quote": "根據中央災害應變中心今日(24日)最新統計，薔琵颱風已造成1人死亡、616人受傷，一般災情累計通報多達9,027件…全國超過34萬戶曾經停電"
+        },
+        {
+          "name": "CTWANT 2026-10-24",
+          "url": "https://www.ctwant.com/article/503675/",
+          "official": false,
+          "quote": "全台災情共計高達9027件，總計有1死、616傷…全台曾高達34萬6251戶停電"
+        },
+        {
+          "name": "三立新聞 2026-10-24",
+          "url": "https://www.setn.com/news/1927903",
+          "official": false,
+          "quote": "颱風薔琵襲台累計造成1人死亡、616人受傷"
+        }
+      ],
+      "exception": "媒體轉述中央災害應變中心統計；口播須講明出處",
+      "must_say": "媒體報導"
+    },
+    "TY12": {
+      "claim": "農業部 115 年薔琵颱風農業災情報告（至 10/24 17 時）：農業產物及民間設施估計損失 1 億 3,336 萬元；雲林縣 1 億 960 萬元約占 82%；蒜頭損失 5,307 萬元最多；受害面積約 2,405 公頃；受災農民應向公所通報以辦理天然災害救助",
+      "tokens": [
+        "115",
+        "10",
+        "24",
+        "17",
+        "5",
+        "13336",
+        "1",
+        "3336",
+        "10960",
+        "960",
+        "82",
+        "5307",
+        "5,307",
+        "2405",
+        "2,405",
+        "8"
+      ],
+      "sources": [
+        {
+          "name": "農業部 115年薔琵颱風農業災情報告",
+          "url": "https://www.moa.gov.tw/theme_data.php?theme=news&sub_theme=agri&id=10320",
+          "official": true,
+          "quote": "經本部農糧署彙整各直轄市、縣市政府查報資料(至10月24日17時止)，農業產物及民間設施估計損失計1億3,336萬元"
+        },
+        {
+          "name": "ETtoday 2026-10-24",
+          "url": "https://www.ettoday.net/news/20261024/3260328.htm",
+          "official": false,
+          "quote": "雲林縣農損最嚴重，估計損失約1億960萬元，占全台約82%…以蒜頭損失最為嚴重…損失金額約5307萬元…受損面積約2405公頃…受災農民應主動向當地公所通報"
+        }
+      ]
+    },
+    "TY13": {
+      "claim": "主計總處 2026-08-14 預測：115 年（2026）名目 GDP 新台幣 33,698,991 百萬元（約 33.7 兆元）",
+      "tokens": [
+        "2026",
+        "115",
+        "33698991",
+        "33.7",
+        "8",
+        "14"
+      ],
+      "sources": [
+        {
+          "name": "行政院主計總處 國民所得統計新聞稿 2026-08-14",
+          "url": "https://ws.dgbas.gov.tw/001/Upload/463/relfile/10980/236591/news11508.pdf",
+          "official": true,
+          "quote": "115年(f) | 33,698,991 | 1,053,627"
+        },
+        {
+          "name": "主計總處新聞稿頁面",
+          "url": "https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=236591",
+          "official": true,
+          "quote": "預測115年與116年分別成長11.05％及6.04％"
+        },
+        {
+          "name": "中華民國統計資訊網",
+          "url": "https://www.stat.gov.tw/",
+          "official": true,
+          "quote": "國民所得統計及國內經濟情勢展望"
+        }
+      ]
+    },
+    "TC11": {
+      "claim": "試算：33,698,991 百萬元 ÷ 365 天 ≈ 每天 923 億元",
+      "tokens": [
+        "33698991",
+        "365",
+        "923",
+        "33.7"
+      ],
+      "sources": [
+        {
+          "name": "主計總處 115 年名目 GDP 預測",
+          "url": "https://ws.dgbas.gov.tw/001/Upload/463/relfile/10980/236591/news11508.pdf",
+          "official": true,
+          "quote": "115年(f) | 33,698,991"
+        },
+        {
+          "name": "本頻道試算（全年 GDP 平均到 365 天，僅示意規模，不代表颱風一天的損失）",
+          "url": "https://www.dgbas.gov.tw/News_Content.aspx?n=3602&s=236591",
+          "official": true,
+          "quote": "名目GDP"
+        }
+      ]
+    },
+    "TY14": {
+      "claim": "香港勞工處《惡劣天氣及「極端情況」下的工作守則》（2026 年 5 月）：8 號或以上風球、黑色暴雨或極端情況；上班前已發出時雇主不應要求員工回工作地點；因惡劣天氣未上班、提早下班或未能準時上班，雇主不應扣減工資、勤工獎或津貼，亦不應要求事後補回工時；不可用年假、法定假日或休息日抵銷；指定員工應安排交通或支付計程車費／額外交通津貼，並發額外當值津貼；守則目的為事先訂好安排、避免勞資爭拗",
+      "tokens": [
+        "8",
+        "2026",
+        "5"
+      ],
+      "sources": [
+        {
+          "name": "香港勞工處 Code of Practice At a Glance（2026 年 5 月）",
+          "url": "https://www.labour.gov.hk/eng/public/wcp/Rainstorm_glance.pdf",
+          "official": true,
+          "quote": "employers should not deduct their wages, good attendance bonus, or allowances, nor require employees to compensate subsequently for the loss of working hours … Employers should not require employees to return to the workplaces … should grant an extra duty allowance … to avoid unnecessary disputes"
+        },
+        {
+          "name": "香港政府新聞公報 2026-05-04",
+          "url": "https://www.info.gov.hk/gia/general/202605/04/P2026043000267.htm",
+          "official": true,
+          "quote": "Employers and employees should make prior work arrangements"
+        },
+        {
+          "name": "GetMore HK 員工指南",
+          "url": "https://www.getmore.com.hk/post/typhoon-black-rainstorm-work-guide-for-employees-your-rights-before-during-and-after-bad-weathe",
+          "official": false,
+          "quote": "Understand your rights for attendance, wages, WFH … during typhoons & black rainstorms"
+        }
+      ]
+    },
+    "TY15": {
+      "claim": "日本勞動基準法第 26 條：可歸責於雇主之停工須付平均工資 60% 以上停工津貼；厚生勞動省 Q&A：天災事變等不可抗力不屬之，雇主無支付義務；不可抗力要件為原因來自事業外部、且盡通常經營者最大注意仍無法避免；過去天災停工照付工資者改為不付屬不利益變更，須經合法變更程序",
+      "tokens": [
+        "26",
+        "60",
+        "100",
+        "6"
+      ],
+      "sources": [
+        {
+          "name": "厚生労働省 台風被害に伴う労働基準法等Q&A",
+          "url": "https://www.mhlw.go.jp/content/000548560.pdf",
+          "official": true,
+          "quote": "労働基準法第２６条では、使用者の責に帰すべき事由による休業の場合には、使用者は、休業期間中の休業手当（平均賃金の１００分の６０以上）を支払わなければならない…天災事変等の不可抗力の場合は…使用者に休業手当の支払義務はありません。…①その原因が事業の外部より発生した事故であること、②事業主が通常の経営者として最大の注意を尽くしてもなお避けることのできない事故…労働条件の不利益変更に該当します"
+        },
+        {
+          "name": "労働問題.com Q&A",
+          "url": "https://www.roudoumondai.com/qa/wages/leave_allowance_earthquake_or_typhoon.html",
+          "official": false,
+          "quote": "不可抗力な事情が無い場合は，労基法26条の休業手当（平均賃金の100分の60以上）を支払う必要がある"
+        }
+      ]
+    },
+    "TY16": {
+      "claim": "菲律賓勞動部 Labor Advisory No. 14, Series of 2026（2026-08-19 簽署）：雇主可因天候停工；勞工因迫切危險拒絕上班不受行政懲處；停工未上班者原則上無薪（no work, no pay），除非公司政策、慣例或團體協約另有規定",
+      "tokens": [
+        "14",
+        "2026",
+        "8",
+        "19"
+      ],
+      "sources": [
+        {
+          "name": "DOLE 新聞 2026-08-20",
+          "url": "https://dole.gov.ph/news/dole-workers-may-refuse-unsafe-work-during-weather-disturbances-without-penalty/",
+          "official": true,
+          "quote": "Tolentino signed Labor Advisory No. 14, Series of 2026, on August 19, 2026 … employees who do not report for work due to a work suspension are not entitled to regular pay unless a company policy, established practice, or collective bargaining agreement provides otherwise"
+        },
+        {
+          "name": "Philstar 2026-08-20",
+          "url": "https://www.philstar.com/headlines/2026/08/20/2550394/bad-weather-dole-reminds-private-employers-work-suspension-pay",
+          "official": false,
+          "quote": "The “no work, no pay” rule applies to workers who decline to work amid bad weather conditions, unless more favorable conditions are provided"
+        }
+      ]
+    },
+    "TS01": {
+      "claim": "證交所天然災害處理：台北市長宣布當日或當日上午台北市全體公教機關停止上班→集中市場全日休市（當日則證券商停止營業）；僅下午停班→不休市，收盤後其他交易停止",
+      "tokens": [
+        "10",
+        "23"
+      ],
+      "sources": [
+        {
+          "name": "臺灣證券交易所〈天然災害停止上班之處理〉",
+          "url": "https://www.twse.com.tw/zh/clearing/suspended.html",
+          "official": true,
+          "quote": "台北市市長宣布當日台北市全體公教機關停止上班時，本公司集中交易市場全日休市，全體證券商當日停止營業…台北市市長宣布當日下午台北市全體公教機關停止上班時，本公司集中交易市場不休市，惟收盤後其他交易均予停止。"
+        },
+        {
+          "name": "臺灣證券交易所股份有限公司天然災害侵襲處理措施",
+          "url": "https://twse-regulation.twse.com.tw/m/LawContent.aspx?FID=FL007347",
+          "official": true,
+          "quote": "台北市市長宣布當日上午台北市全體公教機關停止上班時，本公司集中交易市場全日休市，且當日應屆交割款券順延辦理。"
+        },
+        {
+          "name": "APPI News〈颱風天台股休市嗎？〉",
+          "url": "https://appi.news/articles/typhoon-stock-market-closure-guide/",
+          "official": false,
+          "quote": "2026年10月23日台股休市，是臺北市宣布停班後依現行規則辦理的案例。"
+        }
+      ]
+    },
+    "TS02": {
+      "claim": "休市時應屆交割款券順延；權證最後交易日及到期日、公開申購扣款與抽籤等後續作業順延至次一營業日",
+      "tokens": [],
+      "sources": [
+        {
+          "name": "臺灣證券交易所〈因應重大災變查詢證券相關業務問答〉",
+          "url": "https://www.twse.com.tw/zh/about/suspended_faq.html",
+          "official": true,
+          "quote": "投資人對證券商之應屆交割款券順延辦理…權證最後交易日及到期日若遇到股市因天然災害而休市，均順延至次一營業日…申購截止日、公開抽籤日…扣繳…其後續作業一律順延至次一營業日辦理"
+        },
+        {
+          "name": "永豐金證券〈颱風假股市有開盤嗎？〉",
+          "url": "https://www.sinotrade.com.tw/richclub/hotstock/%E9%A2%B1%E9%A2%A8%E5%81%87%E8%82%A1%E5%B8%82%E6%9C%89%E9%96%8B%E7%9B%A4%E5%97%8E-%E5%8F%B0%E8%82%A1%E4%BC%91%E5%B8%82-%E4%BA%A4%E6%98%93%E8%A6%8F%E5%89%87%E5%AE%8C%E6%95%B4%E6%87%B6%E4%BA%BA%E5%8C%85-%E8%96%94%E7%90%B5%E9%A2%B1%E9%A2%A8%E6%9C%80%E6%96%B0%E5%8B%95%E6%85%8B-669f53bf15fc4d4560aeaeb4",
+          "official": false,
+          "quote": "應屆交割款券將順延至次一營業日辦理，不需另外申請"
+        }
+      ]
+    },
+    "TS03": {
+      "claim": "2026-10-25 光復節適逢週日，10-26（一）補假休市；連同 10-23 颱風休市，10/23～10/26 連續 4 天無交易，10/27 恢復",
+      "tokens": [
+        "10",
+        "23",
+        "25",
+        "26",
+        "27",
+        "4"
+      ],
+      "sources": [
+        {
+          "name": "臺灣證券交易所 115 年市場開休市日期",
+          "url": "https://www.twse.com.tw/zh/trading/holiday.html",
+          "official": true,
+          "quote": "2026-10-26 臺灣光復暨金門古寧頭大捷紀念日：為10月25日適逢星期日，於10月26日（星期一）補假。"
+        },
+        {
+          "name": "工商時報 2026-10-06",
+          "url": "https://www.ctee.com.tw/news/20261006700801-430201",
+          "official": false,
+          "quote": "10月25日光復節適逢周日，10月9日（周五）及10月26日（周一）補假兩日，該兩日集中交易市場都休市"
+        },
+        {
+          "name": "蘋果仁〈台股連休 4 天！2026 光復節 10/26 休市、10/27 開盤〉",
+          "url": "https://applealmondrealty.com/posts/54098",
+          "official": false,
+          "quote": "台股連休 4 天！2026 光復節 10/26 休市、10/27 開盤"
+        }
+      ]
+    },
+    "TS04": {
+      "claim": "2026-10-22 加權指數收 46,041.43 點（跌 846.34 點），成交金額 933,437,473,560 元（約 9,334 億元）",
+      "tokens": [
+        "10",
+        "22",
+        "46041",
+        "46,041",
+        "9334",
+        "9,334"
+      ],
+      "sources": [
+        {
+          "name": "臺灣證券交易所 每日市場成交資訊（FMTQIK）",
+          "url": "https://www.twse.com.tw/rwd/zh/afterTrading/FMTQIK?date=20261001&response=json",
+          "official": true,
+          "quote": "115/10/22 | 11,999,249,506 | 933,437,473,560 | 5,720,639 | 46,041.43 | -846.34"
+        },
+        {
+          "name": "聯合新聞網",
+          "url": "https://udn.com/news/story/7251/9800346",
+          "official": false,
+          "quote": "加權指數22日下跌846點，收在46,041點，跌破季線大關，成交量9,334億元。"
+        }
+      ]
+    },
+    "TS05": {
+      "claim": "證券交易稅向出賣人按成交價格課徵，股票稅率千分之三；當沖、ETF 另有較低稅率",
+      "tokens": [
+        "3"
+      ],
+      "sources": [
+        {
+          "name": "證券交易稅條例第 2 條（財政部主管法規系統）",
+          "url": "https://law-out.mof.gov.tw/LawContent.aspx?id=FL006079",
+          "official": true,
+          "quote": "證券交易稅向出賣有價證券人按每次交易成交價格依左列稅率課徵之：一、公司發行之股票及表明股票權利之證書或憑證徵千分之三。"
+        },
+        {
+          "name": "財政部稅務入口網 Q&A 6206",
+          "url": "https://www.etax.nat.gov.tw/etwmain/tax-info/understanding/tax-q-and-a/national/securities-transaction-tax/filing/mM8n39b",
+          "official": true,
+          "quote": "買賣股票的證券交易稅稅率為千分之3。"
+        },
+        {
+          "name": "財政部〈證券交易稅重要史料〉",
+          "url": "https://museum.mof.gov.tw/singlehtml/4f0b20ff20154c24a417fe7757ae6b05",
+          "official": true,
+          "quote": "調降證券商受託買賣現股當日沖銷交易之證券交易稅稅率為1.5‰"
+        }
+      ]
+    },
+    "TC12": {
+      "claim": "試算：9,334 億元 × 千分之三 ≈ 28 億元（上限，未扣當沖與 ETF 較低稅率）",
+      "tokens": [
+        "9334",
+        "9,334",
+        "3",
+        "28"
+      ],
+      "sources": [
+        {
+          "name": "臺灣證券交易所 每日市場成交資訊（10/22 成交金額）",
+          "url": "https://www.twse.com.tw/rwd/zh/afterTrading/FMTQIK?date=20261001&response=json",
+          "official": true,
+          "quote": "115/10/22 | 933,437,473,560"
+        },
+        {
+          "name": "本頻道試算（成交金額 × 股票證交稅率，為上限估算）",
+          "url": "https://law-out.mof.gov.tw/LawContent.aspx?id=FL006079",
+          "official": true,
+          "quote": "徵千分之三"
+        }
+      ]
+    },
+    "TS06": {
+      "claim": "颱風假與股市休市是否脫鉤再引討論；金管會表示仍在蒐集各界意見、尚無時程；支持者提電子下單，反對者擔心從業人員出勤安全與交割結算配套",
+      "tokens": [],
+      "sources": [
+        {
+          "name": "聯合新聞網 2026-10-24",
+          "url": "https://udn.com/news/story/12806/9834283",
+          "official": false,
+          "quote": "金管會表示，颱風假與台股休市脫鉤仍在蒐集意見，尚無時程；金融從業人員出勤、結算及異常處理配套引發爭論。"
+        },
+        {
+          "name": "三立新聞網（Yahoo 新聞）2026-10-22",
+          "url": "https://tw.news.yahoo.com/%E5%BF%AB%E8%A8%8A-%E6%B2%88%E4%BC%AF%E6%B4%8B%E6%8B%8B%E8%82%A1%E5%B8%82-%E9%A2%B1%E9%A2%A8%E5%81%87%E8%84%AB%E9%89%A4-%E9%87%91%E7%AE%A1%E6%9C%83%E8%AA%AA%E8%A9%B1%E4%BA%86-093300534.html",
+          "official": false,
+          "quote": "金管會證期局副局長黃仲豪…表示，目前已在評估、研擬相關方案，並蒐集各界意見…金融從業人員的出勤安全、銀行及券商作業，以及交割機制如何配合"
+        }
+      ],
+      "exception": "金管會說法僅見媒體轉述；口播須講明出處",
+      "must_say": "媒體報導"
+    },
+    "ES01": {
+      "claim": "87 歲的 María del Carmen（Maricarmen）Abascal 於 2026-09-23 在馬德里 Retiro 區遭驅逐，住了約 70 年；10-07 在 Gregorio Marañón 醫院過世",
+      "tokens": [
+        "87",
+        "9",
+        "23",
+        "70",
+        "10",
+        "7"
+      ],
+      "sources": [
+        {
+          "name": "RDL 29/2026 序言（BOE 2026-10-07）",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20823",
+          "official": true,
+          "quote": "El desahucio de María del Carmen Abascal despertó la conciencia colectiva"
+        },
+        {
+          "name": "El País 2026-10-07",
+          "url": "https://elpais.com/espana/2026-10-07/muere-maricarmen-la-mujer-que-encendio-la-lucha-contra-los-desahucios-en-espana.html",
+          "official": false,
+          "quote": "El 23 de septiembre fue desahuciada de su casa de Retiro, en la que vivió durante siete décadas…ha fallecido este miércoles en el Hospital Gregorio Marañón a los 87 años"
+        },
+        {
+          "name": "Yahoo Noticias／EFE 2026-10-07",
+          "url": "https://es-us.noticias.yahoo.com/muere-maricarmen-abascal-anciana-87-190139731.html",
+          "official": false,
+          "quote": "Abascal falleció en el hospital Gregorio Marañón…tras ser desalojada de su vivienda"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "年齡、居住年數、過世日期僅見媒體；官方序言只確認驅逐與姓名"
+    },
+    "ES02": {
+      "claim": "Maricarmen 每月退休金約 1,400 歐元，舊租約房租加帳單約 500 歐元；屋主提出的替代租金約 1,600 歐元（Maldita 引述 1,650），高於她的退休金；房子約 6 年前被公司買下",
+      "tokens": [
+        "1400",
+        "1,400",
+        "500",
+        "1600",
+        "1,600",
+        "6"
+      ],
+      "sources": [
+        {
+          "name": "El País 2026-10-07",
+          "url": "https://elpais.com/espana/2026-10-07/muere-maricarmen-la-mujer-que-encendio-la-lucha-contra-los-desahucios-en-espana.html",
+          "official": false,
+          "quote": "Seis años antes, una empresa compró su piso…Con una pensión de 1.400 euros…unos 500 euros al mes en total…(le pedían 1.600 euros)…la mujer nunca dejó de pagar el alquiler"
+        },
+        {
+          "name": "Maldita.es 2026-10-01",
+          "url": "https://maldita.es/desinfo/20261001/preguntas-y-respuestas-desahucio-maricarmen-madrid/",
+          "official": false,
+          "quote": "la pensión “no llegaba a 1.400 euros”…la cifra de 1.650 euros supera “en más de 200 euros” su pensión"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "個人財務細節僅見媒體"
+    },
+    "ES03": {
+      "claim": "Eurostat：2025 年西班牙以市價租屋的家庭，26.8% 房租超過收入 40%；2022 年是 39.4%；歐盟平均 18.6%",
+      "tokens": [
+        "2025",
+        "26.8",
+        "40",
+        "2022",
+        "39.4",
+        "18.6",
+        "8"
+      ],
+      "sources": [
+        {
+          "name": "RDL 29/2026 序言（BOE）",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20823",
+          "official": true,
+          "quote": "el 26,8 % de los hogares que residían en alquiler a precios de mercado en 2025 en nuestro país destinaban al pago del alquiler más del 40 % de los ingresos…desde el 39,4 % del año 2022…media de la Unión Europea, en la que el 18,6%…aún se encuentra unos 8 puntos por encima de la media de la Unión Europea"
+        },
+        {
+          "name": "finanzassinmiedo.es（引 Eurostat）",
+          "url": "https://finanzassinmiedo.es/hipotecas-y-vivienda/vivienda-inaccesible-esfuerzo-salarial-alquiler-2026/",
+          "official": false,
+          "quote": "En 2025, el 26,8% de los inquilinos a precio de mercado en España vivía en hogares con sobrecarga"
+        }
+      ]
+    },
+    "ES04": {
+      "claim": "西班牙央行年報：觀光住宅占全國租屋市場約 10%；塞維亞、馬拉加舊城區出租房屋近一半是觀光住宅",
+      "tokens": [
+        "10"
+      ],
+      "sources": [
+        {
+          "name": "RDL 29/2026 序言（BOE，引西班牙央行年報）",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20823",
+          "official": true,
+          "quote": "El último Informe Anual del Banco de España refleja que este tipo de viviendas suponen un 10% del mercado del alquiler en toda España…Sevilla y Málaga donde casi una de cada dos viviendas…es de uso turístico…En el caso de las viviendas de uso turístico, hasta la actualidad, carecen de un régimen fiscal específico"
+        },
+        {
+          "name": "西班牙央行 2025 年報簡報",
+          "url": "https://www.bde.es/f/webbe/SES/Secciones/Publicaciones/PublicacionesAnuales/InformesAnuales/25/Fich/IIPP-2026-06-18-lopez-salido-es-or.pdf",
+          "official": true,
+          "quote": "PESO DE LAS VIVIENDAS TURÍSTICAS EN EL MERCADO DEL ALQUILER EN 2025 (%)"
+        }
+      ]
+    },
+    "ES05": {
+      "claim": "INE：2026 年第二季西班牙房價指數年增 12.2%",
+      "tokens": [
+        "2026",
+        "12.2"
+      ],
+      "sources": [
+        {
+          "name": "INE 房價指數新聞稿 2026Q2",
+          "url": "https://www.ine.es/dyngs/Prensa/IPV2T26.htm",
+          "official": true,
+          "quote": "La tasa de variación anual del Índice de Precios de Vivienda se situó en el 12,2%"
+        },
+        {
+          "name": "Colegio de Registradores（引 INE）",
+          "url": "https://www.facebook.com/ColegiodeRegistradores/posts/el-precio-de-la-vivienda-modera-el-crecimiento-en-el-2t-v%C3%ADa-caixabank-research-e/1573963844775474/",
+          "official": false,
+          "quote": "El índice oficial de precios de la vivienda en España aumentó un 12,2 % en tasa interanual en el segundo trimestre de 2026"
+        }
+      ]
+    },
+    "ES06": {
+      "claim": "INE：2026 年 9 月西班牙 CPI 年增 4.9%",
+      "tokens": [
+        "2026",
+        "9",
+        "4.9"
+      ],
+      "sources": [
+        {
+          "name": "INE CPI 新聞稿 2026-09",
+          "url": "https://www.ine.es/dyngs/Prensa/IPC0926.htm",
+          "official": true,
+          "quote": "La tasa de variación anual del IPC del mes de septiembre se situó en el 4,9%"
+        },
+        {
+          "name": "Europa Press 2026-10-14",
+          "url": "https://www.europapress.es/economia/macroeconomia-00338/noticia-ine-confirma-ipc-sube-49-septiembre-rebaja-fiscal-combustible-sera-20-centimos-20261014090030.html",
+          "official": false,
+          "quote": "El IPC sube al 4,9% en septiembre"
+        }
+      ]
+    },
+    "ES07": {
+      "claim": "Eurostat：2025 年西班牙年輕人平均 30.2 歲離開父母家，歐盟平均 26.3 歲",
+      "tokens": [
+        "2025",
+        "30.2",
+        "26.3"
+      ],
+      "sources": [
+        {
+          "name": "Eurostat yth_demo_030",
+          "url": "https://ec.europa.eu/eurostat/databrowser/view/yth_demo_030/default/map?lang=en",
+          "official": true,
+          "quote": "Spain: 30.2"
+        },
+        {
+          "name": "Eurostat 新聞 2026-09-15",
+          "url": "https://ec.europa.eu/eurostat/web/products-eurostat-news/w/ddn-20260915-1",
+          "official": true,
+          "quote": "In 2025, young people in the EU left their parents' home at an average age of 26.3 years"
+        },
+        {
+          "name": "El Boletín",
+          "url": "https://www.elboletin.com/la-emancipacion-de-los-jovenes-espanoles-llega-a-los-302-anos-casi-cuatro-mas-que-en-la-ue/",
+          "official": false,
+          "quote": "abandonaron el hogar de sus padres a una edad media de 30,2 años en 2025"
+        },
+        {
+          "name": "RDL 29/2026 序言（BOE）",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20823",
+          "official": true,
+          "quote": "a las personas jóvenes que no pueden emanciparse"
+        }
+      ]
+    },
+    "ES08": {
+      "claim": "政府 9-29 通過 RDL 26/2026 與 27/2026 兩道住房法令；10-02 眾議院拒絕追認（172 比 178、166 比 184），當天在 BOE 公告廢止",
+      "tokens": [
+        "9",
+        "29",
+        "26",
+        "27",
+        "10",
+        "2",
+        "172",
+        "178",
+        "166",
+        "184"
+      ],
+      "sources": [
+        {
+          "name": "BOE 眾議院決議 BOE-A-2026-20526",
+          "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20526",
+          "official": true,
+          "quote": "el Congreso de los Diputados, en su sesión del día de hoy, acordó derogar el Real Decreto-ley 26/2026, de 29 de septiembre"
+        },
+        {
+          "name": "BOE 眾議院決議 BOE-A-2026-20527",
+          "url": "https://www.boe.es/buscar/doc.php?id=BOE-A-2026-20527",
+          "official": true,
+          "quote": "acordó derogar el Real Decreto-ley 27/2026, de 29 de septiembre"
+        },
+        {
+          "name": "Legal Today 2026-10-08",
+          "url": "https://www.legaltoday.com/opinion/articulos-de-opinion/los-decretos-leyes-de-vivienda-derogacion-reaprobacion-y-convalidacion-en-plena-disolucion-2026-10-08/",
+          "official": false,
+          "quote": "El 2 de octubre, el Congreso rechazó su convalidación (172 votos a favor y 178 en contra el primero; 166 frente a 184 el segundo) y ese mismo día el BOE publicó su derogación"
+        }
+      ]
+    },
+    "ES09": {
+      "claim": "RD 806/2026（10-05）解散國會，11-29 舉行大選，比原定提早將近 8 個月；BOE 於 10-06 刊登並當日生效",
+      "tokens": [
+        "806",
+        "10",
+        "5",
+        "11",
+        "29",
+        "8",
+        "6"
+      ],
+      "sources": [
+        {
+          "name": "BOE RD 806/2026",
+          "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20742",
+          "official": true,
+          "quote": "Se convocan elecciones a ambas Cámaras, que se celebrarán el domingo 29 de noviembre de 2026"
+        },
+        {
+          "name": "RTVE 2026-10-06",
+          "url": "https://www.rtve.es/noticias/20261006/elecciones-generales-huelga-espana-directo-hoy-boe-publica-disolucion-cortes-convocatoria-elecciones/17254509.shtml",
+          "official": false,
+          "quote": "convocatoria anticipada de las elecciones generales el próximo domingo 29 de noviembre, casi ocho meses antes de la fecha prevista…El Boletín Oficial del Estado (BOE) ha publicado este martes el real decreto de disolución"
+        }
+      ]
+    },
+    "ES10": {
+      "claim": "RDL 29/2026（BOE 10-07，10-08 生效）：2028 年底前到期的主要住所租約，房客前 8 個月逐月繳清者可申請逐年延長、最多 2 年、條件不變（房東自住等例外）；到 2027 年底前的年度調租，無新協議時漲幅不得超過 2%，租金已高於參考上限者不得調漲",
+      "tokens": [
+        "10",
+        "6",
+        "28",
+        "29",
+        "7",
+        "2028",
+        "2",
+        "2027",
+        "2",
+        "8"
+      ],
+      "sources": [
+        {
+          "name": "RDL 29/2026 第五、第六附加條款（BOE）",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20823",
+          "official": true,
+          "quote": "una prórroga extraordinaria por plazos anuales y hasta un máximo de dos años adicionales…el incremento de la renta a aplicar no podrá ser superior al dos por ciento…siempre y cuando la parte arrendataria se encuentre al corriente de pago del alquiler, y lo haya estado mensualmente durante los ocho meses anteriores…Entrada en vigor: 08/10/2026"
+        },
+        {
+          "name": "Abogados Calvo 2026-10",
+          "url": "https://abogadoscalvo.com/decretos-alquiler-2026-prorroga-subida-renta/",
+          "official": false,
+          "quote": "Decretos del alquiler 2026 (RDL 28 y 29/2026): prórroga de hasta dos años, tope del 2 %"
+        }
+      ]
+    },
+    "ES11": {
+      "claim": "國會已解散，RDL 28／29 須由眾議院常設委員會在 30 天內表決是否追認；據 2026-10-22 媒體報導兩道仍待表決",
+      "tokens": [
+        "28",
+        "29",
+        "30",
+        "10",
+        "22"
+      ],
+      "sources": [
+        {
+          "name": "西班牙憲法第 86 條（BOE）",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-1978-31229#a86",
+          "official": true,
+          "quote": "Los Decretos-leyes deberán ser inmediatamente sometidos a debate y votación de totalidad al Congreso de los Diputados…en el plazo de los treinta días siguientes a su promulgación"
+        },
+        {
+          "name": "Aurovas 2026-10",
+          "url": "https://aurovas.com/noticias/alquiler-subida-0-o-maximo-2-hasta-fin-de-2027-ip4x/",
+          "official": false,
+          "quote": "Ambos requieren convalidación de la Diputación Permanente del Congreso, con las Cortes disueltas desde el 6 de octubre, en un plazo de 30 días"
+        },
+        {
+          "name": "FEDEA 2026-10",
+          "url": "https://documentos.fedea.net/pubs/ap/2026/ap2026-24.pdf",
+          "official": false,
+          "quote": "Los anuncios de voto de los grupos apuntan a un resultado dividido"
+        },
+        {
+          "name": "Infobae 2026-10-22",
+          "url": "https://www.infobae.com/espana/2026/10/22/los-propietarios-que-no-renueven-el-contrato-pero-quieran-seguir-alquilando-la-vivienda-tendran-que-indemnizar-al-inquilino-con-unos-15500-euros/",
+          "official": false,
+          "quote": "aprobados por el Consejo de Ministros todavía tienen que ser convalidados en la Diputación Permanente"
+        }
+      ]
+    },
+    "ES12": {
+      "claim": "UGT 與 CCOO 兩大工會號召 2026-11-11 為住房舉行全國大罷工，是 2012 年以來第一次大罷工",
+      "tokens": [
+        "11",
+        "11",
+        "2012"
+      ],
+      "sources": [
+        {
+          "name": "CCOO Madrid（主辦工會）",
+          "url": "https://madrid.ccoo.es/noticia:769369--CCOO_y_UGT_acuerdan_la_convocatoria_de_una_huelga_general_el_11_de_novimebre_de_2026&opc_id=711af56c79ef209f3b5831a8b38f22b1",
+          "official": true,
+          "quote": "CCOO y UGT acuerdan la convocatoria de una huelga general el 11 de noviembre de 2026"
+        },
+        {
+          "name": "Radio Insular",
+          "url": "https://www.facebook.com/RadioInsularFTV/posts/ugt-confirma-el-11-de-noviembre-como-fecha-para-la-huelga-general-por-la-viviend/1896056908042870/",
+          "official": false,
+          "quote": "UGT y CCOO convocan para el 11 de noviembre la primera huelga general desde 2012, en protesta por la crisis de la vivienda"
+        }
+      ]
+    },
+    "ES13": {
+      "claim": "西班牙 2026 年最低工資每月 1,221 歐元（一年 14 期）",
+      "tokens": [
+        "2026",
+        "1221",
+        "1,221",
+        "14"
+      ],
+      "sources": [
+        {
+          "name": "BOE RD 126/2026",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-3815",
+          "official": true,
+          "quote": "queda fijado en 40,70 euros/día o 1 221 euros/mes"
+        },
+        {
+          "name": "Iberley 2026-02-18",
+          "url": "https://www.iberley.es/noticias/publicado-salario-minimo-interprofesional-2026-36093",
+          "official": false,
+          "quote": "hasta los 1.221 euros mensuales en 14 pagas"
+        }
+      ]
+    },
+    "EC01": {
+      "claim": "試算：歐元以臺灣銀行 2026-10-23 即期匯率中間值約 36.4 換算——500 歐元≈1.8 萬、1,221 歐元≈4.4 萬、1,400 歐元≈5.1 萬、1,600 歐元≈5.8 萬新台幣、20 萬歐元≈728 萬新台幣",
+      "tokens": [
+        "36.4",
+        "500",
+        "1.8",
+        "1221",
+        "1,221",
+        "4.4",
+        "1400",
+        "1,400",
+        "5.1",
+        "1600",
+        "1,600",
+        "5.8",
+        "200000",
+        "728"
+      ],
+      "sources": [
+        {
+          "name": "臺灣銀行 歐元歷史牌告（2026-10-23 即期 36.2／36.6）",
+          "url": "https://rate.bot.com.tw/xrt/quote/ltm/EUR",
+          "official": true,
+          "quote": "2026/10/23 | Euro (EUR) | 35.58 | 36.92 | 36.2 | 36.6"
+        },
+        {
+          "name": "本頻道試算（金額 × 即期匯率中間值）",
+          "url": "https://rate.bot.com.tw/xrt/quote/2026-10-23/EUR/spot",
+          "official": true,
+          "quote": "即期 36.2／36.6"
+        }
+      ]
+    },
+    "ES14": {
+      "claim": "RDL 28/2026：主要住所租約滿 5 年（房東是公司則 7 年）後，雙方都沒通知就自動續約 5 年（7 年）；房東不續約須補償房客，取 12 個月租金或每住一年補一個月，以高者為準；預定 2026-11-15 生效（須先通過追認）",
+      "tokens": [
+        "28",
+        "5",
+        "7",
+        "12",
+        "1",
+        "11",
+        "15"
+      ],
+      "sources": [
+        {
+          "name": "BOE RDL 28/2026",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20822",
+          "official": true,
+          "quote": "se prorrogará tácita y obligatoriamente por plazos sucesivos de cinco años, o siete años si el arrendador fuese persona jurídica…indemnizar al arrendatario…doce mensualidades…o una mensualidad…por cada año que el arrendatario haya residido…entrará en vigor el 15 de noviembre de 2026"
+        },
+        {
+          "name": "Abogados Calvo 2026-10",
+          "url": "https://abogadoscalvo.com/decretos-alquiler-2026-prorroga-subida-renta/",
+          "official": false,
+          "quote": "renovación de 5 o 7 años"
+        },
+        {
+          "name": "LinkedIn（Borja G.）2026-10",
+          "url": "https://es.linkedin.com/pulse/espa%C3%B1a-ya-tiene-su-laboratorio-lo-que-dicen-los-datos-borjas-g--0fzue",
+          "official": false,
+          "quote": "El RDL 28/2026 entraría en vigor el 15 de noviembre, si se convalida"
+        }
+      ]
+    },
+    "ES15": {
+      "claim": "9-26 馬德里「不要再有下一個瑪莉卡門」遊行：主辦單位稱約 30 萬人，政府代表處統計約 2.5 萬人；之後太陽門廣場出現抗議營地，一週內超過 1,200 頂帳篷",
+      "tokens": [
+        "9",
+        "26",
+        "30",
+        "2.5",
+        "25000",
+        "1200",
+        "1,200",
+        "10",
+        "25"
+      ],
+      "sources": [
+        {
+          "name": "RTVE 2026-09-26",
+          "url": "https://www.rtve.es/noticias/20260926/manifestacion-vivienda-madrid-maricarmen-directo-cronica/17241527.shtml",
+          "official": false,
+          "quote": "Unas 300.000 personas, según la organización, y 25.000, según la Delegación del Gobierno…'Ni una Maricarmen más'"
+        },
+        {
+          "name": "El País 2026-10-25",
+          "url": "https://elpais.com/espana/madrid/2026-10-25/la-acampada-de-sol-ya-dura-mas-que-la-historica-protesta-del-15-m.html",
+          "official": false,
+          "quote": "decenas de miles de personas (25.000 según informó la delegación del Gobierno)…En una semana ya eran más de 1.200…Casi un mes después de aquella noche ya histórica, la acampada tiene vida propia",
+          "note": "El País 2026-10-25 報導營地仍在"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "人數為主辦單位與政府代表處說法，經媒體轉述"
+    },
+    "ES16": {
+      "claim": "INE：2022 年 7 月西班牙 CPI 年增 10.8%，是 1984 年以來最高",
+      "tokens": [
+        "2022",
+        "7",
+        "10.8",
+        "1984",
+        "7.6",
+        "2023"
+      ],
+      "sources": [
+        {
+          "name": "INE CPI 快報 2022-07",
+          "url": "https://www.ine.es/daco/daco42/daco421/ipcia0722.pdf",
+          "official": true,
+          "quote": "La inflación anual estimada del IPC en julio de 2022 es del 10,8%"
+        },
+        {
+          "name": "RTVE 2022-08-12",
+          "url": "https://www.rtve.es/noticias/20220812/ipc/2396102.shtml",
+          "official": false,
+          "quote": "El INE confirma la subida del IPC al 10,8% en julio, su nivel más alto desde 1984"
+        },
+        {
+          "name": "RDL 29/2026 序言（BOE）",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20823",
+          "official": true,
+          "quote": "Tras el inicio del conflicto en Ucrania, la inflación llegó a situarse en el 10,8% y la subyacente en el 7,6% en los años 2022 y 2023"
+        }
+      ]
+    },
+    "ES17": {
+      "claim": "Eurostat：2025 年歐盟各國年輕人離家年齡，從克羅埃西亞 31.5 歲到芬蘭 21.3 歲",
+      "tokens": [
+        "2025",
+        "31.5",
+        "21.3"
+      ],
+      "sources": [
+        {
+          "name": "Eurostat Statistics Explained",
+          "url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Young_people_-_housing_conditions",
+          "official": true,
+          "quote": "In 2025, people across the EU left their parental home at an average age of 26.3 years, ranging from 31.5 years in Croatia to 21.3 years in Finland"
+        },
+        {
+          "name": "Eurostat 新聞 2026-09-15",
+          "url": "https://ec.europa.eu/eurostat/web/products-eurostat-news/w/ddn-20260915-1",
+          "official": true,
+          "quote": "young people in the EU left their parents' home at an average age of 26.3 years"
+        }
+      ]
+    },
+    "ES18": {
+      "claim": "瑪莉卡門住的約 90 平方公尺公寓被不動產公司 Urbagestión 買下，公司曾開價約 25 萬歐元要她買下；前後 4 次驅逐行動，9-23 是第四次",
+      "tokens": [
+        "90",
+        "25",
+        "4",
+        "9",
+        "23"
+      ],
+      "sources": [
+        {
+          "name": "El País 2026-10-07 時間軸",
+          "url": "https://elpais.com/espana/madrid/2026-10-07/cronologia-del-caso-maricarmen-de-cuatro-intentos-de-desahucio-a-un-movimiento-nacional-por-la-vivienda.html",
+          "official": false,
+          "quote": "el piso, de unos 90 metros cuadrados, lo compra una empresa inmobiliaria, que le ofrece adquirir la vivienda por unos 250.000 euros…Urbagestión Desarrollo e Inversión S.L"
+        },
+        {
+          "name": "El País 2026-10-25",
+          "url": "https://elpais.com/espana/madrid/2026-10-25/la-acampada-de-sol-ya-dura-mas-que-la-historica-protesta-del-15-m.html",
+          "official": false,
+          "quote": "El 23 de septiembre, Maricarmen fue desahuciada de su piso de Retiro ―era el cuarto intento―"
+        },
+        {
+          "name": "RTVE 2026-09-26",
+          "url": "https://www.rtve.es/noticias/20260926/manifestacion-vivienda-madrid-maricarmen-directo-cronica/17241527.shtml",
+          "official": false,
+          "quote": "una mujer de 87 años y con discapacidad…donde residía desde hacía más de 70 años"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "個人事件細節僅見媒體"
+    },
+    "ES19": {
+      "claim": "RDL 29/2026 序言直接寫：María del Carmen Abascal 的驅逐喚醒了集體意識；媒體與抗議者稱這次法令為「瑪莉卡門法令」",
+      "tokens": [
+        "29",
+        "10"
+      ],
+      "sources": [
+        {
+          "name": "RDL 29/2026 序言（BOE）",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20823",
+          "official": true,
+          "quote": "El desahucio de María del Carmen Abascal despertó la conciencia colectiva"
+        },
+        {
+          "name": "RTVE 2026-09-26",
+          "url": "https://www.rtve.es/noticias/20260926/manifestacion-vivienda-madrid-maricarmen-directo-cronica/17241527.shtml",
+          "official": false,
+          "quote": "Los acampados piden la aprobación el martes del llamado decreto Maricarmen"
+        }
+      ]
+    },
+    "ES20": {
+      "claim": "瑪莉卡門從醫院錄影片呼籲民眾上街，說希望她的遭遇能讓人爭取修改允許她被驅逐的法律；抗議營地的訴求包括無限期租約、沒有替代住處就暫停驅逐、凍結房租",
+      "tokens": [],
+      "sources": [
+        {
+          "name": "RTVE 2026-09-26",
+          "url": "https://www.rtve.es/noticias/20260926/manifestacion-vivienda-madrid-maricarmen-directo-cronica/17241527.shtml",
+          "official": false,
+          "quote": "\"Quiero que sirva para que la gente luche para que se cambien las leyes que han permitido mi desahucio\"…contratos indefinidos, suspensión de todos los desahucios sin alternativa habitacional…congelación de precios de alquiler"
+        },
+        {
+          "name": "Sindicato de Inquilinas（Instagram）2026-09-26",
+          "url": "https://www.instagram.com/reel/DdwD4tUu5c1/",
+          "official": false,
+          "quote": "Necesitamos un decreto que impida cualquier desahucio sin alternativa habitacional, garantice contratos estables, congele los alquileres"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "個人談話與抗議訴求僅見媒體與主辦團體"
+    },
+    "EC02": {
+      "claim": "試算：月租 1,000 歐元，適用 2% 上限時最多調到 1,020 歐元",
+      "tokens": [
+        "1000",
+        "1,000",
+        "2",
+        "1020",
+        "1,020"
+      ],
+      "sources": [
+        {
+          "name": "RDL 29/2026 第六附加條款（BOE）",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20823",
+          "official": true,
+          "quote": "el incremento de la renta a aplicar no podrá ser superior al dos por ciento"
+        },
+        {
+          "name": "本頻道試算（1,000 × 1.02）",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20823#df-6",
+          "official": true,
+          "quote": "no podrá ser superior al dos por ciento"
+        }
+      ]
+    },
+    "ES21": {
+      "claim": "西班牙央行：2024 年在馬拉加、馬德里、巴塞隆納租屋的家庭，大約要 10 年淨收入才買得起一間房子",
+      "tokens": [
+        "2024",
+        "10"
+      ],
+      "sources": [
+        {
+          "name": "西班牙央行 2025 年報簡報",
+          "url": "https://www.bde.es/f/webbe/SES/Secciones/Publicaciones/PublicacionesAnuales/InformesAnuales/25/Fich/IIPP-2026-06-18-lopez-salido-es-or.pdf",
+          "official": true,
+          "quote": "Años de renta neta para comprar una vivienda en 2024 (años) | Hogares en Málaga, Madrid y Barcelona en alquiler | 10"
+        },
+        {
+          "name": "Cadena SER 2026-06-19",
+          "url": "https://cadenaser.com/andalucia/2026/06/19/el-banco-de-espana-situa-a-malaga-como-la-ciudad-que-exige-mas-esfuerzo-para-comprar-una-vivienda-ser-malaga/",
+          "official": false,
+          "quote": "hay que destinar un promedio de 10 años a pagar el piso"
+        }
+      ]
+    },
+    "ES22": {
+      "claim": "西班牙央行：2025 年舊城觀光區的出租住宅中，觀光住宅占比——塞維亞 44.9%、馬拉加 44.6%、巴塞隆納 22.2%、馬德里 14.9%；馬拉加整個都會區也有 28.9%",
+      "tokens": [
+        "2025",
+        "44.9",
+        "44.6",
+        "22.2",
+        "14.9",
+        "28.9"
+      ],
+      "sources": [
+        {
+          "name": "西班牙央行 2025 年報簡報",
+          "url": "https://www.bde.es/f/webbe/SES/Secciones/Publicaciones/PublicacionesAnuales/InformesAnuales/25/Fich/IIPP-2026-06-18-lopez-salido-es-or.pdf",
+          "official": true,
+          "quote": "Málaga | 28.9 | 44.6 | Sevilla | 12.1 | 44.9 | Barcelona | 4.0 | 22.2 | Madrid | 2.8 | 14.9"
+        },
+        {
+          "name": "RDL 29/2026 序言（BOE）",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20823",
+          "official": true,
+          "quote": "Sevilla y Málaga donde casi una de cada dos viviendas del total de alquiladas en sus centros históricos, es de uso turístico"
+        }
+      ]
+    },
+    "ES23": {
+      "claim": "RDL 29/2026：2026-10-08 至 2027-12-31，把住宅賣給推動社會與平價住宅的公部門單位，賣價 20 萬歐元以下資本利得 100% 免稅，80 萬歐元以下部分免稅；BOE 序言稱買方須讓房屋永久受保護",
+      "tokens": [
+        "2027",
+        "20",
+        "200000",
+        "200,000",
+        "80",
+        "800000",
+        "800,000",
+        "100"
+      ],
+      "sources": [
+        {
+          "name": "西班牙國稅局 RDL 29/2026 稅務重點（PDF）",
+          "url": "https://sede.agenciatributaria.gob.es/static_files/Sede/Actualidad/Novedades/2026/BOLINFORM_RDL%2029_2026.pdf",
+          "official": true,
+          "quote": "desde la entrada en vigor…(8 de octubre de 2026), hasta el 31 de diciembre de 2027, a entes públicos…cuya finalidad es la promoción y la gestión de vivienda social y asequible, siempre que el valor de transmisión total de la vivienda sea inferior a 800.000 euros estará exenta: Siempre que dicho valor de transmisión sea igual o inferior a 200.000 euros, en un 100%"
+        },
+        {
+          "name": "RDL 29/2026 序言（BOE）",
+          "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20823",
+          "official": true,
+          "quote": "destaca la exención en el impuesto por ganancia patrimonial en la venta de una vivienda cuando el comprador sea una administración pública o entidad dependiente que fije una protección permanente e indefinida del inmueble"
+        }
+      ]
+    }
+  },
+  "rejected": {
+    "R01": {
+      "claim": "受益人比被保險人早過世，保險金就變成遺產",
+      "why": "與評議中心109年評字第2632號決定書不符：多數保單條款約定原受益人身故時由法定繼承人遞補為受益人，評議書明言此情形『與保險法第113條規定…有別』、『身故保險金給付，與遺產分配不同』。不可使用。"
+    },
+    "R02": {
+      "claim": "最低稅負制保險死亡給付免稅額 3,740 萬",
+      "why": "數字本身已雙重驗證（財政部稅務入口網 1716、115年度公告），但屬所得基本稅額、不是遺產稅，放進 60 秒遺產稅短片容易混淆，這次不用。"
+    }
+  }
+}
