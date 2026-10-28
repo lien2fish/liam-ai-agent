@@ -1,8 +1,8 @@
-// 旭和官網訂購表單 → 寫進 Notion「旭和客戶／旭和訂單」＋推 LINE 給 Lien。
+// 炘和官網訂購表單 → 寫進 Notion「炘和客戶／炘和訂單」＋推 LINE 給 Lien。
 // 價格一律以站上 products.json 為準，不採用瀏覽器送來的數字。
 // 環境變數（Pages 專案 secret）：
 //   LINE_NOTIFY_URL、LINE_NOTIFY_TOKEN
-//   NOTION_TOKEN —— ⛔ 只連「旭和管理顧問」頁面的專用 integration，不可用鉅鑫那把（它看得到整個鉅鑫 CRM）
+//   NOTION_TOKEN —— ⛔ 只連「炘和管理顧問」頁面的專用 integration，不可用鉅鑫那把（它看得到整個鉅鑫 CRM）
 //   NOTION_API —— 選填，本機測試時指向假伺服器
 
 const CUSTOMERS_DB = "9cb11bd8a1944a5099b82564f887ab21";
@@ -167,7 +167,7 @@ export async function onRequestPost({ request, env }) {
   }
 
   const lines = [
-    "🛒 旭和官網新訂單",
+    "🛒 炘和官網新訂單",
     `${p.name}${c ? `（${c.festival}檔期）` : ""}`,
     `NT$ ${price.toLocaleString("en-US")} × ${qty} ＝ NT$ ${(price * qty).toLocaleString("en-US")}`,
     "",

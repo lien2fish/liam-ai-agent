@@ -1,4 +1,4 @@
-"""旭和官網商品頁＋IG 草稿產生器。
+"""炘和官網商品頁＋IG 草稿產生器。
 
 資料：design/xuhe_products/<slug>.json，原圖：design/xuhe_products/src/<slug>.<jpg|png|heic>
 輸出：design/xuhe_site/products.html、p/<slug>.html、img/<slug>.jpg（只含 status=published）
@@ -59,7 +59,7 @@ PLACEHOLDER = "＿＿"
 FORBIDDEN_ALL = [
     (r"NT\$|\$\s?\d|\d[\d,]*\s*元|售價|特價|優惠|折扣|限時", "不放價格與促銷用語"),
     (r"生食級|可生食", "「生食級」未確認法規依據前不准出現"),
-    (r"自家漁船|自有漁船", "漁船是鉅鑫的資產，旭和不能寫「自家漁船」"),
+    (r"自家漁船|自有漁船", "漁船是鉅鑫的資產，炘和不能寫「自家漁船」"),
     (r"\d+\s*艘", "不寫死合作漁船數量"),
     (r"老闆.{0,6}出海", "老闆本人不出海"),
 ]
@@ -262,7 +262,7 @@ def page(title, body, depth=0, desc=""):
 <body>
 <nav class="nav">
   <div class="wrap">
-    <a class="brand" href="{up}index.html"><img class="mark" src="{up}mark.svg" alt=""><b>旭和</b><small>XUHE CONSULTING</small></a>
+    <a class="brand" href="{up}index.html"><img class="mark" src="{up}mark.svg" alt=""><b>炘和</b><small>XUHE CONSULTING</small></a>
     <ul>
       <li class="opt"><a href="{up}index.html#about">關於</a></li>
       <li><a href="{up}index.html#services">服務</a></li>
@@ -276,7 +276,7 @@ def page(title, body, depth=0, desc=""):
 </main>
 <footer>
   <div class="wrap">
-    <p>© 2026 旭和管理顧問（籌備中）</p>
+    <p>© 2026 炘和管理顧問（籌備中）</p>
     <p class="legal">{WINE_WARNING}</p>
   </div>
 </footer>
@@ -345,7 +345,7 @@ def detail_html(d):
   </div>
 </article>"""
     return page(
-        f'{d["name"]}｜旭和管理顧問',
+        f'{d["name"]}｜炘和管理顧問',
         body,
         depth=1,
         desc=d.get("subtitle") or d["intro"][:80],
@@ -377,7 +377,7 @@ def catalog_html(items):
     {content}
   </div>
 </section>"""
-    return page("商品介紹｜旭和管理顧問", body, desc="旭和經手的海鮮、葡萄酒與台灣茶。")
+    return page("商品介紹｜炘和管理顧問", body, desc="炘和經手的海鮮、葡萄酒與台灣茶。")
 
 
 def build(out, include_drafts):
@@ -497,7 +497,7 @@ def render_poster(d, c):
     if price:
         draw.text((70, y + 6), f"NT$ {price:,}", font=f_price, fill=accent)
         y += 86
-    footer = "旭和管理顧問　官網訂購" if price else "旭和管理顧問"
+    footer = "炘和管理顧問　官網訂購" if price else "炘和管理顧問"
     draw.text((70, y + 14), footer, font=f_small, fill=cream)
     if is_wine:
         draw.text((70, y + 60), WINE_WARNING, font=f_small, fill=cream)
@@ -559,7 +559,7 @@ def ig(slug):
     for line in name_lines:
         draw.text((60, y), line, font=f_name, fill=(246, 243, 236))
         y += 74
-    draw.text((60, y + 6), "旭和管理顧問", font=f_small, fill=(224, 138, 92))
+    draw.text((60, y + 6), "炘和管理顧問", font=f_small, fill=(224, 138, 92))
     if is_wine:
         draw.text((60, y + 70), WINE_WARNING, font=f_small, fill=(246, 243, 236))
     out = DATA / "ig" / slug
