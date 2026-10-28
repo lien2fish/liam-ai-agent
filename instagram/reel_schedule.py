@@ -6,6 +6,7 @@
   python3 instagram/reel_schedule.py list
   python3 instagram/reel_schedule.py cancel <id>
   python3 instagram/reel_schedule.py probe <id>   # 只建 container 驗 IG 抓得到，不發布
+  add 加 --no-fb 只發 IG（預設同步發到 FB 粉絲專頁 Reels）
   python3 instagram/reel_schedule.py run --queue ws/ig_schedule/queue.json   # workflow 用
 
 ⛔ IG 發出去 API 刪不掉，所以：
@@ -151,6 +152,45 @@ def creds():
     return c["long_lived_user_token"], c["ig_account_id"]
 
 
+def page_token(user_tok):
+    """專頁 token 每次用 IG 的 user token 現換，不另存 FB_PAGE_TOKEN（那把會隨 session 作廢）。"""
+    pid = os.environ.get("FB_PAGE_ID") or json.load(
+        open(os.path.join(REPO, "config", "instagram_config.json"))
+    )["page_id"]
+    return pid, get(f"{GRAPH}/{pid}?fields=access_token&access_token={user_tok}")["access_token"]
+
+
+def fb_reel(user_tok, item, state="PUBLISHED"):
+    """發到 FB 粉絲專頁 Reels。⚠️ 不走 IG 的 cross_post_ids——每日發文用了它，專頁上一則都沒有。"""
+    pid, pt = page_token(user_tok)
+    head_ = item["caption"][:30]
+    for r in get(f"{GRAPH}/{pid}/video_reels?fields=description,created_time&limit=5&access_token={pt}")["data"]:
+        age = datetime.now(timezone.utc) - datetime.strptime(r["created_time"], "%Y-%m-%dT%H:%M:%S%z")
+        if age < timedelta(minutes=10) and (r.get("description") or "").startswith(head_):
+            return r["id"], "已存在（帳號層自動分享），未重發"
+    vid = post(f"{pid}/video_reels", {"upload_phase": "start", "access_token": pt})["video_id"]
+    req = urllib.request.Request(
+        f"https://rupload.facebook.com/video-upload/v19.0/{vid}",
+        method="POST",
+        headers={"Authorization": f"OAuth {pt}", "file_url": item["url"]},
+    )
+    if not json.load(urllib.request.urlopen(req, timeout=120)).get("success"):
+        raise RuntimeError("FB 抓檔失敗")
+    post(f"{pid}/video_reels", {"upload_phase": "finish", "video_id": vid,
+         "video_state": state, "description": item["caption"], "access_token": pt})  # fmt: skip
+    for i in range(60):
+        time.sleep(5)
+        st = get(f"{GRAPH}/{vid}?fields=status,permalink_url&access_token={pt}")
+        vs = st["status"].get("video_status")
+        print(f"  [FB {i * 5 + 5:>3}s] {vs}", flush=True)
+        if vs == "error":
+            raise RuntimeError(f"FB 處理失敗：{st['status']}")
+        if vs == "ready":
+            link = st.get("permalink_url") or ""
+            return vid, link if link.startswith("http") else "https://www.facebook.com" + link
+    raise RuntimeError("FB 處理逾時（5 分鐘）")
+
+
 def get(url):
     return json.load(urllib.request.urlopen(url, timeout=60))
 
@@ -210,7 +250,7 @@ def parse_at(s):
     return at
 
 
-def cmd_add(video, caption_file, when, yes=False):
+def cmd_add(video, caption_file, when, yes=False, no_fb=False):
     at = parse_at(when)
     caption = read_caption(caption_file)
     info = probe(video)
@@ -241,7 +281,7 @@ def cmd_add(video, caption_file, when, yes=False):
     print(
         f"影片：{os.path.basename(video)}  {info['w']}×{info['h']}  {info['duration']:.1f} 秒  {size / 1e6:.1f}MB"
     )
-    print(f"發布：{at:%Y-%m-%d (%a) %H:%M} 台灣時間")
+    print(f"發布：{at:%Y-%m-%d (%a) %H:%M} 台灣時間　{'只發 IG' if no_fb else 'IG＋FB 粉絲專頁'}")
     print(f"文案（{len(caption)} 字）：\n{'-' * 40}\n{caption}\n{'-' * 40}")
     for w in warns:
         print(f"⚠️ {w}")
@@ -269,6 +309,7 @@ def cmd_add(video, caption_file, when, yes=False):
         "duration": round(info["duration"], 2),
         "caption": caption,
         "status": "pending",
+        "fb": not no_fb,
         "added": datetime.now(TW).isoformat(timespec="seconds"),
     }
     items.append(item)
@@ -384,17 +425,28 @@ def cmd_run(qpath):
             if abs(dur - it["duration"]) > 1:
                 raise RuntimeError(f"抓回來 {dur:.1f} 秒，排程時 {it['duration']} 秒")
             it["verified"] = f"{m.get('media_type')} {dur:.1f}s"
-            try:
-                r2_delete(it["key"])
-            except Exception as e:
-                it["note"] = f"R2 刪檔失敗（45 天後自動刪）：{e}"[:300]
-            notify(f"✅ IG 預約 Reels 已發布\n{label}\n{it['permalink']}")
+            msg = f"✅ IG 預約 Reels 已發布\n{label}\n{it['permalink']}"
         except Exception as e:
             it["note"] = f"已發布但驗收失敗：{e}"[:300]
-            notify(
-                f"⚠️ IG 預約 Reels 已發布，但驗收沒過，請手動看一下\n{label}\n{e}\n{it.get('permalink') or ''}"
-            )
+            msg = f"⚠️ IG 預約 Reels 已發布，但驗收沒過，請手動看一下\n{label}\n{e}\n{it.get('permalink') or ''}"
             failed = True
+
+        # FB 是附帶的：IG 已經發了，FB 失敗只通知，不影響狀態
+        if it.get("fb", True):
+            try:
+                it["fb_video_id"], it["fb_permalink"] = fb_reel(tok, it)
+                msg += f"\nFB：{it['fb_permalink']}"
+            except Exception as e:
+                it["fb_error"] = str(e)[:300]
+                msg += f"\n❌ FB 沒發成功：{e}"
+                failed = True
+
+        # R2 要等 IG、FB 都抓完檔才能刪
+        try:
+            r2_delete(it["key"])
+        except Exception as e:
+            it["r2_note"] = f"R2 刪檔失敗（45 天後自動刪）：{e}"[:300]
+        notify(msg)
         save(qpath, items, f"ig 排程驗收：{it['video']}")
         print(f"{it['status']} {label} {it.get('permalink')} {it.get('note', '')}")
     if failed:
@@ -406,7 +458,7 @@ if __name__ == "__main__":
     if not a:
         raise SystemExit(__doc__)
     if a[0] == "add" and len(a) >= 4:
-        cmd_add(a[1], a[2], a[3], yes="--yes" in a)
+        cmd_add(a[1], a[2], a[3], yes="--yes" in a, no_fb="--no-fb" in a)
     elif a[0] == "list":
         cmd_list()
     elif a[0] == "cancel" and len(a) == 2:
