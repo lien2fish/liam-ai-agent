@@ -126,11 +126,11 @@ def query_all(dbid):
 def main():
     today = date.today()
     rows = query_all(CUST_DB)
-    # 已移轉旭和的客人改由旭和聯繫，鉅鑫這邊不提醒，避免兩家公司重複找同一位（2026-10-14）
+    # 已移轉炘和的客人改由炘和聯繫，鉅鑫這邊不提醒，避免兩家公司重複找同一位（2026-10-14）
     rows = [
         r
         for r in rows
-        if "已移轉旭和" not in r["properties"] or not val(r["properties"]["已移轉旭和"])
+        if "已移轉炘和" not in r["properties"] or not val(r["properties"]["已移轉炘和"])
     ]
     due = []
     for row in rows:

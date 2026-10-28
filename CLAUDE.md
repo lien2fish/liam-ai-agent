@@ -99,7 +99,7 @@
 | `gmail-ops` | Gmail 清理／新聞摘要腳本、OAuth 重新授權 |
 | `meeting-minutes` | 會議錄音轉會議記錄 PDF |
 | `company-docs` | 報價單、發票、合約等正式文件（公司統編／帳戶） |
-| `xuhe-product` | Lien 丟商品圖要上**旭和**官網或做旭和 IG 貼文——查證規則、商品 JSON、兩道人工確認關卡 |
+| `xuhe-product` | Lien 丟商品圖要上**炘和**官網或做炘和 IG 貼文——查證規則、商品 JSON、兩道人工確認關卡 |
 | `memory-extract` | Lien 說「萃取記憶」，或週報提醒有對話尚未萃取——從工作日誌挑出沒記下來的偏好與決定，**勾選後才寫入** |
 | `codex-delegate`（全域，在 `~/.claude/skills/`）| 考慮把工作交給 Codex、要不要先跟它討論、派工／審核／收尾流程，或派工紀錄滿 10 筆要檢視門檻 |
 
