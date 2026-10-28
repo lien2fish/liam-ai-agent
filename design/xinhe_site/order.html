@@ -14,7 +14,7 @@
 <body>
 <nav class="nav">
   <div class="wrap">
-    <a class="brand" href="index.html"><img class="mark" src="mark.svg" alt=""><b>炘和</b><small>XUHE CONSULTING</small></a>
+    <a class="brand" href="index.html"><img class="mark" src="mark.svg" alt=""><b>炘和</b><small>XINHE CONSULTING</small></a>
     <ul>
       <li class="opt"><a href="index.html#about">關於</a></li>
       <li><a href="index.html#services">服務</a></li>
@@ -92,9 +92,9 @@
   try {
     products = await (await fetch("products.json", { cache: "no-store" })).json();
   } catch (e) {}
-  const today = xuheToday();
+  const today = xinheToday();
   const current = (p) => {
-    const c = xuheActive(p.campaigns, today);
+    const c = xinheActive(p.campaigns, today);
     return { price: (c && c.price) || p.price, festival: c ? c.festival : "" };
   };
   products = products.filter((p) => current(p).price);
@@ -113,7 +113,7 @@
   const showPrice = () => {
     const p = products.find((x) => x.slug === select.value);
     const cur = current(p);
-    unit.textContent = (cur.festival ? cur.festival + "檔期　" : "") + "單價 " + xuhePrice(cur.price);
+    unit.textContent = (cur.festival ? cur.festival + "檔期　" : "") + "單價 " + xinhePrice(cur.price);
   };
   select.addEventListener("change", showPrice);
   showPrice();

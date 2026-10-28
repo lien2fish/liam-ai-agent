@@ -109,7 +109,7 @@ async function pushLine(env, message) {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + env.LINE_NOTIFY_TOKEN,
-        "User-Agent": "xuhe-order/1",
+        "User-Agent": "xinhe-order/1",
       },
       body: JSON.stringify({ text: message }),
     });

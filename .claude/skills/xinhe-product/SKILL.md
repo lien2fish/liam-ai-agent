@@ -1,12 +1,12 @@
 ---
-name: xuhe-product
-description: 炘和管理顧問「丟圖→查資料→官網商品頁＋IG 草稿」流程。Lien 丟商品照片說要上炘和官網、做商品介紹、或要炘和的 IG 貼文時載入。含查證規則、商品 JSON 格式、tools/xuhe_product.py 指令、兩道人工確認關卡。
+name: xinhe-product
+description: 炘和管理顧問「丟圖→查資料→官網商品頁＋IG 草稿」流程。Lien 丟商品照片說要上炘和官網、做商品介紹、或要炘和的 IG 貼文時載入。含查證規則、商品 JSON 格式、tools/xinhe_product.py 指令、兩道人工確認關卡。
 ---
 
 # 炘和商品上架流程
 
 ```
-Lien 丟圖 → 辨識商品 → 上網查證（每條附出處）→ 寫 design/xuhe_products/<slug>.json
+Lien 丟圖 → 辨識商品 → 上網查證（每條附出處）→ 寫 design/xinhe_products/<slug>.json
 → preview（Lien 看）→ Lien 說 OK → publish＋部署官網
 → ig 草稿（Lien 看）→ Lien 說 OK → 發 IG（⏸️ 帳號未定，見最下方）
 ```
@@ -41,7 +41,7 @@ Lien 丟圖 → 辨識商品 → 上網查證（每條附出處）→ 寫 design
 
 ## 3. 商品 JSON
 
-放 `design/xuhe_products/<slug>.json`，原圖放 `design/xuhe_products/src/<slug>.jpg`（png／heic 也可）。
+放 `design/xinhe_products/<slug>.json`，原圖放 `design/xinhe_products/src/<slug>.jpg`（png／heic 也可）。
 slug 用英文小寫加連字號，例如 `flechas-gran-malbec-2019`。
 
 ```json
@@ -87,18 +87,18 @@ slug 用英文小寫加連字號，例如 `flechas-gran-malbec-2019`。
 ## 4. 指令
 
 ```bash
-python3 tools/xuhe_product.py check <slug>     # 護欄
-python3 tools/xuhe_product.py preview <slug>   # 含草稿，Safari 開預覽（不動官網）
-python3 tools/xuhe_product.py publish <slug>   # 有＿＿或違規就擋；過了才改 published 並重建官網
-python3 tools/xuhe_product.py ig <slug>        # IG 草稿 → design/xuhe_products/ig/<slug>/（不進版控）
-python3 tools/xuhe_product.py poster <slug> [起日]  # 節慶行銷圖＋IG 草稿（預設：進行中或下一檔）
+python3 tools/xinhe_product.py check <slug>     # 護欄
+python3 tools/xinhe_product.py preview <slug>   # 含草稿，Safari 開預覽（不動官網）
+python3 tools/xinhe_product.py publish <slug>   # 有＿＿或違規就擋；過了才改 published 並重建官網
+python3 tools/xinhe_product.py ig <slug>        # IG 草稿 → design/xinhe_products/ig/<slug>/（不進版控）
+python3 tools/xinhe_product.py poster <slug> [起日]  # 節慶行銷圖＋IG 草稿（預設：進行中或下一檔）
 ```
 
 行銷圖＝實拍照＋節日配色色塊＋檔期標題＋價格。**不用 AI 生圖**（2026-10-14 Lien 選定：商品圖不能跟實物不符）。
 
 ## 訂購
 
-`order.html`＋`design/xuhe_pages/functions/api/order.js`：表單送出 → 寫進 Notion → 推 LINE（`/notify`）。
+`order.html`＋`design/xinhe_pages/functions/api/order.js`：表單送出 → 寫進 Notion → 推 LINE（`/notify`）。
 
 **Notion（2026-10-14 建）**：私人頁「炘和管理顧問」底下的「炘和客戶」（`9cb11bd8a1944a5099b82564f887ab21`）
 與「炘和訂單」（`7a048786067b4d30bf6822f1d0d98501`），**跟鉅鑫 CRM 完全分開**（Lien 選定）。
@@ -121,14 +121,14 @@ python3 tools/xuhe_product.py poster <slug> [起日]  # 節慶行銷圖＋IG 草
 建好之後：
 
 ```bash
-cd design/xuhe_pages && npx wrangler pages deploy ../xuhe_site --project-name=<待定> --branch=main --commit-dirty=true
+cd design/xinhe_pages && npx wrangler pages deploy ../xinhe_site --project-name=<待定> --branch=main --commit-dirty=true
 ```
 
-⚠️ **一定要在 `design/xuhe_pages/` 裡執行**——wrangler 從「目前資料夾」找 `functions/`，在別處執行訂購 API 會整個不見。
-`functions/` 刻意不放進 `xuhe_site/`，否則原始碼會被當成網頁公開。
+⚠️ **一定要在 `design/xinhe_pages/` 裡執行**——wrangler 從「目前資料夾」找 `functions/`，在別處執行訂購 API 會整個不見。
+`functions/` 刻意不放進 `xinhe_site/`，否則原始碼會被當成網頁公開。
 Pages 專案要設兩個 secret：`LINE_NOTIFY_URL`、`LINE_NOTIFY_TOKEN`（值同 GitHub Secrets）。
 
-本機測試（2026-10-14 驗證過）：`cd design/xuhe_pages && npx wrangler pages dev <網站資料夾> --binding LINE_NOTIFY_URL=http://127.0.0.1:9999 --binding LINE_NOTIFY_TOKEN=test`，
+本機測試（2026-10-14 驗證過）：`cd design/xinhe_pages && npx wrangler pages dev <網站資料夾> --binding LINE_NOTIFY_URL=http://127.0.0.1:9999 --binding LINE_NOTIFY_TOKEN=test`，
 推播接到本機假接收端，不會真的發到 LINE。
 
 部署完要**把線上的商品頁抓回來確認**，不是看指令回 Success。
