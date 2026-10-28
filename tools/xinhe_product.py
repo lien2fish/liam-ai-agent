@@ -1,15 +1,15 @@
 """炘和官網商品頁＋IG 草稿產生器。
 
-資料：design/xuhe_products/<slug>.json，原圖：design/xuhe_products/src/<slug>.<jpg|png|heic>
-輸出：design/xuhe_site/products.html、p/<slug>.html、img/<slug>.jpg（只含 status=published）
-IG 草稿：design/xuhe_products/ig/<slug>/post.jpg＋caption.txt（不進版控）
+資料：design/xinhe_products/<slug>.json，原圖：design/xinhe_products/src/<slug>.<jpg|png|heic>
+輸出：design/xinhe_site/products.html、p/<slug>.html、img/<slug>.jpg（只含 status=published）
+IG 草稿：design/xinhe_products/ig/<slug>/post.jpg＋caption.txt（不進版控）
 
-  python3 tools/xuhe_product.py check <slug>     # 護欄檢查
-  python3 tools/xuhe_product.py preview [slug]   # 含草稿，建到暫存目錄並用 Safari 開
-  python3 tools/xuhe_product.py ig <slug>        # 產生 IG 草稿
-  python3 tools/xuhe_product.py poster <slug> [檔期起日]  # 節慶行銷圖＋IG 草稿（預設：進行中或下一檔）
-  python3 tools/xuhe_product.py publish <slug>   # 改成 published 並重建官網
-  python3 tools/xuhe_product.py build            # 只重建官網
+  python3 tools/xinhe_product.py check <slug>     # 護欄檢查
+  python3 tools/xinhe_product.py preview [slug]   # 含草稿，建到暫存目錄並用 Safari 開
+  python3 tools/xinhe_product.py ig <slug>        # 產生 IG 草稿
+  python3 tools/xinhe_product.py poster <slug> [檔期起日]  # 節慶行銷圖＋IG 草稿（預設：進行中或下一檔）
+  python3 tools/xinhe_product.py publish <slug>   # 改成 published 並重建官網
+  python3 tools/xinhe_product.py build            # 只重建官網
 
 價格只能來自 Lien（price／campaigns[].price 欄位），文案裡不准出現價格數字。
 官網把所有檔期寫進頁面，由瀏覽器依當天日期切換，不必每個檔期重新部署。
@@ -28,8 +28,8 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA = ROOT / "design" / "xuhe_products"
-SITE = ROOT / "design" / "xuhe_site"
+DATA = ROOT / "design" / "xinhe_products"
+SITE = ROOT / "design" / "xinhe_site"
 
 
 def find_font():
@@ -217,7 +217,7 @@ def check(d, for_publish=False):
         if not str(s.get("url", "")).startswith("http"):
             errors.append(f"出處沒有網址：{s}")
     if not source_image(d.get("slug", "")):
-        errors.append("找不到原圖 design/xuhe_products/src/<slug>.jpg")
+        errors.append("找不到原圖 design/xinhe_products/src/<slug>.jpg")
     body = texts(d)
     rules = FORBIDDEN_ALL + (FORBIDDEN_WINE if d.get("category") == "wine" else [])
     for pattern, why in rules:
@@ -262,7 +262,7 @@ def page(title, body, depth=0, desc=""):
 <body>
 <nav class="nav">
   <div class="wrap">
-    <a class="brand" href="{up}index.html"><img class="mark" src="{up}mark.svg" alt=""><b>炘和</b><small>XUHE CONSULTING</small></a>
+    <a class="brand" href="{up}index.html"><img class="mark" src="{up}mark.svg" alt=""><b>炘和</b><small>XINHE CONSULTING</small></a>
     <ul>
       <li class="opt"><a href="{up}index.html#about">關於</a></li>
       <li><a href="{up}index.html#services">服務</a></li>
@@ -433,7 +433,7 @@ def preview(slug=None):
             print("⚠️ 護欄提醒（預覽照常產生）：")
             for x in errs:
                 print(f"   - {x}")
-    out = Path(tempfile.gettempdir()) / "xuhe_preview"
+    out = Path(tempfile.gettempdir()) / "xinhe_preview"
     subprocess.run(
         [
             "rsync",
