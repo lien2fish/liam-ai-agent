@@ -18,7 +18,7 @@ preview_urls = false
 #    04:07→12:07 股市日報          10:08→18:08 限動預告
 #    （02:07 原為 YT 自動影片，2026-09-05 停排程；cron 仍會打但對不到 key 而空轉）
 #    02:30→台灣 10:30 稽核上午那批   12:30→台灣 20:30 稽核下午兩支＋留言回覆
-#    每 :00 與 :30 → IG 留言回覆（每 30 分鐘）；每 :00 → YT 留言回覆（每小時）
+#    每 :00 與 :30 → IG 留言回覆、IG Reels 預約發布（每 30 分鐘）；每 :00 → YT 留言回覆（每小時）
 #    以上兩支跟時段表無關，不進 SCHEDULE。
 #
 # ⚠️ 一個 Worker 的 cron trigger 條目數有上限，所以下面把時段擠成 3 條，
@@ -27,6 +27,11 @@ preview_urls = false
 #
 # ⛔ 第二條**不可以**含 30 分——那會跟 */30 在同一分鐘重疊，Cloudflare 會送兩次
 #    scheduled 事件，稽核推兩則通知、留言回覆跑兩次。:30 一律交給 */30 那條。
+# IG Reels 預約發布的影片暫存（instagram/reel_schedule.py 上傳、發完由 /r2/delete 刪）
+[[r2_buckets]]
+binding = "IG_REELS"
+bucket_name = "ig-reels"
+
 [triggers]
 crons = [
   "3,13,17,23,27,29,33,37,43,47,53,57 0 * * *",
