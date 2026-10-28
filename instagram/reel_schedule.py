@@ -384,7 +384,10 @@ def cmd_run(qpath):
             if abs(dur - it["duration"]) > 1:
                 raise RuntimeError(f"抓回來 {dur:.1f} 秒，排程時 {it['duration']} 秒")
             it["verified"] = f"{m.get('media_type')} {dur:.1f}s"
-            r2_delete(it["key"])
+            try:
+                r2_delete(it["key"])
+            except Exception as e:
+                it["note"] = f"R2 刪檔失敗（45 天後自動刪）：{e}"[:300]
             notify(f"✅ IG 預約 Reels 已發布\n{label}\n{it['permalink']}")
         except Exception as e:
             it["note"] = f"已發布但驗收失敗：{e}"[:300]
