@@ -49,7 +49,8 @@ const SCHEDULE = {
 
 // 每 30 分鐘一次的高頻任務——不進 SCHEDULE，因為它跟「幾點幾分」無關。
 // 由 cron 的 */30 打進來，在每個 :00 與 :30 觸發，與時段表和稽核並行不衝突。
-const EVERY_30MIN = ["ig_comment_reply.yml"];
+// ig_reel_scheduled：IG Reels 預約發布（Graph API 沒有 publishAt）。沒到期就只讀清單、不碰 IG。
+const EVERY_30MIN = ["ig_comment_reply.yml", "ig_reel_scheduled.yml"];
 
 // 每小時一次——掛在 */30 的 :00 那次，不必為它多開一條 cron。
 // 留言回覆多數情況只是把已回過的跳過（判斷方式是問 API 有沒有本頻道的回覆），
@@ -229,6 +230,19 @@ export default {
    */
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    // IG 預約發布成功後刪 R2 上的影片（Actions 沒有 Cloudflare 憑證，借這裡的 binding）。
+    // 只收 reel_schedule.py 產生的 32 碼亂數檔名，其他一律拒絕。
+    if (url.pathname === "/r2/delete" && request.method === "POST") {
+      const auth = request.headers.get("Authorization") || "";
+      if (!env.NOTIFY_TOKEN || auth !== "Bearer " + env.NOTIFY_TOKEN) {
+        return new Response("unauthorized", { status: 401 });
+      }
+      const key = url.searchParams.get("key") || "";
+      if (!/^[0-9a-f]{32}\.mp4$/.test(key)) return new Response("bad key", { status: 400 });
+      await env.IG_REELS.delete(key);
+      return new Response("deleted");
+    }
 
     if (url.pathname === "/selftest") {
       const auth = request.headers.get("Authorization") || "";

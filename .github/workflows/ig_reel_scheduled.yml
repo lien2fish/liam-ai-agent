@@ -1,0 +1,56 @@
+name: IG Reels 預約發布
+
+# 🕐 由 Cloudflare Worker `liam-scheduler` 每 :00／:30 dispatch，不要加 schedule。
+# 清單在私人 repo liam-workspace/ig_schedule/queue.json，用 instagram/reel_schedule.py add 排。
+# 沒有到期項目時只讀清單就結束，不碰 IG。
+on:
+  workflow_dispatch:
+
+# ⛔ 同時只能有一個在跑：兩個 run 讀到同一筆 pending 會發兩次，而 IG 刪不掉
+concurrency:
+  group: ig_reel_scheduled
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout 排程清單（私人 repo）
+        uses: actions/checkout@v4
+        with:
+          repository: lien2fish/liam-workspace
+          token: ${{ secrets.WORKSPACE_PAT }}
+          path: ws
+          sparse-checkout: ig_schedule
+
+      - name: 有到期項目才裝 ffmpeg
+        id: due
+        run: |
+          n=$(python3 -c "
+          import json,os,datetime as d
+          p='ws/ig_schedule/queue.json'
+          q=json.load(open(p)) if os.path.exists(p) else []
+          now=d.datetime.now(d.timezone.utc)
+          print(sum(i['status']=='pending' and d.datetime.fromisoformat(i['at'])<=now for i in q))")
+          echo "n=$n" >> "$GITHUB_OUTPUT"
+          echo "到期 $n 筆"
+
+      - name: Install ffmpeg
+        if: steps.due.outputs.n != '0'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+
+      - name: 發布
+        if: steps.due.outputs.n != '0'
+        env:
+          IG_TOKEN:          ${{ secrets.IG_TOKEN }}
+          IG_ID:             ${{ secrets.IG_ID }}
+          LINE_NOTIFY_URL:   ${{ secrets.LINE_NOTIFY_URL }}
+          LINE_NOTIFY_TOKEN: ${{ secrets.LINE_NOTIFY_TOKEN }}
+        run: |
+          git -C ws config user.name "liam-bot"
+          git -C ws config user.email "liam-bot@users.noreply.github.com"
+          python3 instagram/reel_schedule.py run --queue ws/ig_schedule/queue.json
