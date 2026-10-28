@@ -855,14 +855,12 @@ def upload_image(image):
 
 
 def post_to_instagram(image_url, knowledge):
-    """發限時動態到 Instagram，同時 cross_post 到已連結的 FB 粉絲專頁"""
+    """發限時動態到 Instagram。FB 另由 post_to_facebook 發。"""
     post_data = {
         "image_url": image_url,
         "media_type": "STORIES",
         "access_token": IG_TOKEN,
     }
-    if FB_PAGE_ID:
-        post_data["cross_post_ids"] = FB_PAGE_ID
 
     r1 = requests.post(
         f"https://graph.facebook.com/v19.0/{IG_ID}/media", data=post_data
@@ -930,24 +928,11 @@ def should_use_video(knowledge):
 
 
 def post_video_to_instagram(video_url, knowledge):
-    """發影片限動。轉檔比圖片久很多，輪詢要拉長到 3 分鐘。
-
-    ⚠️ FB 跨發走 best-effort：cross_post_ids 若讓 container 建不起來，去掉它再試一次。
-    FB 少一則可以補，IG 開天窗不行。
-    """
-
-    def _create(with_fb):
-        d = {"video_url": video_url, "media_type": "STORIES", "access_token": IG_TOKEN}
-        if with_fb and FB_PAGE_ID:
-            d["cross_post_ids"] = FB_PAGE_ID
-        return requests.post(
-            f"https://graph.facebook.com/v19.0/{IG_ID}/media", data=d
-        ).json()
-
-    data1 = _create(True)
-    if "id" not in data1:
-        print(f"[FB] 影片跨發失敗，改成只發 IG：{data1}", flush=True)
-        data1 = _create(False)
+    """發影片限動。轉檔比圖片久很多，輪詢要拉長到 3 分鐘。"""
+    data1 = requests.post(
+        f"https://graph.facebook.com/v19.0/{IG_ID}/media",
+        data={"video_url": video_url, "media_type": "STORIES", "access_token": IG_TOKEN},
+    ).json()
     if "id" not in data1:
         raise RuntimeError(f"建立影片 container 失敗：{data1}")
 
@@ -972,13 +957,61 @@ def post_video_to_instagram(video_url, knowledge):
     ).json()
 
 
-def post_to_facebook(image_url, knowledge):
-    """FB 限時動態已透過 post_to_instagram 的 cross_post_ids 跨發，此函式保留備用"""
+def post_to_facebook(media_url, is_video=False):
+    """發 FB 粉絲專頁限動。
+
+    ⚠️ 2026-10-28 前是靠 IG container 的 cross_post_ids 跨發，專頁上一則都沒有、也沒有報錯。
+       改走專頁自己的 photo_stories／video_stories。
+    專頁 token 用 IG_TOKEN 現換——FB_PAGE_TOKEN 會隨 user session 作廢（08-25 死過一次）。
+    FB 是附帶的：任何失敗只記 log＋推 LINE，不丟例外，IG 已經發了。
+    """
     if not FB_PAGE_ID:
         print("[FB] 未設定 FB_PAGE_ID，跳過", flush=True)
         return None
-    print(f"[FB] 限時動態已透過 IG cross_post_ids 跨發到 Page {FB_PAGE_ID}", flush=True)
-    return {"cross_posted": True, "page_id": FB_PAGE_ID}
+    G = "https://graph.facebook.com/v19.0"
+    try:
+        pt = requests.get(
+            f"{G}/{FB_PAGE_ID}", params={"fields": "access_token", "access_token": IG_TOKEN}
+        ).json()["access_token"]
+        if is_video:
+            vid = requests.post(
+                f"{G}/{FB_PAGE_ID}/video_stories",
+                data={"upload_phase": "start", "access_token": pt},
+            ).json()["video_id"]
+            up = requests.post(
+                f"https://rupload.facebook.com/video-upload/v19.0/{vid}",
+                headers={"Authorization": f"OAuth {pt}", "file_url": media_url},
+            ).json()
+            if not up.get("success"):
+                raise RuntimeError(f"FB 抓影片失敗：{up}")
+            r = requests.post(
+                f"{G}/{FB_PAGE_ID}/video_stories",
+                data={"upload_phase": "finish", "video_id": vid, "access_token": pt},
+            ).json()
+        else:
+            photo = requests.post(
+                f"{G}/{FB_PAGE_ID}/photos",
+                data={"url": media_url, "published": "false", "access_token": pt},
+            ).json()
+            if "id" not in photo:
+                raise RuntimeError(f"FB 上傳圖片失敗：{photo}")
+            r = requests.post(
+                f"{G}/{FB_PAGE_ID}/photo_stories",
+                data={"photo_id": photo["id"], "access_token": pt},
+            ).json()
+        if not r.get("success"):
+            raise RuntimeError(f"FB 限動發布失敗：{r}")
+        return r
+    except Exception as e:
+        print(f"[FB] ❌ {e}", flush=True)
+        try:
+            sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            from line_assistant.notify import notify
+
+            notify(f"⚠️ 今天 FB 粉絲專頁限動沒發成功（IG 照常）\n{str(e)[:150]}")
+        except Exception:
+            pass
+        return None
 
 
 if __name__ == "__main__":
@@ -1027,6 +1060,10 @@ if __name__ == "__main__":
             notify_video_fallback(e)
 
         if posted:
+            # 放在 try 外面：FB 出錯絕不能被當成影片失敗而退回靜態圖，那會讓 IG 發兩則
+            log("發影片限動到 Facebook...")
+            log(f"FB 完成：{post_to_facebook(vurl, is_video=True)}")
+
             # 限動 24 小時就失效，舊影片留著會讓公開 repo 無限膨脹。
             # 這一步失敗不算發文失敗——獨立包起來，免得清檔出錯卻發出「影片失敗」的假警報。
             try:
@@ -1050,7 +1087,7 @@ if __name__ == "__main__":
         log(f"IG 完成：{result}")
 
         log("發文到 Facebook...")
-        fb_result = post_to_facebook(url, knowledge)
+        fb_result = post_to_facebook(url)
         log(f"FB 完成：{fb_result}")
 
     log("更新歷史紀錄...")
