@@ -383,6 +383,7 @@ from hf_render import render; render(pdir)                 # 程式內（先把 
 | 抽格限流 | `HYPERFRAMES_FFMPEG_PATH` → `tools/ffmpeg_gate.py`：只攔抽格，同時 ≤2、每個 2 核，其餘 ffmpeg 原樣放行 | HyperFrames 0.8.30 **對每段 `<video>` 同時開一個 ffmpeg、沒上限**。限 2 個後 186 段 42.6 秒、0.5GB |
 | 強制 SDR | `--sdr` | 素材（影片或圖片）只要混到**一段** HDR，整支就切成 HDR 分層合成：1 小時 39 分→**17 分**，而且 HDR 版畫面發灰 |
 | 限制 Chrome | `--workers 3` | 預設 auto 會開滿核心數的 Chrome，M5 Air 沒有風扇，長時間滿載會過熱 |
+| 限制加速轉檔 | `podcast_wide.speed_up()` 的 x264 加 `-threads 4`（要放在 `-c:v libx264` 後面） | 渲染完的 1.2 倍速轉檔是另外直接呼叫 ffmpeg、不經過 hf_render，2026-10-29 單一程序吃到約 9 核、機身發燙。跑到一半要降溫用 `taskpolicy -b -p <pid>` |
 
 **事件經過（2026-10-27）**：金錢怪物 es-01（186 段 b-roll）渲染時開到 130 個 ffmpeg、吃掉 36GB，整台兩度強制重開。
 Activity Monitor 會把子程序算在終端機頭上，所以看起來像「cmux 吃了 30 多 GB」。跟 Codex 無關。

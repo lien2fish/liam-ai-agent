@@ -60,7 +60,7 @@ html, body, #root { width: 1920px; height: 1080px; }
 .bv { position: absolute; font-size: 42px; color: var(--ink); }
 .bgw { position: absolute; inset: 0; overflow: hidden; }
 .vclip { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; }
-.vshade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.7) 100%); }
+.vshade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.85) 100%); }
 .callout { position: absolute; left: 96px; bottom: 210px; padding: 18px 34px 22px; border-radius: 18px;
   background: rgba(7,13,26,0.82); border-left: 10px solid var(--gold); max-width: 900px; }
 .ctag, .cbig, .cnote { display: block; position: relative; }

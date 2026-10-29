@@ -18,7 +18,7 @@ import sys
 
 from build import ROOT
 
-YTDLP = "/private/tmp/claude-501/-Users-lien-Downloads-Liam-AI-agent/0a0d9659-62f9-4bae-9f6c-1d568dbeee77/scratchpad/ytvenv2/bin/yt-dlp"
+YTDLP = str(pathlib.Path.home() / ".local/share/ytdlp-venv/bin/yt-dlp")
 OUT = ROOT / "shared" / "broll"
 CC = "EgIwAQ%253D%253D"  # YouTube 搜尋的「創用 CC」篩選
 
