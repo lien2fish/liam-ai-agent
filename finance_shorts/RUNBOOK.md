@@ -95,6 +95,7 @@ Lien 說「做金錢怪物」時照這份做完整流程（每週兩次；2026-1
   ⚠️ 小數點待確認多半是 Whisper 寫法不穩，`say` 裡有寫「點」就可以放行。
   （`check_say.py` 把數字差異歸為可忽略，數字等於沒驗，所以整集驗收不要用它）
 - 抽 6 格以上畫面看：字幕有沒有貼邊、畫面跟句子對不對得上、有沒有黑畫面
+- **最後一格一定要是片尾卡**（最後一句 `screen` 要 `kind: outro`，不能寫 `broll`／`pool`）——es-01 漏掉，多渲染一次
 - 總長 8～12 分鐘
 
 ### 8. 上片：寫 `<集>/youtube.json`（格式看 `jp-01/youtube.json`），然後
@@ -116,6 +117,8 @@ python3 finance_shorts/publish.py <集>             # 排程隔天 18:00，自�
 - 上片資料寫在每支的 `yt`（title／summary／hashtags／tags），**長片傳完才能傳 Shorts**（說明欄要附完整版連結）：
   `python3 finance_shorts/publish.py <集> --short a --dry-run`，再拿掉 `--dry-run`
 - 發布時間自動對齊長片：A 同時、B +2 天、C +4 天（`--at` 可覆寫）；傳過的 video_id 會寫回 shorts.json，重跑會擋
+- ⚠️ **每日上傳有上限**（頻道沒電話驗證）：回 400 `uploadLimitExceeded` 就是今天額度用完，在上傳初始化就失敗、不會產生影片，隔天重跑同一行即可。2026-10-27 長片＋1 支 Short 後就撞到（前一天傳了 8 支）
+- Short 的說明欄**不吃 `notes`**（只有長片會讀）；舊示威畫面的聲明直接寫進該支的 `summary`
 
 ### 9. 收尾
 
