@@ -29,7 +29,7 @@
 ## MCP 工具（已安裝，scope: user）
 | 工具 | 套件 | 說明 |
 |------|------|------|
-| firecrawl | `firecrawl-mcp` | 抓取任何網頁內容，API Key 已設定於環境變數 |
+| firecrawl | `firecrawl-mcp` | 抓取任何網頁內容，API Key 已設定於環境變數。**免費方案每月 1,000 點，每月 1 日 17:30 重置**（讀一頁 1 點、搜尋 2 點；10 月爆量到 1,042 點用完）。⛔ **一般讀網頁先用內建 WebFetch／WebSearch 或 `curl`**，Firecrawl 只留給：① Google 熱搜（`firecrawl-trends`，金錢怪物選題，無替代）② 擋爬蟲或要跑 JavaScript 才有內容的網站 ③ 前兩者都抓不到時。查餘額用 `firecrawl_credit_usage`（不扣點）。連兩個月不夠用再考慮 Hobby 月繳 US$19（2026-10-31 官網價），不要年繳 |
 | filesystem | `@modelcontextprotocol/server-filesystem` | **實際只開 `~/Downloads/Liam AI agent`**（啟動參數寫的是 `~/Downloads`，但 MCP roots protocol 會拿 workspace 根目錄蓋過參數——2026-09-10 實測連 `~/Downloads` 本身都被擋。設定成 Downloads 是當天從 Desktop／Documents／Downloads 縮小的，Desktop 有敏感檔案，Documents 是空的）。⚠️ 這只管 MCP 這個 server，**內建 Read／Edit／Bash 不受此限**，不要誤以為個資已經隔離 |
 | playwright | `@playwright/mcp` | 控制 Chromium 瀏覽器。args＝`--isolated --browser chromium`。**`--isolated`**（2026-09-10 起）每次開全新暫存 profile，不會接管你已登入私人帳號的瀏覽器（也代表它看不到任何登入狀態，要登入的操作一律走 Safari）。⚠️ **`--browser chromium` 不能拿掉**——預設會去找系統的 `/Applications/Google Chrome.app`，這台沒裝 Chrome，一拿掉就 launch 失敗。用的是 playwright 自帶的 chromium，裝在 `~/Library/Caches/ms-playwright/`（`npx playwright install chromium`，約 95MB）。⚠️ **換機器要重裝**——這個目錄不跟著 git 走，2026-09-10 搬到 M5 Air 就是因此整個開不起來 |
 | ~~notion-mcp~~ | — | ⛔ **這個 server 不存在**（2026-09-10 查證：`~/.claude.json` 的 `mcpServers` 只有 playwright／firecrawl／filesystem 三個）。Notion 走的是 **claude.ai 帳號層連接器**，不在專案設定裡、也不受 scope: user 管，工具名前綴是 `mcp__claude_ai_Notion__*`。同層還有 Canva／Gmail／Google Calendar／Google Drive 四個連接器 |
