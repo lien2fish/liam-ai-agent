@@ -3,8 +3,7 @@
 不寫產地、不放價格（Lien 2026-10-29 指定），導 IG 私訊。
 照片：Wikimedia Commons「Roe inside steamed female hairy crab.jpg」，
 Jpatokal，CC BY-SA 4.0——授權要求標示作者，所以底部有一行小字，不可拿掉。
-（Lien 10-30 定案用母蟹實拍。可商用的公蟹蟹膏實拍找不到；
- AI 生成的公母版 ai_steamed_pair.png、v1 清蒸擺盤照 steamed_plate.jpg 都留在 assets。）
+（Lien 10-30 定案用母蟹實拍。可商用的公蟹蟹膏實拍找不到。）
 公母辨別出處：人民網 2017-09-28〈大闸蟹攻略〉、維基百科「中華絨螯蟹」。
 """
 
