@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="zh-Hant" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>大閘蟹公母一翻就知道</title>
+    <link rel="stylesheet" href="shared/brand.css" />
+    <script src="vendor/gsap.min.js"></script>
+    <script src="shared/brand.js"></script>
+    <style>
+      /* 標本照（Yale Peabody Museum，CC0）原底是純黑，已依亮度轉成去背 PNG。
+         遮罩與 mix-blend-mode 都試過：前者上下緣露矩形，後者被 GSAP 的 transform 隔離失效。 */
+      #crab { position: absolute; left: 40px; top: 640px; width: 1000px; height: 663px; }
+      #crab img {
+        position: absolute; inset: 0; width: 1000px; height: 663px; display: block;
+      }
+
+      /* 兩隻螯的絨毛：圈心從素材內座標換算（左 (360,90)、右 (660,95)） */
+      .ring {
+        position: absolute; border: 6px solid var(--gold); border-radius: 50%;
+        box-shadow: 0 0 44px rgba(214, 168, 92, 0.5);
+        opacity: 0; visibility: hidden;
+      }
+      #ring-l { left: 275px; top: 640px; width: 250px; height: 180px; }
+      #ring-r { left: 575px; top: 645px; width: 250px; height: 180px; }
+
+      /* 腹面示意圖：左母右公 */
+      .belly { position: absolute; top: 640px; width: 460px; height: 420px; color: var(--dim); }
+      #belly-f { left: 70px; }
+      #belly-m { left: 550px; }
+      .belly .abd { fill: rgba(214, 168, 92, 0); stroke: var(--dim); }
+      .belly-label {
+        position: absolute; top: 1080px; width: 460px; text-align: center;
+        font-size: 50px; color: var(--dim);
+      }
+      #label-f { left: 70px; }
+      #label-m { left: 550px; }
+
+      #hero-end { position: absolute; inset: 0; overflow: hidden; }
+      #hero-end img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+      #hero-end-veil {
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg,
+          rgba(4,14,24,0.70) 0%, rgba(4,14,24,0.25) 22%, rgba(4,14,24,0.30) 40%,
+          rgba(4,14,24,0.88) 52%, rgba(4,14,24,0.97) 62%, rgba(4,14,24,0.98) 100%);
+      }
+      .cta {
+        position: absolute; left: 340px; width: 400px; text-align: center;
+        padding: 14px 0; border: 3px solid var(--gold); border-radius: 60px;
+        font-size: 52px; color: var(--gold); white-space: nowrap;
+      }
+      .credit {
+        position: absolute; left: 0; right: 0; text-align: center;
+        font-size: 24px; color: var(--dim); letter-spacing: 0.02em; font-weight: 400;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="species02"
+      data-start="0"
+      data-duration="46.4"
+      data-fps="24"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="46.4" data-track-index="0"></div>
+
+      <!-- 標本照：場景 1～2b -->
+      <div id="crablayer" class="clip" data-start="0" data-duration="12" data-track-index="1">
+        <div class="sin" id="crab-in">
+          <div id="crab"><img src="assets/crab_top.png" alt="" /></div>
+          <div class="ring" id="ring-l"></div>
+          <div class="ring" id="ring-r"></div>
+        </div>
+      </div>
+
+      <!-- 腹面示意圖：場景 3～5 -->
+      <div id="bellylayer" class="clip" data-start="18.2" data-duration="11.1" data-track-index="2">
+        <div class="sin" id="belly-in">
+          <div class="belly" id="belly-f"></div>
+          <div class="belly" id="belly-m"></div>
+          <div class="belly-label" id="label-f">母・圓臍</div>
+          <div class="belly-label" id="label-m">公・尖臍</div>
+          <div class="caption" id="belly-cap" style="top: 1190px; font-size: 32px">腹面示意圖</div>
+        </div>
+      </div>
+
+      <!-- 1. HOOK 0–3.7 -->
+      <section id="s1" class="clip" data-start="0" data-duration="3.7" data-track-index="3">
+        <div class="sin" id="s1-in">
+          <div class="tag" id="s1-tag" style="top: 520px">當 季 海 鮮 ・ 大 閘 蟹</div>
+          <div class="stack" id="s1-text" style="top: 1380px">
+            <span class="line l-hook">六兩大閘蟹</span>
+            <span class="line l-hook gold">公的母的怎麼挑？</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 本名 3.7–8.5 -->
+      <section id="s2" class="clip" data-start="3.7" data-duration="4.8" data-track-index="4">
+        <div class="sin" id="s2-in">
+          <div class="stack" id="s2-a" style="top: 1380px">
+            <span class="line l-body">本名 <span class="gold">中華絨螯蟹</span></span>
+          </div>
+          <div class="stack" id="s2-b" style="top: 1520px">
+            <span class="line l-small">大螯上長滿絨毛</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2b. 冷知識：手套蟹 8.5–12.0。出處：密西根州立大學 MISIN 入侵種資料庫
+           「named for the dense patches of hair — like furry mittens — on its claws」、德文名 Chinesische Wollhandkrabbe -->
+      <section id="s2b" class="clip" data-start="8.5" data-duration="3.5" data-track-index="13">
+        <div class="sin" id="s2b-in">
+          <div class="stack" id="s2b-a" style="top: 1380px">
+            <span class="line l-body">英文叫 <span class="gold">手套蟹</span></span>
+          </div>
+          <div class="stack" id="s2b-b" style="top: 1490px">
+            <span class="line l-body">德文叫 <span class="gold">羊毛手蟹</span></span>
+          </div>
+          <div class="caption" id="s2b-cap" style="top: 1630px; font-size: 32px">Chinese mitten crab ／ Wollhandkrabbe</div>
+        </div>
+      </section>
+
+      <!-- 3. 蟹臍 18.2–22.3 -->
+      <section id="s3" class="clip" data-start="18.2" data-duration="4.1" data-track-index="5">
+        <div class="sin" id="s3-in">
+          <div class="tag" id="s3-tag" style="top: 520px">翻 到 肚 子 這 一 面</div>
+          <div class="stack" id="s3-text" style="top: 1380px">
+            <span class="line l-body">中間這一片</span>
+            <span class="line l-hook gold">叫「蟹臍」</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. 圓臍 22.3–25.6 -->
+      <section id="s4" class="clip" data-start="22.3" data-duration="3.3" data-track-index="6">
+        <div class="sin" id="s4-in">
+          <div class="stack" id="s4-text" style="top: 1380px">
+            <span class="line l-body">圓臍是<span class="gold">母蟹</span></span>
+            <span class="line l-hook gold">吃蟹黃</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. 尖臍 25.6–29.3 -->
+      <section id="s5" class="clip" data-start="25.6" data-duration="3.7" data-track-index="7">
+        <div class="sin" id="s5-in">
+          <div class="stack" id="s5-text" style="top: 1380px">
+            <span class="line l-body">尖臍是<span class="gold">公蟹</span></span>
+            <span class="line l-hook gold">吃蟹膏</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5b. 冷知識：蟹黃蟹膏 35.3–42.5（Lien 10-30 要求接片尾、最後停在蟹黃）。照片 Jpatokal，CC BY-SA 4.0。
+           說法依論文「雌蟹性腺（蟹黃）」「性腺（蟹膏）」；不寫「副性腺」——只有科普站這樣講。 -->
+      <section id="sx1" class="clip" data-start="35.3" data-duration="7.2" data-track-index="11">
+        <div class="sin" id="sx1-in">
+          <div class="tag" id="sx1-tag" style="top: 520px">冷 知 識</div>
+          <div class="photo-frame" id="sx1-photo" style="left: 100px; top: 620px; width: 880px; height: 660px">
+            <img src="assets/roe.jpg" alt="" />
+          </div>
+          <div class="stack" id="sx1-a" style="top: 1370px">
+            <span class="line l-body">母蟹橘紅那團　是<span class="gold">卵巢</span></span>
+          </div>
+          <div class="stack" id="sx1-b" style="top: 1500px">
+            <span class="line l-body">公蟹白膏　是<span class="gold">生殖腺</span></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. 九雌十雄 29.3–35.3 -->
+      <section id="s6" class="clip" data-start="29.3" data-duration="6" data-track-index="8">
+        <div class="sin" id="s6-in">
+          <div class="tag" id="s6-tag" style="top: 520px">老 話 說</div>
+          <div class="stack" id="s6-hook" style="top: 760px">
+            <span class="line l-hook gold">九雌十雄</span>
+          </div>
+          <div class="stack" id="s6-a" style="top: 1060px">
+            <span class="line l-body">農曆九月　吃<span class="gold">母蟹</span></span>
+          </div>
+          <div class="stack" id="s6-b" style="top: 1200px">
+            <span class="line l-body">農曆十月　吃<span class="gold">公蟹</span></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6b. 冷知識：兩年一生 12.0–18.2（Lien 10-30 要求往前移，接在手套蟹後）。照片 科隆動物園（Vassil），CC0。
+           出處：上海海洋大學學報 2013「生命周期通常为两年，繁殖结束生命也就终止」、歐盟 Interreg 北海計畫
+           「After reproduction they die of exhaustion」。不講「只交配一次」——只有科普站這樣寫。 -->
+      <section id="sx2" class="clip" data-start="12" data-duration="6.2" data-track-index="12">
+        <div class="sin" id="sx2-in">
+          <div class="tag" id="sx2-tag" style="top: 520px">冷 知 識</div>
+          <div class="photo-frame" id="sx2-photo" style="left: 100px; top: 620px; width: 880px; height: 660px">
+            <img src="assets/invasive.jpg" alt="" />
+          </div>
+          <div class="stack" id="sx2-a" style="top: 1370px">
+            <span class="line l-body">大閘蟹的一生</span>
+          </div>
+          <div class="stack" id="sx2-b" style="top: 1480px">
+            <span class="line l-hook gold">通常只有兩年</span>
+          </div>
+          <div class="caption" id="sx2-cap" style="top: 1660px; font-size: 32px">繁殖完，生命就結束</div>
+        </div>
+      </section>
+
+      <!-- 7. END 42.5–46.4：母蟹蟹黃照（Jpatokal，CC BY-SA 4.0，授權要求標示作者） -->
+      <section id="s7" class="clip" data-start="42.5" data-duration="3.9" data-track-index="9">
+        <div class="sin" id="s7-in">
+          <div id="hero-end"><img src="assets/roe_end.jpg" alt="" /><div id="hero-end-veil"></div></div>
+          <div class="stack" id="s7-a" style="top: 1030px">
+            <span class="line l-body">每隻 <span class="gold">5.8–6.4 兩</span></span>
+          </div>
+          <div class="stack" id="s7-b" style="top: 1140px">
+            <span class="line l-body">公母都有</span>
+          </div>
+          <div class="cta" id="s7-cta" style="top: 1300px">私訊詢問</div>
+          <div class="caption" id="s7-cap" style="top: 1470px">資料：人民網・水產學報・上海海洋大學學報・維基百科</div>
+          <div class="credit" id="s7-credit" style="top: 1540px">照片：Jpatokal (CC BY-SA 4.0)</div>
+        </div>
+      </section>
+
+      <div id="chrome" class="clip" data-start="0" data-duration="46.4" data-track-index="10"></div>
+
+      <!-- 旁白：Lien 克隆聲音（Qwen3-TTS）。閘→札、絨→榮、臍→齊 餵 TTS，字幕用原字；
+           九段都經 large-v3 回聽，無唸錯、無漏句。 -->
+      <audio id="vo-1" data-start="0.25" data-duration="2.88" src="audio/s1.mp3"></audio>
+      <audio id="vo-2" data-start="3.95" data-duration="4.24" src="audio/s2.mp3"></audio>
+      <audio id="vo-9" data-start="8.6" data-duration="3.28" src="audio/s9.mp3"></audio>
+      <audio id="vo-3" data-start="18.45" data-duration="3.6" src="audio/s3.mp3"></audio>
+      <audio id="vo-4" data-start="22.55" data-duration="2.69" src="audio/s4.mp3"></audio>
+      <audio id="vo-5" data-start="25.85" data-duration="3.2" src="audio/s5.mp3"></audio>
+      <audio id="vo-7" data-start="35.55" data-duration="6.16" src="audio/s7.mp3"></audio>
+      <audio id="vo-6" data-start="29.55" data-duration="5.52" src="audio/s6.mp3"></audio>
+      <audio id="vo-8" data-start="12.25" data-duration="5.52" src="audio/s8.mp3"></audio>
+    </div>
+
+    <script>
+      brandChrome("bg", "chrome");
+
+      // 腹面示意：頭在上。母蟹腹部寬圓、蓋住大半腹甲；公蟹窄、尖端朝前。
+      function bellyMarkup(abdPath) {
+        const legs = [-40, 0, 40, 78].map((y) =>
+          '<line x1="-140" y1="' + y + '" x2="-190" y2="' + (y + 26) + '"/>' +
+          '<line x1="140" y1="' + y + '" x2="190" y2="' + (y + 26) + '"/>'
+        ).join("");
+        const shell =
+          '<path d="M -150 -70 Q -135 -122 0 -125 Q 135 -122 150 -70 L 128 60 Q 95 128 0 132 Q -95 128 -128 60 Z"/>';
+        const claws =
+          '<path d="M -132 -100 Q -176 -150 -140 -182 Q -112 -170 -120 -140"/>' +
+          '<path d="M 132 -100 Q 176 -150 140 -182 Q 112 -170 120 -140"/>';
+        return '<svg viewBox="-200 -200 400 365" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">' +
+          '<g stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
+          shell + legs + claws + '</g>' +
+          '<path class="abd" stroke-width="6" stroke-linejoin="round" d="' + abdPath + '"/></svg>';
+      }
+      document.getElementById("belly-f").innerHTML =
+        bellyMarkup("M -92 116 C -112 30 -72 -46 0 -48 C 72 -46 112 30 92 116 Q 0 134 -92 116 Z");
+      document.getElementById("belly-m").innerHTML =
+        bellyMarkup("M -40 122 L -30 70 L -20 20 L 0 -46 L 20 20 L 30 70 L 40 122 Q 0 130 -40 122 Z");
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // 1. HOOK：t=0 就要完整可讀，只做極緩推近
+      tl.fromTo("#crab", { scale: 1 }, { scale: 1.05, duration: 12, ease: "none" }, 0);
+      tl.fromTo("#s1-tag", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.4);
+      tl.to("#s1-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 3.4);
+      tl.set("#s1-in", { opacity: 0 }, 3.7);
+
+      // 2. 本名：兩隻螯圈起來
+      tl.fromTo("#s2-a", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: "power2.out" }, 4.0);
+      tl.fromTo("#ring-l", { autoAlpha: 0, scale: 1.3 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 6.0);
+      tl.fromTo("#ring-r", { autoAlpha: 0, scale: 1.3 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 6.2);
+      tl.fromTo("#s2-b", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 6.2);
+      tl.to("#s2-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 8.2);
+      tl.set("#s2-in", { opacity: 0 }, 8.5);
+
+      // 2b. 冷知識：手套蟹（螯上的圈留著）
+      tl.fromTo("#s2b-a", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: "power2.out" }, 8.7);
+      tl.fromTo("#s2b-b", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: "power2.out" }, 10.1);
+      tl.fromTo("#s2b-cap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 10.6);
+      tl.to("#s2b-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 11.7);
+      tl.set("#s2b-in", { opacity: 0 }, 12);
+      tl.to("#crab-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 11.7);
+      tl.set("#crab-in", { opacity: 0 }, 12);
+
+      // 6b. 冷知識：一生只有兩年
+      tl.fromTo("#sx2-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 12.1);
+      tl.fromTo("#sx2-photo", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 12.2);
+      tl.fromTo("#sx2-photo img", { scale: 1 }, { scale: 1.06, duration: 6.2, ease: "none" }, 12);
+      tl.fromTo("#sx2-a", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 12.4);
+      tl.fromTo("#sx2-b", { autoAlpha: 0, y: 34, scale: 0.92 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.6)" }, 13.7);
+      tl.fromTo("#sx2-cap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 15.6);
+      tl.to("#sx2-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 17.9);
+      tl.set("#sx2-in", { opacity: 0 }, 18.2);
+
+      // 3. 蟹臍：兩張示意圖進場，腹部一起亮
+      tl.fromTo("#s3-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 18.3);
+      tl.fromTo("#belly-f, #belly-m", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 18.3);
+      tl.fromTo("#belly-cap", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 18.7);
+      tl.to(".belly .abd", { fill: "rgba(214,168,92,0.28)", stroke: "#d6a85c", duration: 0.6 }, 20.3);
+      tl.fromTo("#s3-text", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 20.1);
+      tl.to("#s3-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 22);
+      tl.set("#s3-in", { opacity: 0 }, 22.3);
+
+      // 4. 圓臍：左邊亮、右邊退
+      tl.to("#belly-m", { opacity: 0.25, duration: 0.4 }, 22.3);
+      tl.to("#belly-f", { color: "#eef4f9", duration: 0.4 }, 22.3);
+      tl.fromTo("#label-f", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, color: "#d6a85c", duration: 0.5 }, 22.5);
+      tl.fromTo("#s4-text", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 22.6);
+      tl.to("#s4-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 25.3);
+      tl.set("#s4-in", { opacity: 0 }, 25.6);
+
+      // 5. 尖臍：換右邊亮
+      tl.to("#belly-f", { opacity: 0.25, color: "#8098ac", duration: 0.4 }, 25.6);
+      tl.to("#label-f", { opacity: 0.35, color: "#8098ac", duration: 0.4 }, 25.6);
+      tl.to("#belly-m", { opacity: 1, color: "#eef4f9", duration: 0.4 }, 25.6);
+      tl.fromTo("#label-m", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, color: "#d6a85c", duration: 0.5 }, 25.8);
+      tl.fromTo("#s5-text", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 25.9);
+      tl.to("#s5-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 29);
+      tl.set("#s5-in", { opacity: 0 }, 29.3);
+      tl.to("#belly-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 29);
+      tl.set("#belly-in", { opacity: 0 }, 29.3);
+
+      // 6. 九雌十雄
+      tl.fromTo("#s6-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 29.5);
+      tl.fromTo("#s6-hook", { autoAlpha: 0, y: 34, scale: 0.92 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "back.out(1.6)" }, 30.1);
+      tl.fromTo("#s6-a", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 32);
+      tl.fromTo("#s6-b", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 33.5);
+      tl.to("#s6-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 35);
+      tl.set("#s6-in", { opacity: 0 }, 35.3);
+
+      // 5b. 冷知識：蟹黃蟹膏是什麼
+      tl.fromTo("#sx1-tag", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 35.4);
+      tl.fromTo("#sx1-photo", { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" }, 35.5);
+      tl.fromTo("#sx1-photo img", { scale: 1 }, { scale: 1.06, duration: 7.2, ease: "none" }, 35.3);
+      tl.fromTo("#sx1-a", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 36.1);
+      tl.fromTo("#sx1-b", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 39.1);
+      tl.to("#sx1-in", { opacity: 0, duration: 0.3, ease: "power1.in" }, 42.2);
+      tl.set("#sx1-in", { opacity: 0 }, 42.5);
+
+      // 7. END
+      tl.fromTo("#hero-end img", { scale: 1.06 }, { scale: 1, duration: 3.9, ease: "power1.out" }, 42.5);
+      tl.fromTo("#s7-a", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 42.7);
+      tl.fromTo("#s7-b", { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 43);
+      tl.fromTo("#s7-cta", { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "back.out(1.6)" }, 43.5);
+      tl.fromTo("#s7-cap, #s7-credit", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 43.9);
+
+      window.__timelines["species02"] = tl;
+    </script>
+  </body>
+</html>
