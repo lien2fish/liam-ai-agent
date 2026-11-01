@@ -110,6 +110,9 @@ def speech_rate(path):
     """每秒幾個字、停頓多長。要跑 Whisper，慢。"""
     try:
         import whisper
+        import torch
+
+        torch.set_num_threads(4)  # openai-whisper 預設吃滿全部核心
     except ImportError:
         return None
     wav = tempfile.mktemp(suffix=".wav")

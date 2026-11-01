@@ -36,7 +36,7 @@ def proxy(src, t0, t1, path):
         # fmt: off
         ["ffmpeg", "-v", "error", "-ss", str(t0), "-t", str(round(t1 - t0, 3)),
          "-i", src, "-vf", f"scale={PROXY_W}:-1", "-an",
-         "-c:v", "libx264", "-crf", "20", "-preset", "veryfast", path, "-y"],
+         "-c:v", "libx264", "-threads", "4", "-crf", "20", "-preset", "veryfast", path, "-y"],
         # fmt: on
         check=True,
     )
@@ -345,7 +345,7 @@ def render(src, track_json, out, pad=1.45, size=None, cmd_path=None):
         # fmt: off
         ["ffmpeg", "-v", "error", "-stats", "-i", src, "-i", st_path,
          "-filter_complex", fc, "-map", "[v]", "-map", "0:a?",
-         "-c:v", "libx264", "-crf", "18", "-preset", "medium",
+         "-c:v", "libx264", "-threads", "4", "-crf", "18", "-preset", "medium",
          "-pix_fmt", "yuv420p", "-color_range", "tv",
          "-c:a", "copy", "-movflags", "+faststart", out, "-y"],
         # fmt: on

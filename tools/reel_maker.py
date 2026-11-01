@@ -84,6 +84,9 @@ def extract_audio(video, out=None):
 
 def transcribe(video):
     import whisper, warnings
+    import torch
+
+    torch.set_num_threads(4)  # openai-whisper 預設吃滿全部核心
 
     warnings.filterwarnings("ignore")
     wav = extract_audio(video)
@@ -675,7 +678,7 @@ def prepend_intro(out_mp4, card_jpg, dur=1.0):
             "-vf",
             f"scale={P['W']}:{P['H']}:out_range=tv,format=yuv420p",
             "-c:v",
-            "libx264",
+            "libx264", "-threads", "4",
             "-preset",
             "veryfast",
             "-crf",
@@ -804,7 +807,7 @@ def build(cfg):
             + amap
             + [
                 "-c:v",
-                "libx264",
+                "libx264", "-threads", "4",
                 "-preset",
                 "veryfast",
                 "-crf",
@@ -886,7 +889,7 @@ def build(cfg):
             "-map",
             "[a]",
             "-c:v",
-            "libx264",
+            "libx264", "-threads", "4",
             "-preset",
             "veryfast",
             "-crf",

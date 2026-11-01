@@ -206,7 +206,7 @@ def prepend_intro(out_mp4, card_png, dur=1.0):
             "-vf",
             "scale=1080:1920:out_range=tv,format=yuv420p",
             "-c:v",
-            "libx264",
+            "libx264", "-threads", "4",
             "-preset",
             "veryfast",
             "-crf",
@@ -397,7 +397,7 @@ def build(cfg):
                 "-af",
                 "highpass=f=100,afftdn=nf=-28,speechnorm=e=6.25:r=0.00015",
                 "-c:v",
-                "libx264",
+                "libx264", "-threads", "4",
                 "-preset",
                 "veryfast",
                 "-crf",
@@ -483,7 +483,7 @@ def build(cfg):
         + vfargs
         + [
             "-c:v",
-            "libx264",
+            "libx264", "-threads", "4",
             "-preset",
             "veryfast",
             "-crf",

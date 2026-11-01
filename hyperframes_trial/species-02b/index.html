@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="zh-Hant" data-resolution="portrait">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<title>大閘蟹分級與蟹王</title>
+<script src="vendor/gsap.min.js"></script>
+<style>
+@font-face { font-family: "PingFang TC"; src: local("PingFang TC"); }
+@font-face { font-family: "Menlo"; src: local("Menlo"); }
+:root {
+  --paper:#ece6da; --card:#f8f5ee; --ink:#2b2621; --dim:#6f665a; --line:#cfc6b6;
+  --kraft:#d4b07a; --kraft-ink:#4a3820; --seal:#b5322a; --teal:#3c8c86; --roe:#d9773f;
+  --sticky:#f3dc8f; --shadow:0 22px 44px rgba(70,52,30,.20), 0 3px 8px rgba(70,52,30,.14);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1080px; height:1920px; overflow:hidden; background:var(--paper); }
+body { font-family:"PingFang TC",sans-serif; font-weight:600; color:var(--ink); }
+#root { position:relative; width:1080px; height:1920px; overflow:hidden; }
+.clip { position:absolute; inset:0; }
+#bg { background:radial-gradient(80% 60% at 50% 38%, #f3eee4 0%, var(--paper) 60%, #ddd5c6 100%); }
+.abs { position:absolute; }
+.card { position:absolute; background:var(--card); border-radius:16px; box-shadow:var(--shadow); }
+.kraft { position:absolute; left:80px; top:200px; background:var(--kraft); color:var(--kraft-ink);
+  font-size:40px; padding:12px 30px; border-radius:6px; box-shadow:0 8px 18px rgba(70,52,30,.22); white-space:nowrap; letter-spacing:.06em; z-index:3; }
+.seal { position:absolute; color:var(--seal); border:8px solid var(--seal); border-radius:16px; padding:4px 24px;
+  font-size:92px; font-weight:900; letter-spacing:.12em; outline:3px solid var(--seal); outline-offset:7px; white-space:nowrap;
+  background:rgba(248,245,238,.7); z-index:4; }
+.polar { position:absolute; background:#fff; padding:18px 18px 58px; box-shadow:var(--shadow); }
+.polar img, .polar video { display:block; object-fit:cover; }
+.polar .pc { position:absolute; left:0; right:0; bottom:14px; text-align:center; font-size:21px; color:var(--dim); font-weight:400; }
+.polar .note { position:absolute; right:30px; top:30px; background:rgba(43,38,33,.7); color:#fff; font-size:24px; padding:4px 14px; border-radius:6px; }
+.chip { position:absolute; left:90px; width:900px; background:var(--card); border:2px solid var(--line); border-radius:14px;
+  font-size:44px; padding:22px 30px 22px 100px; box-shadow:0 8px 18px rgba(70,52,30,.12); white-space:nowrap; }
+.chip .ck { position:absolute; left:28px; top:20px; width:52px; height:52px; border-radius:50%; background:var(--teal);
+  color:#fff; font-size:34px; display:flex; align-items:center; justify-content:center; }
+.chip .dm { color:var(--dim); font-size:38px; margin-left:16px; }
+.sticky { position:absolute; background:var(--sticky); box-shadow:0 10px 20px rgba(70,52,30,.18); font-size:48px; padding:26px 40px; white-space:nowrap; }
+.sticky::before { content:""; position:absolute; left:50%; top:-14px; width:26px; height:26px; margin-left:-13px;
+  border-radius:50%; background:var(--seal); box-shadow:0 3px 5px rgba(0,0,0,.25); }
+#head { position:absolute; left:0; right:0; top:110px; text-align:center; font-size:30px; color:var(--dim); letter-spacing:.3em; }
+.sub { position:absolute; left:60px; right:60px; top:1440px; bottom:auto; display:flex; justify-content:center; align-items:flex-start; }
+.sub span { background:rgba(248,245,238,.95); border-radius:12px; padding:16px 28px; font-size:46px; line-height:1.4;
+  text-align:center; box-shadow:0 6px 14px rgba(70,52,30,.12); }
+
+/* 蟹王 */
+#kp { left:150px; top:290px; transform:rotate(-2deg); } #kp img { width:780px; height:500px; }
+#scale { left:200px; top:930px; width:680px; height:380px; padding:36px 46px; }
+#scale .lcd { background:#2f3b37; border-radius:14px; height:190px; display:flex; align-items:flex-end; justify-content:flex-end;
+  padding:0 40px 22px; color:#9fe0c8; font-family:Menlo,monospace; font-weight:700; }
+#scale .lcd b { font-size:140px; line-height:1; } #scale .lcd i { font-style:normal; font-size:60px; margin-left:14px; }
+#scale .plate { margin:30px auto 0; width:460px; height:22px; border-radius:11px; background:var(--line); }
+#scale .lbl { margin-top:22px; text-align:center; font-size:32px; color:var(--dim); letter-spacing:.1em; }
+#kingseal { left:690px; top:840px; transform:rotate(-9deg); }
+#kingnote { left:0; right:0; top:1340px; text-align:center; font-size:36px; color:var(--dim); }
+#kingnote b { color:var(--ink); }
+
+/* 第幾級 */
+#vp { left:120px; top:290px; } #vp .vbox { width:800px; height:600px; background:#2b2621; }
+#crabvid { position:absolute; z-index:5; left:138px; top:308px; width:800px; height:600px; object-fit:cover; }
+#askcard { left:110px; top:1000px; width:860px; height:330px; padding:46px 50px; text-align:center; }
+#askcard .a { font-size:56px; } #askcard .b { font-size:120px; font-weight:900; color:var(--seal); margin-top:16px; }
+
+/* 重量表 */
+#wp { left:600px; top:250px; transform:rotate(3deg); z-index:2; } #wp img { width:380px; height:260px; }
+#wtable { left:70px; top:600px; width:940px; height:740px; padding:30px 44px; }
+.tr { display:flex; align-items:center; height:190px; border-bottom:2px solid var(--line); border-radius:10px; }
+.tr.h { height:90px; font-size:36px; color:var(--dim); }
+.tr .k { width:170px; text-align:center; font-size:84px; font-weight:900; font-family:Menlo,monospace; color:var(--kraft-ink); }
+.tr.h .k { font-size:36px; font-family:inherit; font-weight:600; color:var(--dim); }
+.tr .c { flex:1; text-align:center; }
+.tr .c b { display:block; font-size:68px; font-weight:900; } .tr .c span { display:block; font-size:30px; color:var(--dim); margin-top:4px; }
+
+/* 肥滿度 */
+#fp { left:150px; top:290px; transform:rotate(-1.5deg); } #fp img { width:780px; height:520px; }
+#fat1 { top:950px; } #fat2 { top:1080px; } #fat3 { top:1210px; }
+
+/* 合起來 */
+#gp { left:620px; top:250px; transform:rotate(3deg); z-index:2; } #gp img { width:360px; height:250px; }
+#matrix { left:60px; top:600px; width:960px; height:720px; padding:30px 36px; }
+.mr { display:flex; height:180px; align-items:center; border-bottom:2px solid var(--line); }
+.mr.h { height:90px; }
+.mr div { flex:1; text-align:center; font-size:58px; font-weight:800; }
+.mr.h div { font-size:34px; font-weight:600; color:var(--dim); }
+.mr div:first-child { flex:.6; font-family:Menlo,monospace; font-weight:900; color:var(--kraft-ink); font-size:72px; }
+.mr .no { color:var(--line); }
+#jpseal { left:220px; top:700px; transform:rotate(-7deg); font-size:84px; }
+
+/* 公母 */
+#bp { left:240px; top:280px; transform:rotate(-2deg); } #bp img { width:600px; height:400px; }
+.bcard { top:820px; width:440px; height:510px; padding:20px 20px; text-align:center; }
+#bf { left:80px; } #bm { left:560px; }
+.bcard .svgbox { width:400px; height:270px; color:var(--ink); }
+.bcard .abd { fill:rgba(217,119,63,0); stroke:var(--ink); }
+.bcard .t1 { font-size:48px; font-weight:900; margin-top:16px; }
+.bcard .t2 { font-size:58px; font-weight:900; color:var(--roe); margin-top:16px; }
+
+/* 九雌十雄 */
+#sp { left:150px; top:290px; transform:rotate(1.5deg); } #sp img { width:780px; height:440px; }
+#saybig { left:0; right:0; top:840px; text-align:center; font-size:128px; font-weight:900; letter-spacing:.08em; color:var(--seal); }
+.cal { position:absolute; top:1030px; width:300px; }
+.cal .top { height:56px; background:var(--seal); border-radius:12px 12px 0 0; }
+.cal .bd { height:250px; background:#fffdf7; border-radius:0 0 12px 12px; box-shadow:var(--shadow);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.cal .bd b { font-size:76px; font-weight:900; line-height:1; } .cal .bd span { font-size:28px; color:var(--dim); margin-top:8px; }
+.cal .bd em { font-style:normal; font-size:52px; font-weight:900; color:var(--roe); margin-top:18px; }
+#cal9 { left:170px; transform:rotate(-3deg); } #cal10 { left:610px; transform:rotate(2deg); }
+
+/* 結尾 */
+#ep { left:150px; top:290px; transform:rotate(-2deg); } #ep img { width:780px; height:560px; }
+#endk { left:50%; top:960px; transform:translateX(-50%); font-size:56px; }
+#endchip { left:50%; top:1080px; transform:translateX(-50%); width:auto; }
+#dm { left:50%; top:1230px; transform:translateX(-50%) rotate(1.5deg); }
+#src { left:40px; right:40px; top:1830px; text-align:center; font-size:20px; color:var(--dim); font-weight:400; line-height:1.5; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="species02b" data-start="0" data-duration="49.69" data-fps="24" data-width="1080" data-height="1920">
+<div id="bg" class="clip" data-start="0" data-duration="49.69" data-track-index="0"></div>
+<div class="clip" data-start="0" data-duration="49.69" data-track-index="1"><div id="head">連老闆・產地到餐桌</div></div>
+<section id="sc-king" class="clip" data-start="0.00" data-duration="6.68" data-track-index="2"><div class="clip" id="in-king"><div class="polar pop" id="kp" data-anim="1"><img src="assets/hk_steamed.jpg" alt="" /><div class="note">示意照片</div><div class="pc">Photo: :ja:User:(WT-ja) Tatata / CC BY-SA 4.0</div></div>
+<div class="kraft pop" data-anim="2">全國大蟹比賽・蟹王</div>
+<div class="card pop" id="scale" data-anim="3"><div class="lcd"><b>580.5</b><i>g</i></div><div class="plate"></div><div class="lbl">一隻・公蟹</div></div>
+<div class="seal stamp" id="kingseal" data-anim="4">蟹王</div>
+<div class="abs pop" id="kingnote" data-anim="5"><b>2024</b> 王寶和杯全國大蟹比賽・上海</div></div></section>
+<section id="sc-ask" class="clip" data-start="6.68" data-duration="3.30" data-track-index="3"><div class="clip" id="in-ask"><div class="polar pop" id="vp" data-anim="6"><div class="vbox"></div><div class="pc">Photo: François Nguyen / CC BY 2.0</div></div>
+<div class="card pop" id="askcard" data-anim="7"><div class="a">你買的那一隻</div><div class="b">是第幾級？</div></div></div></section>
+<video id="crabvid" src="assets/live_video.mp4" muted playsinline data-start="6.68" data-duration="3.30" data-track-index="30"></video>
+<section id="sc-weight" class="clip" data-start="9.98" data-duration="9.08" data-track-index="4"><div class="clip" id="in-weight"><div class="polar pop" id="wp" data-anim="8"><img src="assets/tied_cc0.jpg" alt="" /><div class="pc">Photo: Fumikas Sagisavas / CC0</div></div>
+<div class="kraft pop" data-anim="9">① 先秤重</div>
+<div class="card pop" id="wtable" data-anim="10">
+ <div class="tr h"><div class="k">規格</div><div class="c">公蟹</div><div class="c">母蟹</div></div>
+ <div class="tr" id="rowA"><div class="k">A</div><div class="c"><b>≥ 200 g<span>約 5.3 台兩</span></b></div><div class="c"><b>≥ 175 g<span>約 4.7 台兩</span></b></div></div>
+ <div class="tr"><div class="k">B</div><div class="c"><b>≥ 175 g<span>約 4.7 台兩</span></b></div><div class="c"><b>≥ 150 g<span>約 4.0 台兩</span></b></div></div>
+ <div class="tr"><div class="k">C</div><div class="c"><b>≥ 150 g<span>約 4.0 台兩</span></b></div><div class="c"><b>≥ 125 g<span>約 3.3 台兩</span></b></div></div>
+</div></div></section>
+<section id="sc-fat" class="clip" data-start="19.06" data-duration="4.02" data-track-index="5"><div class="clip" id="in-fat"><div class="polar pop" id="fp" data-anim="11"><img src="assets/cut_half.jpg" alt="" /><div class="pc">Photo: Fumikas Sagisavas / CC0</div></div>
+<div class="kraft pop" data-anim="12">② 再看肥不肥</div>
+<div class="chip pop" id="fat1" data-anim="13"><span class="ck">✓</span>第三對腳<span class="dm">越硬越好</span></div>
+<div class="chip pop" id="fat2" data-anim="14"><span class="ck">✓</span>背跟肚子之間<span class="dm">越鼓越好</span></div>
+<div class="chip pop" id="fat3" data-anim="15"><span class="ck">✓</span>掀開蟹臍<span class="dm">透色越深越好</span></div></div></section>
+<section id="sc-grade" class="clip" data-start="23.08" data-duration="2.66" data-track-index="6"><div class="clip" id="in-grade"><div class="polar pop" id="gp" data-anim="16"><img src="assets/tied_red.jpg" alt="" /><div class="pc">Photo: ProjectManhattan / CC0</div></div>
+<div class="kraft pop" data-anim="17">③ 合起來定等級</div>
+<div class="card pop" id="matrix" data-anim="18">
+ <div class="mr h"><div></div><div>第一檔</div><div>第二檔</div><div>第三檔</div></div>
+ <div class="mr"><div>A</div><div>精品</div><div>優選</div><div>標準</div></div>
+ <div class="mr"><div>B</div><div>優選</div><div>標準</div><div class="no">—</div></div>
+ <div class="mr"><div>C</div><div>標準</div><div class="no">—</div><div class="no">—</div></div>
+</div>
+<div class="seal stamp" id="jpseal" data-anim="19">精品</div></div></section>
+<section id="sc-belly" class="clip" data-start="25.74" data-duration="9.56" data-track-index="7"><div class="clip" id="in-belly"><div class="polar pop" id="bp" data-anim="20"><img src="assets/belly_real.jpg" alt="" /><div class="note">實拍腹面</div><div class="pc">Photo: Tomchiukc / CC BY-SA 4.0</div></div>
+<div class="kraft pop" data-anim="21">翻過來看肚子</div>
+<div class="card bcard pop" id="bf" data-anim="22"><div class="svgbox"><svg viewBox="-200 -200 400 365" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><g stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M -150 -70 Q -135 -122 0 -125 Q 135 -122 150 -70 L 128 60 Q 95 128 0 132 Q -95 128 -128 60 Z"/><line x1="-140" y1="-40" x2="-190" y2="-14"/><line x1="140" y1="-40" x2="190" y2="-14"/><line x1="-140" y1="0" x2="-190" y2="26"/><line x1="140" y1="0" x2="190" y2="26"/><line x1="-140" y1="40" x2="-190" y2="66"/><line x1="140" y1="40" x2="190" y2="66"/><line x1="-140" y1="78" x2="-190" y2="104"/><line x1="140" y1="78" x2="190" y2="104"/><path d="M -132 -100 Q -176 -150 -140 -182 Q -112 -170 -120 -140"/><path d="M 132 -100 Q 176 -150 140 -182 Q 112 -170 120 -140"/></g><path class="abd" stroke-width="7" stroke-linejoin="round" d="M -92 116 C -112 30 -72 -46 0 -48 C 72 -46 112 30 92 116 Q 0 134 -92 116 Z"/></svg></div><div class="t1">母蟹・圓臍</div><div class="t2 pop" data-anim="23">吃蟹黃</div></div>
+<div class="card bcard pop" id="bm" data-anim="24"><div class="svgbox"><svg viewBox="-200 -200 400 365" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><g stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M -150 -70 Q -135 -122 0 -125 Q 135 -122 150 -70 L 128 60 Q 95 128 0 132 Q -95 128 -128 60 Z"/><line x1="-140" y1="-40" x2="-190" y2="-14"/><line x1="140" y1="-40" x2="190" y2="-14"/><line x1="-140" y1="0" x2="-190" y2="26"/><line x1="140" y1="0" x2="190" y2="26"/><line x1="-140" y1="40" x2="-190" y2="66"/><line x1="140" y1="40" x2="190" y2="66"/><line x1="-140" y1="78" x2="-190" y2="104"/><line x1="140" y1="78" x2="190" y2="104"/><path d="M -132 -100 Q -176 -150 -140 -182 Q -112 -170 -120 -140"/><path d="M 132 -100 Q 176 -150 140 -182 Q 112 -170 120 -140"/></g><path class="abd" stroke-width="7" stroke-linejoin="round" d="M -40 122 L -30 70 L -20 20 L 0 -46 L 20 20 L 30 70 L 40 122 Q 0 130 -40 122 Z"/></svg></div><div class="t1">公蟹・尖臍</div><div class="t2 pop" data-anim="25">吃蟹膏</div></div></div></section>
+<section id="sc-saying" class="clip" data-start="35.30" data-duration="5.94" data-track-index="8"><div class="clip" id="in-saying"><div class="polar pop" id="sp" data-anim="26"><img src="assets/cooked_plate.jpg" alt="" /><div class="pc">Photo: J. Patrick Fischer / CC BY-SA 3.0</div></div>
+<div class="kraft pop" data-anim="27">老話說</div>
+<div class="abs stamp" id="saybig" data-anim="28">九雌十雄</div>
+<div class="cal pop" id="cal9" data-anim="29"><div class="top"></div><div class="bd"><b>九月</b><span>農曆</span><em>吃母蟹</em></div></div>
+<div class="cal pop" id="cal10" data-anim="30"><div class="top"></div><div class="bd"><b>十月</b><span>農曆</span><em>吃公蟹</em></div></div></div></section>
+<section id="sc-end" class="clip" data-start="41.24" data-duration="8.45" data-track-index="9"><div class="clip" id="in-end"><div class="polar pop" id="ep" data-anim="31"><img src="assets/roe.jpg" alt="" /><div class="pc">Photo: Jpatokal / CC BY-SA 4.0</div></div>
+<div class="kraft pop" id="endk" data-anim="32">每隻 5.8–6.4 台兩</div>
+<div class="chip pop" id="endchip" data-anim="33"><span class="ck">✓</span>重量都在 A 規格以上</div>
+<div class="sticky pop" id="dm" data-anim="34">想吃的要加快腳步</div>
+<div class="abs pop" id="src" data-anim="35">資料：江蘇省漁業協會等級標準（2025 徵求意見稿）・China Daily・人民網・維基百科「中華絨螯蟹」<br>照片與影片：Wikimedia Commons，非實際販售商品</div></div></section>
+<div class="sub clip" data-start="0.00" data-duration="2.74" data-track-index="20"><span>一隻大閘蟹，580 克。</span></div>
+<div class="sub clip" data-start="2.74" data-duration="3.94" data-track-index="20"><span>這是 2024 年全國大蟹比賽的蟹王。</span></div>
+<div class="sub clip" data-start="6.68" data-duration="3.30" data-track-index="20"><span>那你買的那一隻，是第幾級？</span></div>
+<div class="sub clip" data-start="9.98" data-duration="3.30" data-track-index="20"><span>大閘蟹分級，先看重量。</span></div>
+<div class="sub clip" data-start="13.28" data-duration="5.78" data-track-index="20"><span>公蟹 200 克、母蟹 175 克以上，是最高的 A 規格。</span></div>
+<div class="sub clip" data-start="19.06" data-duration="4.02" data-track-index="20"><span>再看肥不肥：腳越硬、肚子越鼓，檔次越高。</span></div>
+<div class="sub clip" data-start="23.08" data-duration="2.66" data-track-index="20"><span>兩樣都到頂，才叫精品。</span></div>
+<div class="sub clip" data-start="25.74" data-duration="3.22" data-track-index="20"><span>公的母的怎麼分？翻過來看肚子。</span></div>
+<div class="sub clip" data-start="28.96" data-duration="6.34" data-track-index="20"><span>圓臍是母蟹，吃蟹黃；尖臍是公蟹，吃蟹膏。</span></div>
+<div class="sub clip" data-start="35.30" data-duration="5.94" data-track-index="20"><span>老話說「九雌十雄」：農曆九月吃母蟹，十月吃公蟹。</span></div>
+<div class="sub clip" data-start="41.24" data-duration="4.82" data-track-index="20"><span>這一批每隻 5.8–6.4 兩，重量都在 A 規格以上。</span></div>
+<div class="sub clip" data-start="46.06" data-duration="2.18" data-track-index="20"><span>想吃的要加快腳步。</span></div>
+<audio id="a-v01" data-start="0.15" data-duration="2.24" src="audio/v01.wav"></audio>
+<audio id="a-v02" data-start="2.89" data-duration="3.44" src="audio/v02.wav"></audio>
+<audio id="a-v03" data-start="6.83" data-duration="2.80" src="audio/v03.wav"></audio>
+<audio id="a-v04" data-start="10.13" data-duration="2.80" src="audio/v04.wav"></audio>
+<audio id="a-v05" data-start="13.43" data-duration="5.28" src="audio/v05.wav"></audio>
+<audio id="a-v06" data-start="19.21" data-duration="3.52" src="audio/v06.wav"></audio>
+<audio id="a-v07" data-start="23.23" data-duration="2.16" src="audio/v07.wav"></audio>
+<audio id="a-v08" data-start="25.89" data-duration="2.72" src="audio/v08.wav"></audio>
+<audio id="a-v09" data-start="29.11" data-duration="5.84" src="audio/v09.wav"></audio>
+<audio id="a-v10" data-start="35.45" data-duration="5.44" src="audio/v10.wav"></audio>
+<audio id="a-v11" data-start="41.39" data-duration="4.32" src="audio/v11.wav"></audio>
+<audio id="a-v12" data-start="46.21" data-duration="1.68" src="audio/v12.wav"></audio>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({ paused: true });
+tl.fromTo("[data-anim=\"4\"]", {autoAlpha:0, scale:1.7}, {autoAlpha:1, scale:1, duration:0.35, ease:"power3.in"}, 0.90);
+tl.fromTo("[data-anim=\"5\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 3.04);
+tl.to("#in-king", {opacity:0, duration:0.25, ease:"power1.in"}, 6.43);
+tl.set("#in-king", {opacity:0}, 6.68);
+tl.fromTo("#in-king .polar img", {scale:1}, {scale:1.05, duration:6.68, ease:"none"}, 0.00);
+tl.fromTo("[data-anim=\"6\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 6.68);
+tl.fromTo("[data-anim=\"7\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 6.98);
+tl.fromTo("#crabvid", {autoAlpha:0}, {autoAlpha:1, duration:0.3}, 7.08);
+tl.to("#crabvid", {autoAlpha:0, duration:0.25}, 9.73);
+tl.set("#crabvid", {autoAlpha:0}, 9.98);
+tl.to("#in-ask", {opacity:0, duration:0.25, ease:"power1.in"}, 9.73);
+tl.set("#in-ask", {opacity:0}, 9.98);
+tl.fromTo("#in-ask .polar img", {scale:1}, {scale:1.05, duration:3.30, ease:"none"}, 6.68);
+tl.fromTo("[data-anim=\"8\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 9.98);
+tl.fromTo("[data-anim=\"9\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 9.98);
+tl.fromTo("[data-anim=\"10\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 10.18);
+tl.to("#in-weight", {opacity:0, duration:0.25, ease:"power1.in"}, 18.81);
+tl.set("#in-weight", {opacity:0}, 19.06);
+tl.fromTo("#in-weight .polar img", {scale:1}, {scale:1.05, duration:9.08, ease:"none"}, 9.98);
+tl.fromTo("[data-anim=\"11\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 19.06);
+tl.fromTo("[data-anim=\"12\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 19.06);
+tl.fromTo("[data-anim=\"13\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 19.66);
+tl.fromTo("[data-anim=\"14\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 20.36);
+tl.fromTo("[data-anim=\"15\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 21.06);
+tl.to("#in-fat", {opacity:0, duration:0.25, ease:"power1.in"}, 22.83);
+tl.set("#in-fat", {opacity:0}, 23.08);
+tl.fromTo("#in-fat .polar img", {scale:1}, {scale:1.05, duration:4.02, ease:"none"}, 19.06);
+tl.fromTo("[data-anim=\"16\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 23.08);
+tl.fromTo("[data-anim=\"17\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 23.08);
+tl.fromTo("[data-anim=\"18\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 23.08);
+tl.fromTo("[data-anim=\"19\"]", {autoAlpha:0, scale:1.7}, {autoAlpha:1, scale:1, duration:0.35, ease:"power3.in"}, 24.08);
+tl.to("#in-grade", {opacity:0, duration:0.25, ease:"power1.in"}, 25.49);
+tl.set("#in-grade", {opacity:0}, 25.74);
+tl.fromTo("#in-grade .polar img", {scale:1}, {scale:1.05, duration:2.66, ease:"none"}, 23.08);
+tl.fromTo("[data-anim=\"20\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 25.74);
+tl.fromTo("[data-anim=\"21\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 25.74);
+tl.fromTo("[data-anim=\"22\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 26.34);
+tl.fromTo("[data-anim=\"23\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 29.56);
+tl.fromTo("[data-anim=\"24\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 26.64);
+tl.fromTo("[data-anim=\"25\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 31.36);
+tl.to("#in-belly", {opacity:0, duration:0.25, ease:"power1.in"}, 35.05);
+tl.set("#in-belly", {opacity:0}, 35.30);
+tl.fromTo("#in-belly .polar img", {scale:1}, {scale:1.05, duration:9.56, ease:"none"}, 25.74);
+tl.fromTo("[data-anim=\"26\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 35.30);
+tl.fromTo("[data-anim=\"27\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 35.30);
+tl.fromTo("[data-anim=\"28\"]", {autoAlpha:0, scale:1.7}, {autoAlpha:1, scale:1, duration:0.35, ease:"power3.in"}, 35.60);
+tl.fromTo("[data-anim=\"29\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 36.90);
+tl.fromTo("[data-anim=\"30\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 38.50);
+tl.to("#in-saying", {opacity:0, duration:0.25, ease:"power1.in"}, 40.99);
+tl.set("#in-saying", {opacity:0}, 41.24);
+tl.fromTo("#in-saying .polar img", {scale:1}, {scale:1.05, duration:5.94, ease:"none"}, 35.30);
+tl.fromTo("[data-anim=\"31\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 41.24);
+tl.fromTo("[data-anim=\"32\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 41.54);
+tl.fromTo("[data-anim=\"33\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 43.04);
+tl.fromTo("[data-anim=\"34\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 46.66);
+tl.fromTo("[data-anim=\"35\"]", {autoAlpha:0, y:30}, {autoAlpha:1, y:0, duration:0.5, ease:"power2.out"}, 41.24);
+tl.fromTo("#in-end .polar img", {scale:1}, {scale:1.05, duration:8.45, ease:"none"}, 41.24);
+tl.to("#rowA", {backgroundColor:"rgba(243,220,143,.85)", duration:0.4}, 13.58);
+tl.to("#bf .abd", {fill:"rgba(217,119,63,.35)", stroke:"#d9773f", duration:0.5}, 29.26);
+tl.to("#bm .abd", {fill:"rgba(217,119,63,.35)", stroke:"#d9773f", duration:0.5}, 31.06);
+window.__timelines["species02b"] = tl;
+</script>
+</body>
+</html>

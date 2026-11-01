@@ -128,7 +128,7 @@ def take(name, vid, start, dur):
             "-vf",
             "scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,fps=24",
             "-c:v",
-            "libx264",
+            "libx264", "-threads", "4",
             "-crf",
             "20",
             "-pix_fmt",

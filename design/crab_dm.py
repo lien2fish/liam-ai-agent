@@ -128,7 +128,7 @@ def build_video():
     subprocess.run(
         ["ffmpeg", "-v", "error", "-y", "-i", VIDEO_SRC, "-loop", "1", "-i", ov,
          "-filter_complex", vf, "-map", "[v]", "-an", "-r", "30",
-         "-c:v", "libx264", "-crf", "18", "-preset", "slow",
+         "-c:v", "libx264", "-threads", "4", "-crf", "18", "-preset", "slow",
          "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
          "-movflags", "+faststart", out],
         check=True,
