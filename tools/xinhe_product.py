@@ -305,7 +305,7 @@ def detail_html(d):
     )
     warning = f'<p class="warn">{WINE_WARNING}</p>' if d["category"] == "wine" else ""
     note = (
-        "依法酒類恕不提供線上購買，請透過專人洽詢。"
+        "依法酒類恕不提供線上購買。請透過 LINE 與我們聯繫，以面交方式交易，交貨時將確認購買者年滿十八歲。"
         if d["category"] == "wine"
         else "品項與供應量依當期狀況而定，歡迎洽詢。"
     )
@@ -319,6 +319,8 @@ def detail_html(d):
         <a class="btn solid" data-order href="../order.html?p={e(d["slug"])}"{'' if d.get('price') else ' hidden'}>訂購</a>
         <a class="btn" href="../index.html#contact">洽詢</a>"""
         note = "送出訂單後，我們會以電話或 LINE 與您確認品項與到貨日，並提供匯款資訊。"
+    elif d["category"] == "wine":
+        buy = '<a class="btn solid" href="../index.html#contact">LINE 洽詢・面交</a>'
     else:
         buy = '<a class="btn solid" href="../index.html#contact">洽詢這項商品</a>'
     body = f"""<article class="pd" data-campaigns="{cmp}" data-imgbase="../img/">
