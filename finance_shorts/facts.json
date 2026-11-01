@@ -3780,6 +3780,768 @@
           "quote": "依《預算法》立法院應在2026年12月1日前三讀116年度總預算案…但115年度總預算曾歷經逾1年協商才三讀，因此12月1日是法定期限，不是入帳保證。"
         }
       ]
+    },
+    "EL01": {
+      "claim": "2026 年地方公職人員選舉（九合一）於 2026-11-28（星期六）投票",
+      "tokens": [
+        "2026",
+        "11",
+        "28",
+        "9",
+        "九"
+      ],
+      "sources": [
+        {
+          "name": "中央社 2026-07-17",
+          "url": "https://www.cna.com.tw/news/aipl/202607170267.aspx",
+          "official": false,
+          "quote": "選舉定於11月28日（星期六）舉行"
+        },
+        {
+          "name": "聯合報 九合一選舉登記",
+          "url": "https://udn.com/news/story/124652/9724816",
+          "official": false,
+          "quote": "九合一選舉開始登記！是哪九項投票"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "中選會公告頁未直接取得，兩家媒體一致"
+    },
+    "EL02": {
+      "claim": "中選會 2026-07-17 調降保證金：直轄市長 150 萬→120 萬、直轄市議員 20 萬→16 萬、縣市長 20 萬→16 萬、縣市議員 12 萬→10 萬；7-22 定鄉鎮市長 10 萬、村里長 5 萬→3 萬",
+      "tokens": [
+        "150",
+        "120",
+        "20",
+        "16",
+        "12",
+        "10",
+        "5",
+        "3",
+        "2026",
+        "7",
+        "17",
+        "22"
+      ],
+      "sources": [
+        {
+          "name": "中央社 2026-07-17",
+          "url": "https://www.cna.com.tw/news/aipl/202607170267.aspx",
+          "official": false,
+          "quote": "直轄市長選舉候選人保證金降為120萬元"
+        },
+        {
+          "name": "中央社 2026-07-22",
+          "url": "https://www.cna.com.tw/news/aipl/202607220329.aspx",
+          "official": false,
+          "quote": "村里長候選人保證金3萬元"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "中選會候選人登記公告載明，原文頁未直接取得"
+    },
+    "EL03": {
+      "claim": "選罷法 §41：競選經費最高金額＝選區人口 70%（議員等除以應選名額）× 基本金額（首長 20 元、民代 30 元）＋固定金額（直轄市長 5,000 萬、縣市長 3,000 萬、議員 1,000 萬、村里長 20 萬）",
+      "tokens": [
+        "41",
+        "70",
+        "20",
+        "30",
+        "5000",
+        "5,000",
+        "3000",
+        "3,000",
+        "1000",
+        "1,000"
+      ],
+      "sources": [
+        {
+          "name": "公職人員選舉罷免法 第41條",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0020010",
+          "official": true,
+          "quote": "乘以基本金額新臺幣三十元所得數額，加上一固定金額之和"
+        },
+        {
+          "name": "聯合報 2026-07-17",
+          "url": "https://udn.com/news/story/124652/9634672",
+          "official": false,
+          "quote": "人口總數70%乘以基本金額20元…固定金額直轄市長5000萬元、縣市長3000萬元"
+        }
+      ]
+    },
+    "EL04": {
+      "claim": "2026 直轄市長競選經費上限：新北市 1 億 655 萬 1,000 元（人口 4,039,299，全國最高）、台北市 8,398 萬 6,000 元（人口 2,427,533）；連江縣 3,019 萬 2,000 元最低。驗算台北 2,427,533×0.7×20＋5,000 萬＝8,398.5 萬，進位到千元",
+      "tokens": [
+        "1",
+        "655",
+        "10655",
+        "1.0655",
+        "4039299",
+        "4,039,299",
+        "8398",
+        "8,398",
+        "2427533",
+        "2,427,533",
+        "3019",
+        "3,019",
+        "2026",
+        "70",
+        "20",
+        "5000",
+        "7",
+        "10655",
+        "3019"
+      ],
+      "sources": [
+        {
+          "name": "聯合報 2026-07-17",
+          "url": "https://udn.com/news/story/124652/9634672",
+          "official": false,
+          "quote": "新北市1億655萬1000元…連江3019萬2000元最低"
+        },
+        {
+          "name": "公職人員選舉罷免法 第41條（公式驗算）",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0020010",
+          "official": true,
+          "quote": "不足新臺幣一千元者，以新臺幣一千元計算"
+        }
+      ]
+    },
+    "EL05": {
+      "claim": "選罷法 §43：一人選區得票達當選票數三分之一以上，每票補貼 30 元，最高不超過該選區競選經費最高金額；三個月內領取",
+      "tokens": [
+        "43",
+        "30",
+        "3",
+        "三分之一",
+        "100",
+        "3000",
+        "3,000",
+        "1"
+      ],
+      "sources": [
+        {
+          "name": "公職人員選舉罷免法 第43條",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0020010",
+          "official": true,
+          "quote": "每票補貼新臺幣三十元。但其最高額，不得超過各該選舉區候選人競選經費最高金額。"
+        },
+        {
+          "name": "財政部 電子申報繳稅服務網 競選經費列舉扣除",
+          "url": "https://www.etax.nat.gov.tw/etwmain/tax-info/understanding/tax-q-and-a/national/individual-income-tax/exemption-scope/deduction/oGJ6xAb",
+          "official": true,
+          "quote": "減除政治獻金及依公職人員選舉罷免法第43條規定政府補貼競選經費後的餘額"
+        }
+      ]
+    },
+    "EL06": {
+      "claim": "直轄市長待遇比照部長；部長月俸＋公費合計 204,320 元（111 年 1 月 1 日生效表）",
+      "tokens": [
+        "204320",
+        "204,320",
+        "20",
+        "111",
+        "2022",
+        "980",
+        "48",
+        "4"
+      ],
+      "sources": [
+        {
+          "name": "臺北市法規查詢 函釋（直轄市長待遇）",
+          "url": "https://laws.gov.taipei/law/Interpretation/Content/FE338018",
+          "official": true,
+          "quote": "直轄市市長待遇比照部長級人員支給"
+        },
+        {
+          "name": "行政院人事行政總處 現行政務人員及一般公務人員各職等待遇對照表",
+          "url": "https://www.dgpa.gov.tw/FileConversion?filename=dgpa%2Ffiles%2F202202%2F20b18b32-8f76-4b5b-9f94-19850d1094f3.pdf&nfix=&name=a.pdf",
+          "official": true,
+          "quote": "各部部長 204,320"
+        }
+      ]
+    },
+    "EL07": {
+      "claim": "縣（市）長待遇照簡任第 14 職等：113 年表合計 193,410 元；114 年 1 月 1 日生效表合計 199,290 元。鄉（鎮、市）長 98,270 元（113 年表）",
+      "tokens": [
+        "193410",
+        "193,410",
+        "199290",
+        "199,290",
+        "98270",
+        "98,270",
+        "14",
+        "19",
+        "20",
+        "113",
+        "114",
+        "2025"
+      ],
+      "sources": [
+        {
+          "name": "臺中市政府人事處 縣（市）長待遇表（113 年生效）",
+          "url": "https://www.personnel.taichung.gov.tw/media/1015207/116%E7%B8%A3%E5%B8%82%E9%95%B7%E5%89%AF%E7%B8%A3%E5%B8%82%E9%95%B7%E9%84%89%E9%8E%AE%E5%B8%82%E9%95%B7%E5%BE%85%E9%81%87%E8%A1%A8.pdf",
+          "official": true,
+          "quote": "縣（市）長 61,660 46,250 85,500 193,410"
+        },
+        {
+          "name": "新竹市政府人事處 縣（市）長待遇表（114 年生效）",
+          "url": "https://dep-personnel.hccg.gov.tw/ch/home.jsp?id=52&parentpath=0%2C51",
+          "official": true,
+          "quote": "縣（市）長 俸額63,570 專業加給47,640 主管職務加給88,080 合計199,290"
+        }
+      ]
+    },
+    "EL08": {
+      "claim": "地方制度法 §61：村（里）長為無給職，由公所編列事務補助費；法務部 105 年函：事務補助費性質上是處理村里事務的公款",
+      "tokens": [
+        "61",
+        "105"
+      ],
+      "sources": [
+        {
+          "name": "地方制度法 第61條",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=A0040003",
+          "official": true,
+          "quote": "村（里）長，為無給職"
+        },
+        {
+          "name": "法務部 105.07.27 法律字第10503510920號函",
+          "url": "https://laws.gov.taipei/law/Interpretation/ContentExport/FE288004?type=5",
+          "official": true,
+          "quote": "村（里）長事務補助費與村（里）辦公費，性質上均為處理村（里）事務之公款"
+        }
+      ]
+    },
+    "EL09": {
+      "claim": "村里長事務補助費每村里每月 5 萬元（條例 §7）；2024-06-04 修法增訂春節加發 1.5 個月，自 114 年起編列。試算一年 5 萬×12＋7.5 萬＝67.5 萬",
+      "tokens": [
+        "5",
+        "50000",
+        "12",
+        "1.5",
+        "7.5",
+        "67.5",
+        "2024",
+        "114",
+        "2022",
+        "2025"
+      ],
+      "sources": [
+        {
+          "name": "地方民意代表費用支給及村里長事務補助費補助條例 第7條",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0020039",
+          "official": true,
+          "quote": "每村（里）每月新臺幣五萬元"
+        },
+        {
+          "name": "內政部新聞 2024-06-04（113-06-04）",
+          "url": "https://www.moi.gov.tw/News_Content.aspx?n=4&s=316375",
+          "official": true,
+          "quote": "增訂春節期間加發村(里)長1.5個月事務補助費"
+        }
+      ]
+    },
+    "EL10": {
+      "claim": "行政院 2026-09 追加預算案：村里長事務補助費 7 月 1 日起溯及由 5 萬調為 5.4 萬（原住民族地區 6 萬→6.48 萬），需立法院通過追加預算",
+      "tokens": [
+        "5",
+        "5.4",
+        "54000",
+        "7",
+        "1",
+        "2026",
+        "6",
+        "6.48",
+        "9"
+      ],
+      "sources": [
+        {
+          "name": "中央社 2026-09-05",
+          "url": "https://cna.com.tw/news/aipl/202609050033.aspx",
+          "official": false,
+          "quote": "一般村里長事務補助費每月由5萬元調高至5萬4000元"
+        },
+        {
+          "name": "聯合報",
+          "url": "https://udn.com/news/story/6656/9632457",
+          "official": false,
+          "quote": "7月1日起：5萬4000元"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "內政部說明經媒體轉述"
+    },
+    "EL11": {
+      "claim": "議員助理補助費：直轄市議員每人每月不得超過 32 萬元、縣市議員 16 萬元（條例 §6，2024 修法由 24 萬、8 萬調高）；為民服務費直轄市議員 2 萬→4 萬、縣市議員 9 千→2 萬",
+      "tokens": [
+        "32",
+        "16",
+        "24",
+        "8",
+        "4",
+        "2",
+        "2024",
+        "9000",
+        "6"
+      ],
+      "sources": [
+        {
+          "name": "地方民意代表費用支給及村里長事務補助費補助條例 第6條",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0020039",
+          "official": true,
+          "quote": "直轄市議會議員每人每月不得超過新臺幣三十二萬元"
+        },
+        {
+          "name": "內政部新聞 2024-06-04",
+          "url": "https://www.moi.gov.tw/News_Content.aspx?n=4&s=316375",
+          "official": true,
+          "quote": "直轄市議員從2萬元調高至4萬元，縣(市)議員從9千元調高至2萬元"
+        }
+      ]
+    },
+    "EL12": {
+      "claim": "政治獻金法 §7：與政府機關（構）有巨額採購或重大公共建設投資契約，且在履約期間之廠商，不得捐贈政治獻金",
+      "tokens": [
+        "7"
+      ],
+      "sources": [
+        {
+          "name": "政治獻金法 第7條",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0020049",
+          "official": true,
+          "quote": "與政府機關（構）有巨額採購或重大公共建設投資契約，且在履約期間之廠商"
+        },
+        {
+          "name": "全國法規六法 政治獻金法",
+          "url": "https://6laws.net/6law/law/政治獻金法.htm",
+          "official": false,
+          "quote": "二、與政府機關(構)有巨額採購或重大公共建設投資契約，且在履約期間之廠商"
+        }
+      ]
+    },
+    "EL13": {
+      "claim": "貪污治罪條例 §4：違背職務收受賄賂或其他不正利益，處無期徒刑或 10 年以上，得併科 1 億元以下罰金；§5：職務上行為收受賄賂或不正利益，7 年以上，得併科 6,000 萬元以下",
+      "tokens": [
+        "4",
+        "5",
+        "10",
+        "1",
+        "7",
+        "6000",
+        "6,000"
+      ],
+      "sources": [
+        {
+          "name": "臺北市法規查詢 貪污治罪條例",
+          "url": "https://laws.gov.taipei/law/LawSearch/LawExport/FL001430?type=0",
+          "official": true,
+          "quote": "處無期徒刑或十年以上有期徒刑，得併科新台幣一億元以下罰金"
+        },
+        {
+          "name": "法律百科 Legispedia",
+          "url": "https://www.legis-pedia.com/article/crime-penalty/1275",
+          "official": false,
+          "quote": "對於職務上之行為，要求、期約或收受賄賂或其他不正利益者…七年以上有期徒刑"
+        }
+      ]
+    },
+    "EL14": {
+      "claim": "台北市一位前里長以不同意挖路為由向建商索取，建商 2015 年 2 月交付 180 萬元；依貪污治罪條例藉勢藉端勒索財物罪判 6 年、褫奪公權 5 年定讞（一審曾判 14 年）",
+      "tokens": [
+        "180",
+        "2015",
+        "2",
+        "6",
+        "5",
+        "14"
+      ],
+      "sources": [
+        {
+          "name": "自由時報 2023-01-11",
+          "url": "https://news.ltn.com.tw/news/society/breakingnews/4181416",
+          "official": false,
+          "quote": "藉損鄰索賠為由，要求建商給付200萬元，否則不同意建商挖路。建商因有限期完工的合約壓力，交付180萬元"
+        },
+        {
+          "name": "中央社 2021-12-02",
+          "url": "https://www.cna.com.tw/news/asoc/202112020115.aspx",
+          "official": false,
+          "quote": "藉勢藉端勒索財物罪，判處有期徒刑6年，褫奪公權5年"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "判決經媒體報導，裁判書未直接引用"
+    },
+    "EL15": {
+      "claim": "新北市一位前議員向市府承辦人施壓優先審建照，換取自己投資的工程行承接建商工程；不違背職務收受不正利益等 6 罪判 10 年 8 月，不法所得 1,307 萬元定讞（另案收 20 萬緩拆違建判 7 年 6 月定讞）",
+      "tokens": [
+        "10",
+        "8",
+        "1307",
+        "1,307",
+        "6",
+        "20",
+        "7"
+      ],
+      "sources": [
+        {
+          "name": "聯合報",
+          "url": "https://udn.com/news/story/7321/9231829",
+          "official": false,
+          "quote": "他關說建照再判關10年8月定讞"
+        },
+        {
+          "name": "自由時報",
+          "url": "https://news.ltn.com.tw/news/society/breakingnews/3120081",
+          "official": false,
+          "quote": "施壓新北市府承辦人員優先處理特定建商的建照"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "判決經媒體報導"
+    },
+    "EL16": {
+      "claim": "地方制度法 §78：首長涉貪污治罪條例之罪，經第一審判處有期徒刑以上即停止職務（圖利罪須第二審）；民代判刑定讞才解職",
+      "tokens": [
+        "78"
+      ],
+      "sources": [
+        {
+          "name": "地方制度法 第78條",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=A0040003",
+          "official": true,
+          "quote": "涉嫌貪污治罪條例上之圖利罪者，須經第二審判處有期徒刑以上之刑者"
+        },
+        {
+          "name": "臺北市法規查詢 法務部函釋",
+          "url": "https://laws.gov.taipei/law/Interpretation/Content/FE078676",
+          "official": true,
+          "quote": "判決有罪定讞，由行政機關依法解職"
+        }
+      ]
+    },
+    "EL17": {
+      "claim": "監察院政治獻金公開查閱平臺可查各候選人政治獻金會計報告書；監察院 2026-04 公布 2022 年地方選舉政治獻金裁處 129 件、2,501 萬 7,115 元，超額捐贈 48 件最多",
+      "tokens": [
+        "2026",
+        "4",
+        "2022",
+        "129",
+        "2501",
+        "2,501",
+        "48",
+        "2502",
+        "2,502"
+      ],
+      "sources": [
+        {
+          "name": "監察院 政治獻金專戶公告資料",
+          "url": "https://sunshine.cy.gov.tw/PAQuery.aspx?n=21&sms=0",
+          "official": true,
+          "quote": "政治獻金專戶公告資料"
+        },
+        {
+          "name": "自由時報影音",
+          "url": "https://video.ltn.com.tw/article/IZun-H6GT0s/PLI7xntdRxhw1gDu9DJwSWvhyraLk-de62",
+          "official": false,
+          "quote": "審查決議共計裁處129件、裁罰總額達新台幣2501萬7115元"
+        },
+        {
+          "name": "大紀元 2026-04-21",
+          "url": "https://www.epochtimes.com/b5/26/4/21/n14746619.htm",
+          "official": false,
+          "quote": "政治獻金公開透明三現象"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "裁處統計原公告未取得，兩家媒體一致"
+    },
+    "EL18": {
+      "claim": "地方制度法：直轄市長、縣市長每屆 4 年連選得連任一屆；村里長 4 年連選得連任（無屆數限制）；直轄市長任免一級機關首長，但主計、人事、警察、政風依專屬人事法律任免",
+      "tokens": [
+        "4",
+        "1",
+        "55",
+        "56",
+        "59"
+      ],
+      "sources": [
+        {
+          "name": "地方制度法 第55、56、59條",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=A0040003",
+          "official": true,
+          "quote": "每屆任期四年，連選得連任一屆"
+        },
+        {
+          "name": "臺北市法規查詢 地方制度法第55條相關",
+          "url": "https://laws.gov.taipei/law/Interpretation/RelatedLaw/FE057798",
+          "official": true,
+          "quote": "除主計、人事、警察及政風首長，依專屬人事管理法律任免外"
+        }
+      ]
+    },
+    "PH01": {
+      "claim": "菲律賓 2022-07 至 2025-05 共 9,855 件防洪工程、約 5,456.4 億披索；2,409 家合格包商中 15 家拿走近 20%（約 1,000 億披索）",
+      "tokens": [
+        "2022",
+        "7",
+        "2025",
+        "5",
+        "9855",
+        "9,855",
+        "545.64",
+        "5456",
+        "5,456",
+        "2409",
+        "2,409",
+        "15",
+        "20",
+        "1000",
+        "1,000",
+        "100"
+      ],
+      "sources": [
+        {
+          "name": "菲律賓國家通訊社 PNA（SunStar 轉載）2025-08-12",
+          "url": "https://www.sunstar.com.ph/manila/pbbm-wont-spare-anyone-in-anomalous-flood-control-projects",
+          "official": true,
+          "quote": "15 contractors secured nearly 20 percent of the total PHP545.64 billion allocation…9,855 flood control projects from July 2022 to May 2025"
+        },
+        {
+          "name": "Malaya 2025-09-11",
+          "url": "https://malaya.com.ph/business/business-news/from-the-ongoing-probe-into-flood-control-projects-marcos-findings-disturbing",
+          "official": false,
+          "quote": "Roughly 20 percent of the total projects, worth around P100 billion, were awarded to just 15 contractors"
+        },
+        {
+          "name": "Philstar 評論",
+          "url": "https://www.philstar.com/opinion/2025/08/26/2468046/abolish-flood-control",
+          "official": false,
+          "quote": "15 firms out of 2,409 accredited contractors took P100 billion"
+        }
+      ]
+    },
+    "PH02": {
+      "claim": "2025-08-20 菲律賓總統視察布拉干省一處河堤工程：文件上 6 月已「完工」、付款超過 5,500 萬披索，現場沒有施工",
+      "tokens": [
+        "2025",
+        "8",
+        "20",
+        "6",
+        "5500",
+        "5,500",
+        "55"
+      ],
+      "sources": [
+        {
+          "name": "Philstar 2025-08-20",
+          "url": "https://www.philstar.com/headlines/2025/08/20/2466834/im-not-disappointed-im-angry-marcos-blasts-unfinished-p55-million-ghost-project",
+          "official": false,
+          "quote": "Marcos blasts unfinished P55-million ghost project"
+        },
+        {
+          "name": "ABS-CBN 2025-08-20",
+          "url": "https://www.abs-cbn.com/news/nation/2025/8/20/marcos-inspects-flood-control-project-in-bulacan-as-probe-intensifies-0913",
+          "official": false,
+          "quote": "Marcos 'very angry' over P55-M 'ghost' riverwall project in Baliuag, Bulacan"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "總統府 PCO 原文 403 無法取得，兩家媒體一致"
+    },
+    "PH03": {
+      "claim": "菲律賓選委會調查 2022 年選舉中政府包商的競選捐款（選舉法禁止有政府工程或採購契約者捐款）；2025-11 有 27 家包商被要求說明",
+      "tokens": [
+        "2022",
+        "2025",
+        "11",
+        "27",
+        "3"
+      ],
+      "sources": [
+        {
+          "name": "Daily Tribune 2025-08-27",
+          "url": "https://tribune.net.ph/2025/08/27/comelec-probes-contractors-campaign-donations",
+          "official": false,
+          "quote": "individuals or companies with government supply or construction contracts are barred from contributing"
+        },
+        {
+          "name": "Philstar 2025-11-21",
+          "url": "https://www.philstar.com/headlines/2025/11/21/2488825/27-contractors-explain-illicit-donations-today",
+          "official": false,
+          "quote": "27 contractors explain illicit donations today"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "選委會原始公告未取得"
+    },
+    "PH04": {
+      "claim": "2025-09-21 馬尼拉多處數萬人上街反貪腐抗議（兆元披索大遊行）",
+      "tokens": [
+        "2025",
+        "9",
+        "21"
+      ],
+      "sources": [
+        {
+          "name": "ABS-CBN 2025-09-21",
+          "url": "https://www.abs-cbn.com/news/nation/2025/9/21/thousands-join-trillion-peso-march-at-edsa-to-protest-corruption-1609",
+          "official": false,
+          "quote": "Thousands join 'Trillion Peso March' at EDSA to protest corruption"
+        },
+        {
+          "name": "Asia News Network",
+          "url": "https://asianews.network/?p=228083",
+          "official": false,
+          "quote": "Tens of thousands join anti-corruption protests in Metro Manila"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "無官方人數"
+    },
+    "PH05": {
+      "claim": "2026-09-07 菲律賓監察使署向反貪法院起訴前眾議院議長等人掠奪罪，指控 2022 至 2025 年至少 15 次收受回扣，合計至少 74.4 億披索；法院同日核發拘票；本人否認",
+      "tokens": [
+        "2026",
+        "9",
+        "7",
+        "2022",
+        "2025",
+        "15",
+        "74.4",
+        "7.44"
+      ],
+      "sources": [
+        {
+          "name": "Philstar 2026-09-07",
+          "url": "https://www.philstar.com/headlines/2026/09/07/2554626/ombudsman-files-plunder-case-vs-romualdez-over-flood-control-scandal",
+          "official": false,
+          "quote": "totaling at least P7.44 billion on at least 15 occasions"
+        },
+        {
+          "name": "Inquirer 2026-09-07",
+          "url": "https://newsinfo.inquirer.net/2300343/ombudsman-files-plunder-case-vs-romualdez-in-sandiganbayan",
+          "official": false,
+          "quote": "Ombudsman files plunder case vs Romualdez in Sandiganbayan"
+        }
+      ],
+      "must_say": "媒體報導",
+      "exception": "監察使署新聞稿未直接取得"
+    },
+    "PH06": {
+      "claim": "世界銀行 2026-08 菲律賓經濟展望：2026 年成長預測 3.7%（2025 年 4.4%）；指出政策不確定性影響投資與信心、全球能源價格上升壓抑消費，公共工程貪腐疑雲拖慢公共投資",
+      "tokens": [
+        "2026",
+        "8",
+        "3.7",
+        "2025",
+        "4.4"
+      ],
+      "sources": [
+        {
+          "name": "World Bank 新聞稿 2026-08-03",
+          "url": "https://www.worldbank.org/en/news/press-release/2026/08/03/ph-reaches-upper-middle-income-status-bolder-reforms-critical-for-more-inclusive",
+          "official": true,
+          "quote": "growth forecast of 3.7 percent in 2026…policy uncertainty…global energy prices"
+        },
+        {
+          "name": "Daily Tribune 2026-08-05",
+          "url": "https://tribune.net.ph/2026/08/05/corruption-concerns-weakened-investment-phl-growth-world-bank",
+          "official": false,
+          "quote": "governance concerns surrounding corruption contributed to delays in public investment"
+        },
+        {
+          "name": "GMA News",
+          "url": "https://www.gmanetwork.com/news/money/economy/997358/corruption-helped-bog-down-ph-economic-growth-in-2025-says-world-bank/story/",
+          "official": false,
+          "quote": "Corruption helped bog down PH economic growth in 2025, says World Bank"
+        },
+        {
+          "name": "Interaksyon 2026-08-05",
+          "url": "https://interaksyon.philstar.com/business/2026/08/05/317298/world-bank-maintains-2026-philippine-growth-forecast-at-3-7/",
+          "official": false,
+          "quote": "World Bank maintains 2026 Philippine growth forecast at 3.7%"
+        }
+      ]
+    },
+    "PH07": {
+      "claim": "試算：披索以臺灣銀行 2026-10-30 現金匯率中間值約 0.51 換算——5,456 億披索≈2,780 億新台幣、1,000 億披索≈510 億、74.4 億披索≈38 億、5,500 萬披索≈2,800 萬",
+      "tokens": [
+        "0.51",
+        "5456",
+        "5,456",
+        "2780",
+        "2,780",
+        "1000",
+        "1,000",
+        "510",
+        "74.4",
+        "38",
+        "5500",
+        "5,500",
+        "2800",
+        "2,800",
+        "2026",
+        "10",
+        "30"
+      ],
+      "sources": [
+        {
+          "name": "臺灣銀行 菲律賓比索歷史牌告（2026-10-30 現金 0.4437／0.5757）",
+          "url": "https://rate.bot.com.tw/xrt/quote/ltm/PHP",
+          "official": true,
+          "quote": "2026/10/30 | 0.4437 | 0.5757"
+        },
+        {
+          "name": "本頻道試算（金額 × 現金匯率中間值 0.51）",
+          "url": "https://rate.bot.com.tw/xrt/quote/ltm/PHP",
+          "official": true,
+          "quote": "(0.4437+0.5757)/2≈0.51"
+        }
+      ]
+    },
+    "EL19": {
+      "claim": "地方制度法：直轄市議員、縣市議員得支研究費等必要費用；內政部函釋認為研究費屬議員行使職權的合理報酬",
+      "tokens": [
+        "52"
+      ],
+      "sources": [
+        {
+          "name": "地方制度法 第52條",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=A0040003",
+          "official": true,
+          "quote": "得支研究費等必要費用"
+        },
+        {
+          "name": "臺北市法規查詢 內政部函釋（研究費性質）",
+          "url": "https://laws.gov.taipei/law/Interpretation/ContentPrint/FE330966?type=5",
+          "official": true,
+          "quote": "研究費…屬議員行使職權之合理報酬"
+        }
+      ]
+    },
+    "EL20": {
+      "claim": "選罷法 §32：保證金於當選人名單公告後 30 日內發還；得票數不足應選名額除選舉人數所得商數 10% 者不予發還",
+      "tokens": [
+        "32",
+        "30",
+        "10"
+      ],
+      "sources": [
+        {
+          "name": "公職人員選舉罷免法 第32條",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0020010",
+          "official": true,
+          "quote": "保證金應於當選人名單公告日後三十日內發還"
+        },
+        {
+          "name": "鼎川法律 政治人物薪水與保證金",
+          "url": "https://dingchuanlawyer.com/taiwan-politician-salary-election-deposit",
+          "official": false,
+          "quote": "得票未達門檻者保證金不予發還"
+        }
+      ]
     }
   },
   "rejected": {

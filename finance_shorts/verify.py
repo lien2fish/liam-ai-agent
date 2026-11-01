@@ -82,6 +82,7 @@ def norm_numbers(text):
 
 def check_episode(eid, ep):
     errors = []
+    uses_media = set()
     for i, line in enumerate(ep["lines"], 1):
         tag = f"{eid} 第{i}句"
         fids = line.get("facts", [])
@@ -92,11 +93,12 @@ def check_episode(eid, ep):
             srcs = FACTS["facts"][fid]["sources"]
             if len(srcs) < 2:
                 errors.append(f"{tag}：{fid} 只有 {len(srcs)} 個來源")
-            if not any(s["official"] for s in srcs) and not FACTS["facts"][fid].get("exception"):
+            if not any(s["official"] for s in srcs) and not FACTS["facts"][fid].get(
+                "exception"
+            ):
                 errors.append(f"{tag}：{fid} 沒有官方來源")
-            must = FACTS["facts"][fid].get("must_say")
-            if must and must not in line["text"]:
-                errors.append(f"{tag}：{fid} 是核准的例外，這句要講明「{must}」")
+            if FACTS["facts"][fid].get("must_say"):
+                uses_media.add(fid)
 
         hay = " ".join(fact_haystack(f) for f in fids if f in FACTS["facts"])
         hay_nums = norm_numbers(hay)
@@ -113,7 +115,24 @@ def check_episode(eid, ep):
 
         spoken = text
         # 不是數量的常見詞：「零利率」「兩個規則」不該被當成 0、2 去對事實表
-        for phrase in ("零利率", "停在零", "兩個", "兩年", "兩邊", "三級會議", "第二", "第三", "三條線", "三件事", "百分點", "百貨", "二手", "零容忍", "兩天", "第四"):
+        for phrase in (
+            "零利率",
+            "停在零",
+            "兩個",
+            "兩年",
+            "兩邊",
+            "三級會議",
+            "第二",
+            "第三",
+            "三條線",
+            "三件事",
+            "百分點",
+            "百貨",
+            "二手",
+            "零容忍",
+            "兩天",
+            "第四",
+        ):
             spoken = spoken.replace(phrase, "")
         for phrase in sorted(allowed_text, key=len, reverse=True):
             spoken = spoken.replace(phrase, "")
@@ -130,6 +149,14 @@ def check_episode(eid, ep):
         for pat in REJECTED_PATTERNS:
             if re.search(pat, text + shown):
                 errors.append(f"{tag}：出現已否決的說法（{pat}）")
+
+    # 2026-11-01 Lien：口播不再逐句講「媒體報導」，改在說明欄的資料來源列出媒體
+    yt = ROOT / eid / "youtube.json"
+    if uses_media and yt.exists():
+        if not any("媒體" in s for s in json.loads(yt.read_text()).get("sources", [])):
+            errors.append(
+                f"{eid}：引用只有媒體來源的 {sorted(uses_media)}，youtube.json 的 sources 要列出媒體"
+            )
     return errors
 
 

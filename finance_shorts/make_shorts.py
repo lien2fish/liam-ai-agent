@@ -104,20 +104,44 @@ def duration(path):
 
 
 def wrap(text, font, width, draw):
-    rows, cur = [], ""
-    for ch in re.findall(r"[0-9A-Za-z][0-9A-Za-z,.%]*|.", text):
-        if draw.textlength(cur + ch, font=font) > width and cur:
-            if ch in "，。、；：？！）」』":
-                cur += ch
-                rows.append(cur)
-                cur = ""
+    """行數最少的前提下，優先斷在標點後、不拆數字和單位、不留只剩幾個字的尾行。"""
+    toks = re.findall(r"[0-9A-Za-z][0-9A-Za-z,.%]*|.", text)
+    n = len(toks)
+
+    def cut_cost(i):
+        a, b = toks[i - 1], toks[i]
+        if b in "，。、；：？！）」』":
+            return None
+        if a in "，。、；：？！":
+            return 0
+        if a[0].isdigit():
+            return 4
+        return 1
+
+    best = [(0, 0.0, -1)] + [None] * n
+    for i in range(1, n + 1):
+        cc = 0 if i == n else cut_cost(i)
+        if cc is None:
+            continue
+        for j in range(i - 1, -1, -1):
+            if best[j] is None:
                 continue
-            rows.append(cur)
-            cur = ""
-        cur += ch
-    if cur:
-        rows.append(cur)
-    return rows
+            w = draw.textlength("".join(toks[j:i]), font=font)
+            if w > width:
+                break
+            slack = (width - w) / width
+            cost = best[j][1] + cc + (slack**2 if i < n else 0)
+            if i == n and len("".join(toks[j:i])) <= 4 and j > 0:
+                cost += 3
+            cand = (best[j][0] + 1, cost, j)
+            if best[i] is None or cand[:2] < best[i][:2]:
+                best[i] = cand
+    rows, i = [], n
+    while i > 0:
+        j = best[i][2]
+        rows.append("".join(toks[j:i]))
+        i = j
+    return rows[::-1]
 
 
 def overlay_png(title, text, path):
@@ -151,7 +175,7 @@ def overlay_png(title, text, path):
     img.save(path)
 
 
-ENC = ["-r", "30", "-c:v", "libx264", "-crf", "18", "-preset", "medium",
+ENC = ["-r", "30", "-c:v", "libx264", "-threads", "2", "-crf", "18", "-preset", "medium",
        "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2"]
 VIDEO_FC = (
     f"[0:v]crop=1920:{CROP_H}:0:0,split[a][b];"
