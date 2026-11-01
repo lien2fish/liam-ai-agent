@@ -185,9 +185,9 @@ def slide(ln, n, total_pages, lang):
             f'<div class="h1" id="{sid}-h" style="top: 180px; font-size: 64px; color: var(--gold)">{esc(sc["head"])}</div>'
         )
         js.append(enter(f"#{sid}-h", t0))
-        n = len(sc["items"])
-        w = min(640, (1760 - (n - 1) * 80) // n)
-        x0 = (1920 - n * w - (n - 1) * 80) // 2
+        cnt = len(sc["items"])
+        w = min(640, (1760 - (cnt - 1) * 80) // cnt)
+        x0 = (1920 - cnt * w - (cnt - 1) * 80) // 2
         for j, x in enumerate(sc["items"]):
             left = x0 + j * (w + 80)
             b += [
