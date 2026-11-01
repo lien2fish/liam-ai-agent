@@ -441,7 +441,7 @@ def build(cfg, path):
         "-map",
         "0:a?",
         "-c:v",
-        "libx264", "-threads", "4",
+        "libx264", "-threads", "2",
         "-preset",
         "veryfast",
         "-crf",

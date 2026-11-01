@@ -138,7 +138,7 @@ def build_clip(photo_path, dur, fit, out_mp4, rotate=0):
             "-t",
             str(dur),
             "-c:v",
-            "libx264", "-threads", "4",
+            "libx264", "-threads", "2",
             "-preset",
             "veryfast",
             "-crf",

@@ -187,7 +187,7 @@ def build(video, gags, out):
             "-filter_complex", fc,
             "-map", "[vout]",
             "-map", amap,
-            "-c:v", "libx264", "-threads", "4", "-crf", "20", "-preset", "medium",
+            "-c:v", "libx264", "-threads", "2", "-crf", "20", "-preset", "medium",
             "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.0", "-r", "24",
             "-c:a", "aac", "-ar", "48000", "-b:a", "160k",
             "-movflags", "+faststart",

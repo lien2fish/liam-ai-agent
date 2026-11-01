@@ -384,6 +384,7 @@ from hf_render import render; render(pdir)                 # 程式內（先把 
 | 強制 SDR | `--sdr` | 素材（影片或圖片）只要混到**一段** HDR，整支就切成 HDR 分層合成：1 小時 39 分→**17 分**，而且 HDR 版畫面發灰 |
 | 限制 Chrome | `--workers 3` | 預設 auto 會開滿核心數的 Chrome，M5 Air 沒有風扇，長時間滿載會過熱 |
 | 限制加速轉檔 | `podcast_wide.speed_up()` 的 x264 加 `-threads 2`（要放在 `-c:v libx264` 後面；11-01 從 4 降為 2，與合成一致） | 渲染完的 1.2 倍速轉檔是另外直接呼叫 ffmpeg、不經過 hf_render，2026-10-29 單一程序吃到約 9 核、機身發燙。跑到一半要降溫用 `taskpolicy -b -p <pid>` |
+| 全部影片工具 | 所有直接呼叫 ffmpeg 的 x264 編碼一律 `-threads 2`（放在 `libx264` 後面）：`tools/` 的 reel_maker／music_reel／dessert_*／reel_outro／overlay_fx／paper_mask／knowledge_short、`finance_shorts/` 的 make_shorts／broll、`design/crab_dm.py`。**新寫的 ffmpeg 呼叫也照這條** | 2026-11-01 Lien 指示「都一起降」：4 執行緒滿載約 380%，無風扇 M5 Air 仍發燙 |
 | TTS／Whisper 低優先 | 克隆配音（`tts.py`、`say.py`、`fix_vo.py`）與 Whisper 回聽（`check_vo.py`、`check_say.py`）一律 `taskpolicy -b python3 ...` 跑。⚠️ **渲染不要加**——`hf_render.py` 掛 `taskpolicy -b` 會讓 hyperframes 檢查逾時（navigation timeout 10 秒） | MLX 跑在 GPU、沒有執行緒參數可限；2026-11-01 tw-03 一次產 93 句加回聽，Lien 反映電腦變燙 |
 
 **事件經過（2026-10-27）**：金錢怪物 es-01（186 段 b-roll）渲染時開到 130 個 ffmpeg、吃掉 36GB，整台兩度強制重開。
