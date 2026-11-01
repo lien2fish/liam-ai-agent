@@ -204,7 +204,7 @@ def speed_up(pdir, ep):
             "-c:v",
             "libx264",
             "-threads",
-            "4",
+            "2",
             "-crf",
             "18",
             "-pix_fmt",

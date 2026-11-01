@@ -62,7 +62,7 @@ html, body, #root { width: 1920px; height: 1080px; }
 .vclip { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; }
 .vshade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.85) 100%); }
 .callout { position: absolute; left: 96px; bottom: 210px; padding: 18px 34px 22px; border-radius: 18px;
-  background: rgba(7,13,26,0.82); border-left: 10px solid var(--gold); max-width: 900px; }
+  background: rgba(7,13,26,0.82); border-left: 10px solid var(--gold); white-space: nowrap; }
 .ctag, .cbig, .cnote { display: block; position: relative; }
 .ctag { font-size: 34px; line-height: 1.4; color: var(--gold); font-weight: 700; }
 .cbig { font-size: 120px; line-height: 1.25; margin: 4px 0; font-weight: 800; color: #ffd400; }
@@ -79,6 +79,17 @@ def fit(text, width, cap):
     """字級：英數字約半個中文字寬，否則英文標題會被縮得太小。"""
     longest = max(sum(0.55 if c.isascii() else 1 for c in t) for t in text.split("\n"))
     return min(cap, int(width / max(longest, 1)))
+
+
+def sub_lines(text):
+    """字幕放得下就一行；放不下在最靠近中間的標點後斷行，不從詞中間切開。"""
+    if fit(text, 1400, 42) >= 42:
+        return f'<span style="white-space: nowrap">{esc(text)}</span>'
+    cuts = [i + 1 for i, c in enumerate(text[:-1]) if c in "，；：、。"]
+    if not cuts:
+        return esc(text)
+    mid = min(cuts, key=lambda i: abs(i - len(text) / 2))
+    return f"{esc(text[:mid])}<br>{esc(text[mid:])}"
 
 
 # 維持不動用橫向箭頭：上升箭頭會讓觀眾以為也升息了（10-19 台灣央行那頁差點這樣發出去）
@@ -174,12 +185,15 @@ def slide(ln, n, total_pages, lang):
             f'<div class="h1" id="{sid}-h" style="top: 180px; font-size: 64px; color: var(--gold)">{esc(sc["head"])}</div>'
         )
         js.append(enter(f"#{sid}-h", t0))
+        n = len(sc["items"])
+        w = min(640, (1760 - (n - 1) * 80) // n)
+        x0 = (1920 - n * w - (n - 1) * 80) // 2
         for j, x in enumerate(sc["items"]):
-            left = 260 + j * 720
+            left = x0 + j * (w + 80)
             b += [
-                f'<div class="card" id="{sid}-c{j}" style="left: {left}px; top: 320px; width: 640px; height: 360px"></div>',
-                f'<div class="h1" id="{sid}-cd{j}" style="left: {left}px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">{esc(x["date"])}</div>',
-                f'<div class="h1" id="{sid}-cw{j}" style="left: {left}px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">{esc(x["what"])}</div>',
+                f'<div class="card" id="{sid}-c{j}" style="left: {left}px; top: 320px; width: {w}px; height: 360px"></div>',
+                f'<div class="h1" id="{sid}-cd{j}" style="left: {left}px; right: auto; width: {w}px; top: 380px; font-size: 96px; color: var(--gold)">{esc(x["date"])}</div>',
+                f'<div class="h1" id="{sid}-cw{j}" style="left: {left}px; right: auto; width: {w}px; top: 540px; font-size: {fit(x["what"], w - 40, 50)}px; font-weight: 600">{esc(x["what"])}</div>',
             ]
             at = t0 + 0.5 + j * 1.2
             js += [
@@ -210,13 +224,13 @@ def slide(ln, n, total_pages, lang):
             b += [
                 f'<div class="callout" id="{sid}-co">'
                 + (
-                    f'<span class="ctag">{esc(sc["tag"])}</span>'
+                    f'<span class="ctag" style="font-size: {fit(sc["tag"], 1400, 34)}px">{esc(sc["tag"])}</span>'
                     if sc.get("tag")
                     else ""
                 )
-                + f'<span class="cbig">{esc(sc["big"])}</span>'
+                + f'<span class="cbig" style="font-size: {fit(sc["big"], 1400, 120)}px">{esc(sc["big"])}</span>'
                 + (
-                    f'<span class="cnote">{esc(sc["note"])}</span>'
+                    f'<span class="cnote" style="font-size: {fit(sc["note"], 1400, 30)}px">{esc(sc["note"])}</span>'
                     if sc.get("note")
                     else ""
                 )
@@ -237,7 +251,7 @@ def slide(ln, n, total_pages, lang):
 
     if k != "end":
         b.append(
-            f'<div class="sub2" id="{sid}-sub">{esc(ln.get("sub", ln["text"]))}</div>'
+            f'<div class="sub2" id="{sid}-sub">{sub_lines(ln.get("sub", ln["text"]))}</div>'
         )
         js.append(
             f'tl.fromTo("#{sid}-sub", {{ autoAlpha: 0 }}, {{ autoAlpha: 1, duration: 0.15 }}, {t0:.3f});'
