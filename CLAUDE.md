@@ -253,9 +253,11 @@
 
 ## 對外發布的 Plugin（2026-08-25 建立）
 
-獨立 repo **`lien2fish/lien-plugins`**（🌐 公開，MIT），四個 Claude Code plugin：
-`line-assistant`／`print-cmyk`／`reel`／`safe-commit`。
+獨立 repo **`lien2fish/lien-plugins`**（🌐 公開，MIT），五個 Claude Code plugin：
+`line-assistant`／`print-cmyk`／`reel`／`safe-commit`／`voice-clone`。
 本機 clone 在 `~/lien-plugins/`。
+
+另一個獨立 repo **`lien2fish/lien-mode`**（🌐 公開，MIT，2026-11-02 建）：仿 pstack 形式的工作原則包——`/lien-mode` 入口＋12 條原則＋`fact-gate`＋`second-opinion`，內容取自本檔與 USER.md 的規則、去識別化。本機在 `~/lien-mode/`；lien-plugins 的 marketplace 以 github source 指向它，**只改 lien-mode repo 那一份**。⚠️ 自我介紹寫了品類（海鮮／酒／茶／私廚）但不寫公司與品牌名；個資外洩事件只寫教訓不寫件數。社群預覽圖 `assets/social-preview.png` 要在 GitHub Settings 手動上傳（沒有 API）
 
 ```
 /plugin marketplace add lien2fish/lien-plugins
