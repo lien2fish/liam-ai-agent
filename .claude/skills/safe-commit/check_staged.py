@@ -23,6 +23,10 @@ PATH_BLOCK = [
     (r"policy_data|保單", "保單資料"),
     (r"\.key$|\.pem$", "憑證檔"),
     (r"身分證|identity", "身分證相關"),
+    # 2026-11-02 稽核：finance/finance_config.json（個人收支）在公開 repo 半年，舊規則只認中文「財務/」
+    (r"(?i)(^|/)(customers?|clients?|finances?)/", "客戶／財務資料夾（英文）"),
+    (r"(?i)(customer|client|member|contact)s?[_ -]?(list|data|export).*\.(csv|xlsx|numbers)$", "名單類資料檔（英文）"),
+    (r"(?i)passport|ssn[_.-]", "護照／社會安全號碼相關"),
 ]
 
 # 執行日誌會逐條列出往來的銀行與平台名稱，比想像中洩漏更多
@@ -50,6 +54,11 @@ CONTENT_BLOCK = [
     (r"AIza[A-Za-z0-9_-]{30,}", "疑似 Google API 金鑰"),
     (r"EAA[A-Za-z0-9]{40,}", "疑似 Meta／FB token"),
     (r"xox[baprs]-[A-Za-z0-9-]{10,}", "疑似 Slack token"),
+    (r"\b\d{3}-\d{2}-\d{4}\b", "疑似美國社會安全號碼"),
+    # 2026-11-02 稽核：公司銀行帳號用連字號分段寫在 skill 裡，一般數字規則抓不到
+    (r"帳號\s*[:：]?\s*\d{3,4}-\d{2,4}-\d{4,8}(-\d{1,3})?", "疑似銀行帳號"),
+    # 2026-11-02 稽核：出貨單產生程式把真實客戶姓名與地址寫死在範例資料裡
+    (r"\"?(客戶姓名|收件人)\"?\s*[:=]\s*\"(?!範例)[\u4e00-\u9fff]{2,4}", "程式裡寫死客戶姓名"),
 ]
 
 # 資料檔的欄位標題——比猜值的格式可靠得多。
@@ -64,6 +73,21 @@ HEADER_BLOCK = [
     ("e-mail", "Email"),
     ("累計消費", "消費金額"),
     ("訂購金額", "訂購金額"),
+    # 英文欄位。刻意不放單獨的 name／ssn：會撞到 filename、classname、品名
+    ("first name", "客戶姓名"),
+    ("last name", "客戶姓名"),
+    ("full name", "客戶姓名"),
+    ("customer name", "客戶姓名"),
+    ("client name", "客戶姓名"),
+    ("phone", "電話"),
+    ("mobile", "手機"),
+    ("address", "地址"),
+    ("date of birth", "生日"),
+    ("birthday", "生日"),
+    ("social security", "身分證號"),
+    ("passport", "護照號碼"),
+    ("total spent", "消費金額"),
+    ("order total", "訂購金額"),
 ]
 
 # 需要人看一眼，但不一定是問題
@@ -74,6 +98,9 @@ CONTENT_WARN = [
     # 結尾用 (?![A-Za-z]) 不用 \b——\w 含中文，Email 後面直接接中文字時 \b 會漏掉。
     (r"[\w.+-]+@[\w-]+(?:\.[\w-]+)*\.[A-Za-z]{2,}(?![A-Za-z])", "含 Email 位址"),
     (r"統一?編號\s*[:：,]", "含統編欄位"),
+    (r"統編\s*[:：]\s*\d{8}", "含統編（確認不是客戶的）"),
+    (r"(?i)\bname\s*,\s*(phone|e-?mail|address)\b", "含姓名＋聯絡方式的英文欄位標題"),
+    (r"(?<![\w-])(\+1[ .-]?)?(\(\d{3}\) ?|\d{3}[.-])\d{3}[.-]\d{4}\b", "疑似北美電話號碼"),
 ]
 
 DATA_EXT = (".csv", ".xlsx", ".xls", ".numbers", ".db", ".sqlite", ".json")
@@ -148,6 +175,10 @@ def scan(path):
             errs.append("含人名＋個資的資料表（%d 列）" % rows)
         elif rows:
             warns.append("有疑似人名欄的表格（%d 列）——確認是文件還是名單" % rows)
+    if re.search(r"(?i)\|\s*(customers?|clients?|full name|members?|contacts?)\s*\|", text):
+        rows = len(re.findall(r"(?m)^\|\s*[A-Z][a-z]+(?: [A-Z][a-z']+){1,2}\s*\|", text))
+        if rows:
+            errs.append("含英文人名表格（%d 列）" % rows)
     for pat, why in CONTENT_WARN:
         if re.search(pat, text):
             warns.append(why)
