@@ -8,10 +8,20 @@
 - 銷售紀錄：歷史訂單記錄
 """
 import openpyxl
+from pathlib import Path
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.utils import get_column_letter
 from openpyxl.styles.numbers import FORMAT_DATE_DATETIME
+
+
+def _bank_account():
+    # 帳號不進公開 repo：從本機 config/bank_account.txt 讀（已 gitignore）
+    for d in Path(__file__).resolve().parents:
+        p = d / "config" / "bank_account.txt"
+        if p.exists():
+            return p.read_text(encoding="utf-8").strip()
+    return "（請洽業務）"
 
 OUTPUT = "/Users/lien/Desktop/鉅鑫管理顧問/鑫酒藏/鑫酒藏品項＆客戶紀錄單.xlsx"
 
@@ -406,7 +416,7 @@ def build_order(ws):
     bank_fields = [
         ("銀　　行", "彰化銀行(009）南港科學園區分行"),
         ("戶　　名", "鉅鑫管理顧問有限公司"),
-        ("帳　　號", "（不公開）"),
+        ("帳　　號", _bank_account()),
     ]
     for i, (label, value) in enumerate(bank_fields):
         r = bank_r + 1 + i

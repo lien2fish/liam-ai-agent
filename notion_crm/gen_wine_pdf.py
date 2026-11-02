@@ -5,6 +5,7 @@
 修改 ORDER 後執行：python3 notion_crm/gen_wine_pdf.py
 """
 import os
+from pathlib import Path
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.units import mm
@@ -21,6 +22,15 @@ from reportlab.platypus import (
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 
+
+def _bank_account():
+    # 帳號不進公開 repo：從本機 config/bank_account.txt 讀（已 gitignore）
+    for d in Path(__file__).resolve().parents:
+        p = d / "config" / "bank_account.txt"
+        if p.exists():
+            return p.read_text(encoding="utf-8").strip()
+    return "（請洽業務）"
+
 pdfmetrics.registerFont(TTFont("F", "/Library/Fonts/Arial Unicode.ttf"))
 
 # ── 顏色（從原版 PDF 直接抽取）────────────────────────────────────
@@ -35,7 +45,7 @@ RED = colors.HexColor("#A02010")  # 折扣
 BANK = [
     ("銀行", "彰化銀行(009) 南港科學園區分行"),
     ("戶名", "鉅鑫管理顧問有限公司"),
-    ("帳號", "（不公開）"),
+    ("帳號", _bank_account()),
 ]
 
 # ── 修改這裡 ──────────────────────────────────────────────────────
