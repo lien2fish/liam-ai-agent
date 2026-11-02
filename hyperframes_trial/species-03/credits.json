@@ -1,0 +1,62 @@
+{
+ "yc_large": {
+  "file": "Yangcheng Lake large crabs.jpg",
+  "artist": "Fumikas Sagisavas",
+  "license": "CC0",
+  "page": "https://commons.wikimedia.org/wiki/File:Yangcheng_Lake_large_crabs.jpg"
+ },
+ "yc_raw": {
+  "file": "阳澄湖大闸蟹 生 蒸前.jpg",
+  "artist": "Walter Grassroot",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:%E9%98%B3%E6%BE%84%E6%B9%96%E5%A4%A7%E9%97%B8%E8%9F%B9_%E7%94%9F_%E8%92%B8%E5%89%8D.jpg"
+ },
+ "yc_cooked": {
+  "file": "阳澄湖大闸蟹 熟 蒸后.jpg",
+  "artist": "Walter Grassroot",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:%E9%98%B3%E6%BE%84%E6%B9%96%E5%A4%A7%E9%97%B8%E8%9F%B9_%E7%86%9F_%E8%92%B8%E5%90%8E.jpg"
+ },
+ "yc_lake": {
+  "file": "Yangcheng Lake 20140831 085624.jpg",
+  "artist": "Qa003qa003",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Yangcheng_Lake_20140831_085624.jpg"
+ },
+ "yc_scenery": {
+  "file": "Yangcheng Lake scenery.JPG",
+  "artist": "Makecat",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Yangcheng_Lake_scenery.JPG"
+ },
+ "mini": {
+  "file": "Mini hairy crabs.jpg",
+  "artist": "Fumikas Sagisavas",
+  "license": "CC0",
+  "page": "https://commons.wikimedia.org/wiki/File:Mini_hairy_crabs.jpg"
+ },
+ "roe": {
+  "file": "Roe inside steamed female hairy crab.jpg",
+  "artist": "Jpatokal",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Roe_inside_steamed_female_hairy_crab.jpg"
+ },
+ "tied_red": {
+  "file": "Hairy crab.jpg",
+  "artist": "ProjectManhattan",
+  "license": "CC0",
+  "page": "https://commons.wikimedia.org/wiki/File:Hairy_crab.jpg"
+ },
+ "cut_half": {
+  "file": "Hairy crab cut in half.jpg",
+  "artist": "Fumikas Sagisavas",
+  "license": "CC0",
+  "page": "https://commons.wikimedia.org/wiki/File:Hairy_crab_cut_in_half.jpg"
+ },
+ "steamed": {
+  "file": "Shanghai hairy crab (4178989634).jpg",
+  "artist": "Kentaro Iemoto from Tokyo, Japan",
+  "license": "CC BY-SA 2.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Shanghai_hairy_crab_(4178989634).jpg"
+ }
+}
