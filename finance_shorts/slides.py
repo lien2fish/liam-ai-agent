@@ -280,7 +280,7 @@ def slide(ln, n, total_pages, lang):
         ]
         js += fade_out(f"#{sid}-bgw", s1 - 0.3, s1)
     if ln.get("clips") or ln.get("pool"):
-        bg = '<div class="vshade"></div>'
+        bg = '<div class="shade"></div>' if ln.get("dim") else '<div class="vshade"></div>'
     html_ = (
         f'<section id="{sid}" class="clip" data-start="{s0:.3f}" data-duration="{s1 - s0:.3f}" data-track-index="{n + 1}">'
         + bg
