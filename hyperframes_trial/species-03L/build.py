@@ -19,6 +19,7 @@ data-in="key:比例"＝該句唸到該比例時出現，重配旁白不用改時
 import json
 import os
 import re
+import subprocess
 import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -29,8 +30,8 @@ MEDIA_BOX = "left:80px; top:130px; width:960px; height:540px;"
 VIDEO_CREDIT = "中新網 2020・CC BY 3.0"
 
 SCENES = [
-    ("hookw", ["l01"]),
-    ("hookl", ["l02"]),
+    ("hookl", ["l01"]),
+    ("hookw", ["l02"]),
     ("hookr", ["l03"]),
     ("three", ["l04", "l05"]),
     ("conv", ["l06", "l07"]),
@@ -159,7 +160,7 @@ def photo(key, note="示意照片", box=MEDIA_BOX):
 
 
 def clip(key, note):
-    """影片底下墊最後一格，旁白比片段長時畫面停住，不會露出底色。"""
+    """影片底下墊最後一格防露底；片段長度由 cut_clips.py 保證超過旁白，不會停住。"""
     return (
         f'<div class="frame pop" style="{MEDIA_BOX}" data-in="{{first}}:0" data-clip="{key}">'
         f'<img src="assets/{key}_end.jpg" alt="" /></div>'
@@ -196,9 +197,9 @@ BODY = {
 <div class="card sc" style="left:230px"><div class="tt">大陸五兩</div><div class="lcd"><b>250</b><i>g</i></div><div class="plate"></div></div>
 <div class="card sc" style="left:1050px"><div class="tt">台灣五兩</div><div class="lcd"><b>187.5</b><i>g</i></div><div class="plate"></div></div>""",
     "hookl": clip("v_net", "2020 開捕資料畫面")
-    + nc(190, 240, "l02:0.1", "寫著「陽澄湖」", "湖裡？", "還是沿湖的池塘？"),
+    + nc(190, 240, "l01:0.1", "2026 官方預估・陽澄湖大閘蟹", "<i>八成多</i>", "不是養在湖裡"),
     "hookr": clip("v_tags", "2020 開捕資料畫面")
-    + nc(190, 240, "l03:0.1", "看到蟹環", "誰發的？", "查得到什麼？"),
+    + nc(190, 240, "l03:0.1", "蟹環", "不等於", "一句安全保證"),
     "three": """
 <div class="card say pop" style="left:90px" data-in="l04:0">這隻<br>五兩</div>
 <div class="card say pop" style="left:690px" data-in="l04:0.2">這是<br>陽澄湖的</div>
@@ -220,7 +221,7 @@ BODY = {
     + bar("陸蟹四兩", 200, 300, "seal", "l10:0.3")
     + bar("台灣五兩（報導寫「也近 200 克」）", 187.5, 300, "teal", "l10:0.65")
     + "</div>",
-    "ask1": clip("v_scale", "2020 開捕資料畫面")
+    "ask1": clip("v_ask1", "2020 開捕資料畫面")
     + nc(150, 200, "l12:0.1", "產地在大陸", "不一定用市兩")
     + chip(390, "l13:0.25", "問幾克")
     + chip(510, "l13:0.6", "每隻至少，還是範圍"),
@@ -238,7 +239,7 @@ BODY = {
     + chip(410, "l16:0.1", "這是草案")
     + chip(530, "l16:0.65", "另外看肥滿度"),
     "ch2": photo("yc_scenery", "陽澄湖") + chap("第二句", "這是陽澄湖的"),
-    "split": clip("v_net", "2020 開捕資料畫面")
+    "split": clip("v_split", "2020 開捕資料畫面")
     + nc(130, 190, "l19:0.2", "2026 官方預估", "約 1.01 萬噸")
     + nc(335, 190, "l20:0.15", "湖區圍網", "<u>約 1600 噸</u>")
     + nc(540, 190, "l20:0.6", "沿湖高標準池塘", "<i>約 8500 噸</i>"),
@@ -266,7 +267,7 @@ BODY = {
     ),
     "ring": photo("mini")
     + nc(250, 220, "l26:0.45", "農業部門 2005 年資料：前一年", "防偽戒指滿天飛"),
-    "clasp": clip("v_tags", "2020 開捕資料畫面")
+    "clasp": clip("v_clasp", "2020 開捕資料畫面")
     + nc(120, 195, "l27:0.05", "今年官方公告", "一蟹一扣・一箱一貼")
     + chip(330, "l27:0.45", "養殖水域")
     + chip(445, "l27:0.65", "苗種來源")
@@ -275,7 +276,7 @@ BODY = {
     + chip(150, "l29:0.1", "湖裡還是池塘")
     + chip(310, "l29:0.4", "用哪一種標示")
     + chip(470, "l29:0.7", "資料對不對得上"),
-    "ch3": clip("v_crate", "2020 開捕資料畫面") + chap("第三句", "有蟹環，很安全"),
+    "ch3": clip("v_ch3", "2020 開捕資料畫面") + chap("第三句", "有蟹環，很安全"),
     "species": photo("yc_raw")
     + nc(180, 240, "l31:0.3", "台灣養的＝大陸的", "中華絨螯蟹")
     + nc(440, 220, "l31:0.65", "台灣原生毛蟹", "日本絨螯蟹等"),
@@ -342,6 +343,15 @@ def dur(key):
         return w.getnframes() / w.getframerate()
 
 
+def clip_len(key):
+    out = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
+         os.path.join(HERE, "assets", f"{key}.mp4")],
+        capture_output=True, text=True,
+    ).stdout  # fmt: skip
+    return float(out)
+
+
 def main():
     lines = {k: sub for k, _, sub in json.load(open(os.path.join(HERE, "lines.json")))}
     t, starts, ends, durs, audio, scene_t = 0.0, {}, {}, {}, [], []
@@ -383,17 +393,10 @@ def main():
 
         body = re.sub(r'(<\w+[^>]*?)data-in="([^"]+)"', tag, body)
         for key in re.findall(r'data-clip="(\w+)"', body):
-            length = {
-                "v_boats": 8.0,
-                "v_net": 5.1,
-                "v_under": 4.9,
-                "v_scale": 2.6,
-                "v_crate": 2.6,
-                "v_tags": 5.2,
-            }[key]
+            length = clip_len(key)
             videos.append(
                 f'<video id="vid-{sid}" class="vid" style="left:94px; top:144px; width:932px; height:512px" src="assets/{key}.mp4" muted playsinline '
-                f'data-start="{s0 + 0.3:.2f}" data-duration="{min(length, s1 - s0 - 0.6):.2f}" data-track-index="{100 + i}"></video>'
+                f'data-start="{s0:.2f}" data-duration="{min(length, s1 - s0):.2f}" data-track-index="{100 + i}"></video>'
             )
             videos.append(
                 f'<div class="clip" data-start="{s0:.2f}" data-duration="{s1 - s0 - 0.22:.2f}" data-track-index="{130 + i}">'
