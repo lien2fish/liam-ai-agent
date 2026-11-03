@@ -124,7 +124,7 @@ def credit_block(ep_dir, only=None):
         out.append("📷 畫面照片（Wikimedia Commons；已裁切、加上文字）\n" + "\n".join(photos))
     if videos:
         out.append(
-            f"🎬 畫面影片（YouTube 創用 CC 姓名標示 3.0 {YT_CC} ；已裁切、剪輯、加上文字）\n"
+            f"🎬 畫面影片（創用 CC 姓名標示 3.0 {YT_CC} ；已裁切、剪輯、加上文字）\n"
             + "\n".join(videos)
         )
     return out
