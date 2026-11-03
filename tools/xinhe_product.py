@@ -67,7 +67,7 @@ FORBIDDEN_WINE = [
     (r"線上購買|下單|購物車|宅配|網購", "酒依法不得線上販售（菸酒管理法 §30）"),
 ]
 
-# 混裝禮盒（例：海鮮＋茶）的「併同銷售」稅務認定要等記帳士確認，確認前不得公開標價。
+# 混裝禮盒（例：海鮮＋茶）的「併同銷售」稅務認定要等會計師確認，確認前不得公開標價。
 MIXED_BOX_PRICING_CLEARED = False
 
 FESTIVALS = [
@@ -185,7 +185,7 @@ def check_commerce(d):
     if cat == "wine" and priced:
         errors.append("酒不在官網標價（菸酒管理法 §30 禁止線上販售）")
     if cat == "gift" and d.get("mixed") and priced and not MIXED_BOX_PRICING_CLEARED:
-        errors.append("混裝禮盒在記帳士確認「併同銷售」前不得公開標價")
+        errors.append("混裝禮盒在會計師確認「併同銷售」前不得公開標價")
     seen = set()
     for i, c in enumerate(d.get("campaigns", [])):
         where = f"campaigns[{i}]"

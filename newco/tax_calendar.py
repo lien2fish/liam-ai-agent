@@ -113,7 +113,7 @@ def build_html(today, hits, upcoming, company):
         <table style="width:100%;border-collapse:collapse">{up}</table>
       </div>
       <div style="margin-top:24px;padding:12px 14px;background:#F3E4E1;font-size:12px;line-height:1.7;color:#4B4B45">
-        <b style="color:#A8352A">申報義務在公司，不在事務所。</b>記帳士代辦不等於你不用管——
+        <b style="color:#A8352A">申報義務在公司，不在事務所。</b>會計師代辦不等於你不用管——
         每一次申報後跟他要回執，那是唯一能證明有送出去的東西。
       </div>
     </div>"""
