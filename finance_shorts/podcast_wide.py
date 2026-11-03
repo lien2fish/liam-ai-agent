@@ -187,6 +187,8 @@ def speed_up(pdir, ep):
     out = pdir / "renders" / f"final_{r:.2f}x.mp4"
     subprocess.run(
         [
+            "taskpolicy",
+            "-b",
             "ffmpeg",
             "-v",
             "error",

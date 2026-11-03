@@ -98,12 +98,12 @@ L = [
         "market",
     ),
     (
-        "這一集我們就來拆這門生意。",
-        "這一集，我們就來拆這門生意。",
+        "這門生意我們看三件事：價錢怎麼標、錢怎麼轉、風險誰扛。",
+        "這門生意，我們看三件事：價錢怎麼標，錢怎麼轉，風險誰扛。",
         [],
         {
             "kind": "calendar",
-            "head": "這一集看三件事",
+            "head": "這門生意看三件事",
             "items": [
                 {"date": "①", "what": "價錢怎麼標"},
                 {"date": "②", "what": "錢怎麼轉"},
@@ -835,6 +835,7 @@ EP = {
             "screen": sc,
             **({"dim": True} if sc["kind"] in ("stat", "bars", "calendar") else {}),
             **({"pool": p} if p else {}),
+            **({"card_at": [2.2, 3.3, 4.3], "hold": 0.8} if sc.get("head") == "這門生意看三件事" else {}),
         }
         for t, s, f, sc, p in L
     ],

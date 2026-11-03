@@ -43,7 +43,7 @@ def timeline(eid):
     for i, line in enumerate(SCRIPTS["episodes"][eid]["lines"], 1):
         d = dur[f"l{i}"]["dur"]
         out.append({**line, "i": i, "start": round(t, 3), "dur": d})
-        t += d + gap
+        t += d + gap + line.get("hold", 0)
     total = round(t - gap + TAIL, 2)
     return out, total
 

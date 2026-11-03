@@ -195,7 +195,9 @@ def slide(ln, n, total_pages, lang):
                 f'<div class="h1" id="{sid}-cd{j}" style="left: {left}px; right: auto; width: {w}px; top: 380px; font-size: 96px; color: var(--gold)">{esc(x["date"])}</div>',
                 f'<div class="h1" id="{sid}-cw{j}" style="left: {left}px; right: auto; width: {w}px; top: 540px; font-size: {fit(x["what"], w - 40, 50)}px; font-weight: 600">{esc(x["what"])}</div>',
             ]
-            at = t0 + 0.5 + j * 1.2
+            at = t0 + ln["card_at"][j] if ln.get("card_at") else t0 + 0.5 + j * 1.2
+            if at + 0.85 > ln["s1"] - 0.3:
+                print(f"⚠️ 第{i}句 calendar 第{j + 1}張卡來不及播完，句子太短")
             js += [
                 enter(f"#{sid}-c{j}", at, 0, 60, 0.5, "back.out(1.4)"),
                 enter(f"#{sid}-cd{j}", at + 0.2),

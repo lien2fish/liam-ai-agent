@@ -14,7 +14,7 @@ import sys
 
 HF = "hyperframes@0.8.30"
 GATE = pathlib.Path(__file__).resolve().parent / "ffmpeg_gate.py"
-WORKERS = "3"  # auto 會開滿核心數的 Chrome，M5 Air 無風扇、長時間滿載過熱
+WORKERS = "2"  # auto 會開滿核心數的 Chrome，M5 Air 無風扇、長時間滿載過熱（2026-11-04 Lien 指示 3→2）
 
 
 def render(pdir, *extra):
