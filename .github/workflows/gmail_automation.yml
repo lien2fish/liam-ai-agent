@@ -6,6 +6,12 @@ on:
   # 全部任務改由 Worker 定時 dispatch，GitHub 只負責執行。
   # ⛔ 不要把 cron 加回來——兩邊都留會一天觸發兩次。
   workflow_dispatch:        # 允許手動觸發
+    inputs:
+      mode:
+        description: full＝排程預設；dry_run＝只列要清的數量不刪信；cleanup_only＝只清信
+        type: choice
+        default: full
+        options: [full, dry_run, cleanup_only]
 
 jobs:
   gmail-automation:
@@ -24,6 +30,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 新聞摘要（08:00）
+        if: inputs.mode != 'dry_run' && inputs.mode != 'cleanup_only'
         env:
           GMAIL_CLIENT_ID:     ${{ secrets.GMAIL_CLIENT_ID }}
           GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
@@ -36,9 +43,11 @@ jobs:
           GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
           GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
           GMAIL_APP_PASSWORD:  ${{ secrets.GMAIL_APP_PASSWORD }}
+          GMAIL_CLEANUP_MODE:  ${{ inputs.mode }}
         run: python3 gmail_monthly_cleanup.py
 
       - name: 產生 PDF 報告（只含新聞摘要）
+        if: inputs.mode != 'dry_run' && inputs.mode != 'cleanup_only'
         run: |
           pip install reportlab
           rm -f day/gmail日報_*.pdf day/新聞日報_*.pdf
@@ -47,6 +56,7 @@ jobs:
           python3 scripts/md_to_pdf.py "day/新聞日報_$(date +%Y-%m-%d).pdf" 今日新聞摘要.md
 
       - name: Commit 報告到 repo
+        if: inputs.mode != 'dry_run' && inputs.mode != 'cleanup_only'
         run: |
           git config user.name  "Liam AI Agent"
           git config user.email "lien2fish@gmail.com"

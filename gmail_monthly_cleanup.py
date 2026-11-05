@@ -20,7 +20,8 @@ import time
 import smtplib
 import ssl
 from email.mime.text import MIMEText
-from email.utils import formataddr
+from email.utils import formataddr, parseaddr
+from collections import Counter
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -184,7 +185,81 @@ LOGIN_SENDERS = [
 ]
 
 
-def save_report(total, ad_results, login_results, read_count, read_err):
+# ── 收件匣規則（只列「可以丟的」，名單外一律不動）──────────────
+# ⚠️ 刻意不列銀行／保險保留名單：repo 是 public，寫出來等於公告往來機構。
+#    反過來只列可丟的寄件者，漏列只會少清，不會誤刪憑證。
+KEEP_SUBJECTS = "-subject:(發票 OR 收據 OR 帳單 OR 明細 OR invoice OR receipt)"
+OLD_UPDATES = f"in:inbox category:updates older_than:30d -is:starred {KEEP_SUBJECTS}"
+OLD_SELF = "in:inbox from:me older_than:30d -is:starred"
+INBOX_RULES = [
+    # 促銷信留 7 天：Gmail 偶爾把真人來信分到促銷，當天就丟來不及發現。
+    # 中時、聯合電子報要留給 gmail_news_digest.py 讀。
+    (
+        "促銷信（7 天前）",
+        "in:inbox category:promotions older_than:7d -is:starred "
+        "-from:ctepaper@infotimes.com.tw -from:mailman@mx.udnpaper.com",
+    ),
+    ("GitHub 通知", f"{OLD_UPDATES} from:github.com"),
+    (
+        "Google／YouTube 通知",
+        f"{OLD_UPDATES} from:(no-reply@accounts.google.com OR noreply-accounts@google.com "
+        "OR businessprofile-noreply@google.com OR googleaistudio-noreply@google.com "
+        "OR noreply@google.com OR google-noreply@google.com OR googleone-noreply@google.com "
+        "OR gemininotebook-noreply@google.com OR chat-noreply@google.com OR no-reply@youtube.com)",
+    ),
+    (
+        "其他平台通知",
+        f"{OLD_UPDATES} -from:invoice@mail.anthropic.com from:(discord.com OR hoyoverse.com "
+        "OR tiktok.com OR email.claude.com OR uber.com OR chanchao.com.tw OR 1111.com.tw "
+        "OR decathlon.tw OR decathlon.com OR kkday.com OR email-marriott.com OR 518.com.tw "
+        "OR substack.com OR grok.com OR elevenlabs.io OR uniqlo.com OR gu-global.com "
+        "OR 91app.com OR dropbox.com OR notion.so OR surveycake.com OR research-enq.net "
+        "OR cyberbiz.co OR inline.tw OR medeo.app OR starbucks.com.tw OR momoshop.com.tw "
+        "OR cw.com.tw OR mailer-daemon@googlemail.com OR email.anthropic.com "
+        "OR mail.anthropic.com)",
+    ),
+    ("自動頻道日報", f"{OLD_SELF} subject:頻道日報"),
+    ("自動清理報告", f'{OLD_SELF} subject:"Gmail 清理報告"'),
+    ("回購提醒", f"{OLD_SELF} subject:回購提醒"),
+    ("生日提醒", f"{OLD_SELF} subject:生日提醒"),
+    ("產險到期提醒", f"{OLD_SELF} subject:產險保單到期提醒"),
+]
+
+
+def count_senders(token, ids):
+    counts = Counter()
+    for mid in ids:
+        url = (
+            f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{mid}"
+            "?format=metadata&metadataHeaders=From"
+        )
+        req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            headers = json.loads(r.read())["payload"].get("headers", [])
+        addr = parseaddr(headers[0]["value"])[1] if headers else ""
+        counts[addr.rsplit("@", 1)[-1].lower() or "（無寄件者）"] += 1
+    return counts
+
+
+def preview_inbox_rules(token):
+    """只列數量不刪信。寄件者明細只走 Email——Actions log 在公開 repo 看得到。"""
+    lines = [f"# 🧪 Gmail 清理空跑｜{now.strftime('%Y-%m-%d %H:%M')}", ""]
+    total = 0
+    for name, query in INBOX_RULES:
+        ids = get_all_message_ids(token, query)
+        total += len(ids)
+        print(f"  {name}：{len(ids)} 封（空跑）")
+        lines += ["", f"## {name}：{len(ids)} 封", ""]
+        lines += [
+            f"- {domain}：{n}" for domain, n in count_senders(token, ids).most_common()
+        ]
+    print(f"空跑完成，共 {total} 封，沒有刪任何信")
+    send_report_email(
+        "\n".join(lines), total, subject=f"🧪 Gmail 清理空跑：{total} 封（未刪除）"
+    )
+
+
+def save_report(total, ad_results, login_results, read_count, read_err, inbox_results):
     lines = [
         f"# 📧 Gmail 清理報告｜{now.strftime('%Y年%m月%d日')}",
         "",
@@ -216,7 +291,14 @@ def save_report(total, ad_results, login_results, read_count, read_err):
         f"| 項目 | 結果 |",
         f"|------|------|",
         f"| 已讀 + 超過 30 天 + 非星號/重要 | {'❌ ' + read_err if read_err else str(read_count) + ' 封'} |",
+        "",
+        "## 收件匣規則",
+        "",
+        "| 規則 | 清理數量 |",
+        "|------|---------|",
     ]
+    for name, n, err in inbox_results:
+        lines.append(f"| {name} | {'❌ ' + err if err else str(n) + ' 封'} |")
 
     report = "\n".join(lines)
     REPORT_FILE.write_text(report, encoding="utf-8")
@@ -224,14 +306,16 @@ def save_report(total, ad_results, login_results, read_count, read_err):
     return report
 
 
-def send_report_email(report, total):
+def send_report_email(report, total, subject=None):
     """把清理報告寄給自己。未設 GMAIL_APP_PASSWORD 就跳過，不影響清理本身。"""
     if not GMAIL_PW:
         print("⚠️ 未設 GMAIL_APP_PASSWORD，跳過寄信（本機測試正常）")
         return
     try:
         msg = MIMEText(report.replace("\n", "<br>"), "html", "utf-8")
-        msg["Subject"] = f"📧 Gmail 清理報告：{total} 封（{now.strftime('%Y-%m-%d')}）"
+        msg["Subject"] = (
+            subject or f"📧 Gmail 清理報告：{total} 封（{now.strftime('%Y-%m-%d')}）"
+        )
         msg["From"] = formataddr(("鉅鑫 Gmail 自動化", MAIL_ADDR))
         msg["To"] = MAIL_ADDR
         ctx = ssl.create_default_context()
@@ -248,6 +332,10 @@ def main():
     log("Gmail 每日清理開始")
 
     token = get_access_token()
+    if os.environ.get("GMAIL_CLEANUP_MODE") == "dry_run":
+        preview_inbox_rules(token)
+        return
+
     cutoff = (now - timedelta(days=30)).strftime("%Y/%m/%d")
     total = 0
 
@@ -294,10 +382,26 @@ def main():
         print(f"  已讀舊信：錯誤 {e}")
         read_err = str(e)
 
+    # 4. 收件匣規則
+    inbox_results = []
+    print("── 收件匣規則 ──")
+    for name, query in INBOX_RULES:
+        try:
+            ids = get_all_message_ids(token, query)
+            n = batch_trash(token, ids) if ids else 0
+            print(f"  {name}：刪除 {n} 封")
+            total += n
+            inbox_results.append((name, n, None))
+        except Exception as e:
+            print(f"  {name}：錯誤 {e}")
+            inbox_results.append((name, 0, str(e)))
+
     print(f"清理完成，本次共刪除 {total} 封")
     print("=" * 50)
 
-    report = save_report(total, ad_results, login_results, read_count, read_err)
+    report = save_report(
+        total, ad_results, login_results, read_count, read_err, inbox_results
+    )
     send_report_email(report, total)
 
 
