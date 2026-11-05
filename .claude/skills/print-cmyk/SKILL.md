@@ -3,6 +3,21 @@ name: print-cmyk
 description: 惜食廚房大圖送印產線：外牆防水布 12 面、歷史發展牆（直角梯形異形）、一樓乾貨牆志工名單、便當捐款卡。含 CMYK PDF 輸出、出血/裁切/安全線、字體加大、異形幾何與所有已知地雷。要做防水布、大圖、送印檔時載入。
 ---
 
+## 通用送印工具（2026-11-05）
+
+新的送印工作先用 `tools/print_cmyk/`，從 RGB 母檔產 PDF，再做送印前檢查。**先問印刷廠收哪種色彩**。
+
+```bash
+python3 tools/print_cmyk/build_print_pdf.py 母檔.png 輸出.pdf --width-cm 300 --height-cm 100 --icc 印刷廠.icc   # CMYK
+python3 tools/print_cmyk/build_print_pdf.py 母檔.png 輸出.pdf --width-cm 300 --height-cm 100 --color rgb         # 印刷廠確認收 RGB 才用
+python3 tools/print_cmyk/preflight_print.py 輸出.pdf --width-cm 300 --height-cm 100 --master 母檔.png --preview 預覽.png --viewing-distance-m 5
+```
+
+- 依賴：`pip3 install -r tools/print_cmyk/requirements.txt`
+- 母檔已含出血加 `--art-includes-bleed`；超過 5.08m 會自動改 1:10 頁面，檔名帶 `_SCALE-1to10`，**要書面告知印刷廠以 1000% 輸出**
+- 檢查結束碼 1 代表有 `FAIL`，要修完從 RGB 母檔重產；`WARN`、`MANUAL` 都要轉告 Lien。檢查通過不等於打樣
+- ⛔ 下面惜食 12 面的定案流程是 `design/tarp_face_pdf.py`（含固定調亮參數），**不要改用這套重產**，否則顏色會跟已掛上去的布不同
+
 ## 惜食廚房外牆防水布（最新：招募志工面，2026-07-07）
 - 主牆定稿 `外牆防水布_主牆25m5_招募志工版.png`（25500×1300，第7面已改成志工招募：暖光志工廚房底圖＋5項服務金圓圖示＋3步驟＋QR「了解更多/立即報名」＋扶輪3501捐贈框）。腳本 scratchpad/vol_panel2.py。規格與地雷見 memory `savefood-kitchen-signage`。
 - **立即報名 QR 更新（2026-07-07）**：右 QR 改指志工報名表單 `https://forms.gle/Njoas8PnUuEuZCqk7`。腳本已遺失，改「就地替換」：偵測白卡內黑模組定位右QR(x24762~25098/y652~988)→`qrcode`(border=0,EC=Q)產330px置中蓋回→清白舊區防殘影。左「了解更多」官網QR未動。原檔備份 `外牆防水布/備份_20260703/..._改QR前_20260707.png`。**這台無 pyzbar/opencv 可解碼**，QR正確性靠「直接用URL產生」保證，送印前請手機實掃
