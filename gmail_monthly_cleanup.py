@@ -234,10 +234,19 @@ def count_senders(token, ids):
             "?format=metadata&metadataHeaders=From"
         )
         req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
-        with urllib.request.urlopen(req, timeout=30) as r:
-            headers = json.loads(r.read())["payload"].get("headers", [])
+        for wait in (5, 20, 60, None):
+            try:
+                with urllib.request.urlopen(req, timeout=30) as r:
+                    headers = json.loads(r.read())["payload"].get("headers", [])
+                break
+            except urllib.error.HTTPError as e:
+                if e.code not in (403, 429) or wait is None:
+                    print(f"  查寄件者失敗 HTTP {e.code}：{e.read().decode()[:300]}")
+                    raise
+                time.sleep(wait)
         addr = parseaddr(headers[0]["value"])[1] if headers else ""
         counts[addr.rsplit("@", 1)[-1].lower() or "（無寄件者）"] += 1
+        time.sleep(0.1)
     return counts
 
 
