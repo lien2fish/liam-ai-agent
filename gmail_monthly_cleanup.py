@@ -197,7 +197,8 @@ INBOX_RULES = [
     (
         "促銷信（7 天前）",
         "in:inbox category:promotions older_than:7d -is:starred "
-        "-from:ctepaper@infotimes.com.tw -from:mailman@mx.udnpaper.com",
+        "-from:ctepaper@infotimes.com.tw -from:mailman@mx.udnpaper.com "
+        "-from:ntou.edu.tw",
     ),
     ("GitHub 通知", f"{OLD_UPDATES} from:github.com"),
     (
@@ -336,6 +337,12 @@ def send_report_email(report, total, subject=None):
         print(f"⚠️ 寄信失敗（清理已完成，不影響）：{e}")
 
 
+def log_group_total(results):
+    """只印總數。逐寄件者明細只走 Email——Actions log 在公開 repo 看得到。"""
+    errors = sum(1 for _, _, err in results if err)
+    log(f"  共刪除 {sum(n for _, n, _ in results)} 封，{errors} 項錯誤")
+
+
 def main():
     log("=" * 50)
     log("Gmail 每日清理開始")
@@ -355,12 +362,11 @@ def main():
         try:
             ids = get_all_message_ids(token, query)
             n = batch_trash(token, ids) if ids else 0
-            log(f"  {name}：{'刪除 ' + str(n) + ' 封' if n else '無信件'}")
             total += n
             ad_results.append((name, n, None))
         except Exception as e:
-            log(f"  {name}：錯誤 {e}")
             ad_results.append((name, 0, str(e)))
+    log_group_total(ad_results)
 
     # 2. 登入通知（30天前）
     login_results = []
@@ -369,12 +375,11 @@ def main():
         try:
             ids = get_all_message_ids(token, f"{base_query} before:{cutoff}")
             n = batch_trash(token, ids) if ids else 0
-            log(f"  {name}：{'刪除 ' + str(n) + ' 封' if n else '無舊記錄'}")
             total += n
             login_results.append((name, n, None))
         except Exception as e:
-            log(f"  {name}：錯誤 {e}")
             login_results.append((name, 0, str(e)))
+    log_group_total(login_results)
 
     # 3. 已讀舊信（30天前，非星號、非重要）
     read_count, read_err = 0, None
