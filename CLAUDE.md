@@ -389,6 +389,7 @@ from hf_render import render; render(pdir)                 # 程式內（先把 
 | 限制 Chrome | `--workers 2`（2026-11-04 Lien 指示 3→2，渲染時機身仍發燙）| 預設 auto 會開滿核心數的 Chrome，M5 Air 沒有風扇，長時間滿載會過熱 |
 | 限制加速轉檔 | `podcast_wide.speed_up()` 用 `taskpolicy -b` 跑（2026-11-04 起，排到省電核心；這段沒有逾時問題，跟渲染不同），x264 加 `-threads 2`（要放在 `-c:v libx264` 後面；11-01 從 4 降為 2，與合成一致） | 渲染完的 1.2 倍速轉檔是另外直接呼叫 ffmpeg、不經過 hf_render，2026-10-29 單一程序吃到約 9 核、機身發燙。跑到一半要降溫用 `taskpolicy -b -p <pid>` |
 | 全部影片工具 | 所有直接呼叫 ffmpeg 的 x264 編碼一律 `-threads 2`（放在 `libx264` 後面）：`tools/` 的 reel_maker／music_reel／dessert_*／reel_outro／overlay_fx／paper_mask／knowledge_short、`finance_shorts/` 的 make_shorts／broll、`design/crab_dm.py`。**新寫的 ffmpeg 呼叫也照這條** | 2026-11-01 Lien 指示「都一起降」：4 執行緒滿載約 380%，無風扇 M5 Air 仍發燙 |
+| 電池溫度監測 | 每 30 秒讀一次電池溫度記進 `<專案>/render_temp.log`；**達 40°C 就「停 4 秒、跑 4 秒」間歇暫停整個渲染程序樹，降到 37°C 恢復全速**（`HF_TEMP_LIMIT` 可暫時覆寫）。渲染結束印出最高溫與暫停秒數。中途被中斷會整組結束，不留停住或殘留的 Chrome／ffmpeg（2026-11-06 加） | 2026-11-06 Lien 擔心發熱傷電池。當天實測：循環 16 次、容量 100%，這幾週含渲染的電池最高溫 38°C；強迫降溫的成品與正常版 SSIM 0.999。不整段停住是因為 hyperframes 有 10 秒逾時 |
 | TTS／Whisper 低優先 | 克隆配音（`tts.py`、`say.py`、`fix_vo.py`）與 Whisper 回聽（`check_vo.py`、`check_say.py`）一律 `taskpolicy -b python3 ...` 跑。⚠️ **渲染不要加**——`hf_render.py` 掛 `taskpolicy -b` 會讓 hyperframes 檢查逾時（navigation timeout 10 秒） | MLX 跑在 GPU、沒有執行緒參數可限；2026-11-01 tw-03 一次產 93 句加回聽，Lien 反映電腦變燙 |
 
 **事件經過（2026-10-27）**：金錢怪物 es-01（186 段 b-roll）渲染時開到 130 個 ffmpeg、吃掉 36GB，整台兩度強制重開。

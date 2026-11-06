@@ -163,3 +163,6 @@ collab_video/audio/
 # YouTube 長片產線：build 腳本內含旁白原文，整個資料夾先不進公開 repo
 collab_video/yt/
 collab_video/yt2/
+
+# hf_render.py 每次渲染的電池溫度紀錄
+render_temp.log
