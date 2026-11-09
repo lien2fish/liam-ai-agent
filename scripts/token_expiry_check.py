@@ -6,7 +6,7 @@
 順便涵蓋 2026-08-25 那次的死法：session 被作廢（190/460），跟到期日無關。
 """
 
-import json, os, smtplib, ssl, sys, urllib.error, urllib.parse, urllib.request
+import base64, json, os, smtplib, ssl, sys, urllib.error, urllib.parse, urllib.request
 from datetime import datetime, timezone
 from email.mime.text import MIMEText
 from email.utils import formataddr
@@ -65,6 +65,7 @@ HINT_NOTION = (
 
 IMPACT = {
     "IG_TOKEN": "每日發文、留言自動回覆、限動預告<b>三套一起停</b>",
+    "IG2_TOKEN": "創業紀錄 @firstbefore40 的預約 Reels 發不出去（跑 <code>python3 scripts/ig2_auth.py</code> 重新授權）",
     "FB_PAGE_TOKEN": "目前沒有腳本真的在用（FB 跨發走 IG 的 cross_post_ids），影響最小",
     "NOTION_TOKEN": (
         "壽險生日與拜訪提醒、回購提醒、市場日報、漁獲行情、Notion 月報，"
@@ -154,6 +155,50 @@ def check_token(label, token, smoke_path, broken, warn, need_scopes=False):
     )
 
 
+def refresh_ig2(broken, warn):
+    """創業紀錄 IG（Instagram 登入的 token，60 天期）：每天續期一次並寫回 Secret，順便驗證還能用。"""
+    tok = os.environ.get("IG2_TOKEN", "")
+    if not tok:
+        print("（IG2_TOKEN 尚未設定，略過）")
+        return
+    base = "https://graph.instagram.com"
+    try:
+        new = json.load(urllib.request.urlopen(
+            f"{base}/refresh_access_token?grant_type=ig_refresh_token&access_token={tok}", timeout=30))  # fmt: skip
+    except urllib.error.HTTPError as e:
+        why = e.read().decode()[:200]
+        try:
+            urllib.request.urlopen(f"{base}/v23.0/me?fields=user_id&access_token={tok}", timeout=30)
+        except urllib.error.HTTPError as e2:
+            broken.append(f"IG2_TOKEN 已失效——HTTP {e2.code}")
+            return
+        warn.append(f"IG2_TOKEN 還能用，但今天續期失敗（{why}）")  # 剛授權未滿 24 小時也會這樣
+        return
+    except Exception as e:
+        warn.append(f"IG2_TOKEN 今天沒能檢查（{type(e).__name__}），明天再試")
+        return
+    days = new.get("expires_in", 0) // 86400
+    try:
+        save_ig2(new["access_token"])
+    except Exception as e:  # 寫不回去不能擋住後面其他金鑰的檢查與通知
+        warn.append(f"IG2_TOKEN 續期成功但寫不回 GitHub Secret（{type(e).__name__}），舊 token 仍有效")
+        return
+    print(f"✅ IG2_TOKEN 已續期，{days} 天後到期")
+
+
+def save_ig2(token):
+    from nacl import encoding, public
+
+    gh = os.environ["GH_PAT"]
+    hdr = {"Authorization": f"Bearer {gh}", "Accept": "application/vnd.github+json"}
+    repo = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/actions/secrets"
+    key = json.load(urllib.request.urlopen(urllib.request.Request(f"{repo}/public-key", headers=hdr), timeout=30))
+    box = public.SealedBox(public.PublicKey(key["key"].encode(), encoding.Base64Encoder))
+    body = {"encrypted_value": base64.b64encode(box.encrypt(token.encode())).decode(), "key_id": key["key_id"]}
+    urllib.request.urlopen(urllib.request.Request(
+        f"{repo}/IG2_TOKEN", data=json.dumps(body).encode(), headers=hdr, method="PUT"), timeout=30)  # fmt: skip
+
+
 def notion_get(path):
     req = urllib.request.Request(
         f"{NOTION_API}/{path}",
@@ -219,8 +264,8 @@ def send_mail(broken, warn):
     if broken:
         subject = f"🔴 金鑰出問題（{len(broken)} 項）——自動化已經停擺"
     else:
-        soonest = min(int(w.split("剩 ")[1].split(" 天")[0]) for w in warn)
-        subject = f"🟡 Token 剩 {soonest} 天到期，該重新授權了"
+        days = [int(w.split("剩 ")[1].split(" 天")[0]) for w in warn if "剩 " in w]
+        subject = f"🟡 Token 剩 {min(days)} 天到期，該重新授權了" if days else "🟡 金鑰續期沒成功，還能用但要看一下"
 
     lines = []
     if broken:
@@ -255,6 +300,7 @@ def main():
 
     check_token("IG_TOKEN", IG_TOKEN, f"{IG_ID}/media", broken, warn, need_scopes=True)
     check_token("FB_PAGE_TOKEN", FB_PAGE_TOKEN, "me", broken, warn)
+    refresh_ig2(broken, warn)
     check_notion(broken)
 
     for b in broken:

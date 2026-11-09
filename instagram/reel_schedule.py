@@ -7,6 +7,7 @@
   python3 instagram/reel_schedule.py cancel <id>
   python3 instagram/reel_schedule.py probe <id>   # 只建 container 驗 IG 抓得到，不發布
   add 加 --no-fb 只發 IG（預設同步發到 FB 粉絲專頁 Reels）
+  add 加 --acct=firstbefore40 發到創業紀錄帳號（走 Instagram 登入、不需粉絲專頁，自動只發 IG）
   python3 instagram/reel_schedule.py run --queue ws/ig_schedule/queue.json   # workflow 用
 
 ⛔ IG 發出去 API 刪不掉，所以：
@@ -23,6 +24,10 @@ WORKER_DIR = os.path.join(REPO, "scheduler_worker")
 LOCAL_QUEUE = os.path.expanduser("~/liam-workspace/ig_schedule/queue.json")
 
 GRAPH = "https://graph.facebook.com/v19.0"
+# 其他 IG 帳號：走「Instagram 登入」的 graph.instagram.com，token 與連老闆的 IG_TOKEN 分開
+ACCOUNTS = {
+    "firstbefore40": ("IG2_TOKEN", "IG2_ID", "ig_firstbefore40.json", "https://graph.instagram.com/v23.0"),
+}
 BUCKET = "ig-reels"
 SCHEDULER = "https://liam-scheduler.lien2fish.workers.dev"
 TW = timezone(timedelta(hours=8))
@@ -144,12 +149,19 @@ def r2_delete(key):
 # ---------- IG ----------
 
 
-def creds():
+def creds(acct=None):
+    if acct:
+        tk, ik, cfg, base = ACCOUNTS[acct]
+        tok, ig = os.environ.get(tk), os.environ.get(ik)
+        if not (tok and ig):
+            c = json.load(open(os.path.join(REPO, "config", cfg)))
+            tok, ig = c["token"], c["user_id"]
+        return tok, ig, base
     tok, ig = os.environ.get("IG_TOKEN"), os.environ.get("IG_ID")
     if tok and ig:
-        return tok, ig
+        return tok, ig, GRAPH
     c = json.load(open(os.path.join(REPO, "config", "instagram_config.json")))
-    return c["long_lived_user_token"], c["ig_account_id"]
+    return c["long_lived_user_token"], c["ig_account_id"], GRAPH
 
 
 def page_token(user_tok):
@@ -195,9 +207,9 @@ def get(url):
     return json.load(urllib.request.urlopen(url, timeout=60))
 
 
-def post(path, params):
+def post(path, params, base=GRAPH):
     req = urllib.request.Request(
-        f"{GRAPH}/{path}", data=urllib.parse.urlencode(params).encode(), method="POST"
+        f"{base}/{path}", data=urllib.parse.urlencode(params).encode(), method="POST"
     )
     try:
         return json.load(urllib.request.urlopen(req, timeout=60))
@@ -205,7 +217,7 @@ def post(path, params):
         raise RuntimeError(f"HTTP {e.code} {e.read().decode()[:300]}")
 
 
-def container(tok, ig, item):
+def container(tok, ig, item, base=GRAPH):
     cid = post(
         f"{ig}/media",
         {
@@ -216,10 +228,11 @@ def container(tok, ig, item):
             "thumb_offset": "0",  # 第一格＝reel_maker 接上去的封面卡
             "access_token": tok,
         },
+        base,
     )["id"]
     for i in range(60):
         time.sleep(5)
-        st = get(f"{GRAPH}/{cid}?fields=status_code,status&access_token={tok}")
+        st = get(f"{base}/{cid}?fields=status_code,status&access_token={tok}")
         print(f"  [{i * 5 + 5:>3}s] {st.get('status_code')}", flush=True)
         if st.get("status_code") == "FINISHED":
             return cid
@@ -250,7 +263,10 @@ def parse_at(s):
     return at
 
 
-def cmd_add(video, caption_file, when, yes=False, no_fb=False):
+def cmd_add(video, caption_file, when, yes=False, no_fb=False, acct=None):
+    if acct and acct not in ACCOUNTS:
+        raise SystemExit(f"❌ 不認得帳號 {acct}，可用：{', '.join(ACCOUNTS)}")
+    no_fb = no_fb or bool(acct)  # 其他帳號不跨發到連老闆的 FB 專頁
     at = parse_at(when)
     caption = read_caption(caption_file)
     info = probe(video)
@@ -281,7 +297,7 @@ def cmd_add(video, caption_file, when, yes=False, no_fb=False):
     print(
         f"影片：{os.path.basename(video)}  {info['w']}×{info['h']}  {info['duration']:.1f} 秒  {size / 1e6:.1f}MB"
     )
-    print(f"發布：{at:%Y-%m-%d (%a) %H:%M} 台灣時間　{'只發 IG' if no_fb else 'IG＋FB 粉絲專頁'}")
+    print(f"發布：{at:%Y-%m-%d (%a) %H:%M} 台灣時間　帳號 {'@' + acct if acct else '連老闆'}　{'只發 IG' if no_fb else 'IG＋FB 粉絲專頁'}")
     print(f"文案（{len(caption)} 字）：\n{'-' * 40}\n{caption}\n{'-' * 40}")
     for w in warns:
         print(f"⚠️ {w}")
@@ -310,6 +326,7 @@ def cmd_add(video, caption_file, when, yes=False, no_fb=False):
         "caption": caption,
         "status": "pending",
         "fb": not no_fb,
+        **({"acct": acct} if acct else {}),
         "added": datetime.now(TW).isoformat(timespec="seconds"),
     }
     items.append(item)
@@ -357,8 +374,8 @@ def cmd_probe(iid):
     """只建 container、等 FINISHED，不呼叫 media_publish。未發布的 container 24 小時後自動失效。"""
     pull(LOCAL_QUEUE)
     it = find(load(LOCAL_QUEUE), iid)
-    tok, ig = creds()
-    print(f"✅ IG 抓得到並轉檔完成（container {container(tok, ig, it)}），未發布")
+    tok, ig, base = creds(it.get("acct"))
+    print(f"✅ IG 抓得到並轉檔完成（container {container(tok, ig, it, base)}），未發布")
 
 
 def cmd_run(qpath):
@@ -375,7 +392,6 @@ def cmd_run(qpath):
     if not due:
         print("沒有到期的排程")
         return
-    tok, ig = creds()
     failed = False
     for it in due:
         at = datetime.fromisoformat(it["at"])
@@ -397,9 +413,10 @@ def cmd_run(qpath):
             got = head(it["url"])
             if got != it["bytes"]:
                 raise RuntimeError(f"R2 檔案大小 {got} 與排程時 {it['bytes']} 不符")
-            cid = container(tok, ig, it)
+            tok, ig, base = creds(it.get("acct"))
+            cid = container(tok, ig, it, base)
             mid = post(
-                f"{ig}/media_publish", {"creation_id": cid, "access_token": tok}
+                f"{ig}/media_publish", {"creation_id": cid, "access_token": tok}, base
             )["id"]
         except Exception as e:
             it.update(status="error", note=str(e)[:300])
@@ -413,7 +430,7 @@ def cmd_run(qpath):
 
         try:
             m = get(
-                f"{GRAPH}/{mid}?fields=permalink,media_type,media_url&access_token={tok}"
+                f"{base}/{mid}?fields=permalink,media_type,media_url&access_token={tok}"
             )
             it["permalink"] = m.get("permalink")
             with tempfile.TemporaryDirectory() as tmp:
@@ -458,7 +475,8 @@ if __name__ == "__main__":
     if not a:
         raise SystemExit(__doc__)
     if a[0] == "add" and len(a) >= 4:
-        cmd_add(a[1], a[2], a[3], yes="--yes" in a, no_fb="--no-fb" in a)
+        acct = next((x.split("=", 1)[1] for x in a if x.startswith("--acct=")), None)
+        cmd_add(a[1], a[2], a[3], yes="--yes" in a, no_fb="--no-fb" in a, acct=acct)
     elif a[0] == "list":
         cmd_list()
     elif a[0] == "cancel" and len(a) == 2:
