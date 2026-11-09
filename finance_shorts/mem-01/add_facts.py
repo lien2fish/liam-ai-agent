@@ -335,11 +335,12 @@ F = {
         "exception": MEDIA,
     },
     "MM14": {
-        "claim": "主計總處：2026 年 9 月教養設備及用具（電腦、隨身碟、印表機等）年增 9.75%，連 10 個月上漲，44 年來最高；權重 1.76 個百分點，購買頻率低，影響不大，「國內沒有 AI 通膨」；9 月進口物價新台幣計價漲 29.59%，多為加工後再出口",
-        "tokens": ["2026", "9", "9.75", "10", "44", "1.76", "29.59"],
+        "claim": "主計總處：2026 年 9 月教養設備及用具（電腦、隨身碟、印表機等）年增 9.75%，連 10 個月上漲，44 年來最高；權重 1.76 個百分點，購買頻率低，影響有但不多；官員強調「國內沒有 AI 通膨」（2026-10-07 說明，媒體轉述）",
+        "tokens": ["2026", "9", "9.75", "10", "44", "1.76"],
         "sources": [
             s(DG, DG_U, "9月價格上揚9.75%……為44年來、有統計以來最高"),
             s(DG2, DG2_U, "涵蓋電腦、隨身碟的教養設備及用具大漲9.75%"),
+            s(DG, DG_U, "占消費者物價指數（CPI）權重較小，且民眾購買頻率不常，因此記憶體漲價對消費有影響，但不多。她強調，國內沒有AI通膨"),
         ],
         "exception": "主計總處官員說明，媒體轉述；10 月數字 11/05 公布後要更新並補官方連結",
     },
@@ -401,6 +402,25 @@ F["MM13"]["tokens"] += ["2027"]
 F["MM13"]["sources"].append(s("民報 2026-09-20〈宏碁下一局〉（江星翰）", "https://www.peoplenews.tw/?p=56432", "PC平均售價可能到2027年中才來到高點"))
 F["MM08"]["sources"].append(s(AK, AK_U, "Actions, such as price increases, that have been and may in the future be taken by the Company may not effectively mitigate these negative impacts and may also reduce demand for the Company's products.", True))
 F["MM05"]["sources"].append(s(TF, TF_U, "The market depends heavily on Taiwanese suppliers because major suppliers are cutting production"))
+
+DGO = "行政院主計總處 2026-11-05 新聞稿：115 年 10 月物價變動概況"
+DGO_U = "https://ws.dgbas.gov.tw/001/Upload/463/relfile/10980/236836/news11510.pdf"
+UDN10 = "經濟日報 2026-11-05 10 月 CPI 年增 2.33%"
+UDN10_U = "https://money.udn.com/money/story/10869/9859986"
+LTN10 = "自由時報（中央社）2026-11-05 10 月進口物價漲幅創近 50 年最大"
+LTN10_U = "https://ec.ltn.com.tw/article/breakingnews/5630935"
+F["MM16"] = {
+    "claim": "主計總處 2026-11-05 公布：10 月教養設備及用具因記憶體等價揚年增 9.51%，歷年次高（僅次於 9 月）；10 月進口物價新台幣計價年增 33.32%，民國 66 年以來最大（近 50 年）；官員說 AI 需求帶動記憶體等電子零件漲價，但多為出口所用，對國內消費端影響相對有限",
+    "tokens": ["2026", "11", "5", "10", "9.51", "33.32", "50", "AI", "二", "0"],
+    "sources": [
+        s(DGO, DGO_U, "教養設備及用具因記憶體等價揚，上漲9.51％", True),
+        s(DGO, DGO_U, "10月較上年同月變動 1. 以新臺幣計價漲33.32％", True),
+        s(UDN10, UDN10_U, "教養設備及用具年增9.51%，寫下歷年次高漲幅，僅次於9月"),
+        s(LTN10, LTN10_U, "以新台幣計價年增33.32%，創民國66年1月以來最大漲幅"),
+        s(LTN10, LTN10_U, "反映AI需求，帶動記憶體等電子零組件價格走升……這些零組件大多為出口所用，對國內消費端影響相對有限"),
+    ],
+}
+F["MM14"]["exception"] = "9 月數字的官員說明（權重、沒有 AI 通膨）只有媒體轉述；10 月數字見 MM16 官方新聞稿"
 
 d = json.loads(P.read_text())
 d["facts"].update(F)
