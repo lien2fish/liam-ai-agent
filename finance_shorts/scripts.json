@@ -14221,6 +14221,468 @@
      }
     }
    ]
+  },
+  "ms-01": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "clone",
+   "gap": 0.15,
+   "speed": 1.2,
+   "shot": 5.0,
+   "lang": "zh",
+   "ui": "zh",
+   "title": "最低工資多 1,400 元，扣完勞健保實拿多多少？",
+   "caption": "資料：勞動部、勞動部勞工保險局、行政院、衛生福利部、全民健康保險法",
+   "note": "資訊整理，非法律建議｜金額為本頻道試算｜資料來源見說明欄",
+   "bgm": {
+    "src": "~/liam-workspace/assets/bgm/night_music.mp3",
+    "volume": 0.12
+   },
+   "reject": [
+    "broll/bk_atm_00",
+    "broll/bk_atm_12",
+    "broll/bk_atm_15",
+    "broll/bk_atm_16",
+    "broll/tw_mrt_00",
+    "broll/tw_mrt_01",
+    "broll/tw_mrt_09",
+    "broll/tw_mrt_10",
+    "broll/tw_city_11"
+   ],
+   "clip_max": 6.0,
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "2027 年 1 月 1 日起，最低工資月薪從 29,500 元調到 30,900 元，多了 1,400 元。",
+     "say": "二零二七年一月一日起，最低工資月薪，從兩萬九千五百元，升到三萬零九百元，多了一千四百元。",
+     "facts": [
+      "MW01"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "2027 年最低工資",
+      "big": "30,900 元",
+      "note": "原 29,500 元，月薪多 1,400 元"
+     },
+     "dim": true,
+     "pool": "tw_mrt"
+    },
+    {
+     "speaker": "narr",
+     "text": "但加薪 1,400 元，不代表入帳就多 1,400 元。",
+     "say": "但加薪一千四百元，不代表入帳就多一千四百元。",
+     "facts": [
+      "MW01"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "以公司幫你投保的全職月薪族為例，每個月要先扣保費。",
+     "say": "以公司幫你投保的全職月薪族為例，每個月要先扣保費。",
+     "facts": [],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_mrt"
+    },
+    {
+     "speaker": "narr",
+     "text": "勞保加就保的費率，明年從 12.5% 調到 13%，勞工自己付其中的 20%。",
+     "say": "勞保加上就保的費率，明年從百分之十二點五，升到百分之十三，勞工自己付其中的百分之二十。",
+     "facts": [
+      "MW02"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "勞保＋就業保險費率",
+      "big": "12.5% → 13%",
+      "note": "勞工自付 20%"
+     },
+     "dim": true,
+     "pool": "tw_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "健保先用現行的 5.17% 試算，自己付 30%。",
+     "say": "健保先用現行的百分之五點一七來算，自己付百分之三十。",
+     "facts": [
+      "MW04"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "健保費率（現行）",
+      "big": "5.17%",
+      "note": "受僱者自付 30%｜2027 年費率以正式公告為準"
+     },
+     "dim": true,
+     "pool": "tw_mrt"
+    },
+    {
+     "speaker": "narr",
+     "text": "用月薪 30,900 元試算：勞保加就保大約 800 元，健保大約 480 元。",
+     "say": "用月薪三萬零九百元來算，勞工寶險加上就業寶險，大約八百元，健保大約四百八十元。",
+     "facts": [
+      "MWFX",
+      "MW03"
+     ],
+     "screen": {
+      "kind": "bars",
+      "head": "月薪 30,900 元，每月自付（本頻道試算）",
+      "bars": [
+       {
+        "label": "勞保＋就保",
+        "v": 804,
+        "show": "約 800 元"
+       },
+       {
+        "label": "健保",
+        "v": 479,
+        "show": "約 480 元"
+       }
+      ]
+     },
+     "dim": true,
+     "pool": "bk_atm"
+    },
+    {
+     "speaker": "narr",
+     "text": "只扣勞健保，大約剩 29,600 元。",
+     "say": "只扣勞健保，大約剩兩萬九千六百元。",
+     "facts": [
+      "MWFX"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "扣完勞健保（本頻道試算）",
+      "big": "約 29,600 元",
+      "note": "只算本人；不含眷屬健保、勞退自提與其他扣項"
+     },
+     "dim": true,
+     "pool": "bk_atm"
+    },
+    {
+     "speaker": "narr",
+     "text": "同樣條件下，比今年多拿大約 1,310 元，不是整整 1,400 元。",
+     "say": "同樣條件下，比今年多拿大約一千三百一十元，不是整整一千四百元。",
+     "facts": [
+      "MWFX"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "實拿比今年多（本頻道試算）",
+      "big": "約 1,310 元",
+      "note": "薪資多 1,400 元"
+     },
+     "dim": true,
+     "pool": "bk_atm"
+    },
+    {
+     "speaker": "narr",
+     "text": "少拿的這 80 多元，來自投保金額提高，以及勞保費率調高。",
+     "say": "少拿的這八十多元，來自投保金額提高，以及勞保費率調高。",
+     "facts": [
+      "MWFX",
+      "MW02",
+      "MW03"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "以上用投保金額 30,900 元試算，真正扣多少，以勞保局和健保署公告為準。",
+     "say": "以上用投保金額三萬零九百元試算，真正扣多少，以勞保局和健保署公告為準。",
+     "facts": [
+      "MWFX",
+      "MW03"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_mrt"
+    },
+    {
+     "speaker": "narr",
+     "text": "關注我，給你更多錢的大小事。",
+     "say": "關注我，給你更多錢的大小事。",
+     "facts": [],
+     "screen": {
+      "kind": "outro",
+      "a": "關注我",
+      "b": "給你更多錢的大小事",
+      "btn": "訂閱"
+     }
+    }
+   ]
+  },
+  "ms-02": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "clone",
+   "gap": 0.15,
+   "speed": 1.2,
+   "shot": 5.0,
+   "lang": "zh",
+   "ui": "zh",
+   "title": "網購拆封就不能退？7 天退貨的真相",
+   "caption": "資料：消費者保護法、消費者保護法施行細則、行政院消費者保護會",
+   "note": "資訊整理，非法律建議｜個案可洽消保官｜資料來源見說明欄｜畫面為資料畫面，非片中提及品牌",
+   "bgm": {
+    "src": "~/liam-workspace/assets/bgm/night_music.mp3",
+    "volume": 0.12
+   },
+   "reject": [
+    "broll/mm_chip_05",
+    "broll/mm_chip_08",
+    "broll/mm_chip_09",
+    "broll/mm_chip_10",
+    "broll/mm_chip_11",
+    "broll/mm_korea_00",
+    "broll/mm_korea_01",
+    "broll/mm_laptop_00",
+    "broll/mm_laptop_01",
+    "broll/mm_laptop_02",
+    "broll/mm_phone_04",
+    "broll/mm_ram_03",
+    "broll/mm_ram_05",
+    "broll/mm_server_01",
+    "broll/mm_server_02",
+    "broll/mm_server_03",
+    "broll/mm_server_04",
+    "broll/mm_server_05",
+    "broll/mm_server_06",
+    "broll/mm_server_11",
+    "broll/mm_server_13",
+    "broll/mm_server_19",
+    "broll/mm_store_03",
+    "broll/mm_store_05",
+    "broll/mm_store_08",
+    "broll/mm_store_10",
+    "broll/mm_store_22",
+    "broll/mm_store_23",
+    "broll/mm_laptop_03",
+    "broll/mm_laptop_04",
+    "broll/mm_laptop_05",
+    "broll/mm_laptop_06",
+    "broll/mm_phone_05",
+    "broll/mm_phone_06",
+    "broll/mm_phone_07",
+    "broll/mm_phone_08",
+    "broll/mm_ram_02",
+    "broll/mm_server_10",
+    "broll/mm_server_12",
+    "broll/mm_server_14",
+    "broll/mm_store_02",
+    "broll/mm_store_06"
+   ],
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "網購頁面寫著：「一經拆封，恕不退換」。拆了，就真的沒辦法退嗎？",
+     "say": "網購頁面寫著：一經拆封，恕不退換。拆了，就真的沒辦法退嗎？",
+     "facts": [],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "mm_store"
+    },
+    {
+     "speaker": "narr",
+     "text": "向業者網購，收到商品後 7 天內，一般可以不說理由，解除契約、退回商品。",
+     "say": "向業者網購，收到商品後七天內，一般可以不說理由，解除契約，退回商品。",
+     "facts": [
+      "RT01"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "消費者保護法第 19 條",
+      "big": "7 天內可解除契約",
+      "note": "向業者網購｜不必說理由"
+     },
+     "dim": true,
+     "pool": "mm_laptop"
+    },
+    {
+     "speaker": "narr",
+     "text": "一般從收到商品的隔天起算；期限內寄出商品，或發出書面通知，就算數。",
+     "say": "一般從收到商品的隔天起算；期限內寄出商品，或發出書面通知，就算數。",
+     "facts": [
+      "RT01"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "mm_store"
+    },
+    {
+     "speaker": "narr",
+     "text": "拆封呢？在檢查必要的範圍內拆開、使用，解除權不會因此消失。",
+     "say": "拆封呢？在檢查必要的範圍內拆開、使用，解除權不會因此消失。",
+     "facts": [
+      "RT02"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "mm_phone"
+    },
+    {
+     "speaker": "narr",
+     "text": "業者也不能用「拆封不退」，一概排除這個權利。",
+     "say": "業者也不能用拆封不退，一概排除這個權利。",
+     "facts": [
+      "RT02"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "消保會函釋｜「拆封不退」條款",
+      "big": "不能一概排除",
+      "note": "排除必要檢查權利的條款無效"
+     },
+     "dim": true,
+     "pool": "mm_store"
+    },
+    {
+     "speaker": "narr",
+     "text": "不過，商品如果有毀損或減損，退貨時可能要按比例，償還減少的價值。",
+     "say": "不過，商品如果有毀損或減損，退貨時可能要按比例，償還減少的價值。",
+     "facts": [
+      "RT03"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "mm_laptop"
+    },
+    {
+     "speaker": "narr",
+     "text": "另外，法律列了 7 類例外：符合條件、而且業者事先告知，才可以排除這 7 天的權利。",
+     "say": "另外，法律列了七類例外：符合條件，而且業者事先告知，才可以排除這七天的權利。",
+     "facts": [
+      "RT04"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "mm_store"
+    },
+    {
+     "speaker": "narr",
+     "text": "像容易腐敗或保存期限短的商品、照你要求客製的商品，還有報紙、期刊、雜誌；",
+     "say": "像容易腐敗，或保存期限短的商品，照你要求客製的商品，還有報紙，期刊，雜誌；",
+     "facts": [
+      "RT04"
+     ],
+     "screen": {
+      "kind": "calendar",
+      "head": "7 類例外（要符合條件＋事先告知）",
+      "items": [
+       {
+        "date": "①",
+        "what": "易腐敗、保存期短"
+       },
+       {
+        "date": "②",
+        "what": "依你要求客製"
+       },
+       {
+        "date": "③",
+        "what": "報紙、期刊、雜誌"
+       }
+      ]
+     },
+     "dim": true,
+     "pool": "mm_store",
+     "card_at": [
+      0.3,
+      1.6,
+      3.0
+     ],
+     "hold": 0.8
+    },
+    {
+     "speaker": "narr",
+     "text": "以及拆封的影音和電腦軟體、拆封的個人衛生用品、你事先同意提供的線上數位內容，和國際航空客運。",
+     "say": "以及拆封的影音和電腦軟體，拆封的個人衛生用品，你事先同意提供的線上數位內容，和飛國外的航空客運。",
+     "facts": [
+      "RT04"
+     ],
+     "screen": {
+      "kind": "calendar",
+      "head": "7 類例外（續）",
+      "items": [
+       {
+        "date": "④",
+        "what": "拆封的影音、軟體"
+       },
+       {
+        "date": "⑤",
+        "what": "拆封的個人衛生用品"
+       },
+       {
+        "date": "⑥",
+        "what": "事先同意的線上數位內容"
+       },
+       {
+        "date": "⑦",
+        "what": "國際航空客運"
+       }
+      ]
+     },
+     "dim": true,
+     "pool": "mm_store",
+     "card_at": [
+      0.4,
+      1.8,
+      3.4,
+      5.2
+     ],
+     "hold": 0.8
+    },
+    {
+     "speaker": "narr",
+     "text": "這 7 天的規定，是給網購這類交易；在實體店面現場買，沒有這條。",
+     "say": "這七天的規定，是針對網購這類交易；在實體店面現場買，沒有這條。",
+     "facts": [
+      "RT01"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "mm_store"
+    },
+    {
+     "speaker": "narr",
+     "text": "所以，拆封不一定就失去退貨的權利。",
+     "say": "所以，拆封不一定就失去退貨的權利。",
+     "facts": [
+      "RT02",
+      "RT04"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "mm_phone"
+    },
+    {
+     "speaker": "narr",
+     "text": "關注我，給你更多錢的大小事。",
+     "say": "關注我，給你更多錢的大小事。",
+     "facts": [],
+     "screen": {
+      "kind": "outro",
+      "a": "關注我",
+      "b": "給你更多錢的大小事",
+      "btn": "訂閱"
+     }
+    }
+   ]
   }
  }
 }
