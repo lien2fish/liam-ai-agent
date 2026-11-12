@@ -1,0 +1,50 @@
+name: 台股早盤修正（08:41）
+
+on:
+  # 🕐 計時由 Cloudflare Worker `liam-scheduler` 負責（UTC 00:41 = 台灣 08:41）。
+  # ⛔ 不要加 cron——兩邊都留會一天觸發兩次（LINE 推兩則）。
+  workflow_dispatch:
+    inputs:
+      no_send:
+        description: 只印不推 LINE
+        type: boolean
+        default: false
+
+concurrency:
+  group: market-forecast-log
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 早盤修正
+        env:
+          TZ: Asia/Taipei
+          LINE_NOTIFY_URL:   ${{ secrets.LINE_NOTIFY_URL }}
+          LINE_NOTIFY_TOKEN: ${{ secrets.LINE_NOTIFY_TOKEN }}
+        run: python3 market/morning_update.py ${{ inputs.no_send && '--no-send' || '' }}
+
+      - name: Commit 預測紀錄
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add market/forecast_log.json
+          git diff --staged --quiet || git commit -m "chore: 台股早盤修正 $(TZ=Asia/Taipei date +%Y-%m-%d)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep $((RANDOM % 8 + 3))
+          done
+          echo "::error::連 5 次都沒推上去"; exit 1
+
+      - name: 失敗通知
+        if: failure()
+        env:
+          LINE_NOTIFY_URL:   ${{ secrets.LINE_NOTIFY_URL }}
+          LINE_NOTIFY_TOKEN: ${{ secrets.LINE_NOTIFY_TOKEN }}
+        run: python3 line_assistant/notify.py "🔴 台股早盤修正今天沒產出，請看 Actions：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

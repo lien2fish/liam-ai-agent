@@ -1,0 +1,61 @@
+name: 台股盤後日報（21:37）
+
+on:
+  # 🕐 計時由 Cloudflare Worker `liam-scheduler` 負責（UTC 13:37 = 台灣 21:37）。
+  # ⛔ 不要加 cron——兩邊都留會一天觸發兩次。
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 補跑指定日期（YYYY-MM-DD），空白＝今天
+        required: false
+      no_send:
+        description: 只產報告不寄信、不寫 Notion、不推 LINE
+        type: boolean
+        default: false
+
+concurrency:
+  group: market-forecast-log   # 晚報與早盤修正都會改 forecast_log.json
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90   # 融資約 21:00 公布，程式最多再等 60 分鐘
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 產生盤後日報
+        env:
+          TZ: Asia/Taipei
+          NOTION_TOKEN:       ${{ secrets.NOTION_TOKEN }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          MARKET_HOLDINGS:    ${{ secrets.MARKET_HOLDINGS }}
+          LINE_NOTIFY_URL:    ${{ secrets.LINE_NOTIFY_URL }}
+          LINE_NOTIFY_TOKEN:  ${{ secrets.LINE_NOTIFY_TOKEN }}
+        run: |
+          pip install --quiet reportlab
+          python3 market/evening_report.py \
+            ${{ inputs.date && format('--date {0}', inputs.date) || '' }} \
+            ${{ inputs.no_send && '--no-send' || '' }}
+
+      - name: Commit 公開版報告與預測紀錄
+        if: success() || failure()   # 寄送中途失敗也要把「已寄過」記下來，重跑才不會重複寄
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add market/forecast_log.json reports/盤後日報_*.md 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "chore: 台股盤後日報 $(TZ=Asia/Taipei date +%Y-%m-%d)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep $((RANDOM % 8 + 3))
+          done
+          echo "::error::連 5 次都沒推上去"; exit 1
+
+      - name: 失敗通知
+        if: failure()
+        env:
+          LINE_NOTIFY_URL:   ${{ secrets.LINE_NOTIFY_URL }}
+          LINE_NOTIFY_TOKEN: ${{ secrets.LINE_NOTIFY_TOKEN }}
+        run: python3 line_assistant/notify.py "🔴 台股盤後日報今天沒產出，請看 Actions：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
