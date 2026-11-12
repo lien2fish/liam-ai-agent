@@ -189,12 +189,15 @@ def build(d, args):
     settle(log, trading_days, {k.isoformat(): c for k, c in tx})
     fc = {h: forecast(tx, h) for h in (1, 5)}
     bt = {h: backtest_coverage(tx, h) for h in (1, 5)}
-    log["forecasts"] = [
-        e
-        for e in log["forecasts"]
-        if not (e["kind"] == "evening" and e["base_date"] == ds)
-    ]
-    for h in (1, 5):
+    # 只記當天出的預測。補跑舊日期時結果已經知道了，記進去會把命中率灌水。
+    live = d == now_tw().date()
+    if live:
+        log["forecasts"] = [
+            e
+            for e in log["forecasts"]
+            if not (e["kind"] == "evening" and e["base_date"] == ds)
+        ]
+    for h in (1, 5) if live else ():
         log["forecasts"].append(
             {
                 "kind": "evening",
@@ -205,7 +208,7 @@ def build(d, args):
             }
         )
     prev_status = log["state"].get("status")
-    is_latest = ds >= log["state"].get("date", "")
+    is_latest = live and ds >= log["state"].get("date", "")
     if is_latest:
         log["state"].update(status=status, date=ds)
 
