@@ -81,6 +81,7 @@ gh workflow run <檔名>.yml        # 重跑
 | **LINE 助理 `/查` 回報「全部失敗、檢查連線或金鑰」** | 🔴 **多半是助理自己壞了，不是任務掛了**。`/查` 用 Worker 的 `GITHUB_PAT` 逐支打 Actions API，那把過期就每支都 401、累加成「全滅」 | **先用 Actions API 對一次**再判斷（見下方）。確認是助理的問題就補灌 Worker secret，見 `secrets-ops` | ✅ |
 | Claude API 5xx／逾時 | 偶發 | **直接重跑**，別改程式 | ✅ |
 | `Claude 回傳異常` + `content` KeyError | Sonnet 5 開 adaptive thinking，`content[0]` 是 thinking block | 遍歷找 `type == "text"`，**不可寫 `content[0]["text"]`**（2026-08-19 已修 IG 與 YT 兩支） | ✅ |
+| `daily_post` log 出現 `[Claude] 失敗，改用 Gemini fallback：Claude 被 max_tokens 截斷`，接著 Gemini `ReadTimeout` 整支失敗 | **2026-11-12 開天窗**：Sonnet 5 的 adaptive thinking 吃掉 4096 預算，文案 JSON 被截斷；Gemini 備援第一個模型 30 秒逾時就直接拋例外，後兩個模型沒輪到 | 已修（`generate_post.py`：max_tokens 8192、Gemini 逐模型接住連線例外、逾時 90 秒）。**再發生先看是不是又被截斷**，是就再加 max_tokens。補發仍要 Lien 授權（當天是 Lien 單次授權由我觸發，**授權不延續**） | ⚠️ 補發要問 |
 | Gemini 429 `RESOURCE_EXHAUSTED` | 免費額度 20 次/天用完，**五個系統共用同一把 key** | 重跑無效，等隔天重置（**UTC 00:00 ＝台北 15:00**） | ✅ 等 |
 | Gemini 503 UNAVAILABLE | 伺服器過載，暫時性 | 間隔 10~15 秒重試幾次會好。**跟 429 是不同問題，別搞混** | ✅ |
 | OpenAI 生圖 4xx | 額度沒了／內容政策 | 去 Console 儲值。**4xx 不重試**（腳本已設計成直接中止） | ⚠️ 要開 Console |
