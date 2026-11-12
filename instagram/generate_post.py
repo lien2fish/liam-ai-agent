@@ -425,7 +425,8 @@ def knowledge_via_claude(prompt):
             #    判定「未含 JSON」而退到 Gemini——每天默默用備援產文案卻沒人發現
             #    （通知這件事的 LINE 推播在 2026-08-28 之前也是壞的）。
             #    youtube_auto 早就用 8192，這裡對齊到 4096。
-            "max_tokens": 4096,
+            #    2026-11-12 4096 也被截斷一次（thinking 吃掉大半），改 8192；只按實際產出計費。
+            "max_tokens": 8192,
             "messages": [{"role": "user", "content": prompt}],
         },
         timeout=90,
@@ -459,14 +460,19 @@ def knowledge_via_gemini(prompt):
         "gemini-flash-lite-latest",
     ]:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
-        r = requests.post(
-            url,
-            json={
-                "contents": [{"parts": [{"text": prompt}]}],
-                "generationConfig": {"response_mime_type": "application/json"},
-            },
-            timeout=30,
-        )
+        # 2026-11-12 第一個模型 30 秒逾時直接拋例外，後面兩個備援根本沒機會跑
+        try:
+            r = requests.post(
+                url,
+                json={
+                    "contents": [{"parts": [{"text": prompt}]}],
+                    "generationConfig": {"response_mime_type": "application/json"},
+                },
+                timeout=90,
+            )
+        except requests.RequestException as e:
+            print(f"[{model}] 連線失敗：{e}", flush=True)
+            continue
         data = r.json()
         if "candidates" in data:
             text = data["candidates"][0]["content"]["parts"][0]["text"]
