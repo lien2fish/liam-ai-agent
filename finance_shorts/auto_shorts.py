@@ -1,21 +1,24 @@
 #!/usr/bin/env python3
 """金錢怪物獨立 Short 自動開工：本機排程啟動 Claude Code 照 RUNBOOK_SHORTS.md 做一支。
 
-    python3 finance_shorts/auto_shorts.py install     # 裝排程（週一、週四 10:00）並立刻自我測試
+    python3 finance_shorts/auto_shorts.py install     # 裝排程（週一、週四 00:20）並立刻自我測試
     python3 finance_shorts/auto_shorts.py uninstall   # 停掉排程
     python3 finance_shorts/auto_shorts.py status      # 排程狀態、試跑進度、最近紀錄
     python3 finance_shorts/auto_shorts.py run         # 排程實際呼叫的入口（會真的做片並排程上片）
 
 改時間改 SLOTS、改試跑支數改 TRIAL_LIMIT，改完重跑 install。
 """
-import datetime, glob, os, plistlib, re, signal, subprocess, sys, time
+import datetime, glob, os, plistlib, re, shutil, signal, subprocess, sys, time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
 LABEL = "com.lien.moneymonster.shorts"
 PLIST = Path.home() / "Library/LaunchAgents" / f"{LABEL}.plist"
 STATE = Path.home() / "Library/Logs/moneymonster"
-SLOTS = [(1, 10, 0), (4, 10, 0)]  # (星期幾 1=週一, 時, 分)
+# 排程直接跑 python3 讀不到「下載項目」（系統隱私權擋掉、也不會跳授權視窗），
+# 包成一個小 App 才會正常跳出授權詢問，按一次允許就記住
+APP = Path.home() / "Applications/MoneyMonsterShorts.app"
+SLOTS = [(1, 0, 20), (4, 0, 20)]  # (星期幾 1=週一, 時, 分)
 TRIAL_LIMIT = 4  # 試跑支數，做滿就停下來等 Lien 決定
 TIMEOUT = 3 * 3600
 MIN_BATTERY = 50
@@ -219,22 +222,28 @@ def run():
 def install():
     STATE.mkdir(parents=True, exist_ok=True)
     PLIST.parent.mkdir(parents=True, exist_ok=True)
+    APP.parent.mkdir(parents=True, exist_ok=True)
+    shutil.rmtree(APP, ignore_errors=True)
+    script = (
+        'try\n do shell script "/usr/bin/python3 " & quoted form of "%s" & " run"\nend try'
+        % Path(__file__).resolve()
+    )
+    r = subprocess.run(
+        ["osacompile", "-o", str(APP), "-e", script], capture_output=True, text=True
+    )
+    if r.returncode:
+        sys.exit(f"❌ 啟動用的 App 沒建成：{r.stderr.strip()}")
     PLIST.write_bytes(
         plistlib.dumps(
             {
                 "Label": LABEL,
-                "ProgramArguments": [
-                    "/usr/bin/python3",
-                    str(Path(__file__).resolve()),
-                    "run",
-                ],
+                "ProgramArguments": [str(APP / "Contents/MacOS/applet")],
                 "WorkingDirectory": str(REPO),
                 "StartCalendarInterval": [
                     {"Weekday": w, "Hour": h, "Minute": m} for w, h, m in SLOTS
                 ],
                 "StandardOutPath": str(STATE / "launchd.out"),
                 "StandardErrorPath": str(STATE / "launchd.err"),
-                "ProcessType": "Background",
             }
         )
     )
@@ -248,7 +257,9 @@ def install():
     print(
         "✅ 排程已裝好，現在由排程本身跑一次自我測試（不會做片、不會上傳），最多等 10 分鐘…"
     )
-    print("   如果跳出「python3 想要取用下載項目檔案夾」之類的視窗，請按允許。")
+    print(
+        "   如果跳出「MoneyMonsterShorts 想要取用下載項目檔案夾」之類的視窗，請按允許。"
+    )
     res = STATE / "selftest_result.txt"
     res.unlink(missing_ok=True)
     (STATE / "selftest").touch()
@@ -276,6 +287,7 @@ def uninstall():
         ["launchctl", "bootout", f"gui/{os.getuid()}/{LABEL}"], capture_output=True
     )
     PLIST.unlink(missing_ok=True)
+    shutil.rmtree(APP, ignore_errors=True)
     print("已停掉排程")
 
 
