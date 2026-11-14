@@ -157,6 +157,10 @@ python3 finance_shorts/publish.py <集>             # 排程隔天 18:00，自�
 Codex 的回報一律逐條驗證（真 bug／取捨／誤報），驗過才改、才回報 Lien。
 第一次實績：10-26 審 make_shorts.py，9 條裡 5 條真 bug（切點整體早 0.2 秒、接點音畫差 70ms 等），已修。
 
+## Shorts 自動開工（2026-11-15 Lien 同意，試跑 4 支）
+
+獨立 Short《錢的誤會》由本機排程每週一、週四 10:00 自動做一支，流程在 `RUNBOOK_SHORTS.md`，啟動程式是 `auto_shorts.py`（`status` 看進度、`uninstall` 停掉）。長片仍然是 Lien 開對話才做。
+
 ## 卡住的時候
 
 任何一步做不下去（查不到官方來源、素材找不到、驗收一直不過、工具報錯）：
