@@ -19,6 +19,7 @@ STATE = Path.home() / "Library/Logs/moneymonster"
 # 包成一個小 App 才會正常跳出授權詢問，按一次允許就記住
 APP = Path.home() / "Applications/MoneyMonsterShorts.app"
 SLOTS = [(1, 0, 20), (4, 0, 20)]  # (星期幾 1=週一, 時, 分)
+MODEL = "claude-opus-5-5"  # 寫死，不跟著互動視窗的預設模型變（11-16 用預設的 Fable 撞到週額度）
 TRIAL_LIMIT = 4  # 試跑支數，做滿就停下來等 Lien 決定
 TIMEOUT = 3 * 3600
 MIN_BATTERY = 50
@@ -122,6 +123,8 @@ def claude(prompt, timeout):
         "caffeinate",
         "-i",
         "claude",
+        "--model",
+        MODEL,
         "-p",
         prompt,
         "--permission-mode",
