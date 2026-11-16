@@ -1,67 +1,32 @@
 #!/usr/bin/env python3
 """營收衝刺 週報：每週一 Email 本週壽險該接觸的客戶名單＋話術。
 
+2026-11-16 起改讀「炘和客戶」中有「保單類型」的人（磊山保經匯入），原本讀鉅鑫 CRM 下的壽險名單。
 A組＝未來 14 天內生日的待拜訪客戶（生日祝賀切入）。
 B組＝壽產/壽產團待拜訪客戶，依週次輪替每週 6 位（保單健檢＋交叉銷售），避免每週重複同一批。
+勾了「拒絕行銷」的人不列入（個資法第 20 條）。
 ⚠️ repo 為 public，含客戶姓名/電話，只寄 Email、不寫入 repo。
 """
-import json, os, smtplib, ssl, urllib.request
+import os, smtplib, ssl, sys
 from datetime import date
 from email.mime.text import MIMEText
 from email.utils import formataddr
 
-BASE = os.path.dirname(os.path.abspath(__file__))
-CFG = json.load(open(os.path.join(BASE, "visit_config.json")))
-DBID = CFG["life_clients_db"]
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from xinhe_crm.notion import getter, query_all  # noqa: E402
+
 BDAY_WINDOW = 14
 B_PER_WEEK = 6
-TOKEN = (
-    os.environ.get("NOTION_TOKEN")
-    or open(os.path.expanduser("~/.config/notion_token")).read().strip()
-)
-H = {
-    "Authorization": f"Bearer {TOKEN}",
-    "Notion-Version": "2022-06-28",
-    "Content-Type": "application/json",
-}
 GMAIL_PW = os.environ.get("GMAIL_APP_PASSWORD", "")
 ADDR = "lien2fish@gmail.com"
 
 
-def val(prop):
-    t = prop["type"]
-    v = prop[t]
-    if t in ("title", "rich_text"):
-        return "".join(x["plain_text"] for x in v)
-    if t == "phone_number":
-        return v or ""
-    if t == "number":
-        return v
-    if t == "select":
-        return v["name"] if v else ""
-    if t == "date":
-        return v["start"] if v else ""
-    return ""
-
-
-def query_all():
-    out, cur = [], None
-    while True:
-        body = {"page_size": 100}
-        if cur:
-            body["start_cursor"] = cur
-        req = urllib.request.Request(
-            f"https://api.notion.com/v1/databases/{DBID}/query",
-            data=json.dumps(body).encode(),
-            headers=H,
-            method="POST",
-        )
-        d = json.load(urllib.request.urlopen(req))
-        out += d["results"]
-        if not d.get("has_more"):
-            break
-        cur = d["next_cursor"]
-    return out
+def age_on(bday, today):
+    try:
+        y, m, d = (int(x) for x in bday[:10].split("-"))
+    except ValueError:
+        return ""
+    return today.year - y - ((today.month, today.day) < (m, d))
 
 
 def days_to_birthday(bday, today):
@@ -85,14 +50,15 @@ def main():
     today = date.today()
     week = today.isocalendar()[1]
     clients = []
-    for row in query_all():
-        p = row["properties"]
-        g = lambda k: val(p[k]) if k in p else ""
-        if g("拜訪狀態") == "暫緩":
+    for row in query_all("customer_db"):
+        g = getter(row)
+        if not g("保單類型"):  # 只算保險客戶
+            continue
+        if g("拜訪狀態") == "暫緩" or g("拒絕行銷") is True:
             continue
         if g("上次拜訪日"):  # 已排過拜訪，交給每日拜訪提醒系統
             continue
-        phone = g("手機電話")
+        phone = g("手機")
         if not phone:
             continue
         clients.append(
@@ -100,7 +66,7 @@ def main():
                 "name": g("姓名"),
                 "phone": phone,
                 "type": g("保單類型"),
-                "age": g("年齡"),
+                "age": age_on(g("生日"), today) if g("生日") else "",
                 "bday": g("生日"),
                 "d2b": days_to_birthday(g("生日"), today),
             }
@@ -133,7 +99,7 @@ def main():
     if GMAIL_PW and (a_list or b_list):
         msg = MIMEText(html, "html", "utf-8")
         msg["Subject"] = f"📋 營收衝刺週報 · 本週壽險名單（{today}）"
-        msg["From"] = formataddr(("鉅鑫 營收衝刺", ADDR))
+        msg["From"] = formataddr(("炘和 營收衝刺", ADDR))
         msg["To"] = ADDR
         with smtplib.SMTP_SSL(
             "smtp.gmail.com", 465, context=ssl.create_default_context()
@@ -198,7 +164,7 @@ def build_html(today, week, a_list, b_list):
 <h3 style="color:#1F4E79;margin-top:24px">🗣 話術</h3>
 <p><b>A組·生日切入</b><br>「〇〇您好，我是鉅鑫連傳正。看您這兩天生日，先跟您說聲<b>生日快樂</b>！剛好年中，順便關心一下您保單這半年有沒有需要調整。另外公司剛喬遷，想送您一份龜吼現流海鮮嚐鮮、全品牌也有喬遷慶 85 折，改天拿給您順便聊聊。」</p>
 <p><b>B組·保單健檢</b><br>「〇〇您好，我是連傳正。年中幫老客戶做個<b>保單健檢</b>，看您壽險加產險保障夠不夠、有沒有重複或缺口，約 15 分鐘幫您對一下？順便跟您說公司喬遷了，喬遷慶全品牌 85 折。」</p>
-<p style="color:#888;font-size:13px;margin-top:20px">打完後在 Notion 壽險DB 填「上次拜訪日」，系統自動接手排下次拜訪。<br>— Liam AI Agent</p>
+<p style="color:#888;font-size:13px;margin-top:20px">打完後在 Notion 炘和客戶填「上次拜訪日」，系統自動接手排下次拜訪。<br>— Liam AI Agent</p>
 </div>"""
 
 

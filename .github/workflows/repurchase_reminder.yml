@@ -26,7 +26,7 @@ jobs:
 
       - name: Run repurchase reminder
         env:
-          NOTION_TOKEN:        ${{ secrets.NOTION_TOKEN }}
+          XINHE_NOTION_TOKEN:        ${{ secrets.XINHE_NOTION_TOKEN }}
           GMAIL_APP_PASSWORD:  ${{ secrets.GMAIL_APP_PASSWORD }}
           REPURCHASE_DAYS:     '60'
           # ⏸️ 每日行動隊列推 LINE：2026-10-14 Lien 指示暫停，等新公司開始運作再恢復。

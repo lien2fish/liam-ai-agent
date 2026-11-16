@@ -158,7 +158,7 @@
 | `ig_story_teaser.yml` | IG 限動 Reels 預告（從已發布 Reels 剪 3 秒＋「Reels完整版～」，30 天不重複） | 每天 18:08（接 Reels 18:00） |
 | `ig_reel_scheduled.yml` | **IG Reels 預約發布**（2026-10-28 建）。Graph API 沒有 publishAt，所以影片放 R2 `ig-reels`（亂數檔名、45 天自動刪）、清單放私人 repo `liam-workspace/ig_schedule/queue.json`，到期才發。本機排程：`python3 instagram/reel_schedule.py add 影片.mp4 發文案.md "YYYY-MM-DD HH:MM"`（只收 :00／:30），另有 `list`／`cancel <id>`／`probe <id>`（只轉檔不發布）。**預設同步發 FB 粉絲專頁 Reels**（`--no-fb` 只發 IG），走專頁自己的 `video_reels` API、專頁 token 用 IG_TOKEN 現換；FB 失敗只通知不影響 IG。⚠️ **不要用 `cross_post_ids`**——`daily_post` 帶著它跑了兩個月，10-28 查專頁一則限動都沒有。⛔ 呼叫 IG 前先把狀態推上 repo，推不上就不發；超過 2 小時不補發；任何錯誤不自動重試、推 LINE。發完抓回來比長度，再經 Worker `/r2/delete` 刪檔（Bearer NOTIFY_TOKEN）。⚠️ R2 的公開網址會擋 urllib 預設 UA（403） | 每 :00／:30（`EVERY_30MIN`）|
 | `gmail_automation.yml` | Gmail 清理 + 新聞摘要 | 每天 08:13。**2026-09-03 起清理報告改寄 Email 不 commit**——報告列出各寄件者清了幾封，某銀行 >0 就等於對外證實是該行客戶，而 repo 是 public。只有新聞摘要與其 PDF 進版控 |
-| `notion_monthly_report.yml` | Notion 月報 | 每月 1 日 08:57（**2026-07-02 修**：CRM 於 06-26 整併後，`notion_crm/monthly_report.py` 原引用不存在的 `DB["sales"]` 且欄位名對不上，已改讀「全品牌銷售紀錄」統一DB `38bf4149-a6aa-81db-9b89-c47410857a2c`，欄位＝金額/出貨日期/客戶名稱）|
+| `notion_monthly_report.yml` | **炘和月報**（2026-11-16 起跑 `xinhe_crm/monthly_report.py`：上月個人銷售＋炘和訂單，依營業線、分個人／公司，報表頁建在炘和主頁下；`--dry-run` 只印不建）| 每月 1 日 08:57（以下為鉅鑫版舊紀錄：**2026-07-02 修**：CRM 於 06-26 整併後，`notion_crm/monthly_report.py` 原引用不存在的 `DB["sales"]` 且欄位名對不上，已改讀「全品牌銷售紀錄」統一DB `38bf4149-a6aa-81db-9b89-c47410857a2c`，欄位＝金額/出貨日期/客戶名稱）|
 | `market_daily.yml` | 每日股市全面分析報告（舊版，Gemini）| 每天 **12:07**（台灣），自動 commit 報告。**2026-11-12 起與新版平行跑 10 個交易日，比對沒問題就停** |
 | `market_evening.yml` | **台股盤後日報**（2026-11-12 建，與 Codex 討論定案）。數字全由程式算：證交所官方收盤／法人／融資／估值＋Yahoo 歷史與海外；隔日與 5 日收盤區間用波動調整後的歷史分布，`market/forecast_log.json` 每天結算命中率；分批燈號（年線／外資／費半）。**公開版** `reports/盤後日報_*.md` 不含持股；**私人版**（持股來自 Secret `MARKET_HOLDINGS`）只走 Email PDF＋Notion「📊 台股盤後日報」；燈號改變才推 LINE。⚠️ 不可把持股寫進 config 或公開報告。重跑同一天不會重複寄（`delivered` 紀錄） | 每天 21:37（融資約 21:00 公布，最多再等 60 分）|
 | `market_morning.yml` | **台股早盤修正**：依昨夜費半修正今日收盤區間，推 LINE 一則。基準用晚報記下的官方收盤（Yahoo 常晚一天）| 每天 08:41（休市日自動跳過）|
@@ -166,10 +166,10 @@
 | ~~`yt_comment_monitor.yml`~~ | **2026-09-02 停用**：功能被 `yt_channel_report` 的留言區塊涵蓋（且日報看全部影片、不只 Shorts）。兩支各自通知同一批留言＝同一則收兩封信。保留 `workflow_dispatch` 當後路 | 已從 Worker 排程移除 |
 | `yt_comment_reply.yml` | **YouTube 留言自動回覆**（只剩連老闆；**甜點頻道與金錢怪物 2026-10-28 取消**，profile 保留）。只回知識與閒聊，價格／訂購／到貨沿用 IG 的 `NEEDS_HUMAN` 護欄留給人工。⚠️ 判斷「回過沒有」是問 API 這串底下有沒有本頻道的回覆，**不用狀態檔**——狀態檔一遺失就整批重回，而 YouTube 回覆刪不掉。⚠️ 輸出端另有護欄：產季／價格／到貨黑名單、不得冒出留言沒提到的品項名、不得有數字（首次實測三則全部編產季）| **每小時一次**（掛在 `*/30` 的 `:00`）|
 | `policy_expiry_check.yml` | 產險保單到期提醒 | 每天 08:17，自動 commit 報告|
-| `life_visit_reminder.yml` | 壽險客戶固定拜訪提醒 | 每天 08:43，讀Notion算下次拜訪日，本週到期Email（**無commit，客戶個資只走Email**）|
-| `birthday_reminder.yml` | 壽險客戶生日提醒 | 每天 08:23，未來7天內生日則Email（含歲數，無commit）|
-| `repurchase_reminder.yml` | 三品牌客戶回購提醒 | 每天 09:07，超60天未回購則 Email（**2026-08-21 起無commit，客戶個資只走Email**——原本每天 commit 報告，已累積 56 份含姓名與手機的報告在公開 repo）|
-| `weekly_revenue_sprint.yml` | 營收衝刺週報（本週壽險該接觸名單＋話術：A組未來14天生日切入、B組壽產保單健檢每週輪替6位） | 每週一 08:03，Email（**無commit，客戶個資只走Email**）|
+| `life_visit_reminder.yml` | 壽險客戶固定拜訪提醒（**2026-11-16 起讀炘和客戶中有「保單類型」的人**，拜訪後在炘和客戶填「上次拜訪日」）| 每天 08:43，讀Notion算下次拜訪日，本週到期Email（**無commit，客戶個資只走Email**）|
+| `birthday_reminder.yml` | **炘和客戶生日提醒**（2026-11-16 起讀炘和客戶，含保險客戶；勾「拒絕行銷」者跳過）| 每天 08:23，未來7天內生日則Email（含歲數，無commit）|
+| `repurchase_reminder.yml` | **炘和客戶回購提醒**（2026-11-16 起讀炘和客戶「最後下單日」；LINE 行動隊列挑未下單者；勾「拒絕行銷」者一律跳過）| 每天 09:07，超60天未回購則 Email（**2026-08-21 起無commit，客戶個資只走Email**——原本每天 commit 報告，已累積 56 份含姓名與手機的報告在公開 repo）|
+| `weekly_revenue_sprint.yml` | 營收衝刺週報（本週壽險該接觸名單＋話術：A組未來14天生日切入、B組壽產保單健檢每週輪替6位；**2026-11-16 起讀炘和客戶中有保單類型者，勾「拒絕行銷」者跳過**。⚠️ 話術仍寫「鉅鑫連傳正」「喬遷慶 85 折」待 Lien 改）| 每週一 08:03，Email（**無commit，客戶個資只走Email**）|
 | `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；Shorts 週二/五、長片週日）| ⛔ **2026-09-06 起頻道停止上傳**（Lien 決定，長片與 Shorts 都停，**等新機到手再討論方向**）。程式、skill、workflow 全部保留。**兩道閘**：① Worker 的 `SCHEDULE` 與 `AUDITS["02:30"]` 移除 02:07（09-05，**要 `wrangler deploy` 才生效**）② workflow 加 `confirm` 輸入，job 條件 `confirm == 'yes'`——Worker 的 dispatch 只送 `{ref:"main"}` 不帶 inputs，所以**即使 Worker 沒部署也不會再產片**。手動要出：Run workflow 填 `yes`。停的依據：開台 66 天只到 11 訂閱／2,738 觀看、近 19 天 +1 訂閱、留言全 0、與五品牌零關聯；同期泥馬的真心話開台 20 天就 5,431 觀看 |
 | `yt_channel_report.yml` | **三個頻道**每日表現日報：The Unknown Hour／連老闆-產地到餐桌／泥馬的真心話（2026-09-02 擴充）。含觀看・讚・留言數與新留言。三個頻道**依序跑在同一個 job**——並行會在 commit 那步互相 rebase 打架；狀態檔與報告檔用 `YT_REPORT_PROFILE` 區隔 | 每天 08:33 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
@@ -194,6 +194,7 @@
 | `GMAIL_CLIENT_SECRET` | Gmail OAuth |
 | `GMAIL_REFRESH_TOKEN` | Gmail OAuth |
 | `NOTION_TOKEN` | Notion API Token（internal integration secret，`ntn_` 開頭）。**2026-09-10 整個 integration 被刪除導致全部 401**，已重建並輪替；本機備份於 `config/.notion_token`。⚠️ **授權靠父頁面繼承**——只要把 integration 連上「鉅鑫管理顧問 CRM」，底下客戶總表／銷售紀錄／壽險名單／庫存／漁獲行情／市場日報全部涵蓋，不必逐個資料庫連。⚠️ **Cloudflare Worker 也有同一把**，只換 GitHub 會讓 LINE 助理的 `/客戶` `/庫存` 靜默失效 |
+| `XINHE_NOTION_TOKEN` | **炘和專用** Notion 金鑰（2026-11-16 建，integration「炘和助理」，只連「炘和管理顧問」頁＋「個人銷售」）。同一把也在 Cloudflare `liam-assistant`（LINE 建單）與本機 `config/.xinhe_notion_token`——**輪替要三處一起換**。用在：回購／生日／壽險拜訪／營收週報／月報 5 支 workflow。⛔ 不可改用鉅鑫的 `NOTION_TOKEN` |
 | `YT_API_KEY` | YouTube Data API v3 金鑰（無到期問題；連老闆留言通知＋The Unknown Hour 頻道日報共用）|
 | `YT_CHANNEL_ID` | YouTube 頻道 ID（連老闆-產地到餐桌）|
 | `YT_OAUTH_CLIENT_ID` / `YT_OAUTH_CLIENT_SECRET` / `YT_OAUTH_REFRESH_TOKEN` | The Unknown Hour 自動上傳 OAuth（scope youtube.upload，同意畫面已發Production不過期）2026-06-29設 |

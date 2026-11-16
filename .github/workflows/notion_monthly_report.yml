@@ -16,12 +16,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 安裝依賴
-        run: pip install requests
-
       - name: 執行月報
         env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          XINHE_NOTION_TOKEN: ${{ secrets.XINHE_NOTION_TOKEN }}
         run: |
-          cd notion_crm
-          python3 monthly_report.py
+          python3 xinhe_crm/monthly_report.py

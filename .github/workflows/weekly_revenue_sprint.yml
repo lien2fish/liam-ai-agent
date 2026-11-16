@@ -23,6 +23,6 @@ jobs:
 
       - name: Send weekly revenue sprint email
         env:
-          NOTION_TOKEN:       ${{ secrets.NOTION_TOKEN }}
+          XINHE_NOTION_TOKEN:       ${{ secrets.XINHE_NOTION_TOKEN }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: python insurance/weekly_revenue_sprint.py

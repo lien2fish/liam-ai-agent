@@ -1,90 +1,52 @@
 #!/usr/bin/env python3
-"""回購提醒：掃描全品牌客戶總表，找出超過門檻天數未回購的客戶，Email 通知。
+"""回購提醒：掃描炘和客戶，找出超過門檻天數未回購的客戶，Email 通知。
 
+2026-11-16 起改讀 Notion「炘和客戶」（原本讀鉅鑫全品牌客戶總表）。
 - 門檻天數 REPURCHASE_DAYS（預設 60），可用環境變數調整
 - 只提醒「曾購買過、但距今超過門檻」的客戶（回購對象）
-- 認證沿用既有系統：NOTION_TOKEN / GMAIL_APP_PASSWORD（與保單提醒同一套）
+- 所有客戶都列入；勾了「拒絕行銷」的人跳過（個資法第 20 條：客人拒絕就要停止）
 
-## 2026-10-13 新增：每日行動隊列（改版階段 1）
-
-原本「從未消費」是一整區 29 位的參考清單，**等於沒有行動指示**——
-一人公司收到 29 位名單會一位都不做。改成每天只給 3 位、推到 LINE。
+## 每日行動隊列（2026-10-13 起，11-16 改炘和版）
 
 | 項目 | 規則 |
 |---|---|
-| 挑人 | `最後購買日` 空 且 `接觸狀態` = 未接觸 且 `拒絕行銷` 未勾 |
+| 挑人 | `最後下單日` 空 且 `拒絕行銷` 未勾 |
 | 排序 | 建檔日最舊優先（Notion 的 `created_time`） |
 | 上限 | 每天 **3 位**（`QUEUE_LIMIT` 可調）|
 | 通知 | **LINE 推播**，不是 Email——要當天做的事必須推到手機 |
-| 額度 | 每天 1 則 × 30 天 = 30 則／月，在輕用量 200 則／月內 |
 
-⚠️ 隊列內容含客戶姓名，**只走 LINE 推播與本機報告，不 commit**
+⚠️ 內容含客戶姓名，**只走 LINE 推播、Email 與本機報告，不 commit**
 （workflow 刻意不 commit 報告，見 .github/workflows/repurchase_reminder.yml）。
 """
-import urllib.request, json, os, smtplib, ssl, sys
+import os, smtplib, ssl, sys
 from datetime import datetime, date
 from email.mime.text import MIMEText
 from email.utils import formataddr
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(BASE))
-TOKEN = (
-    os.environ.get("NOTION_TOKEN")
-    or open(os.path.expanduser("~/.config/notion_token")).read().strip()
-)
-H = {
-    "Authorization": f"Bearer {TOKEN}",
-    "Notion-Version": "2022-06-28",
-    "Content-Type": "application/json",
-}
-CFG = json.load(open(os.path.join(BASE, "config.json")))
-CUST_DB = CFG["customer_db"]
+from xinhe_crm.notion import getter, query_all  # noqa: E402
+
 REMINDER_DAYS = int(os.environ.get("REPURCHASE_DAYS", "60"))
 GMAIL_PW = os.environ.get("GMAIL_APP_PASSWORD", "")
 ADDR = "lien2fish@gmail.com"
 QUEUE_LIMIT = int(os.environ.get("QUEUE_LIMIT", "3"))
 
 
-def val(prop):
-    t = prop["type"]
-    v = prop[t]
-    if t in ("title", "rich_text"):
-        return "".join(x["plain_text"] for x in v)
-    if t in ("phone_number", "email"):
-        return v or ""
-    if t == "number":
-        return v
-    if t == "select":
-        return v["name"] if v else ""
-    if t == "date":
-        return v["start"] if v else ""
-    if t == "checkbox":
-        return bool(v)
-    return ""
-
-
 def build_queue(rows):
-    """每日行動隊列：從未成交且未接觸過的人，建檔最舊的前 N 位。
-
-    `拒絕行銷` 勾選者永久排除——那是個資法 §20 II 的要求，不是偏好設定。
-    """
+    """每日行動隊列：從未下單、且沒拒絕行銷的人，建檔最舊的前 N 位。"""
     pool = []
     for row in rows:
-        p = row["properties"]
-        g = lambda k: val(p[k]) if k in p else ""
-        if g("最後購買日"):
-            continue
-        if g("接觸狀態") not in ("", "未接觸"):
-            continue
-        if g("拒絕行銷") is True:
+        g = getter(row)
+        if g("最後下單日") or g("拒絕行銷") is True:
             continue
         pool.append(
             {
-                "name": g("客戶姓名"),
-                "brand": g("品牌"),
-                "phone": g("聯絡電話"),
+                "name": g("姓名"),
+                "lines": "、".join(g("品類") or []) or g("來源") or "—",
+                "phone": g("手機"),
                 "created": (row.get("created_time") or "")[:10],
-                "action": "補電話" if not g("聯絡電話") else "首次接觸",
+                "action": "補電話" if not g("手機") else "首次接觸",
             }
         )
     pool.sort(key=lambda x: x["created"] or "9999")
@@ -96,57 +58,43 @@ def queue_message(queue, pool_size, today):
     body = []
     for i, c in enumerate(queue, 1):
         body.append(
-            f"{i}. {c['name']}（{c['brand']}）\n"
+            f"{i}. {c['name']}（{c['lines']}）\n"
             f"   建檔 {c['created'] or '—'}　→ {c['action']}"
         )
-    tail = "填完請把 Notion 的「接觸狀態」改掉，否則明天還是同三位。"
+    tail = "聯繫過就在 Notion 備註記一筆；下單後會自動離開隊列。"
     return "\n".join([head, ""] + body + ["", tail])
 
 
-def query_all(dbid):
-    out, cursor = [], None
-    while True:
-        body = {"page_size": 100}
-        if cursor:
-            body["start_cursor"] = cursor
-        req = urllib.request.Request(
-            f"https://api.notion.com/v1/databases/{dbid}/query",
-            data=json.dumps(body).encode(),
-            headers=H,
-            method="POST",
+def due_table(rows):
+    out = [
+        "",
+        "| 客戶 | 品類 | 距上次下單 | 類型 | 電話 |",
+        "|------|------|-----------|------|------|",
+    ]
+    for c in rows:
+        out.append(
+            f"| {c['name']} | {c['lines'] or '—'} | **{c['days']} 天** | {c['kind'] or '—'} | {c['phone'] or '—'} |"
         )
-        d = json.load(urllib.request.urlopen(req))
-        out += d["results"]
-        if not d.get("has_more"):
-            break
-        cursor = d["next_cursor"]
     return out
 
 
 def main():
     today = date.today()
-    rows = query_all(CUST_DB)
-    # 已移轉炘和的客人改由炘和聯繫，鉅鑫這邊不提醒，避免兩家公司重複找同一位（2026-10-14）
-    rows = [
-        r
-        for r in rows
-        if "已移轉炘和" not in r["properties"] or not val(r["properties"]["已移轉炘和"])
-    ]
+    rows = query_all("customer_db")
     due = []
     for row in rows:
-        p = row["properties"]
-        g = lambda k: val(p[k]) if k in p else ""
-        last = g("最後購買日")
-        if not last:
+        g = getter(row)
+        last = g("最後下單日")
+        if not last or g("拒絕行銷") is True:
             continue
         d = (today - datetime.strptime(last[:10], "%Y-%m-%d").date()).days
         if d > REMINDER_DAYS:
             due.append(
                 {
-                    "name": g("客戶姓名"),
-                    "brand": g("品牌"),
-                    "phone": g("聯絡電話"),
-                    "level": g("會員等級"),
+                    "name": g("姓名"),
+                    "lines": "、".join(g("品類") or []),
+                    "phone": g("手機"),
+                    "kind": g("客戶類型"),
                     "days": d,
                 }
             )
@@ -154,24 +102,13 @@ def main():
     queue, pool_size = build_queue(rows)
 
     lines = [
-        f"# 🔔 回購提醒 {today}",
+        f"# 🔔 炘和回購提醒 {today}",
         "",
-        f"> 門檻：超過 **{REMINDER_DAYS} 天**未回購｜資料來源：全品牌客戶總表",
+        f"> 門檻：超過 **{REMINDER_DAYS} 天**未回購｜資料來源：Notion 炘和客戶",
         "",
         f"## ⏰ 待回購客戶（{len(due)} 位）",
     ]
-    if due:
-        lines += [
-            "",
-            "| 客戶 | 品牌 | 距上次購買 | 等級 | 電話 |",
-            "|------|------|-----------|------|------|",
-        ]
-        for c in due:
-            lines.append(
-                f"| {c['name']} | {c['brand']} | **{c['days']} 天** | {c['level'] or '—'} | {c['phone'] or '—'} |"
-            )
-    else:
-        lines.append("\n（目前無超過門檻的客戶）")
+    lines += due_table(due) if due else ["", "（目前無超過門檻的客戶）"]
     lines += [
         "",
         f"## 📋 今日行動隊列（{len(queue)}/{pool_size} 位，每天上限 {QUEUE_LIMIT}）",
@@ -179,19 +116,15 @@ def main():
     if queue:
         lines += [
             "",
-            "| # | 客戶 | 品牌 | 建檔日 | 建議動作 |",
-            "|---|------|------|--------|---------|",
+            "| # | 客戶 | 品類／來源 | 建檔日 | 建議動作 |",
+            "|---|------|-----------|--------|---------|",
         ]
         for i, c in enumerate(queue, 1):
             lines.append(
-                f"| {i} | {c['name']} | {c['brand']} | {c['created'] or '—'} | **{c['action']}** |"
+                f"| {i} | {c['name']} | {c['lines']} | {c['created'] or '—'} | **{c['action']}** |"
             )
-        lines += [
-            "",
-            "> 做完請改 Notion 的「接觸狀態」，否則明天還是同三位。",
-        ]
     else:
-        lines.append("\n（沒有待接觸的人——未成交名單都已接觸過或已排除）")
+        lines.append("\n（沒有還沒下過單、且未拒絕行銷的人）")
     report = "\n".join(lines)
 
     out = os.path.join(BASE, "..", "reports", f"回購提醒_{today}.md")
@@ -211,8 +144,8 @@ def main():
     if due and GMAIL_PW:
         html = report.replace("\n", "<br>")
         msg = MIMEText(html, "html", "utf-8")
-        msg["Subject"] = f"🔔 回購提醒：{len(due)} 位客戶待跟進（{today}）"
-        msg["From"] = formataddr(("鉅鑫 CRM", ADDR))
+        msg["Subject"] = f"🔔 炘和回購提醒：{len(due)} 位客戶待跟進（{today}）"
+        msg["From"] = formataddr(("炘和 CRM", ADDR))
         msg["To"] = ADDR
         ctx = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=ctx) as s:

@@ -47,7 +47,7 @@ async function notion(env, path, method, body) {
 }
 
 // 同一支手機視為同一位客人：有就更新、沒有就新建。回傳訂單編號。
-async function saveToNotion(env, f, phone, marketing, item) {
+async function saveToNotion(env, f, phone, item) {
   const t = today();
   const found = await notion(env, `databases/${CUSTOMERS_DB}/query`, "POST", {
     filter: { property: "手機", phone_number: { equals: phone } },
@@ -57,8 +57,6 @@ async function saveToNotion(env, f, phone, marketing, item) {
     地址: text(f.address),
     ...(f.email && { Email: { email: f.email } }),
     ...(f.company && { "公司抬頭/統編": text(f.company) }),
-    // 只會從沒勾變成有勾；客人要取消行銷，由人工改，不讓表單自動清掉
-    ...(marketing && { 同意行銷: { checkbox: true } }),
   };
   let customerId;
   if (found.results.length) {
@@ -151,13 +149,12 @@ export async function onRequestPost({ request, env }) {
   const c = p.campaigns.find((x) => x.start <= t && t <= x.end);
   const price = (c && c.price) || p.price;
   if (!price) return reply(400, { error: "這項商品目前不開放線上訂購" });
-  const marketing = data.marketing === true;
 
   let no = null;
   let notionStatus = "⚠️ Notion 未設定，請手動建檔";
   if (env.NOTION_TOKEN) {
     try {
-      no = await saveToNotion(env, f, phone, marketing, {
+      no = await saveToNotion(env, f, phone, {
         name: p.name, festival: c ? c.festival : "", price, qty,
       });
       notionStatus = `✅ 已建檔 ${no}`;
@@ -178,7 +175,6 @@ export async function onRequestPost({ request, env }) {
     `地址：${f.address}`,
     f.date ? `希望到貨：${f.date}` : null,
     f.note ? `備註：${f.note}` : null,
-    `同意行銷：${marketing ? "是" : "否"}`,
     "",
     notionStatus,
     "→ 確認後回覆客人並提供匯款資訊",

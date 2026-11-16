@@ -24,7 +24,7 @@ jobs:
 
       - name: Run visit reminder
         env:
-          NOTION_TOKEN:        ${{ secrets.NOTION_TOKEN }}
+          XINHE_NOTION_TOKEN:        ${{ secrets.XINHE_NOTION_TOKEN }}
           GMAIL_APP_PASSWORD:  ${{ secrets.GMAIL_APP_PASSWORD }}
           VISIT_REMINDER_DAYS: '7'
         run: python insurance/visit_reminder.py

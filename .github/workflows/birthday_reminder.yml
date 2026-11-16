@@ -24,7 +24,7 @@ jobs:
 
       - name: Run birthday reminder
         env:
-          NOTION_TOKEN:        ${{ secrets.NOTION_TOKEN }}
+          XINHE_NOTION_TOKEN:        ${{ secrets.XINHE_NOTION_TOKEN }}
           GMAIL_APP_PASSWORD:  ${{ secrets.GMAIL_APP_PASSWORD }}
           BIRTHDAY_DAYS:       '7'
         run: python insurance/birthday_reminder.py
