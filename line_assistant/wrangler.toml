@@ -28,8 +28,11 @@ MODEL = "claude-haiku-4-5"
 CUSTOMER_DB = "38bf4149-a6aa-816e-9850-f3dfbbb925ec"
 SALES_DB = "38bf4149-a6aa-81db-9b89-c47410857a2c"
 INV_WINE_DB = "3abf4149-a6aa-8104-8d98-fe75f7f367a5"
-INV_TEA_DB = "3abf4149-a6aa-8124-835e-fbaf09d673eb"
 INV_SEAFOOD_DB = "3abf4149-a6aa-8111-b29a-d92909d6962c"
+
+# 炘和（LINE 建訂單用）。讀寫要配 secret XINHE_NOTION_TOKEN——只連炘和頁面與個人銷售的 integration。
+XINHE_SALES_DB = "c9c62280ec644107a804ceedbaab5681"      # 個人銷售（未開發票）
+XINHE_CUSTOMER_DB = "9cb11bd8a1944a5099b82564f887ab21"   # 炘和客戶
 
 # 金鑰不寫在這裡，用 wrangler secret put：
 #   ANTHROPIC_API_KEY     Claude 對話

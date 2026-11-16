@@ -79,6 +79,7 @@ const HELP = [
   HAS_ACTIONS && "/查 自動化        看排程任務有沒有掛（/k）",
   HAS_ACTIONS && "/跑 任務名        立刻跑一次（/r）",
   CAN_WRITE_INVENTORY && "/改庫存           貼一份表更新數量（/u，先看差異再確認）",
+  PROFILE.orders && "訂單              給你填寫格式，填好傳回、確認後才建檔（炘和個人銷售）",
   "",
   "💰 講人話或傳語音＝走 AI",
   "",
@@ -343,6 +344,328 @@ function renderInventoryDiff(diff, skipped) {
   return out.join("\n");
 }
 
+// ── 手機建訂單：「訂單」叫出格式 → 填好傳回 → 確認卡 → /確認 才寫 ──
+//
+// 全程不經過 AI。寫炘和的「個人銷售」與「炘和客戶」（累計由 Notion 彙總欄位自己算）。
+// 桌面個人帳務表 Worker 碰不到，備註標記待記，回電腦跑 sync_line_orders.py 補。
+// ⛔ 讀寫一律用 orders.tokenEnv 那把金鑰（只連炘和），不用鉅鑫的 NOTION_TOKEN。
+
+const ORDERS = PROFILE.orders || null;
+const ORDER_LINES = ORDERS ? ORDERS.lines : [];
+const ORDER_PAYMENTS = ORDERS ? ORDERS.payments || [] : [];
+const OF = ORDERS ? ORDERS.fields : {};
+const OCF = ORDERS ? ORDERS.customerFields : {};
+
+const ORDER_TEMPLATE = [
+  "訂單",
+  `營業線：${ORDER_LINES.join("／")}`,
+  "客戶：",
+  "品項：",
+  "數量：",
+  "金額：",
+  "成本：",
+  `收款：${ORDER_PAYMENTS.join("／")}`,
+  "出貨日：今天",
+  "備註：",
+].join("\n");
+
+const ORDER_KEYS = {
+  營業線: "line", 客戶: "customer", 品項: "items", 數量: "qty", 金額: "amount", 成本: "cost",
+  收款: "pay", 付款: "pay", 出貨日: "date", 日期: "date", 備註: "note",
+};
+
+// 把炘和金鑰換進 env，底下沿用同一套 Notion 函式。沒設定就整條擋掉，絕不退回鉅鑫那把。
+function xinheEnv(env) {
+  const token = env[ORDERS.tokenEnv];
+  if (!token) return null;
+  return { ...env, NOTION_TOKEN: token };
+}
+
+function isOrderForm(text) {
+  const lines = String(text || "").trim().split(/\r?\n/);
+  return lines.length > 1 && /^\/?訂單$/.test(lines[0].trim());
+}
+
+function toHalfWidth(s) {
+  return String(s || "").replace(/[０-９．，]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0));
+}
+
+function parseAmount(s) {
+  const t = toHalfWidth(s).replace(/NT\$|\$|元|塊|,|\s/gi, "");
+  return /^\d+(\.\d+)?$/.test(t) ? Number(t) : null;
+}
+
+function addDays(iso, n) {
+  const d = new Date(iso + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+
+function parseOrderDate(s) {
+  const t = toHalfWidth(s).trim();
+  const now = today();
+  if (!t || t === "今天") return now;
+  if (t === "明天") return addDays(now, 1);
+  if (t === "後天") return addDays(now, 2);
+  if (t === "昨天") return addDays(now, -1);
+  let y, m, d;
+  let hit = t.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+  if (hit) [, y, m, d] = hit;
+  else if ((hit = t.match(/^(\d{1,2})[-/.](\d{1,2})$/))) [y, m, d] = [now.slice(0, 4), hit[1], hit[2]];
+  else return null;
+  const iso = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  const check = new Date(iso + "T00:00:00Z");
+  return !isNaN(check) && check.toISOString().slice(0, 10) === iso ? iso : null;
+}
+
+// 只認得一個選項才算數：「海鮮」→ 嚴選海鮮、「轉帳」→ 個人帳戶轉帳。認不出來就擋，不猜。
+function pickOption(value, options) {
+  if (options.includes(value)) return value;
+  const hits = options.filter((o) => o.includes(value));
+  return hits.length === 1 ? hits[0] : null;
+}
+
+function parseOrderText(text) {
+  const f = {};
+  const unknown = [];
+  let last = null;
+  for (const raw of String(text).trim().split(/\r?\n/).slice(1)) {
+    const line = raw.trim();
+    if (!line) continue;
+    const m = line.match(/^([^：:]{1,4}?)\s*[：:]\s*(.*)$/);
+    if (m && ORDER_KEYS[m[1].trim()]) {
+      last = ORDER_KEYS[m[1].trim()];
+      f[last] = m[2].trim();
+      continue;
+    }
+    // 品項、備註可以寫好幾行
+    if (last === "items" || last === "note") {
+      f[last] = f[last] ? `${f[last]}\n${line}` : line;
+      continue;
+    }
+    unknown.push(line);
+  }
+
+  const errors = [];
+  const order = {};
+
+  if (!f.line) errors.push("營業線沒填");
+  else if (f.line.includes("／")) errors.push(`營業線只能留一個（${ORDER_LINES.join("／")}）`);
+  else if (!(order.line = pickOption(f.line, ORDER_LINES))) errors.push(`營業線「${f.line}」不認得，要填 ${ORDER_LINES.join("／")}`);
+
+  if (!f.customer) errors.push("客戶沒填");
+  else order.customer = f.customer;
+
+  if (!f.items) errors.push("品項沒填");
+  else order.items = f.items;
+
+  for (const [key, label] of [["qty", "數量"], ["cost", "成本"]]) {
+    if (!f[key]) continue;
+    order[key] = parseAmount(f[key]);
+    if (order[key] == null) errors.push(`${label}「${f[key]}」要是數字`);
+  }
+
+  if (!f.amount) errors.push("金額沒填");
+  else {
+    order.amount = parseAmount(f.amount);
+    if (!order.amount) errors.push(`金額「${f.amount}」要是大於 0 的數字`);
+  }
+
+  // 收款可空白；原樣留著選項清單也當作沒填
+  if (f.pay && !f.pay.includes("／")) {
+    order.pay = pickOption(f.pay, ORDER_PAYMENTS);
+    if (!order.pay) errors.push(`收款「${f.pay}」不認得，要填 ${ORDER_PAYMENTS.join("／")} 或留空`);
+  }
+
+  order.date = parseOrderDate(f.date);
+  if (!order.date) errors.push(`出貨日「${f.date}」看不懂，寫 今天／明天／11/20／2026-11-20`);
+
+  if (f.note) order.note = f.note;
+  return { order, errors, unknown };
+}
+
+// 打錯字時整個名字比對不到，改拿前兩個字找相近的（王小名 → 王小 → 王小明）。
+function similarKey(name) {
+  const core = name
+    .replace(/[（(].*$/, "")
+    .replace(/(先生|小姐|太太|老闆娘|老闆|女士|經理)$/, "")
+    .trim();
+  return (core || name).slice(0, 2);
+}
+
+async function findOrderCustomer(xenv, name) {
+  const rows = await notionQuery(xenv, xenv[ORDERS.customerDb], {
+    property: OCF.title,
+    title: { equals: name },
+  });
+  return rows;
+}
+
+async function previewOrder(env, text) {
+  if (!env.CHAT) return "沒有 KV，無法暫存待確認的訂單。";
+  const xenv = xinheEnv(env);
+  if (!xenv) return `⚠️ 還沒設定炘和的 Notion 金鑰（${ORDERS.tokenEnv}），訂單功能暫停。`;
+
+  const { order, errors, unknown } = parseOrderText(text);
+  if (errors.length) {
+    return ["❌ 這張訂單還不能建：", ...errors.map((e) => `・${e}`), "", "改好整則再傳一次。"].join("\n");
+  }
+
+  const warns = [];
+  const hits = await findOrderCustomer(xenv, order.customer);
+  if (hits.length > 1) {
+    return `❌ 炘和客戶裡有 ${hits.length} 位都叫「${order.customer}」，分不出是誰。請到 Notion 先把名字區分開。`;
+  }
+  const customer = hits[0] || null;
+  if (!customer) {
+    const similar = await notionQuery(xenv, xenv[ORDERS.customerDb], {
+      property: OCF.title,
+      title: { contains: similarKey(order.customer) },
+    });
+    const names = similar.slice(0, 5).map((p) => `・${plain(p.properties[OCF.title])}`);
+    warns.push(
+      `⚠️ 炘和客戶沒有「${order.customer}」，確認後會新增一位新客戶。`,
+      ...(names.length ? ["　相近的名字，是不是打錯？", ...names] : [])
+    );
+  } else {
+    const dup = await notionQuery(xenv, xenv[ORDERS.salesDb], {
+      and: [
+        { property: OF.customer, relation: { contains: customer.id } },
+        { property: OF.date, date: { equals: order.date } },
+        { property: OF.amount, number: { equals: order.amount } },
+      ],
+    });
+    if (dup.length) {
+      warns.push(`⚠️ 同一天已經有一筆 ${order.customer} ${order.amount.toLocaleString("en-US")} 的訂單（${plain(dup[0].properties[OF.id])}），是不是重複了？`);
+    }
+  }
+  if (order.cost != null && order.cost > order.amount) warns.push("⚠️ 成本比金額高，是賠錢賣嗎？");
+  if (unknown.length) warns.push("⚠️ 看不懂這幾行（不會存）：", ...unknown.slice(0, 5).map((x) => `・${x}`));
+
+  await env.CHAT.delete("pending_inv"); // 同一時間只留一件待確認，/確認 才不會確認錯東西
+  await env.CHAT.put("pending_order", JSON.stringify(order), { expirationTtl: PENDING_TTL });
+
+  const money = (n) => n.toLocaleString("en-US");
+  const dayNote = order.date === today() ? "（今天）" : "";
+  return [
+    "請核對這張訂單（記個人銷售，不開發票）：",
+    `營業線　${order.line}`,
+    `客戶　${order.customer}${customer ? "（既有客戶）" : "（新客戶）"}`,
+    `品項　${order.items}`,
+    order.qty != null && `數量　${order.qty}`,
+    `金額　${money(order.amount)}`,
+    order.cost != null && `成本　${money(order.cost)}（毛利 ${money(order.amount - order.cost)}）`,
+    `收款　${order.pay || "（未填）"}`,
+    `出貨　${order.date}${dayNote}`,
+    order.note && `備註　${order.note}`,
+    warns.length && "",
+    ...warns,
+    "",
+    "沒問題就回覆　/確認（10 分鐘內有效）",
+    "要改就整則重填再傳，會蓋掉這張。",
+  ]
+    .filter((x) => x !== false && x !== undefined && x !== null)
+    .join("\n");
+}
+
+// 編號在確認當下才取（P-YYYYMMDD-NN，以出貨日為準），預覽到確認之間電腦端若也建了單才不會撞號。
+async function nextOrderId(xenv, date) {
+  const prefix = `${ORDERS.idPrefix}${date.replace(/-/g, "")}-`;
+  const rows = await notionQueryAll(xenv, xenv[ORDERS.salesDb], {
+    property: OF.id,
+    title: { starts_with: prefix },
+  });
+  const nums = rows
+    .map((r) => parseInt(plain(r.properties[OF.id]).slice(prefix.length), 10))
+    .filter(Number.isFinite);
+  return prefix + String((nums.length ? Math.max(...nums) : 0) + 1).padStart(2, "0");
+}
+
+async function confirmOrder(env, raw) {
+  const xenv = xinheEnv(env);
+  if (!xenv) return `⚠️ 還沒設定炘和的 Notion 金鑰（${ORDERS.tokenEnv}），訂單沒有建。`;
+  // 先刪再寫：重複按確認也不會建第二張。
+  await env.CHAT.delete("pending_order");
+  const o = JSON.parse(raw);
+  const rt = (s) => ({ rich_text: [{ type: "text", text: { content: String(s) } }] });
+  const out = [];
+
+  // 客戶先處理：個人銷售要關聯到客戶頁
+  const hits = await findOrderCustomer(xenv, o.customer);
+  if (hits.length > 1) return `❌ 炘和客戶裡有 ${hits.length} 位都叫「${o.customer}」，訂單沒有建。`;
+  let customerId;
+  const lineTag = ORDERS.customerLines.includes(o.line) ? o.line : null;
+  if (hits.length) {
+    const c = hits[0];
+    customerId = c.id;
+    const props = c.properties;
+    const update = {};
+    const first = props[OCF.first]?.date?.start || "";
+    const last = props[OCF.last]?.date?.start || "";
+    if (!first || o.date < first) update[OCF.first] = { date: { start: o.date } };
+    if (o.date > last) update[OCF.last] = { date: { start: o.date } };
+    const tags = (props[OCF.lines]?.multi_select || []).map((x) => x.name);
+    if (lineTag && !tags.includes(lineTag)) {
+      update[OCF.lines] = { multi_select: [...tags, lineTag].map((name) => ({ name })) };
+    }
+    try {
+      if (Object.keys(update).length) await notionApi(xenv, "PATCH", `/pages/${c.id}`, { properties: update });
+    } catch (e) {
+      out.push(`⚠️ 客戶下單日／品類沒更新：${e.message.slice(0, 80)}`);
+    }
+  } else {
+    const props = {
+      [OCF.title]: { title: [{ type: "text", text: { content: o.customer } }] },
+      [OCF.source]: { select: { name: ORDERS.newCustomerSource } },
+      [OCF.first]: { date: { start: o.date } },
+      [OCF.last]: { date: { start: o.date } },
+    };
+    if (lineTag) props[OCF.lines] = { multi_select: [{ name: lineTag }] };
+    const page = await notionApi(xenv, "POST", "/pages", {
+      parent: { database_id: xenv[ORDERS.customerDb] },
+      properties: props,
+    });
+    customerId = page.id;
+    out.push(`已新增炘和客戶「${o.customer}」`);
+  }
+
+  const id = await nextOrderId(xenv, o.date);
+  const props = {
+    [OF.id]: { title: [{ type: "text", text: { content: id } }] },
+    [OF.date]: { date: { start: o.date } },
+    [OF.customer]: { relation: [{ id: customerId }] },
+    [OF.line]: { select: { name: o.line } },
+    [OF.items]: rt(o.items),
+    [OF.amount]: { number: o.amount },
+    [OF.status]: { select: { name: ORDERS.status } },
+    [OF.note]: rt([o.note, ORDERS.syncNote].filter(Boolean).join("｜")),
+  };
+  if (o.qty != null) {
+    props[OF.qty] = { number: o.qty };
+    props[OF.unitPrice] = { number: Math.round((o.amount / o.qty) * 100) / 100 };
+  }
+  if (o.cost != null) props[OF.cost] = { number: o.cost };
+  if (o.pay) props[OF.pay] = { select: { name: o.pay } };
+
+  const page = await notionApi(xenv, "POST", "/pages", {
+    parent: { database_id: xenv[ORDERS.salesDb] },
+    properties: props,
+  });
+
+  // 不信 200：把寫進去的抓回來逐欄比對
+  const back = (await notionApi(xenv, "GET", `/pages/${page.id}`)).properties;
+  const mismatch = [];
+  if (plain(back[OF.id]) !== id) mismatch.push("編號");
+  if (back[OF.amount]?.number !== o.amount) mismatch.push("金額");
+  if (plain(back[OF.date]) !== o.date) mismatch.push("出貨日");
+  if (plain(back[OF.line]) !== o.line) mismatch.push("營業線");
+  if (!(back[OF.customer]?.relation || []).some((r) => r.id.replace(/-/g, "") === customerId.replace(/-/g, ""))) mismatch.push("客戶關聯");
+
+  const head = [`✅ 已建檔 ${id}（個人銷售）`, `${o.line}　${o.customer}　${o.amount.toLocaleString("en-US")}`];
+  if (mismatch.length) head.push(`⚠️ 抓回來比對不一致：${mismatch.join("、")}，請到 Notion 看一下`);
+  return [...head, ...out, "", "個人帳務表還沒記，回電腦再補。"].join("\n");
+}
+
 // ---------- LINE ----------
 
 // ⚠️ 安全邊界：這支 bot 能查客戶姓名、電話、消費紀錄。
@@ -554,6 +877,20 @@ async function notionSetNumber(env, pageId, field, value) {
     body: JSON.stringify({ properties: { [field]: { number: value } } }),
   });
   if (!r.ok) throw new Error(`Notion PATCH ${r.status}: ${(await r.text()).slice(0, 200)}`);
+}
+
+async function notionApi(env, method, path, body) {
+  const r = await fetch(`${NOTION_URL}${path}`, {
+    method,
+    headers: {
+      authorization: `Bearer ${env.NOTION_TOKEN}`,
+      "notion-version": NOTION_VERSION,
+      "content-type": "application/json",
+    },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  if (!r.ok) throw new Error(`Notion ${method} ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  return await r.json();
 }
 
 function plain(prop) {
@@ -771,6 +1108,7 @@ async function runTool(env, name, input) {
     }
     const diff = await buildInventoryDiff(env, items);
     if (diff.changes.length && env.CHAT) {
+      await env.CHAT.delete("pending_order");
       await env.CHAT.put("pending_inv", JSON.stringify(diff.changes), {
         expirationTtl: PENDING_TTL,
       });
@@ -781,7 +1119,7 @@ async function runTool(env, name, input) {
   if (name === "confirm_inventory_update") {
     if (!env.CHAT) return "沒有 KV，無法暫存待確認的變更。";
     const raw = await env.CHAT.get("pending_inv");
-    if (!raw) return "沒有待確認的變更（或已超過 10 分鐘失效）。請重新貼一次庫存表。";
+    if (!raw) return "沒有待確認的訂單或庫存變更（或已超過 10 分鐘失效），請重新傳一次。";
 
     const changes = JSON.parse(raw);
     // 先刪再寫：就算中途失敗也不會因為重複確認而改第二次。
@@ -1185,6 +1523,26 @@ async function handle(env, event) {
     if (text.trim() === "/start" || text.trim() === "/help") {
       await send(HELP);
       return;
+    }
+
+    // 建訂單整條路都不經過 AI
+    if (ORDERS && !heard) {
+      const t = text.trim();
+      if (t === "訂單" || t === "/訂單") {
+        await send("長按下一則複製，填好整則傳回來。\n營業線留一個；數量、成本、收款、備註可以空白。", ORDER_TEMPLATE);
+        return;
+      }
+      if (isOrderForm(t)) {
+        await send(await previewOrder(env, t));
+        return;
+      }
+      if ((t === "/確認" || t === "確認") && env.CHAT) {
+        const pending = await env.CHAT.get("pending_order");
+        if (pending) {
+          await send(await confirmOrder(env, pending));
+          return;
+        }
+      }
     }
 
     // 斜線指令直接查，不花 AI 的錢

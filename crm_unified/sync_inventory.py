@@ -126,24 +126,6 @@ SCHEMAS = {
             "備註": {"rich_text": {}},
         },
     },
-    "鑫茶坊": {
-        "emoji": "🍵",
-        "name": "🍵 鑫茶坊 茶品庫存",
-        "properties": {
-            "品名": {"title": {}},
-            "品種": {"rich_text": {}},
-            "產地": {"rich_text": {}},
-            "海拔": {"rich_text": {}},
-            "製程": {"select": {}},
-            "庫存數量": {"number": {"format": "number"}},
-            "單位": {"select": {}},
-            "庫存成本": {"number": {"format": "number"}},
-            "進貨價_斤": {"number": {"format": "number"}},
-            "單包成本": {"number": {"format": "number"}},
-            "零售價": {"number": {"format": "number"}},
-            "毛利率": {"number": {"format": "percent"}},
-        },
-    },
 }
 
 
@@ -400,10 +382,8 @@ def write_summary(parent, data, src_path):
         call("PATCH", f"/blocks/{block['id']}", {"archived": True})
 
     wine = data["鑫酒藏"]
-    tea = data["鑫茶坊"]
     sea = data["鑫海產"]
     wine_cost = sum(i["庫存成本"] or 0 for i in wine)
-    tea_cost = sum(i["庫存成本"] or 0 for i in tea)
     sea_stock = [i for i in sea if (i["庫存數量"] or 0) > 0]
     sea_costs = [
         (i["品名"], *seafood_cost(i["品名"], i["庫存數量"], i["進價"], i["計價單位"]))
@@ -411,7 +391,6 @@ def write_summary(parent, data, src_path):
     ]
     sea_cost = sum(c or 0 for _, c, _ in sea_costs)
     sea_pending = [f"{n}（{s}）" for n, c, s in sea_costs if c is None]
-    tea_missing = [i["品名"] for i in tea if i["庫存成本"] is None]
 
     blocks = [
         para(
@@ -425,19 +404,11 @@ def write_summary(parent, data, src_path):
             f"（{sum(1 for i in wine if not i['進價'])} 款未填進貨價未計入）"
         ),
         bullet(
-            f"🍵 鑫茶坊：{len(tea)} 項 ─ NT$ {tea_cost:,.0f}（{len(tea_missing)} 項無進價資料未計入）"
-        ),
-        bullet(
             f"🐟 鑫海產：{len(sea_stock)} 項有庫存 ─ NT$ {sea_cost:,.0f}"
             f"（{len(sea_pending)} 項待補換算未計入，另 {len(sea) - len(sea_stock)} 項為可調貨品項）"
         ),
-        bullet(f"合計流動資產（庫存成本）：NT$ {wine_cost + tea_cost + sea_cost:,.0f}"),
+        bullet(f"合計流動資產（庫存成本）：NT$ {wine_cost + sea_cost:,.0f}"),
         heading("待補資料"),
-        bullet(
-            f"鑫茶坊未填進貨價：{'、'.join(tea_missing)}"
-            if tea_missing
-            else "鑫茶坊資料完整"
-        ),
         bullet(
             f"鑫海產待補換算：{'、'.join(sea_pending)}"
             if sea_pending
@@ -459,7 +430,7 @@ def main():
     cfg = load_config()
     parent = ensure_parent(cfg)
     print(f"父頁面 {parent}")
-    for brand in ("鑫酒藏", "鑫茶坊", "鑫海產"):
+    for brand in ("鑫酒藏", "鑫海產"):
         sync_brand(cfg, brand, data[brand], parent)
     write_summary(parent, data, path)
     save_config(cfg)

@@ -164,43 +164,12 @@ def parse_wine(ws):
     return items
 
 
-def parse_tea(ws):
-    items = []
-    for r in ws.iter_rows(min_row=2, values_only=True):
-        name = clean(r[1])
-        if not name:
-            continue
-        qty = r[7] if isinstance(r[7], (int, float)) else 0
-        unit = clean(r[8])
-        cost_per_catty = r[10] if isinstance(r[10], (int, float)) else None
-        subtotal = r[9] if isinstance(r[9], (int, float)) else None
-        if subtotal is None and cost_per_catty and unit in TAEL_TO_CATTY:
-            subtotal = qty * TAEL_TO_CATTY[unit] * cost_per_catty
-        items.append(
-            {
-                "品名": name,
-                "品種": clean(r[2]),
-                "產地": clean(r[3]),
-                "海拔": clean(r[4]),
-                "製程": clean(r[5]),
-                "庫存數量": qty,
-                "單位": unit,
-                "庫存成本": subtotal,
-                "進貨價_斤": cost_per_catty,
-                "產品定價": r[11] if isinstance(r[11], (int, float)) else None,
-                "零售價": r[12] if isinstance(r[12], (int, float)) else None,
-            }
-        )
-    return items
-
-
 def parse(path=SRC, wine_path=WINE_SRC):
     wb = openpyxl.load_workbook(path, data_only=True)
     wine_wb = openpyxl.load_workbook(wine_path, data_only=True)
     return {
         "鑫海產": parse_seafood(wb["鑫海產"]),
         "鑫酒藏": parse_wine(wine_wb["總表"]),
-        "鑫茶坊": parse_tea(wb["鑫茶坊"]),
     }
 
 

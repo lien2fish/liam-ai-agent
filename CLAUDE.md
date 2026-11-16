@@ -235,7 +235,8 @@
 | 推播 | `line_assistant/notify.py` — 任何腳本 `from line_assistant.notify import notify` 即可用；**未設環境變數時靜默跳過**，不會弄壞既有流程。⚠️ **2026-08-25 修**：原本用 urllib 預設 User-Agent，**被 Cloudflare 回 403 擋掉**，而 `silent_fail` 會把它吞掉——等於推播從來沒送出去過也不會有人發現。已改送 `User-Agent: liam-notify/1`。⚠️ `/notify` 連打會被限流（回 500／連線中斷），測試要隔開 |
 | 能做 | 記待辦、口述存知識庫（含語音轉文字）、查客戶／銷售／庫存、接收自動化推播 |
 | **兩種模式** | **斜線指令**（`/客戶` `/買` `/庫存` `/待辦` `/筆記`，含 `/c /s /i /t /n` 簡寫）直達 Notion／GitHub，**零 API 成本**；**自然語言與語音**才走 Claude。日常九成操作免費，**估**月費約 NT$10（2026-08-24 上線，尚未累積實際帳單）|
-| 不做 | 跑腳本、剪片、送印、**建訂單**（要同步四個系統，手機打錯字沒得檢查）|
+| 建訂單 | **2026-11-16 起可以，記炘和**：打「訂單」拿格式→填好傳回→確認卡→ `/確認` 才寫，不經過 AI。寫 Notion「個人銷售（未開發票）」＋「炘和客戶」，金鑰用 `XINHE_NOTION_TOKEN`（⛔不用鉅鑫那把）；回電腦跑 `/usr/bin/python3 tools/xinhe_line_orders_sync.py`（加 `--apply` 才寫）補進桌面個人帳務表。⚠️ homebrew 的 python3 沒有 openpyxl |
+| 不做 | 跑腳本、剪片、送印 |
 | 白名單 | 只認 `LINE_USER_ID`，其他人傳訊息一律靜默忽略。**兩道驗證皆 fail closed**（簽章＋user ID），26 項邊界測試涵蓋 |
 | 知識庫 | 寫進私人 repo `liam-workspace/knowledge/{seafood,wine,tea,business,misc}/` |
 
