@@ -169,7 +169,7 @@
 | `life_visit_reminder.yml` | 壽險客戶固定拜訪提醒（**2026-11-16 起讀炘和客戶中有「保單類型」的人**，拜訪後在炘和客戶填「上次拜訪日」）| 每天 08:43，讀Notion算下次拜訪日，本週到期Email（**無commit，客戶個資只走Email**）|
 | `birthday_reminder.yml` | **炘和客戶生日提醒**（2026-11-16 起讀炘和客戶，含保險客戶；勾「拒絕行銷」者跳過）| 每天 08:23，未來7天內生日則Email（含歲數，無commit）|
 | `repurchase_reminder.yml` | **炘和客戶回購提醒**（2026-11-16 起讀炘和客戶「最後下單日」；LINE 行動隊列挑未下單者；勾「拒絕行銷」者一律跳過）| 每天 09:07，超60天未回購則 Email（**2026-08-21 起無commit，客戶個資只走Email**——原本每天 commit 報告，已累積 56 份含姓名與手機的報告在公開 repo）|
-| `weekly_revenue_sprint.yml` | 營收衝刺週報（本週壽險該接觸名單＋話術：A組未來14天生日切入、B組壽產保單健檢每週輪替6位；**2026-11-16 起讀炘和客戶中有保單類型者，勾「拒絕行銷」者跳過**。⚠️ 話術仍寫「鉅鑫連傳正」「喬遷慶 85 折」待 Lien 改）| 每週一 08:03，Email（**無commit，客戶個資只走Email**）|
+| `weekly_revenue_sprint.yml` | 營收衝刺週報（本週壽險該接觸名單＋話術：A組未來14天生日切入、B組壽產保單健檢每週輪替6位；**2026-11-16 起讀炘和客戶中有保單類型者，勾「拒絕行銷」者跳過**。話術 11-16 改炘和版：談保單只說「我是連傳正」（炘和不經手保險），海鮮只說「跟龜吼在地共捕漁船長期合作」，不放折扣）| 每週一 08:03，Email（**無commit，客戶個資只走Email**）|
 | `yt_auto_post.yml` | YouTube 自動影片（宇宙/古文明未解之謎，無人臉，頻道=The Unknown Hour；Shorts 週二/五、長片週日）| ⛔ **2026-09-06 起頻道停止上傳**（Lien 決定，長片與 Shorts 都停，**等新機到手再討論方向**）。程式、skill、workflow 全部保留。**兩道閘**：① Worker 的 `SCHEDULE` 與 `AUDITS["02:30"]` 移除 02:07（09-05，**要 `wrangler deploy` 才生效**）② workflow 加 `confirm` 輸入，job 條件 `confirm == 'yes'`——Worker 的 dispatch 只送 `{ref:"main"}` 不帶 inputs，所以**即使 Worker 沒部署也不會再產片**。手動要出：Run workflow 填 `yes`。停的依據：開台 66 天只到 11 訂閱／2,738 觀看、近 19 天 +1 訂閱、留言全 0、與五品牌零關聯；同期泥馬的真心話開台 20 天就 5,431 觀看 |
 | `yt_channel_report.yml` | **三個頻道**每日表現日報：The Unknown Hour／連老闆-產地到餐桌／泥馬的真心話（2026-09-02 擴充）。含觀看・讚・留言數與新留言。三個頻道**依序跑在同一個 job**——並行會在 commit 那步互相 rebase 打架；狀態檔與報告檔用 `YT_REPORT_PROFILE` 區隔 | 每天 08:33 |
 | `claude_task_runner.yml` | Claude 任務讀取器（列出GitHub Issue中標記`claude-task,pending`的待辦） | 手動觸發（workflow_dispatch） |
