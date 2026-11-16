@@ -96,7 +96,7 @@ python3 finance_shorts/publish.py <集> --short a --at "YYYY-MM-DD 18:00"
 ### 9. 收尾
 
 - `題目紀錄.md`：題庫那一列改成這集的紀錄（集數、題目、事實編號、Codex 審幾條採幾條、video_id、公開時間）
-- 新踩到的唸錯詞寫進 `.claude/skills/voice-clone/SKILL.md`
+- 新踩到的唸錯詞記在 `題目紀錄.md` 這集那一列（無人值守寫不進 `.claude/skills/`，要人按同意；Lien 開對話時再搬進 voice-clone skill）
 - 照 `safe-commit` skill 檢查後 commit、push（只收這集的 `add_facts.py`／`add_script.py`／`shorts.json`、`facts.json`、`scripts.json`、`題目紀錄.md`）
 
 ## 收工回報（做不成的時候）

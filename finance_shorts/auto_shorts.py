@@ -72,9 +72,9 @@ def env():
         f"{home}/.local/bin",
         f"{home}/bin",
         *node,
+        "/usr/bin",  # 要排在 homebrew 前面：homebrew 的 python3 沒裝 edge_tts、PIL，11-16 tts.py 因此掛掉
         "/opt/homebrew/bin",
         f"{home}/Library/Python/3.9/bin",
-        "/usr/bin",
         "/bin",
         "/usr/sbin",
         "/sbin",
