@@ -22,6 +22,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import time
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -29,6 +30,10 @@ W, H = 1080, 1920
 FPS = 24
 VOICE = os.environ.get("IG_VOICE", "zh-TW-YunJheNeural")  # 男聲
 RATE = os.environ.get("IG_VOICE_RATE", "+8%")
+# edge-tts 掛掉時的備援聲音（verse：三個男聲裡 Whisper 回聽吻合度最高、龜吼唸對）；語速 1.35 是對齊上面 YunJhe +8% 的總長（實測 23~25 秒 vs 23.4 秒）
+OPENAI_VOICE = os.environ.get("IG_OPENAI_VOICE", "verse")
+OPENAI_SPEED = 1.35
+OPENAI_INSTR = "像在漁港跟朋友解說的海鮮行家：沉穩、親切、口語自然，台灣腔國語，不要像新聞主播唸稿。"
 
 # 擋掉「辨別型」題目：gpt-image 分不出頭足類的鰭形、相似魚種的體側差異，
 # 教辨別卻配錯插圖比沒有插圖更糟，而且直接踩到產地真實性紅線。
@@ -350,13 +355,105 @@ async def _speak_all(text, path):
 
 
 def speak_all(text, path):
+    # edge-tts 偶爾 NoAudioReceived，而且一故障常持續幾十秒——
+    # 2026-11-17 六次在幾秒內連打完全部失敗，影片日就退回了靜態圖。所以每次之間要等。
     last = None
-    for _ in range(6):  # edge-tts 偶爾 NoAudioReceived
+    for wait in (0, 5, 10, 20, 40, 60):
+        time.sleep(wait)
         try:
             return asyncio.run(_speak_all(text, path))
         except Exception as e:
             last = e
     raise RuntimeError(f"edge-tts 失敗：{last}")
+
+
+def _openai_key():
+    key = os.environ.get("OPENAI_API_KEY")
+    if key:
+        return key
+    with open(os.path.join(BASE, "..", "config", ".openai_key")) as fh:
+        return fh.read().strip()
+
+
+def speak_openai(sents, path, tmp):
+    """edge-tts 整個掛掉時的備援（2026-11-17 Lien 選定），回傳每句起點。
+
+    OpenAI 不給時間標記，所以逐句合成：每句頭尾靜音修掉、補 0.25 秒再接起來，
+    起點直接由實際長度累加，字幕一定對得上。
+    """
+    import json
+    import urllib.request
+
+    key = _openai_key()
+    parts, starts, t = [], [], 0.0
+    for i, s in enumerate(sents):
+        body = {
+            "model": "gpt-4o-mini-tts",
+            "voice": OPENAI_VOICE,
+            "input": s,
+            "instructions": OPENAI_INSTR,
+            "response_format": "mp3",
+            "speed": OPENAI_SPEED,
+        }
+        req = urllib.request.Request(
+            "https://api.openai.com/v1/audio/speech",
+            data=json.dumps(body).encode(),
+            headers={
+                "Authorization": f"Bearer {key}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        raw = os.path.join(tmp, f"oa_{i}.mp3")
+        with urllib.request.urlopen(req, timeout=120) as r, open(raw, "wb") as fh:
+            fh.write(r.read())
+        wav = os.path.join(tmp, f"oa_{i}.wav")
+        trim = "silenceremove=start_periods=1:start_threshold=-45dB"
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-y",
+                "-loglevel",
+                "error",
+                "-i",
+                raw,
+                "-af",
+                f"{trim},areverse,{trim},areverse,apad=pad_dur=0.25",
+                "-ar",
+                "24000",
+                "-ac",
+                "1",
+                wav,
+            ],
+            check=True,
+        )
+        starts.append(t)
+        t += dur(wav)
+        parts.append(wav)
+    lst = os.path.join(tmp, "oa_list.txt")
+    with open(lst, "w") as fh:
+        fh.writelines(f"file '{p}'\n" for p in parts)
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-loglevel",
+            "error",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            lst,
+            "-c:a",
+            "libmp3lame",
+            "-q:a",
+            "3",
+            path,
+        ],
+        check=True,
+    )
+    return starts
 
 
 def _bare(t):
@@ -428,10 +525,16 @@ def build(knowledge, illustration, out_path, tmp=None, keep=False, layers=None):
 
     # ① 整段一次配音，再用 word boundary 把每句對回時間軸
     voice = os.path.join(tmp, "voice.mp3")
-    marks = speak_all("".join(sents), voice)
-    total = dur(voice)
-    starts = sentence_starts(sents, marks, total)
-    print(f"  旁白 {total:.1f}s（時間標記 {len(marks)} 個）", flush=True)
+    try:
+        marks = speak_all("".join(sents), voice)
+        total = dur(voice)
+        starts = sentence_starts(sents, marks, total)
+        print(f"  旁白 {total:.1f}s（時間標記 {len(marks)} 個）", flush=True)
+    except RuntimeError as e:
+        print(f"  ⚠️ {e}，改用 OpenAI 備援配音（{OPENAI_VOICE}）", flush=True)
+        starts = speak_openai(sents, voice, tmp)
+        total = dur(voice)
+        print(f"  旁白 {total:.1f}s（OpenAI 逐句合成）", flush=True)
     for i, (x, t0) in enumerate(zip(sents, starts)):
         print(f"    [{i+1}] {t0:5.1f}s  {x[:18]}", flush=True)
     assert starts == sorted(starts), "句子起點沒有遞增，時間軸對錯了"
