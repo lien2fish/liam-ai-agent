@@ -185,6 +185,16 @@ def run():
         return
 
     lock = STATE / "lock"
+    if lock.exists():
+        pid = lock.read_text().strip()
+        alive = (
+            pid.isdigit()
+            and subprocess.run(["kill", "-0", pid], capture_output=True).returncode == 0
+        )
+        if not alive:
+            lock.unlink()
+            log("上一輪中途消失、沒有回報結果（鎖檔留著、程序已不在），這輪照常開工")
+            line("⚠️ 金錢怪物 Short 上一輪中途消失、沒有做完，這輪重新開工。")
     if lock.exists() and time.time() - lock.stat().st_mtime < TIMEOUT + 600:
         log("上一輪還在跑，這輪跳過")
         return
@@ -199,7 +209,7 @@ def run():
         line(f"⏭️ 金錢怪物 Short 這輪沒開工：沒接電源而且電量低於 {MIN_BATTERY}%。")
         return
 
-    lock.touch()
+    lock.write_text(str(os.getpid()))
     try:
         log("開工")
         out, timed_out = claude(PROMPT, TIMEOUT)
@@ -228,8 +238,11 @@ def install():
     APP.parent.mkdir(parents=True, exist_ok=True)
     shutil.rmtree(APP, ignore_errors=True)
     script = (
-        'try\n do shell script "/usr/bin/python3 " & quoted form of "%s" & " run"\nend try'
-        % Path(__file__).resolve()
+        # 背景啟動後 App 立刻結束；11-19 00:20 那輪跑到一半連同子程序一起消失，
+        # 推測是 App 結束時 launchd 收掉整個程序群組，所以改成脫離 App 執行（搭配 AbandonProcessGroup）
+        'try\n do shell script "/usr/bin/nohup /usr/bin/python3 " & quoted form of "%s"'
+        ' & " run >> " & quoted form of "%s" & " 2>&1 &"\nend try'
+        % (Path(__file__).resolve(), STATE / "run_stdout.log")
     )
     r = subprocess.run(
         ["osacompile", "-o", str(APP), "-e", script], capture_output=True, text=True
@@ -247,6 +260,7 @@ def install():
                 ],
                 "StandardOutPath": str(STATE / "launchd.out"),
                 "StandardErrorPath": str(STATE / "launchd.err"),
+                "AbandonProcessGroup": True,
             }
         )
     )

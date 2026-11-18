@@ -4,7 +4,7 @@
     python3 finance_shorts/publish.py jp-01 --dry-run        # 只印說明欄，不上傳
     python3 finance_shorts/publish.py jp-01                  # 排程隔天 18:00 公開
     python3 finance_shorts/publish.py jp-01 --at "2026-10-23 18:00"
-    python3 finance_shorts/publish.py tw-01 --short a --dry-run   # Shorts（長片要先上傳）
+    python3 finance_shorts/publish.py tw-01 --short a --dry-run   # Shorts（長片要先上傳），預設 18:55 公開
 
 每集的上片資料寫在 finance_shorts/<集>/youtube.json：
     video     成品路徑（相對 finance_shorts/）
@@ -67,7 +67,9 @@ def credits(ep_dir, only=None):
     if only is not None:
         stems = {f"{k}/{f.rsplit('.', 1)[0]}" for k, f in used}
         if only - stems:
-            sys.exit(f"❌ Short 用到的素材在長片裡找不到，授權會漏列：{sorted(only - stems)}")
+            sys.exit(
+                f"❌ Short 用到的素材在長片裡找不到，授權會漏列：{sorted(only - stems)}"
+            )
         used = [(k, f) for k, f in used if f"{k}/{f.rsplit('.', 1)[0]}" in only]
     bg = json.loads((ROOT / "shared/bg/credits.json").read_text())
     br = json.loads((ROOT / "shared/broll/credits.json").read_text())
@@ -82,7 +84,9 @@ def credits(ep_dir, only=None):
             artist = c["artist"].replace(
                 "Unknown authorUnknown author", "Unknown author"
             )
-            lic = c["license"] + (f"（{c['license_url']}）" if c.get("license_url") else "")
+            lic = c["license"] + (
+                f"（{c['license_url']}）" if c.get("license_url") else ""
+            )
             line = f"・{artist}／{lic}／{c['page']}"
             bucket = photos
         else:
@@ -121,7 +125,9 @@ def credit_block(ep_dir, only=None):
     photos, videos = credits(ep_dir, only)
     out = []
     if photos:
-        out.append("📷 畫面照片（Wikimedia Commons；已裁切、加上文字）\n" + "\n".join(photos))
+        out.append(
+            "📷 畫面照片（Wikimedia Commons；已裁切、加上文字）\n" + "\n".join(photos)
+        )
     if videos:
         out.append(
             f"🎬 畫面影片（創用 CC 姓名標示 3.0 {YT_CC} ；已裁切、剪輯、加上文字）\n"
@@ -142,6 +148,9 @@ def short_sources(ep_id, sh):
                 if src["name"] not in names:
                     names.append(src["name"])
     return names
+
+
+SHORT_HOUR, SHORT_MINUTE = 18, 55  # 2026-11-19 Lien：Shorts 一律 18:55，長片維持 18:00
 
 
 def build_short(ep_id, sid, dry_run):
@@ -165,9 +174,13 @@ def build_short(ep_id, sid, dry_run):
         if not long["id"] and not dry_run:
             sys.exit("❌ 長片還沒上傳，Shorts 說明欄要放完整版連結，先傳長片")
         if long_yt.get("publish_at"):
-            base = datetime.datetime.strptime(long_yt["publish_at"], "%Y-%m-%dT%H:%M:%SZ")
+            base = datetime.datetime.strptime(
+                long_yt["publish_at"], "%Y-%m-%dT%H:%M:%SZ"
+            )
             base = base.replace(tzinfo=datetime.timezone.utc).astimezone(TW)
-            default_when = base + datetime.timedelta(days=2 * ids.index(sid))
+            default_when = (base + datetime.timedelta(days=2 * ids.index(sid))).replace(
+                hour=SHORT_HOUR, minute=SHORT_MINUTE
+            )
     af = ep_dir / "renders" / f"short_{sid}.assets.json"
     if not af.exists():
         sys.exit(f"❌ 沒有 {af.name}，請先用 make_shorts.py 重產這支")
@@ -177,7 +190,11 @@ def build_short(ep_id, sid, dry_run):
         sys.exit("❌ 這支 Short 用到的句子沒有對到任何事實來源")
     parts = [yt["summary"]]
     if long:
-        link = f"https://youtu.be/{long['id']}" if long.get("id") else "（長片上傳後自動填入）"
+        link = (
+            f"https://youtu.be/{long['id']}"
+            if long.get("id")
+            else "（長片上傳後自動填入）"
+        )
         parts.append(f"▶ 完整版：{long['title']}\n{link}")
     parts += [
         "📌 資料來源\n" + "\n".join(f"・{s}" for s in sources),
@@ -321,11 +338,15 @@ def main():
 
     if a.at:
         when = datetime.datetime.strptime(a.at, "%Y-%m-%d %H:%M").replace(tzinfo=TW)
+        if a.short and (when.hour, when.minute) != (SHORT_HOUR, SHORT_MINUTE):
+            print(
+                f"⚠️ Shorts 規定 {SHORT_HOUR}:{SHORT_MINUTE:02d} 公開，--at 給的是 {when:%H:%M}"
+            )
     elif default_when:
         when = default_when
     elif a.short and a.dry_run:
-        when = tomorrow
-        print("⚠️ 長片還沒排程，先用隔天 18:00 預覽")
+        when = tomorrow.replace(hour=SHORT_HOUR, minute=SHORT_MINUTE)
+        print("⚠️ 長片還沒排程，先用隔天 18:55 預覽")
     elif a.short:
         sys.exit("❌ 長片沒有排程時間可對齊，請用 --at 指定")
     else:
@@ -344,12 +365,25 @@ def main():
         sys.exit(f"❌ 找不到成品：{video}")
     if a.short:
         w, h, dur = subprocess.run(
-            ["ffprobe", "-v", "error", "-select_streams", "v", "-show_entries",
-             "stream=width,height:format=duration", "-of", "default=nw=1:nk=1", str(video)],
-            capture_output=True, text=True,
+            [
+                "ffprobe",
+                "-v",
+                "error",
+                "-select_streams",
+                "v",
+                "-show_entries",
+                "stream=width,height:format=duration",
+                "-of",
+                "default=nw=1:nk=1",
+                str(video),
+            ],
+            capture_output=True,
+            text=True,
         ).stdout.split()
         if int(w) >= int(h) or float(dur) > 180:
-            sys.exit(f"❌ 不符合 Shorts 條件（{w}×{h}、{float(dur):.0f} 秒）：要直式且 ≤180 秒")
+            sys.exit(
+                f"❌ 不符合 Shorts 條件（{w}×{h}、{float(dur):.0f} 秒）：要直式且 ≤180 秒"
+            )
     publish_at = when.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     vid = upload(
         str(video),

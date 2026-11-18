@@ -121,7 +121,7 @@ python3 finance_shorts/publish.py <集>             # 排程隔天 18:00，自�
 - 驗收要用 **macOS 原生解碼**（`afconvert` 轉 wav 再量各時間點音量）——Whisper 讀得到不代表播放器有聲音（10-26 單聲道接立體聲，播放器 3 秒後無聲）
 - 上片資料寫在每支的 `yt`（title／summary／hashtags／tags），**長片傳完才能傳 Shorts**（說明欄要附完整版連結）：
   `python3 finance_shorts/publish.py <集> --short a --dry-run`，再拿掉 `--dry-run`
-- 發布時間自動對齊長片：A 同時、B +2 天、C +4 天（`--at` 可覆寫）；傳過的 video_id 會寫回 shorts.json，重跑會擋
+- 發布時間自動對齊長片日期：A 同一天、B +2 天、C +4 天，**時間一律 18:55**（2026-11-19 Lien 定，長片維持 18:00；`--at` 可覆寫）；傳過的 video_id 會寫回 shorts.json，重跑會擋
 - ⚠️ **每日上傳有上限**（頻道沒電話驗證）：回 400 `uploadLimitExceeded` 就是今天額度用完，在上傳初始化就失敗、不會產生影片，隔天重跑同一行即可。2026-10-27 長片＋1 支 Short 後就撞到（前一天傳了 8 支）
 - Short 的說明欄**不吃 `notes`**（只有長片會讀）；舊示威畫面的聲明直接寫進該支的 `summary`
 
