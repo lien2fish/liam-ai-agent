@@ -95,7 +95,7 @@
 | `vector-ai` | 點陣圖轉向量 .ai、六邊形理監事牌換姓名 |
 | `crm-order` | 訂單建檔、客戶資料、回購提醒、名片數位化 |
 | `insurance` | 產險保單到期、壽險拜訪、生日提醒 |
-| `market-finance` | 股市日報、個人資產負債表 |
+| `market-finance` | **股市問答**（給我報告、燈號、能不能進場、護盤／外資新聞查證）、股市日報、個人資產負債表 |
 | `gmail-ops` | Gmail 清理／新聞摘要腳本、OAuth 重新授權 |
 | `meeting-minutes` | 會議錄音轉會議記錄 PDF |
 | `company-docs` | 報價單、發票、合約等正式文件（公司統編／帳戶） |
