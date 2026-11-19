@@ -15867,6 +15867,263 @@
      }
     }
    ]
+  },
+  "ms-04": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "clone",
+   "gap": 0.15,
+   "speed": 1.2,
+   "shot": 5.0,
+   "clip_max": 6.0,
+   "lang": "zh",
+   "ui": "zh",
+   "title": "去日本買東西，免稅改成先付後退",
+   "caption": "資料：日本稅關、觀光廳、國稅廳；外籍旅客購買特定貨物申請退還營業稅實施辦法、財政部",
+   "note": "資訊整理，非法律建議｜資料來源見說明欄｜畫面為資料畫面，非片中提及店家",
+   "bgm": {
+    "src": "~/liam-workspace/assets/bgm/night_music.mp3",
+    "volume": 0.12
+   },
+   "reject": [
+    "broll/bk_atm_00",
+    "broll/bk_atm_12",
+    "broll/bk_atm_15",
+    "broll/bk_atm_16",
+    "broll/jp_city_00",
+    "broll/jp_city_02",
+    "broll/jp_city_05",
+    "broll/jp_city_09",
+    "broll/jp_city_10",
+    "broll/jp_res_00",
+    "broll/jp_res_09",
+    "broll/mm_chip_05",
+    "broll/mm_chip_08",
+    "broll/mm_chip_09",
+    "broll/mm_chip_10",
+    "broll/mm_chip_11",
+    "broll/mm_korea_00",
+    "broll/mm_korea_01",
+    "broll/mm_laptop_00",
+    "broll/mm_laptop_01",
+    "broll/mm_laptop_02",
+    "broll/mm_laptop_03",
+    "broll/mm_laptop_04",
+    "broll/mm_laptop_05",
+    "broll/mm_laptop_06",
+    "broll/mm_phone_04",
+    "broll/mm_phone_05",
+    "broll/mm_phone_06",
+    "broll/mm_phone_07",
+    "broll/mm_phone_08",
+    "broll/mm_ram_02",
+    "broll/mm_ram_03",
+    "broll/mm_ram_05",
+    "broll/mm_server_01",
+    "broll/mm_server_02",
+    "broll/mm_server_03",
+    "broll/mm_server_04",
+    "broll/mm_server_05",
+    "broll/mm_server_06",
+    "broll/mm_server_10",
+    "broll/mm_server_11",
+    "broll/mm_server_12",
+    "broll/mm_server_13",
+    "broll/mm_server_14",
+    "broll/mm_server_19",
+    "broll/mm_store_02",
+    "broll/mm_store_03",
+    "broll/mm_store_05",
+    "broll/mm_store_06",
+    "broll/mm_store_08",
+    "broll/mm_store_10",
+    "broll/mm_store_22",
+    "broll/mm_store_23",
+    "broll/tw_city_11",
+    "broll/tw_mrt_00",
+    "broll/tw_mrt_01",
+    "broll/tw_mrt_09",
+    "broll/tw_mrt_10",
+    "broll/tw_res_01",
+    "broll/tw_res_03",
+    "broll/tw_res_06",
+    "broll/tw_res_07",
+    "broll/tw_res_08",
+    "broll/tw_res_11",
+    "broll/tw_res_12",
+    "broll/tw_res_13",
+    "broll/tw_res_19"
+   ],
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "去日本買東西，結帳拿出護照，就直接免稅？",
+     "say": "去日本買東西，結帳拿出護照，就直接免稅？",
+     "facts": [],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "jp_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "從 2026 年 11 月 1 日起，不是了：日本改成「先付後退」。",
+     "say": "從二零二六年十一月一日起，不是了：日本改成，先付後退。",
+     "facts": [
+      "JT01"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "日本｜2026 年 11 月 1 日起",
+      "big": "先付後退",
+      "note": "先付含稅價 → 出境經海關核對 → 退消費稅"
+     },
+     "dim": true,
+     "pool": "jp_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "符合資格的外國旅客，在免稅店先付含稅價；出境時經海關查核東西帶出國，才由免稅店等退還消費稅。",
+     "say": "符合資格的外國旅客，在免稅店先付含稅價；出境時經海關查核東西帶出國，才由免稅店等，退還消費稅。",
+     "facts": [
+      "JT07",
+      "JT01"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "jp_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "海關查核要在購買後 90 天內、出境時、託運行李之前完成。",
+     "say": "海關查核要在購買後九十天內，出境時，託運行李之前完成。",
+     "facts": [
+      "JT02"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "出境時｜託運行李前",
+      "big": "購買日起 90 天內",
+      "note": "購買日隔天起算｜到機場免稅手續自助機出示護照"
+     },
+     "dim": true,
+     "pool": "jp_aerial"
+    },
+    {
+     "speaker": "narr",
+     "text": "在機場的免稅自助機出示護照；沒經過海關查核，就拿不到退款。",
+     "say": "在機場的免稅自助機出示護照；沒經過海關查核，就拿不到退款。",
+     "facts": [
+      "JT02"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "jp_aerial"
+    },
+    {
+     "speaker": "narr",
+     "text": "還有，海關按每一次購買來看：免稅品少帶一件，那一次買的免稅品都不能退。",
+     "say": "還有，海關按每一次購買來看：免稅品少帶一件，那一次買的免稅品，都不能退。",
+     "facts": [
+      "JT03"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "海關以一次購買（一張收據）查核",
+      "big": "少一件，整筆不退",
+      "note": "在日本吃掉、用掉的食品、飲料、化妝品也不能退"
+     },
+     "dim": true,
+     "pool": "jp_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "條件是同一家店、同一天，買到未稅 5,000 日圓以上。",
+     "say": "條件是同一家店，同一天，買到未稅五千日圓以上。",
+     "facts": [
+      "JT04"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "日本免稅門檻（未稅）",
+      "big": "5,000 日圓以上",
+      "note": "同一家店｜同一天"
+     },
+     "dim": true,
+     "pool": "jp_aerial"
+    },
+    {
+     "speaker": "narr",
+     "text": "台灣對照：停留不到 183 天的外籍旅客，同一天在同一家退稅店買含稅 2,000 元以上的退稅商品，90 天內帶出境，可以退營業稅。",
+     "say": "台灣對照：停留不到一百八十三天的外籍旅客，同一天在同一家退稅店，買含稅兩千元以上的退稅商品，九十天內帶出境，可以退營業稅。",
+     "facts": [
+      "JT05"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "台灣｜外籍旅客購物退稅",
+      "big": "含稅 2,000 元以上",
+      "note": "停留未滿 183 天｜同一天同一家退稅店｜90 天內帶出境"
+     },
+     "dim": true,
+     "pool": "tw_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "退稅可以在出境的機場港口辦；部分店家可以當場小額退稅，但商品要封袋。",
+     "say": "退稅可以在出境的機場港口辦；部分店家可以當場小額退稅，但商品要封袋。",
+     "facts": [
+      "JT05"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "退稅業者可以扣手續費；出境前拆封使用，要繳回退稅款。",
+     "say": "退稅業者可以扣手序費；出境前拆封使用，要繳回退稅款。",
+     "facts": [
+      "JT05",
+      "JT06"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "台灣退稅",
+      "big": "可能扣手續費",
+      "note": "出境前拆封使用｜要繳回退稅款"
+     },
+     "dim": true,
+     "pool": "tw_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "所以，日本怎麼退款由各免稅店決定；制度細節，可以查日本觀光廳的免稅網站。",
+     "say": "所以，日本怎麼退款，由各免稅店決定；制度細節，可以查日本觀光廳的免稅網站。",
+     "facts": [
+      "JT04"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "jp_aerial"
+    },
+    {
+     "speaker": "narr",
+     "text": "關注我，給你更多錢的大小事。",
+     "say": "關注我，給你更多錢的大小事。",
+     "facts": [],
+     "screen": {
+      "kind": "outro",
+      "a": "關注我",
+      "b": "給你更多錢的大小事",
+      "btn": "訂閱"
+     }
+    }
+   ]
   }
  }
 }
