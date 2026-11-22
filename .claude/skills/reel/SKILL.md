@@ -1,6 +1,6 @@
 ---
 name: reel
-description: 剪輯短影音／長影音——把拍攝素材剪成 9:16 品牌影片（連老闆海鮮／崁仔頂）、樂器演奏 reels、甜點頻道長片。涵蓋 reel_maker / music_reel / dessert_longform 三套獨立工具的定案規格、config 寫法、渲染前檢查與所有已知地雷。要剪片、改字幕、調段落、產封面時載入。
+description: 剪輯短影音／長影音——把拍攝素材剪成 9:16 品牌影片（連老闆海鮮／崁仔頂）、樂器演奏 reels、甜點頻道長片，以及 AI 搞笑短劇。涵蓋 reel_maker / music_reel / dessert_longform 三套獨立工具的定案規格、config 寫法、渲染前檢查與所有已知地雷，另附搞笑短劇的鋪陳轉折與特效手冊。要剪片、改字幕、調段落、產封面、寫短劇腳本時載入。
 ---
 
 # 剪輯短影音
@@ -14,6 +14,8 @@ description: 剪輯短影音／長影音——把拍攝素材剪成 9:16 品牌�
 | 甜點頻道 | `tools/dessert_longform.py` | 同 reel 樣式字幕，但獨立流程 |
 
 ⚠️ **使用者明確要求不要動 `reel_maker.py`**。music_reel 與 dessert_longform 是為了不污染它才另開的，三者的音訊處理哲學相反，改錯一支會毀掉另外兩條產線。
+
+🎭 **寫搞笑短劇腳本、排分鏡、上特效之前，先讀 `references/搞笑短劇_鋪陳轉折與特效.md`**（2026-11-23 Claude＋Codex 分析億家水電整合：結構規律、笑點類型、特效時間點、AI 短劇產線與限制）。
 
 ## 標準流程
 
