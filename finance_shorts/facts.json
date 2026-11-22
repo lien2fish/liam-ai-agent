@@ -8221,7 +8221,7 @@
       ]
     },
     "GT07": {
-      "claim": "台灣 2026 年最低時薪 196 元（月薪 29,500 元）；2,320 元÷196 元≈11.8 小時",
+      "claim": "台灣 2026 年最低時薪 196 元（月薪 29,500 元）；2,320 元÷196 元≈11.8 小時；終極版 2,900 元÷196 元≈14.8 小時",
       "tokens": [
         "2026",
         "196",
@@ -8230,7 +8230,10 @@
         "2320",
         "2,320",
         "11.8",
-        "12"
+        "12",
+        "2900",
+        "2,900",
+        "14.8"
       ],
       "sources": [
         {
@@ -8248,12 +8251,14 @@
       ]
     },
     "GT08": {
-      "claim": "美國聯邦最低時薪 7.25 美元；79.99 美元÷7.25≈11.0 小時（各州可訂更高）",
+      "claim": "美國聯邦最低時薪 7.25 美元；79.99 美元÷7.25≈11.0 小時；終極版 99.99 美元÷7.25≈13.8 小時（各州可訂更高）",
       "tokens": [
         "7.25",
         "79.99",
         "11.0",
-        "11"
+        "11",
+        "99.99",
+        "13.8"
       ],
       "sources": [
         {
@@ -8408,6 +8413,57 @@
           "url": "https://www.legis-pedia.com/QA/3090/download",
           "official": false,
           "quote": "通訊交易解除權合理例外情事適用準則"
+        }
+      ]
+    },
+    "GT14": {
+      "claim": "Take-Two 2026 年 7～9 月（GTA6 上市前那一季）的 GAAP 營收有 81% 來自玩家持續消費（recurrent consumer spending：虛擬貨幣、追加內容、遊戲內購買、遊戲內廣告）；10-Q 附註 2：持續消費 12.102 億美元／總營收 14.970 億美元",
+      "tokens": [
+        "2026",
+        "7",
+        "9",
+        "81",
+        "12.102",
+        "1210.2",
+        "1,210.2",
+        "14.970",
+        "1497.0",
+        "1,497.0",
+        "6"
+      ],
+      "sources": [
+        {
+          "name": "Take-Two 8-K 第二季（FY27 Q2）財報新聞稿（2026-11-09）",
+          "url": "https://www.sec.gov/Archives/edgar/data/946581/000162828026072175/ttwo2q27earningsrelease.htm",
+          "official": true,
+          "quote": "Recurrent consumer spending decreased 5% and accounted for 81% of total GAAP net revenue."
+        },
+        {
+          "name": "Take-Two 10-Q（截至 2026-09-30，2026-11-09 申報）附註 2 Net revenue by content",
+          "url": "https://www.sec.gov/Archives/edgar/data/946581/000162828026072254/ttwo-20260930.htm",
+          "official": true,
+          "quote": "Recurrent consumer spending $ 1,210.2 … Total net revenue $ 1,497.0；RCS includes revenue from virtual currency, add-on content, in-game purchases, and in-game advertising."
+        }
+      ]
+    },
+    "GT15": {
+      "claim": "台灣 PlayStation Store 取消政策：遊戲與追加內容購買日起 14 天內可取消退款，前提是尚未開始下載或串流；已開始下載或串流的不能退，除非有瑕疵；預購已開始下載主要部分也不能退；電子錢包加值不可退款。服務條款：除取消政策或適用法律另有規定，購買內容不可退款",
+      "tokens": [
+        "14",
+        "十四"
+      ],
+      "sources": [
+        {
+          "name": "PlayStation Store 取消政策（台灣，2026-11-22 查詢）",
+          "url": "https://www.playstation.com/zh-hant-tw/legal/playstation-store-cancellation-policy/",
+          "official": true,
+          "quote": "您可以在購買日起14天內取消遊戲或遊戲追加內容購買並取得退款，前提是您尚未開始下載或串流該內容。／您已開始下載或串流的遊戲或追加內容不符合退款資格，除非其有瑕疵。／若您已開始下載或串流預購的主要部分，則無法取得退款，除非該商品有瑕疵。／您無法取消PlayStation™Store電子錢包加值。"
+        },
+        {
+          "name": "PlayStation Network 服務條款 第20版（2026年4月）第 8.5 條",
+          "url": "https://www.playstation.com/zh-hant-tw/legal/psn-terms-of-service/",
+          "official": true,
+          "quote": "除非當時生效的PS Store取消政策…另有説明或適用法律另外規定，所購買的內容或服務均不可退款或轉讓"
         }
       ]
     }
