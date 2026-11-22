@@ -7625,6 +7625,791 @@
           "quote": "2026年10月までの消費税免税制度では、外国人旅行者等である免税購入対象者（以下「購入者 」といいます。）は、免税店での購入時に消費税が免除され"
         }
       ]
+    },
+    "UA01": {
+      "claim": "2026 年 11 月 13 日美東時間約下午 3:30，FAA 因技術問題發布全國停飛令；同日晚上 8:15 系統穩定、恢復飛行（約 4 小時 45 分，近 5 小時）。22 座航路管制中心有 17 座出現不穩；停飛時約 3,500 架在空中的飛機全數安全降落",
+      "tokens": [
+        "2026",
+        "11",
+        "13",
+        "3",
+        "30",
+        "8",
+        "15",
+        "4",
+        "45",
+        "5",
+        "22",
+        "17",
+        "3500",
+        "3,500",
+        "近 5 小時",
+        "五"
+      ],
+      "sources": [
+        {
+          "name": "美國聯邦航空總署 FAA〈Nationwide Ground Stop: Questions and Answers〉2026-11-15",
+          "url": "https://www.faa.gov/newsroom/faa-statement-nationwide-ground-stop",
+          "official": true,
+          "quote": "On November 13 at approximately 3:30 p.m. ET, the FAA experienced a technical problem that resulted in issuing a nationwide ground stop. … air traffic resumed as of 8:15 p.m. that same day. … We began experiencing instability at 17 of our 22 Air Route Traffic Control Centers … Approximately 3,500 aircraft safely landed"
+        },
+        {
+          "name": "Fox Weather 2026-11-14〈Thousands of flights canceled, delayed as US air travel slowly recovers from historic nationwide ground stop〉",
+          "url": "https://www.foxweather.com/weather-news/flights-canceled-delayed-us-ground-stop-november-2026",
+          "official": false,
+          "quote": "Friday's nationwide ground stop, which lasted more than four hours"
+        },
+        {
+          "name": "CNN 2026-11-13 直播〈Some US flights resume after hours-long ground stop〉",
+          "url": "https://www.cnn.com/2026/11/13/us/live-news/flights-ground-stop-faa",
+          "official": false,
+          "quote": "Some US flights resume after hours-long ground stop"
+        }
+      ]
+    },
+    "UA02": {
+      "claim": "FAA：11 月 13 日（週五）業者取消約 12,462 班（其中主要航空 9,082 班），並說明不全是停飛直接造成；FlightAware 統計當天超過 9,100 班取消、24,500 班延誤（兩者統計口徑不同）",
+      "tokens": [
+        "11",
+        "13",
+        "12462",
+        "12,462",
+        "1.2",
+        "萬",
+        "9082",
+        "9,082",
+        "9100",
+        "9,100",
+        "24500",
+        "24,500",
+        "2.45"
+      ],
+      "sources": [
+        {
+          "name": "美國聯邦航空總署 FAA〈Nationwide Ground Stop: Questions and Answers〉2026-11-15",
+          "url": "https://www.faa.gov/newsroom/faa-statement-nationwide-ground-stop",
+          "official": true,
+          "quote": "operators canceled approximately 12,462 flights, including 9,082 cancellations by major airlines, out of an abundance of caution. While not all cancellations were directly caused by the nationwide ground stop"
+        },
+        {
+          "name": "Fox Weather 2026-11-14〈Thousands of flights canceled, delayed as US air travel slowly recovers from historic nationwide ground stop〉",
+          "url": "https://www.foxweather.com/weather-news/flights-canceled-delayed-us-ground-stop-november-2026",
+          "official": false,
+          "quote": "more than 9,100 flights were canceled and more than 24,500 were delayed Friday, according to FlightAware"
+        }
+      ]
+    },
+    "UA03": {
+      "claim": "FAA 說明原因：舊設備在 FTI 網路湧入每 4 到 5 秒 1,000 次連線請求的資料後變得不穩；初步調查指向德州 Amarillo 雷達站與阿肯色州 El Dorado 通訊站，網路服務商 L3Harris 曾在 El Dorado 部署新路由器；目前證據顯示不是網路攻擊；已停用另外 60 多台同型路由器的相同功能；FAA 也說大型管制設施的維修通常在夜間做，這次是偏遠站點的例行更換，之後會重新評估施工時段；停飛期間部分無線電頻率和雷達訊號仍可使用，不是完全斷線",
+      "tokens": [
+        "4",
+        "5",
+        "1000",
+        "1,000",
+        "60",
+        "L3Harris"
+      ],
+      "sources": [
+        {
+          "name": "美國聯邦航空總署 FAA〈Nationwide Ground Stop: Questions and Answers〉2026-11-15",
+          "url": "https://www.faa.gov/newsroom/faa-statement-nationwide-ground-stop",
+          "official": true,
+          "quote": "data began flooding the FAA FTI network, at a rate of 1,000 connection attempts every 4 to 5 seconds … a radar site in Amarillo, Texas and a radio communications site in El Dorado, Arkansas. L3 Harris … including deployment of a new router … we have no indication that this was a cyberattack … disabled the same functionality on more than 60 other Juniper routers … Maintenance at major air traffic control facilities is typically conducted at night, when there's less traffic. This disruption was a result of a routine replacement at a remote facility … we will reevaluate when we do replacement/maintenance work. … certain radio frequencies and radar feeds remained operational … No, this was not a full outage. Some frequencies and radar feeds remained reliable."
+        },
+        {
+          "name": "ABC News 2026-11〈Duffy asked for $50B for air traffic control after ground stop, a marked increase〉",
+          "url": "https://abc7news.com/story/duffy-asked-50b-air-traffic-control-ground-stop-marked-increase/20047563/",
+          "official": false,
+          "quote": "FAA halts router installation following nationwide ground stop, root cause of issue unknown"
+        }
+      ]
+    },
+    "UA04": {
+      "claim": "2026-11-17 美國政府要求國會撥款 501 億美元翻新航管：含 101 億數位架構、100 億興建 5 座新的整併航路管制中心（取代現有 22 座，最近一座建於 1969 年）、100 億興建或改善最多 140 座塔台等；2025 年 7 月已撥 125 億美元",
+      "tokens": [
+        "2026",
+        "11",
+        "17",
+        "50.1",
+        "501",
+        "10.1",
+        "101",
+        "10",
+        "100",
+        "5",
+        "22",
+        "1969",
+        "140",
+        "12.5",
+        "125",
+        "2025",
+        "7",
+        "億"
+      ],
+      "sources": [
+        {
+          "name": "美國交通部 2026-11-17 新聞稿〈Trump Administration Calls on Congress to Fully Fund Air Traffic Control Modernization with $50.1 Billion Investment〉",
+          "url": "https://www.transportation.gov/briefing-room/trump-administration-calls-congress-fully-fund-air-traffic-control-modernization-501",
+          "official": true,
+          "quote": "The Trump Administration is requesting $50.1 billion … $10.1 billion to complete a reliable digital architecture … $10 billion to build five new consolidated Air Route Traffic Control Centers (ARTCC), replacing the current 22 deteriorating ATRCCs–the last was built in 1969. $10 billion to build and improve up to 140 air traffic control towers … With $12.5 billion from the Working Families Tax Cut passed in July 2025"
+        },
+        {
+          "name": "ABC News 2026-11〈Duffy asked for $50B for air traffic control after ground stop, a marked increase〉",
+          "url": "https://abc7news.com/story/duffy-asked-50b-air-traffic-control-ground-stop-marked-increase/20047563/",
+          "official": false,
+          "quote": "from the $12.5 billion that was appropriated by Congress to an additional $50 billion that Duffy asked for in the wake of the ground stop"
+        }
+      ]
+    },
+    "UA05": {
+      "claim": "美國交通部退款規定：航空公司取消航班，不論原因，只要沒改搭、也沒主動接受抵用券或里程等替代補償，就有權拿回票款；要退現金或原付款方式（信用卡 7 個營業日內、其他 20 天內）；接受改搭就不能退",
+      "tokens": [
+        "7",
+        "20",
+        "2024"
+      ],
+      "sources": [
+        {
+          "name": "美國交通部〈What Airline Passengers Need to Know About DOT's Automatic Refund Rule〉2024-11-18",
+          "url": "https://www.transportation.gov/briefing-room/what-airline-passengers-need-know-about-dots-automatic-refund-rule",
+          "official": true,
+          "quote": "You are entitled to a refund if the airline cancels a flight, regardless of the reason, and does not rebook you on a new flight or you do not proactively accept alternative compensation, such as a flight voucher or miles. … You are not entitled to a refund if you accept a rebooked flight … within seven business days … 20 calendar days … in cash or in the form of original payment"
+        },
+        {
+          "name": "美國聯邦法規 14 CFR Part 260（Refunds and Other Consumer Protections）§260.2、§260.6",
+          "url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260",
+          "official": true,
+          "quote": "Prompt refund means refunds made within 7 business days … for credit card purchases and within 20 calendar days … for cash, check, debit card, or other forms of purchases"
+        },
+        {
+          "name": "NewsNation〈Canceled flight? DOT's automatic cash refund rules explained〉",
+          "url": "https://digital-release.newsnationnow.com/travel/canceled-delayed-flight-dots-automatic-cash-refund-rules",
+          "official": false,
+          "quote": "Examples of significant changes include departure or arrival times that are altered more than three hours domestically and six hours internationally"
+        }
+      ]
+    },
+    "UA06": {
+      "claim": "14 CFR 260：起飛或抵達時間變動，美國國內 3 小時以上、國際 6 小時以上算重大變更，不接受也可退票；規定適用飛美國、從美國出發或美國境內的定期航班，外國航空公司也包括在內",
+      "tokens": [
+        "3",
+        "6",
+        "260"
+      ],
+      "sources": [
+        {
+          "name": "美國聯邦法規 14 CFR Part 260（Refunds and Other Consumer Protections）§260.2、§260.6",
+          "url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260",
+          "official": true,
+          "quote": "three hours or more for domestic itineraries and six hours or more for international itineraries … Covered carrier means an air carrier or a foreign air carrier operating to, from, or within the United States, conducting scheduled passenger service"
+        },
+        {
+          "name": "NewsNation〈Canceled flight? DOT's automatic cash refund rules explained〉",
+          "url": "https://digital-release.newsnationnow.com/travel/canceled-delayed-flight-dots-automatic-cash-refund-rules",
+          "official": false,
+          "quote": "altered more than three hours domestically and six hours internationally"
+        }
+      ]
+    },
+    "UA07": {
+      "claim": "例外：只是換了航班編號、旅客也成功改訂到新編號航班，而且沒有重大變更或延誤時，美國交通部自 2025-12-05 起暫緩執行相關退款與通知規定；2026-07-07 再延長一年到 2027-07-07；修改「航班取消」定義的規則修訂（Refund III）仍在進行",
+      "tokens": [
+        "2025",
+        "12",
+        "5",
+        "2026",
+        "7",
+        "2027"
+      ],
+      "sources": [
+        {
+          "name": "美國聯邦公報 2026-13675（2026-07-07）〈Airline Refunds and Other Consumer Protections〉執法裁量延長",
+          "url": "https://www.govinfo.gov/content/pkg/FR-2026-07-07/html/2026-13675.htm",
+          "official": true,
+          "quote": "provided that the passenger is rebooked on a flight with a new number and the flight operates without any ``significant change or delay'' … This enforcement discretion is extended for 1-year from the date of this publication, expiring on July 7, 2027 … Refund III … aims to … modifying the definition of a flight cancellation"
+        },
+        {
+          "name": "美國聯邦公報 2025-22140（2025-12-05）執法裁量公告",
+          "url": "https://www.govinfo.gov/content/pkg/FR-2025-12-05/html/2025-22140.htm",
+          "official": true,
+          "quote": "The Department is exercising its discretion to not enforce the requirements in 14 CFR 260.6, 260.9 and 14 CFR 399.80(l)"
+        }
+      ]
+    },
+    "UA08": {
+      "claim": "美國交通部儀表板列出 9 家大航空「自己造成」的取消時的自願承諾：9 家保證等待 3 小時以上給餐券、8 家保證過夜住宿（Frontier 沒有）、0 家給現金賠償；不是航空公司造成的（如這次航管）不在承諾範圍",
+      "tokens": [
+        "9",
+        "3",
+        "8",
+        "0"
+      ],
+      "sources": [
+        {
+          "name": "美國交通部〈Airline Customer Service Dashboard〉（2026-11-20 查詢）",
+          "url": "https://www.transportation.gov/airconsumer/airline-customer-service-dashboard",
+          "official": true,
+          "quote": "Commitments airlines make when they cause a cancellation. … Meal or meal cash/voucher when the cancellation results in a wait of 3 hours or more … Complimentary hotel accommodations … FrontierNo … Cash compensation when the cancellation results in a wait of 3 hours or more … AlaskaNo | AllegiantNo | AmericanNo | DeltaNo | FrontierNo | HawaiianNo | JetBlueNo | SouthwestNo | UnitedNo"
+        },
+        {
+          "name": "美國聯邦公報 2025-20042（2025-11-17）〈Airline Passenger Rights〉撤回 ANPRM",
+          "url": "https://www.govinfo.gov/content/pkg/FR-2025-11-17/html/2025-20042.htm",
+          "official": true,
+          "quote": "voluntary commitments … to assist passengers affected by cancellations and significant delays that are controllable by the carrier. Those voluntary commitments are reflected on the Department's Delay and Cancellation Dashboard"
+        }
+      ]
+    },
+    "UA09": {
+      "claim": "2024-12-11 美國交通部發布航空旅客權益的預先規則制定通知（ANPRM），徵詢航空公司對自身可控延誤付現金的方案（媒體報導：國內延誤 3 小時以上 200–300 美元、9 小時以上最高 775 美元）；2025-11-17 在聯邦公報正式撤回這份徵詢",
+      "tokens": [
+        "2024",
+        "3",
+        "200",
+        "300",
+        "9",
+        "775",
+        "2025",
+        "11",
+        "17",
+        "12",
+        "11"
+      ],
+      "sources": [
+        {
+          "name": "美國聯邦公報 2025-20042（2025-11-17）〈Airline Passenger Rights〉撤回 ANPRM",
+          "url": "https://www.govinfo.gov/content/pkg/FR-2025-11-17/html/2025-20042.htm",
+          "official": true,
+          "quote": "The Department is withdrawing the ANPRM on Airline Passenger Rights issued on December 11, 2024"
+        },
+        {
+          "name": "CBS News 2025-11〈White House drops plan to make airlines pay travelers for delayed flights〉",
+          "url": "https://www.cbsnews.com/news/trump-drops-biden-proposal-delayed-flights-airlines-compensation/",
+          "official": false,
+          "quote": "would have required airlines to pay passengers $200 to $300 for domestic delays lasting at least three hours, and up to $775 for flight delays lasting at least nine hours"
+        }
+      ]
+    },
+    "UA10": {
+      "claim": "歐盟 261/2004：航班取消原則上依距離賠 250／400／600 歐元，但業者能證明是無法避免的特殊情況可以不賠，航管決定屬於特殊情況；不論是否賠償，取消時仍要依等待時間提供餐食，需過夜時提供住宿；航班延誤時，依距離在 2、3、4 小時以上就要提供餐飲照顧；延誤 5 小時以上可選擇在 7 天內退回票款；取消前至少 14 天通知、或在期限內提供時間相近的改搭，可免賠；業者要證明特殊情況且已採取所有合理措施仍無法避免；取消時旅客可選退款或改搭，等候改搭期間提供餐飲，需過夜提供住宿與交通",
+      "tokens": [
+        "261",
+        "2004",
+        "250",
+        "400",
+        "600",
+        "1500",
+        "3500",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "14"
+      ],
+      "sources": [
+        {
+          "name": "歐盟 261/2004 號規則（EUR-Lex 32004R0261）前言第 15 點、第 5(3)、7、9 條",
+          "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32004R0261",
+          "official": true,
+          "quote": "EUR 250 for all flights of 1500 kilometres or less; EUR 400 … EUR 600 … shall not be obliged to pay compensation … if it can prove that the cancellation is caused by extraordinary circumstances … (15) Extraordinary circumstances should be deemed to exist where the impact of an air traffic management decision … meals and refreshments in a reasonable relation to the waiting time; hotel accommodation … for two hours or more in the case of flights of 1500 kilometres or less; or (b) for three hours or more … (c) for four hours or more … when the delay is at least five hours … reimbursement within seven days … they are informed of the cancellation at least two weeks before the scheduled time of departure … could not have been avoided even if all reasonable measures had been taken … Article 8 Right to reimbursement or re-routing … transport between the airport and place of accommodation"
+        },
+        {
+          "name": "歐盟 Your Europe〈Air passenger rights〉",
+          "url": "https://europa.eu/youreurope/citizens/travel/passenger-rights/air/index_en.htm",
+          "official": true,
+          "quote": "Examples of events defined as extraordinary circumstances are air traffic management decisions, political instability, adverse weather conditions and security risks … 250 1 500 km or less 400 … 600 More than 3 500 km"
+        }
+      ]
+    },
+    "UA11": {
+      "claim": "台灣：國內線遲延 15 分鐘、國際線 30 分鐘以上，航空公司要說明原因與處理方式；遲延逾 5 小時、乘客不接受安排，可退票且不收手續費（颱風等天候也適用、外籍航空飛台灣也適用）；應視情況免費提供必要飲食或膳宿；可歸責於航空公司的遲延，才負賠償或補償責任",
+      "tokens": [
+        "15",
+        "30",
+        "5",
+        "108",
+        "3",
+        "4",
+        "8",
+        "2017"
+      ],
+      "sources": [
+        {
+          "name": "交通部〈民用航空乘客與航空器運送人運送糾紛調處辦法〉第 3、4、8 條（108-05-30 修正）",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=K0090047",
+          "official": true,
+          "quote": "致國內航線遲延十五分鐘以上、國際航線遲延三十分鐘以上者…應即向乘客詳實說明原因及處理方式。前項遲延時間逾五小時以上，且乘客未接受運送人安排者，得向原售票單位辦理退票，運送人不得收取退票手續費。…（二）必要之飲食或膳宿。…運送人對因可歸責於自己之事由遲延，致損害乘客權益者，應負賠償或補償責任。"
+        },
+        {
+          "name": "中央社 2017-09-16〈民航局修法 航班延誤5小時可全額退費〉",
+          "url": "https://www.cna.com.tw/news/firstnews/201709165004.aspx",
+          "official": false,
+          "quote": "國內外航班延誤超過5小時，旅客若不接受航空公司安排，可選擇全額退票，航空公司不得收取手續費，颱風天等天候不可抗力因素也適用…無論是國籍航空或是外籍航空，只要降落在台灣的機場航班都適用"
+        }
+      ]
+    },
+    "UAFX": {
+      "claim": "本頻道試算（臺銀 2026-11-20 即期中價：美元 32.94、歐元 36.135）：501 億美元≈新台幣 1.65 兆；125 億美元≈4,100 億；歐盟賠償 250 歐元≈9 千、400 歐元≈1.4 萬、600 歐元≈2.2 萬；美國撤回提案 200 美元≈6,600、775 美元≈2.6 萬",
+      "tokens": [
+        "32.94",
+        "36.135",
+        "50.1",
+        "501",
+        "1.65",
+        "兆",
+        "12.5",
+        "125",
+        "4100",
+        "4,100",
+        "250",
+        "9",
+        "千",
+        "9000",
+        "9,000",
+        "400",
+        "1.4",
+        "萬",
+        "600",
+        "2.2",
+        "200",
+        "6600",
+        "6,600",
+        "775",
+        "2.6",
+        "2026",
+        "11",
+        "20"
+      ],
+      "sources": [
+        {
+          "name": "臺灣銀行 2026-11-20 17:01 牌告匯率（美元即期買入 32.865、賣出 33.015，中價 32.94；歐元即期買入 35.835、賣出 36.435，中價 36.135）",
+          "url": "https://rate.bot.com.tw/xrt?Lang=zh-TW",
+          "official": true,
+          "quote": "美金 即期 32.865 / 33.015；歐元 即期 35.835 / 36.435（2026/11/20 17:01）"
+        },
+        {
+          "name": "美國交通部 2026-11-17 新聞稿〈Trump Administration Calls on Congress to Fully Fund Air Traffic Control Modernization with $50.1 Billion Investment〉",
+          "url": "https://www.transportation.gov/briefing-room/trump-administration-calls-congress-fully-fund-air-traffic-control-modernization-501",
+          "official": true,
+          "quote": "$50.1 billion … $12.5 billion"
+        },
+        {
+          "name": "歐盟 261/2004 號規則（EUR-Lex 32004R0261）前言第 15 點、第 5(3)、7、9 條",
+          "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32004R0261",
+          "official": true,
+          "quote": "EUR 250 … EUR 400 … EUR 600"
+        },
+        {
+          "name": "CBS News 2025-11〈White House drops plan to make airlines pay travelers for delayed flights〉",
+          "url": "https://www.cbsnews.com/news/trump-drops-biden-proposal-delayed-flights-airlines-compensation/",
+          "official": false,
+          "quote": "$200 to $300 … up to $775"
+        }
+      ],
+      "exception": "本頻道試算：匯率與算式列於事實表，片中標明試算"
+    },
+    "UA12": {
+      "claim": "14 CFR 260 也規定：付了錢但沒提供的加購服務（如 Wi-Fi、選位）要退費；托運行李遺失或嚴重延誤要退行李費——美國國內 12 小時內沒送到、國際直飛 12 小時以內的航線 15 小時、直飛超過 12 小時的航線 30 小時；行李費退款要先提出行李異常報告",
+      "tokens": [
+        "260",
+        "12",
+        "15",
+        "30",
+        "Wi-Fi"
+      ],
+      "sources": [
+        {
+          "name": "美國聯邦法規 14 CFR Part 260（Refunds and Other Consumer Protections）§260.2、§260.6",
+          "url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260",
+          "official": true,
+          "quote": "carriers promptly refund consumers for: (a) Fees for ancillary services related to air travel that consumers paid for but were not provided; (b) Fees to transport checked bags that are lost or significantly delayed … within 12 hours of the last flight segment's arrival for domestic itineraries, within 15 hours … 12 hours or less in duration, and within 30 hours … more than 12 hours in duration"
+        },
+        {
+          "name": "NewsNation〈Canceled flight? DOT's automatic cash refund rules explained〉",
+          "url": "https://digital-release.newsnationnow.com/travel/canceled-delayed-flight-dots-automatic-cash-refund-rules",
+          "official": false,
+          "quote": "the airline fails to provide extra services such as Wi-Fi or seat selection if the passenger paid for those services … within 12 hours of their domestic flight arriving at the gate or 15-30 hours for an international flight … Passengers who file a mishandled baggage report may also receive a refund of their checked baggage fee"
+        }
+      ]
+    },
+    "GT01": {
+      "claim": "Take-Two 2026-11-20 公告：GTA6 首日零售額 37.9 億美元（day one retail sales，公司估計、全球、計到 11 月 19 日當天結束），自稱跨所有娛樂媒介的新紀錄；這是玩家花掉的錢，不是 Take-Two 認列的營收",
+      "tokens": [
+        "2026",
+        "11",
+        "20",
+        "19",
+        "3.79",
+        "37.9",
+        "億",
+        "一"
+      ],
+      "sources": [
+        {
+          "name": "Take-Two 8-K Exhibit 99.1（2026-11-20）〈Grand Theft Auto VI Shatters Entertainment Box Office Records with $3.79 Billion in Day One Retail Sales〉",
+          "url": "https://www.sec.gov/Archives/edgar/data/0000946581/000162828026075217/exhibit9918k.htm",
+          "official": true,
+          "quote": "Grand Theft Auto VI day one retail sales* reached $3.79 billion, setting a new record for entertainment across any medium … *based on company estimates through end of day November 19th worldwide"
+        },
+        {
+          "name": "Fox Business 2026-11-21〈GTA VI smashes records with $3.79 billion in first 24 hours, Rockstar says〉",
+          "url": "https://www.foxbusiness.com/entertainment/grand-theft-auto-vi-shatters-entertainment-records-staggering-3-79b-debut",
+          "official": false,
+          "quote": "an estimated $3.79 billion in first-day sales … The estimated worldwide sales are based on company figures through the end of Nov. 19 … a video game's first-day retail sales are different revenue measures"
+        }
+      ]
+    },
+    "GT02": {
+      "claim": "GTA6 上市前就賣出 3,250 萬套，創全平台紀錄",
+      "tokens": [
+        "3250",
+        "3,250",
+        "32.5",
+        "萬"
+      ],
+      "sources": [
+        {
+          "name": "Take-Two 8-K Exhibit 99.1（2026-11-20）〈Grand Theft Auto VI Shatters Entertainment Box Office Records with $3.79 Billion in Day One Retail Sales〉",
+          "url": "https://www.sec.gov/Archives/edgar/data/0000946581/000162828026075217/exhibit9918k.htm",
+          "official": true,
+          "quote": "Grand Theft Auto VI sold 32.5 million units pre-release, a new record across all platforms"
+        },
+        {
+          "name": "Fox Business 2026-11-21〈GTA VI smashes records with $3.79 billion in first 24 hours, Rockstar says〉",
+          "url": "https://www.foxbusiness.com/entertainment/grand-theft-auto-vi-shatters-entertainment-records-staggering-3-79b-debut",
+          "official": false,
+          "quote": "Rockstar also said the game sold 32.5 million units before its release, a record across all platforms."
+        }
+      ]
+    },
+    "GT03": {
+      "claim": "對照：Take-Two 11-09（GTA6 上市前 10 天）給出的本季（2026 年 10～12 月）Net Bookings 預估是 33.5～35 億美元；Net Bookings 是公司數位賣出或出貨給通路的淨額——玩家一天花的 37.9 億，比公司預估整季入帳還多",
+      "tokens": [
+        "11",
+        "9",
+        "10",
+        "12",
+        "2026",
+        "3,350",
+        "3350",
+        "3,500",
+        "3500",
+        "33.5",
+        "35",
+        "億",
+        "37.9"
+      ],
+      "sources": [
+        {
+          "name": "Take-Two 8-K 第二季（FY27 Q2）財報新聞稿（2026-11-09）",
+          "url": "https://www.sec.gov/Archives/edgar/data/946581/000162828026072175/ttwo2q27earningsrelease.htm",
+          "official": true,
+          "quote": "Three Months Ending December 31, 2026 … Operational metric Net Bookings $3,350 to $3,500 … The launch of Grand Theft Auto VI is ten days away"
+        },
+        {
+          "name": "Take-Two 10-Q（截至 2026-09-30，2026-11-09 申報）",
+          "url": "https://www.sec.gov/Archives/edgar/data/946581/000162828026072254/ttwo-20260930.htm",
+          "official": true,
+          "quote": "Net Bookings is defined as the net amount of products and services sold digitally or sold-in physically during the period"
+        },
+        {
+          "name": "Yahoo Finance 2026-11〈Take-Two Shares Rise Over 3% After Quarterly Results as GTA VI November 19 Release Confirmed〉",
+          "url": "https://finance.yahoo.com/markets/stocks/articles/two-shares-rise-over-3-113921042.html",
+          "official": false,
+          "quote": "projected net bookings between $3.35 billion and $3.50 billion for the quarter"
+        }
+      ]
+    },
+    "GT04": {
+      "claim": "美國售價：標準版 79.99 美元、終極版 99.99 美元；盒裝實體版盒內只有下載序號、沒有光碟；2026-06-25 開放預購、11-19 上市（PS5、Xbox Series X|S）",
+      "tokens": [
+        "79.99",
+        "99.99",
+        "80",
+        "100",
+        "2026",
+        "6",
+        "25",
+        "11",
+        "19",
+        "5"
+      ],
+      "sources": [
+        {
+          "name": "Take-Two 新聞稿 2026-06-24〈Rockstar Games Announces Pre-Orders for Grand Theft Auto VI〉",
+          "url": "https://www.take2games.com/ir/news/rockstar-games-announces-pre-orders-grand-theft-auto-vi",
+          "official": true,
+          "quote": "Launching November 19, 2026, for the PlayStation® 5 … and Xbox Series X|S … for $79.99 … Ultimate Edition … will be available for $99.99 … The physical version of Grand Theft Auto VI, containing a download code inside the box"
+        },
+        {
+          "name": "Digital Trends 2026-06〈GTA VI finally gets a price tag and a no-disc rule for physical edition〉",
+          "url": "https://www.digitaltrends.com/gaming/gta-vi-finally-gets-a-price-tag-and-a-no-disc-rule-for-physical-edition",
+          "official": false,
+          "quote": "GTA VI finally gets a price tag and a no disc rule for physical edition"
+        }
+      ]
+    },
+    "GT05": {
+      "claim": "台灣 PlayStation Store 售價：GTA6 標準版 2,320 元、終極版 2,900 元（2026-11-22 查詢）",
+      "tokens": [
+        "2320",
+        "2,320",
+        "2900",
+        "2,900",
+        "2026",
+        "11",
+        "22"
+      ],
+      "sources": [
+        {
+          "name": "PlayStation Store 台灣 搜尋〈Grand Theft Auto VI〉（2026-11-22 查詢；標準版 EP1004-PPSA01547_00-GTAVISTANDARD001、終極版 GTAVIULTIMATE001）",
+          "url": "https://store.playstation.com/zh-hant-tw/search/Grand%20Theft%20Auto%20VI",
+          "official": true,
+          "quote": "Grand Theft Auto VI … PS5 遊戲組合包 NT$2,320 … Grand Theft Auto VI：終極版 … NT$2,900"
+        },
+        {
+          "name": "Cool3c 2026-06〈GTA 6數位版、實體版皆開放預購 普版2320元、終極版2900元〉",
+          "url": "https://www.cool3c.com/article/252120",
+          "official": false,
+          "quote": "普版2320元、終極版2900元"
+        }
+      ]
+    },
+    "GT06": {
+      "claim": "以臺銀 2026-11-20 美元即期中價 32.94 換算：37.9 億美元約 1,248 億台幣；美國標準版 79.99 美元約 2,635 元、終極版 99.99 美元約 3,294 元（美國標價未含銷售稅）——台灣標價 2,320、2,900 元反而比較低",
+      "tokens": [
+        "2026",
+        "11",
+        "20",
+        "32.94",
+        "32.865",
+        "33.015",
+        "1248",
+        "1,248",
+        "億",
+        "79.99",
+        "2635",
+        "2,635",
+        "99.99",
+        "3294",
+        "3,294",
+        "2320",
+        "2,320",
+        "2900",
+        "2,900",
+        "37.9"
+      ],
+      "sources": [
+        {
+          "name": "臺灣銀行 2026-11-20 牌告匯率（美金即期買入 32.865、賣出 33.015，中價 32.94；2026-11-22 查詢，非營業時間沿用 11-20 牌價）",
+          "url": "https://rate.bot.com.tw/xrt?Lang=zh-TW",
+          "official": true,
+          "quote": "美金 (USD) 即期匯率 本行買入 32.865 本行賣出 33.015（牌告匯率 2026/11/20）"
+        },
+        {
+          "name": "Take-Two 新聞稿 2026-06-24〈Rockstar Games Announces Pre-Orders for Grand Theft Auto VI〉",
+          "url": "https://www.take2games.com/ir/news/rockstar-games-announces-pre-orders-grand-theft-auto-vi",
+          "official": true,
+          "quote": "for $79.99 … will be available for $99.99"
+        },
+        {
+          "name": "Take-Two 8-K Exhibit 99.1（2026-11-20）〈Grand Theft Auto VI Shatters Entertainment Box Office Records with $3.79 Billion in Day One Retail Sales〉",
+          "url": "https://www.sec.gov/Archives/edgar/data/0000946581/000162828026075217/exhibit9918k.htm",
+          "official": true,
+          "quote": "day one retail sales* reached $3.79 billion"
+        }
+      ]
+    },
+    "GT07": {
+      "claim": "台灣 2026 年最低時薪 196 元（月薪 29,500 元）；2,320 元÷196 元≈11.8 小時",
+      "tokens": [
+        "2026",
+        "196",
+        "29500",
+        "29,500",
+        "2320",
+        "2,320",
+        "11.8",
+        "12"
+      ],
+      "sources": [
+        {
+          "name": "勞動部新聞稿 2025-12-26〈2026年勞動新制上路，守護勞工不停歇！〉",
+          "url": "https://www.mol.gov.tw/1607/1632/1633/87257/",
+          "official": true,
+          "quote": "自2026年起，每月最低工資調升為新臺幣（下同）29,500元，每小時最低工資調升為196元"
+        },
+        {
+          "name": "經濟日報〈最低工資漲至29,500元 調幅3.1% 時薪調升至196元 明年元月上路〉",
+          "url": "https://money.udn.com/money/amp/story/12926/9032664",
+          "official": false,
+          "quote": "最低工資漲至29,500元 調幅3.1% 時薪調升至196元 明年元月上路"
+        }
+      ]
+    },
+    "GT08": {
+      "claim": "美國聯邦最低時薪 7.25 美元；79.99 美元÷7.25≈11.0 小時（各州可訂更高）",
+      "tokens": [
+        "7.25",
+        "79.99",
+        "11.0",
+        "11"
+      ],
+      "sources": [
+        {
+          "name": "USA.gov〈Minimum wage〉",
+          "url": "https://www.usa.gov/minimum-wage",
+          "official": true,
+          "quote": "The federal minimum wage is $7.25 per hour."
+        },
+        {
+          "name": "美國法典 29 U.S.C. §206(a)(1)(C)（Cornell LII）",
+          "url": "https://www.law.cornell.edu/uscode/text/29/206",
+          "official": true,
+          "quote": "(C) $7.25 an hour, beginning 24 months after that 60th day"
+        }
+      ]
+    },
+    "GT09": {
+      "claim": "2013 年 GTA V 上市前三天全球零售額超過 10 億美元（Take-Two 估計）；GTA6 首日 37.9 億美元約是它的 3.8 倍",
+      "tokens": [
+        "2013",
+        "10",
+        "億",
+        "3",
+        "三",
+        "37.9",
+        "3.8"
+      ],
+      "sources": [
+        {
+          "name": "Take-Two 8-K Exhibit 99.1（2013-09-20）〈Grand Theft Auto V Worldwide Sales Surpass $1 Billion In First Three Days〉",
+          "url": "https://www.sec.gov/Archives/edgar/data/946581/000110465913071387/a13-21085_1ex99d1.htm",
+          "official": true,
+          "quote": "Grand Theft Auto V … has achieved worldwide retail sales of more than $1 billion during its first three days on sale, according to Company estimates"
+        },
+        {
+          "name": "GameSpot 2013-09-20〈Grand Theft Auto V sales reach $1 billion in three days〉",
+          "url": "https://gamespot.com/articles/grand-theft-auto-v-sales-reach-1-billion-in-three-days/1100-6414762/",
+          "official": false,
+          "quote": "Grand Theft Auto V sales reach $1 billion in three days"
+        }
+      ]
+    },
+    "GT10": {
+      "claim": "電影全球首週末票房紀錄：《復仇者聯盟：終局之戰》2019 年 12.09 億美元（迪士尼估計）；GTA6 首日 37.9 億美元約是 3.1 倍（兩者計算口徑不同，只當比例尺）",
+      "tokens": [
+        "2019",
+        "12.09",
+        "12",
+        "億",
+        "1.209",
+        "3.1",
+        "37.9"
+      ],
+      "sources": [
+        {
+          "name": "華特迪士尼公司新聞稿 2019-04-28〈Marvel Studios' 'Avengers: Endgame' Makes History with $1.2 Billion Global Debut〉",
+          "url": "https://thewaltdisneycompany.com/marvel-studios-avengers-endgame-makes-history-with-1-2-billion-global-debut/",
+          "official": true,
+          "quote": "Avengers: Endgame has shattered records with an unprecedented estimated global debut of $1.209 billion"
+        },
+        {
+          "name": "CBS News 2019-04〈'Avengers: Endgame' obliterates box office records with $1.2 billion opening〉",
+          "url": "https://www.cbsnews.com/amp/news/avengers-endgame-box-office-1-2-billion-opening-obliterates-records",
+          "official": false,
+          "quote": "'Avengers: Endgame' obliterates box office records with $1.2 billion opening"
+        }
+      ]
+    },
+    "GT11": {
+      "claim": "開發成本：Take-Two 2026-09-30 帳上資本化的自製軟體開發成本 25.056 億美元（流動 0.651＋非流動 24.405），是全公司合計、沒有拆出 GTA6；GTA6 單一開發成本官方沒有公布，無從證實",
+      "tokens": [
+        "2026",
+        "9",
+        "30",
+        "25.056",
+        "25",
+        "億",
+        "65.1",
+        "2,440.5",
+        "2440.5",
+        "2505.6",
+        "6"
+      ],
+      "sources": [
+        {
+          "name": "Take-Two 10-Q（截至 2026-09-30，2026-11-09 申報）",
+          "url": "https://www.sec.gov/Archives/edgar/data/946581/000162828026072254/ttwo-20260930.htm",
+          "official": true,
+          "quote": "Software development costs, internally developed $ 65.1 $ 2,440.5"
+        },
+        {
+          "name": "Take-Two 8-K 第二季（FY27 Q2）財報新聞稿（2026-11-09）",
+          "url": "https://www.sec.gov/Archives/edgar/data/946581/000162828026072175/ttwo2q27earningsrelease.htm",
+          "official": true,
+          "quote": "Software development costs and licenses 82.4 … Software development costs and licenses, net of current portion 2,494.9"
+        }
+      ]
+    },
+    "GT12": {
+      "claim": "美國 CPI-U（未季調）2013 年 9 月 234.149、2026 年 10 月 337.511，13 年間物價約漲 44%（×1.441）",
+      "tokens": [
+        "2013",
+        "9",
+        "234.149",
+        "2026",
+        "10",
+        "337.511",
+        "44",
+        "1.441",
+        "13"
+      ],
+      "sources": [
+        {
+          "name": "美國勞工統計局 CPI-U 全美城市、未季調（CUUR0000SA0）API 查詢 2026-11-22",
+          "url": "https://api.bls.gov/publicAPI/v2/timeseries/data/CUUR0000SA0",
+          "official": true,
+          "quote": "CUUR0000SA0 2013 September 234.149 … 2026 October 337.511"
+        },
+        {
+          "name": "聖路易聯準銀行 FRED〈CPIAUCNS〉",
+          "url": "https://fred.stlouisfed.org/series/CPIAUCNS",
+          "official": false,
+          "quote": "Consumer Price Index for All Urban Consumers: All Items in U.S. City Average (CPIAUCNS)"
+        }
+      ]
+    },
+    "GT13": {
+      "claim": "網路買遊戲的 7 天解除權：通訊交易原則上可在 7 天內解除；例外包括「經消費者拆封的影音商品或電腦軟體」（準則第 2 條第 4 款）和「非以有形媒介提供的數位內容，經消費者事先同意始提供」（第 5 款），而且業者要事先清楚告知；消保處說例外從嚴、依實際商品個別認定。盒裝只附序號算哪一款，查無官方明文",
+      "tokens": [
+        "7",
+        "七",
+        "2",
+        "4",
+        "5",
+        "19"
+      ],
+      "sources": [
+        {
+          "name": "通訊交易解除權合理例外情事適用準則 第 2 條（全國法規資料庫 J0170012）",
+          "url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=J0170012",
+          "official": true,
+          "quote": "四、經消費者拆封之影音商品或電腦軟體。五、非以有形媒介提供之數位內容或一經提供即為完成之線上服務，經消費者事先同意始提供。"
+        },
+        {
+          "name": "行政院消費者保護處 函釋（例外從嚴、個案認定；告知義務為要件）",
+          "url": "https://www.ey.gov.tw/Page/8F51FEE53AB45EA9/36663b43-67df-4bdb-b8f7-d6a649b95223",
+          "official": true,
+          "quote": "消費者於通訊交易，原則上仍享有7日解除權，上開準則之適用必須在合理之大前提下，而且是屬於例外之情況，在適用上及解釋上均採例外從嚴之原則。商品或服務是否屬於上開準則規範之情形，並非以企業經營者單方之主張為據 … 就個案加以認定 … 第2條序文將告知義務列為合理例外情事之要件，企業經營者如未履行告知義務，消費者仍可主張適用消保法第19條第1項規定之7日解除權"
+        },
+        {
+          "name": "法律百科〈網路購物七天鑑賞期〉問答",
+          "url": "https://www.legis-pedia.com/QA/3090/download",
+          "official": false,
+          "quote": "通訊交易解除權合理例外情事適用準則"
+        }
+      ]
     }
   },
   "rejected": {
