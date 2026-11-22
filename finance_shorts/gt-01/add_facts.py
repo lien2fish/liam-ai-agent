@@ -359,6 +359,64 @@ F = {
             ),
         ],
     },
+    "GT16": {
+        "claim": "GTA6 的舞台是虛構的雷歐尼達州（Leonida）與罪惡城（Vice City）；Rockstar 官網標語「Vice City, USA. The darkest side of the sunniest place in America.」；主角是 Jason（Jason Duval）與 Lucia（Lucia Caminos）兩人",
+        "tokens": ["6", "兩", "2"],
+        "sources": [
+            s(
+                "Rockstar Games 官網〈Grand Theft Auto VI〉（2026-11-22 查詢）",
+                "https://www.rockstargames.com/VI",
+                "Welcome to Leonida／Vice City, USA. The darkest side of the sunniest place in America.／Jason and Lucia have always known the deck is stacked against them… a criminal conspiracy stretching across the state of Leonida",
+                True,
+            ),
+            s(
+                "Rockstar Games 官網〈Only in Leonida〉",
+                "https://www.rockstargames.com/VI/only-in-leonida",
+                "Home to the neon-soaked streets of Vice City and beyond.／Jason wants an easy life, but things just keep getting harder.／Lucia’s father taught her to fight as soon as she could walk.",
+                True,
+            ),
+            s(
+                "GamesRadar〈Newly revealed GTA 6 characters showcase the series' new female protagonist…〉",
+                "https://www.gamesradar.com/newly-revealed-gta-6-characters-showcase-the-series-first-ever-female-protagonist-and-her-bonnie-and-clyde-style-relationship",
+                "Jason Duval and Lucia Caminos",
+            ),
+        ],
+    },
+    "GT17": {
+        "claim": "GTA V 的舞台是洛聖都（Los Santos），主角三人：年輕的街頭混混、退休的銀行搶匪、可怕的精神病患；GTA Online 最多 30 人同時遊玩；現在 PS5、Xbox Series X|S、PC 都能玩（Rockstar 官網）",
+        "tokens": ["5", "V", "三", "3", "30", "三十"],
+        "sources": [
+            s(
+                "Rockstar Games 官網〈Grand Theft Auto V〉（2026-11-22 查詢）",
+                "https://www.rockstargames.com/gta-v",
+                "Welcome to Los Santos／When a young street hustler, a retired bank robber, and a terrifying psychopath find themselves entangled…／GTA Online, a dynamic and ever-evolving online universe for up to 30 players／Now available for PlayStation 5, Xbox Series X|S, and PC",
+                True,
+            ),
+            s(
+                "GameSpot 2013〈New Grand Theft Auto V trailers April 30〉（三位主角 Michael、Franklin、Trevor，舞台 Los Santos）",
+                "https://www.gamespot.com/news/new-grand-theft-auto-v-trailers-april-30-6407530",
+                "Michael, Franklin and Trevor … Los Santos",
+            ),
+        ],
+    },
+    "GT18": {
+        "claim": "平台：GTA V 2013 年上市時在 PlayStation 3 與 Xbox 360；GTA6 2026-11-19 上市平台為 PS5、Xbox Series X|S（Take-Two 公布的上市清單沒有 PC）；兩代相隔 13 年",
+        "tokens": ["2013", "3", "360", "2026", "11", "19", "5", "13", "十三", "6"],
+        "sources": [
+            s(
+                "Take-Two 8-K Exhibit 99.1（2013-09-20）",
+                "https://www.sec.gov/Archives/edgar/data/946581/000110465913071387/a13-21085_1ex99d1.htm",
+                "Grand Theft Auto V is currently available for the PlayStation®3 computer entertainment system and the Xbox 360® video game and entertainment system from Microsoft.",
+                True,
+            ),
+            s(
+                "Take-Two 第一季（FY27 Q1）財報新聞稿（2026-08-07）上市清單",
+                "https://www.sec.gov/Archives/edgar/data/0000946581/000162828026054580/ttwo1q27earningsrelease.htm",
+                "Grand Theft Auto VI / PS5, Xbox Series X|S / November 19, 2026",
+                True,
+            ),
+        ],
+    },
 }
 
 d = json.loads(P.read_text())

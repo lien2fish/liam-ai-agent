@@ -17460,13 +17460,182 @@
     },
     {
      "speaker": "narr",
+     "text": "在講錢之前，先花一分鐘認識一下 GTA6。",
+     "say": "在講錢之前，先花一分鐘，認識一下這款遊戲。",
+     "facts": [
+      "GT16"
+     ],
+     "screen": {
+      "kind": "title",
+      "head": "先認識 GTA6",
+      "sub": "跟上一代差在哪？"
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "GTA 是《俠盜獵車手》系列的英文縮寫，玩家在一座虛構的美國城市裡自由行動、完成任務。",
+     "say": "這個系列的玩法，是在一座虛構的美國城市裡，自由行動、完成任務。",
+     "facts": [
+      "GT17"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "bk_phone"
+    },
+    {
+     "speaker": "narr",
+     "text": "第六代的舞台，是虛構的雷歐尼達州，主要城市叫罪惡城。",
+     "say": "第六代的舞台，是虛構的雷歐尼達州，主要城市叫罪惡城。",
+     "facts": [
+      "GT16"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "GTA6 的舞台｜虛構的雷歐尼達州",
+      "big": "罪惡城",
+      "note": "Vice City，位在 Leonida 州"
+     },
+     "pool": "us_bf",
+     "dim": true
+    },
+    {
+     "speaker": "narr",
+     "text": "官網的形容是：美國最陽光的地方，最黑暗的一面。",
+     "say": "官網的形容是：美國最陽光的地方，最黑暗的一面。",
+     "facts": [
+      "GT16"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_mrt"
+    },
+    {
+     "speaker": "narr",
+     "text": "主角有兩位：Jason 和 Lucia。",
+     "say": "主角有兩位：傑森，和露西亞。",
+     "facts": [
+      "GT16"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "gt_ctrl"
+    },
+    {
+     "speaker": "narr",
+     "text": "那跟上一代比，差在哪？先看時間：GTA V 是 2013 年上市，到這一代，隔了 13 年。",
+     "say": "那跟上一代比，差在哪？先看時間：第五代是二零一三年上市，到這一代，隔了十三年。",
+     "facts": [
+      "GT18"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "GTA V → GTA6",
+      "big": "隔了 13 年",
+      "note": "2013 年 → 2026 年 11 月 19 日"
+     },
+     "pool": "us_bf",
+     "dim": true
+    },
+    {
+     "speaker": "narr",
+     "text": "上一代的舞台是洛聖都，主角有三位：年輕的街頭混混、退休的銀行搶匪，還有一個可怕的瘋子。",
+     "say": "上一代的舞台是洛聖都，主角有三位：年輕的街頭混混、退休的銀行劫匪，還有一個可怕的瘋子。",
+     "facts": [
+      "GT17"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_tm"
+    },
+    {
+     "speaker": "narr",
+     "text": "所以前兩個差別是：地點從洛聖都換到罪惡城，主角從三個人變成兩個人。",
+     "say": "所以前兩個差別是：地點從洛聖都，換到罪惡城，主角從三個人，變成兩個人。",
+     "facts": [
+      "GT16",
+      "GT17",
+      "GT18"
+     ],
+     "screen": {
+      "kind": "calendar",
+      "head": "GTA V vs GTA6",
+      "items": [
+       {
+        "date": "舞台",
+        "what": "洛聖都 → 罪惡城（雷歐尼達州）"
+       },
+       {
+        "date": "主角",
+        "what": "三人 → 兩人（Jason、Lucia）"
+       },
+       {
+        "date": "上市平台",
+        "what": "PS3、Xbox 360 → PS5、Xbox Series X|S"
+       }
+      ]
+     }
+    },
+    {
+     "speaker": "narr",
+     "text": "第三個差別是平台。GTA V 2013 年上市時，是在 PS3 和 Xbox 360 上。",
+     "say": "第三個差別是平台。第五代二零一三年上市時，是在當時的兩大遊戲主機上。",
+     "facts": [
+      "GT18"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "gt_ctrl"
+    },
+    {
+     "speaker": "narr",
+     "text": "這一代上市，只列了 PS5 和 Xbox Series X|S，發行商公布的上市平台裡沒有電腦版。",
+     "say": "這一代上市，只列了現在的兩大遊戲主機，發行商公布的上市平台裡，沒有電腦版。",
+     "facts": [
+      "GT18"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "us_bf"
+    },
+    {
+     "speaker": "narr",
+     "text": "上一代後來陸續推到新主機和電腦，還有線上模式，最多 30 個人一起玩。",
+     "say": "上一代後來又推到新主機和電腦，還有線上模式，最多三十個人一起玩。",
+     "facts": [
+      "GT17"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "bk_phone"
+    },
+    {
+     "speaker": "narr",
+     "text": "這個線上模式，跟等一下要講的錢也有關係。好，認識完了，回到那個數字。",
+     "say": "這個線上模式，跟等一下要講的錢，也有關係。好，介紹完了，回到那個數字。",
+     "facts": [
+      "GT17"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "gt_shop"
+    },
+    {
+     "speaker": "narr",
      "text": "先感受一下這個數字有多大。",
      "say": "先感受一下這個數字有多大。",
      "facts": [],
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_phone"
+     "pool": "tw_tm"
     },
     {
      "speaker": "narr",
@@ -17515,7 +17684,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_ctrl"
+     "pool": "tw_mrt"
     },
     {
      "speaker": "narr",
@@ -17530,7 +17699,7 @@
       "big": "約 3.8 倍",
       "note": "超過 10 億美元 → 估計 37.9 億美元"
      },
-     "pool": "us_bf",
+     "pool": "gt_ctrl",
      "dim": true
     },
     {
@@ -17545,7 +17714,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_bf",
+     "pool": "gt_hand",
      "approx": {
       "零售額": "零售額"
      }
@@ -17558,7 +17727,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_tm"
+     "pool": "tw_mrt"
     },
     {
      "speaker": "narr",
@@ -17583,7 +17752,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_shop",
+     "pool": "tw_tm",
      "approx": {
       "零售額": "零售額"
      }
@@ -17598,7 +17767,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_tm"
+     "pool": "us_bf"
     },
     {
      "speaker": "narr",
@@ -17636,7 +17805,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_hand"
+     "pool": "bk_phone"
     },
     {
      "speaker": "narr",
@@ -17698,7 +17867,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_ctrl"
+     "pool": "us_bf"
     },
     {
      "speaker": "narr",
@@ -17744,7 +17913,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_bf"
+     "pool": "gt_shop"
     },
     {
      "speaker": "narr",
@@ -17756,7 +17925,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_shop",
+     "pool": "tw_tm",
      "approx": {
       "零售通路": "零售"
      }
@@ -17791,7 +17960,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_mrt"
+     "pool": "us_bf"
     },
     {
      "speaker": "narr",
@@ -17841,7 +18010,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_phone"
+     "pool": "tw_tm"
     },
     {
      "speaker": "narr",
@@ -17856,7 +18025,7 @@
       "big": "81%",
       "note": "來自玩家持續消費"
      },
-     "pool": "tw_mrt",
+     "pool": "gt_ctrl",
      "dim": true
     },
     {
@@ -17899,7 +18068,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_bf"
+     "pool": "gt_hand"
     },
     {
      "speaker": "narr",
@@ -17926,7 +18095,7 @@
       "big": "≠ 營收",
       "note": "是發行商估計玩家花的錢，不是公司賺的錢"
      },
-     "pool": "tw_tm",
+     "pool": "tw_mrt",
      "dim": true
     },
     {
@@ -17966,7 +18135,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_ctrl"
+     "pool": "tw_mrt"
     },
     {
      "speaker": "narr",
@@ -17978,7 +18147,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_tm"
+     "pool": "us_bf"
     },
     {
      "speaker": "narr",
@@ -17990,7 +18159,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_hand"
+     "pool": "bk_phone"
     },
     {
      "speaker": "narr",
@@ -18121,7 +18290,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_mrt"
+     "pool": "us_bf"
     },
     {
      "speaker": "narr",
@@ -18194,7 +18363,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_bf",
+     "pool": "gt_shop",
      "approx": {
       "兩千多": "2,320"
      }
@@ -18292,7 +18461,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_shop"
+     "pool": "tw_tm"
     },
     {
      "speaker": "narr",
@@ -18344,7 +18513,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_bf"
+     "pool": "gt_ctrl"
     },
     {
      "speaker": "narr",
@@ -18356,7 +18525,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_phone"
+     "pool": "tw_tm"
     },
     {
      "speaker": "narr",
@@ -18419,7 +18588,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_ctrl"
+     "pool": "us_bf"
     },
     {
      "speaker": "narr",
@@ -18429,7 +18598,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_bf"
+     "pool": "gt_hand"
     },
     {
      "speaker": "narr",
@@ -18441,7 +18610,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_tm"
+     "pool": "tw_mrt"
     },
     {
      "speaker": "narr",
@@ -18451,7 +18620,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_tm"
+     "pool": "us_bf"
     },
     {
      "speaker": "narr",
@@ -18473,7 +18642,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_hand"
+     "pool": "bk_phone"
     },
     {
      "speaker": "narr",
@@ -18514,7 +18683,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_mrt"
+     "pool": "gt_ctrl"
     },
     {
      "speaker": "narr",
@@ -18564,7 +18733,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_mrt"
+     "pool": "us_bf"
     },
     {
      "speaker": "narr",
