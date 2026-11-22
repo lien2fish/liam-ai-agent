@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-Hant" data-resolution="landscape">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>年終獎金一定要發？法律怎麼寫</title>
+<link rel="stylesheet" href="shared/brand.css" />
+<style>
+html, body, #root { width: 1920px; height: 1080px; }
+#bg { background: radial-gradient(120% 90% at 20% 0%, #16294a 0%, #0b1426 55%, #070d1a 100%); }
+#grid { position: absolute; inset: 0; opacity: 0.08;
+  background-image: linear-gradient(#9fb3d1 1px, transparent 1px), linear-gradient(90deg, #9fb3d1 1px, transparent 1px);
+  background-size: 96px 96px; }
+.brand { position: absolute; left: 64px; top: 48px; font-size: 30px; color: var(--gold); letter-spacing: 0.12em; text-shadow: 0 2px 8px rgba(0,0,0,0.95); }
+.disc { position: absolute; right: 64px; top: 52px; font-size: 22px; color: rgba(243,241,234,0.88); text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
+.pg { position: absolute; right: 64px; bottom: 34px; font-size: 24px; color: var(--dim); }
+.prog { position: absolute; left: 0; bottom: 0; height: 8px; width: 1920px; background: var(--gold); transform-origin: left center; }
+.sub2 { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); width: max-content; max-width: 1560px;
+  padding: 10px 30px; border-radius: 18px; background: rgba(7, 13, 26, 0.75); color: var(--ink);
+  font-size: 42px; line-height: 1.35; text-align: center; text-wrap: balance; }
+.h1 { position: absolute; left: 0; right: 0; text-align: center; color: var(--ink); font-weight: 800; }
+.chip { position: absolute; padding: 8px 26px; border-radius: 999px; border: 3px solid var(--gold); color: var(--gold); font-size: 40px; }
+.bank { position: absolute; left: 160px; top: 300px; font-size: 76px; font-weight: 800; color: var(--ink); }
+.rate { position: absolute; left: 960px; top: 330px; font-size: 190px; font-weight: 800; color: var(--gold); white-space: nowrap; }
+.rnote { position: absolute; left: 160px; top: 640px; font-size: 48px; color: var(--ink); }
+.arrow { position: absolute; color: var(--warn); }
+.card { position: absolute; border-radius: 30px; background: rgba(255,255,255,0.06); border: 3px solid var(--panel-line); }
+.bl { position: absolute; left: 220px; font-size: 46px; color: var(--ink); }
+.btrack { position: absolute; left: 480px; width: 1000px; height: 64px; border-radius: 32px; background: rgba(255,255,255,0.06); }
+.bfill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 32px; transform-origin: left center; }
+.bv { position: absolute; font-size: 42px; color: var(--ink); }
+.bgw { position: absolute; inset: 0; overflow: hidden; }
+.vclip { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; }
+.vshade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.85) 100%); }
+.callout { position: absolute; left: 96px; bottom: 210px; padding: 18px 34px 22px; border-radius: 18px;
+  background: rgba(7,13,26,0.82); border-left: 10px solid var(--gold); white-space: nowrap; }
+.ctag, .cbig, .cnote { display: block; position: relative; }
+.ctag { font-size: 34px; line-height: 1.4; color: var(--gold); font-weight: 700; }
+.cbig { font-size: 120px; line-height: 1.25; margin: 4px 0; font-weight: 800; color: #ffd400; }
+.cnote { font-size: 30px; line-height: 1.4; color: var(--ink); margin-top: 6px; }
+.bgw img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 60% 40%; }
+.shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,10,20,0.66) 0%, rgba(5,10,20,0.60) 45%, rgba(5,10,20,0.86) 100%); }
+.sin .h1, .sin .bank, .sin .rate, .sin .rnote, .sin .bl, .sin .bv { text-shadow: 0 4px 18px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.9); }
+.card { background: rgba(7,13,26,0.70) !important; }
+.btrack { background: rgba(7,13,26,0.65) !important; }
+</style>
+<script src="vendor/gsap.min.js"></script>
+</head>
+<body>
+<div id="root" data-composition-id="ms03" data-start="0" data-duration="81.26" data-fps="24" data-width="1920" data-height="1080">
+<div id="bg" class="clip" data-start="0" data-duration="81.26" data-track-index="0"><div id="grid"></div></div>
+<video class="clip vclip" id="c1_0" src="shared/broll/tw_mrt_02.mp4" muted data-volume="0" data-start="0.000" data-duration="3.002" data-track-index="1"></video>
+<video class="clip vclip" id="c1_1" src="shared/broll/tw_mrt_03.mp4" muted data-volume="0" data-start="3.002" data-duration="3.002" data-track-index="1"></video>
+<video class="clip vclip" id="c2_0" src="shared/broll/tw_city_00.mp4" muted data-volume="0" data-start="6.005" data-duration="3.675" data-track-index="1"></video>
+<video class="clip vclip" id="c2_1" src="shared/broll/tw_city_01.mp4" muted data-volume="0" data-start="9.680" data-duration="3.675" data-track-index="1"></video>
+<video class="clip vclip" id="c3_0" src="shared/broll/tw_tm_00.mp4" muted data-volume="0" data-start="13.355" data-duration="3.075" data-track-index="1"></video>
+<video class="clip vclip" id="c3_1" src="shared/broll/tw_tm_01.mp4" muted data-volume="0" data-start="16.430" data-duration="3.075" data-track-index="1"></video>
+<video class="clip vclip" id="c4_0" src="shared/broll/tw_city_02.mp4" muted data-volume="0" data-start="19.505" data-duration="4.795" data-track-index="1"></video>
+<video class="clip vclip" id="c4_1" src="shared/broll/tw_city_03.mp4" muted data-volume="0" data-start="24.300" data-duration="4.795" data-track-index="1"></video>
+<video class="clip vclip" id="c5_0" src="shared/broll/tw_mrt_04.mp4" muted data-volume="0" data-start="29.095" data-duration="3.235" data-track-index="1"></video>
+<video class="clip vclip" id="c5_1" src="shared/broll/tw_mrt_05.mp4" muted data-volume="0" data-start="32.330" data-duration="3.235" data-track-index="1"></video>
+<video class="clip vclip" id="c6_0" src="shared/broll/tw_tm_02.mp4" muted data-volume="0" data-start="35.565" data-duration="2.710" data-track-index="1"></video>
+<video class="clip vclip" id="c7_0" src="shared/broll/bk_atm_01.mp4" muted data-volume="0" data-start="38.275" data-duration="3.835" data-track-index="1"></video>
+<video class="clip vclip" id="c7_1" src="shared/broll/bk_atm_02.mp4" muted data-volume="0" data-start="42.110" data-duration="3.835" data-track-index="1"></video>
+<video class="clip vclip" id="c8_0" src="shared/broll/tw_city_04.mp4" muted data-volume="0" data-start="45.945" data-duration="4.150" data-track-index="1"></video>
+<video class="clip vclip" id="c9_0" src="shared/broll/tw_mrt_06.mp4" muted data-volume="0" data-start="50.095" data-duration="4.835" data-track-index="1"></video>
+<video class="clip vclip" id="c9_1" src="shared/broll/tw_mrt_07.mp4" muted data-volume="0" data-start="54.930" data-duration="4.835" data-track-index="1"></video>
+<video class="clip vclip" id="c10_0" src="shared/broll/tw_tm_03.mp4" muted data-volume="0" data-start="59.765" data-duration="3.315" data-track-index="1"></video>
+<video class="clip vclip" id="c10_1" src="shared/broll/tw_tm_04.mp4" muted data-volume="0" data-start="63.080" data-duration="3.315" data-track-index="1"></video>
+<video class="clip vclip" id="c11_0" src="shared/broll/tw_city_05.mp4" muted data-volume="0" data-start="66.395" data-duration="5.315" data-track-index="1"></video>
+<video class="clip vclip" id="c11_1" src="shared/broll/tw_city_06.mp4" muted data-volume="0" data-start="71.710" data-duration="5.315" data-track-index="1"></video>
+<section id="p1" class="clip" data-start="0.000" data-duration="6.005" data-track-index="2"><div class="vshade"></div><div class="sin" id="p1-in"><div class="sub2" id="p1-sub"><span style="white-space: nowrap">很多人以為：年終獎金是法律規定，公司一定要發。真的是這樣嗎？</span></div><div class="pg">1 / 12</div></div></section>
+<section id="p2" class="clip" data-start="6.005" data-duration="7.350" data-track-index="3"><div class="shade"></div><div class="sin" id="p2-in"><div class="h1" id="p2-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">勞委會 89 年函釋</div><div class="h1" id="p2-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">沒有強制標準</div><div class="h1" id="p2-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">年終獎金的發放標準及方式｜宜由勞雇雙方協商</div><div class="sub2" id="p2-sub">其實，勞基法對年終獎金怎麼發、發多少，<br>沒有強制規定，主要看你和公司的約定。</div><div class="pg">2 / 12</div></div></section>
+<section id="p3" class="clip" data-start="13.355" data-duration="6.150" data-track-index="4"><div class="shade"></div><div class="sin" id="p3-in"><div class="h1" id="p3-h" style="top: 180px; font-size: 64px; color: var(--gold)">年終獎金的約定，寫在哪？</div><div class="card" id="p3-c0" style="left: 80px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p3-cd0" style="left: 80px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">①</div><div class="h1" id="p3-cw0" style="left: 80px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">勞動契約</div><div class="card" id="p3-c1" style="left: 693px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p3-cd1" style="left: 693px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">②</div><div class="h1" id="p3-cw1" style="left: 693px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">工作規則</div><div class="card" id="p3-c2" style="left: 1306px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p3-cd2" style="left: 1306px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">③</div><div class="h1" id="p3-cw2" style="left: 1306px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">團體協約</div><div class="sub2" id="p3-sub"><span style="white-space: nowrap">約定通常寫在勞動契約、工作規則，或團體協約。</span></div><div class="pg">3 / 12</div></div></section>
+<section id="p4" class="clip" data-start="19.505" data-duration="9.590" data-track-index="5"><div class="vshade"></div><div class="sin" id="p4-in"><div class="sub2" id="p4-sub">法律有寫的是勞基法第 29 條：公司年度結算有盈餘，<br>繳完稅、填補虧損、提列股息和公積金之後，</div><div class="pg">4 / 12</div></div></section>
+<section id="p5" class="clip" data-start="29.095" data-duration="6.470" data-track-index="6"><div class="shade"></div><div class="sin" id="p5-in"><div class="h1" id="p5-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">勞動基準法第 29 條</div><div class="h1" id="p5-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">扣除後仍有盈餘</div><div class="h1" id="p5-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">扣稅捐、虧損、股息公積金｜全年無過失者應給獎金或紅利</div><div class="sub2" id="p5-sub"><span style="white-space: nowrap">符合這些條件，對全年工作、沒有過失的勞工，要發獎金或分配紅利。</span></div><div class="pg">5 / 12</div></div></section>
+<section id="p6" class="clip" data-start="35.565" data-duration="2.710" data-track-index="7"><div class="vshade"></div><div class="sin" id="p6-in"><div class="sub2" id="p6-sub"><span style="white-space: nowrap">但這一條沒有寫要發多少、怎麼算。</span></div><div class="pg">6 / 12</div></div></section>
+<section id="p7" class="clip" data-start="38.275" data-duration="7.670" data-track-index="8"><div class="shade"></div><div class="sin" id="p7-in"><div class="h1" id="p7-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">約定成固定薪資結構</div><div class="h1" id="p7-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">可能算工資</div><div class="h1" id="p7-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">例：保證年薪 14 個月｜是否屬工資依個案判斷</div><div class="sub2" id="p7-sub">相反的，契約如果寫明「保證年薪 14 個月」，<br>多出來的部分可能被認定是工資。</div><div class="pg">7 / 12</div></div></section>
+<section id="p8" class="clip" data-start="45.945" data-duration="4.150" data-track-index="9"><div class="vshade"></div><div class="sin" id="p8-in"><div class="sub2" id="p8-sub"><span style="white-space: nowrap">被認定是工資，公司就不能因為沒賺錢而不發。</span></div><div class="pg">8 / 12</div></div></section>
+<section id="p9" class="clip" data-start="50.095" data-duration="9.670" data-track-index="10"><div class="vshade"></div><div class="sin" id="p9-in"><div class="sub2" id="p9-sub">發放前離職呢？恩惠性的獎金，多半約定發放當天要在職；<br>屬於工資的部分，仍可能依在職時間比例要求。</div><div class="pg">9 / 12</div></div></section>
+<section id="p10" class="clip" data-start="59.765" data-duration="6.630" data-track-index="11"><div class="vshade"></div><div class="sin" id="p10-in"><div class="sub2" id="p10-sub"><span style="white-space: nowrap">所以，年終獎金有沒有，要看法定條件、約定和獎金性質。</span></div><div class="pg">10 / 12</div></div></section>
+<section id="p11" class="clip" data-start="66.395" data-duration="10.630" data-track-index="12"><div class="shade"></div><div class="sin" id="p11-in"><div class="h1" id="p11-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">勞動基準法第 70 條</div><div class="h1" id="p11-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">30 人以上</div><div class="h1" id="p11-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">工作規則要訂「津貼及獎金」｜核備後公開揭示</div><div class="sub2" id="p11-sub">想知道自己的情況，看勞動契約和工作規則；30 人以上的公司，<br>工作規則要公開揭示。有疑問可洽勞工主管機關。</div><div class="pg">11 / 12</div></div></section>
+<section id="p12" class="clip" data-start="77.025" data-duration="4.235" data-track-index="13"><div class="sin" id="p12-in"><div class="h1" id="p12-a" style="top: 250px; font-size: 130px">關注我</div><div class="h1" id="p12-b" style="top: 440px; font-size: 64px; color: var(--gold)">給你更多錢的大小事</div><div id="p12-btn" style="position: absolute; left: 710px; top: 620px; width: 420px; height: 110px; border-radius: 22px; background: #e53935; color: #fff; font-size: 48px; font-weight: 800; letter-spacing: 0.08em; display: flex; align-items: center; justify-content: center">訂閱</div><div id="p12-bell" style="position: absolute; left: 1160px; top: 630px; width: 90px; height: 90px; color: var(--gold)"><svg viewBox="0 0 100 100" width="100%" height="100%"><g fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"><path d="M50 14 C30 14 26 32 26 46 L26 64 L16 76 L84 76 L74 64 L74 46 C74 32 70 14 50 14 Z"/><path d="M40 84 C42 92 58 92 60 84"/></g></svg></div><div class="sub2" id="p12-sub"><span style="white-space: nowrap">關注我，給你更多錢的大小事。</span></div><div class="pg">12 / 12</div></div></section>
+<div id="chrome" class="clip" data-start="0" data-duration="81.26" data-track-index="14">
+<div class="brand">金錢怪物</div>
+<div class="disc">資訊整理，非法律建議｜個案可洽當地勞工主管機關｜資料來源見說明欄｜畫面為資料畫面</div>
+<div class="prog"></div>
+</div>
+<audio id="vo-1" data-start="0.250" data-duration="5.680" src="audio/l1.mp3"></audio>
+<audio id="vo-2" data-start="6.080" data-duration="7.200" src="audio/l2.mp3"></audio>
+<audio id="vo-3" data-start="13.430" data-duration="5.200" src="audio/l3.mp3"></audio>
+<audio id="vo-4" data-start="19.580" data-duration="9.440" src="audio/l4.mp3"></audio>
+<audio id="vo-5" data-start="29.170" data-duration="6.320" src="audio/l5.mp3"></audio>
+<audio id="vo-6" data-start="35.640" data-duration="2.560" src="audio/l6.mp3"></audio>
+<audio id="vo-7" data-start="38.350" data-duration="7.520" src="audio/l7.mp3"></audio>
+<audio id="vo-8" data-start="46.020" data-duration="4.000" src="audio/l8.mp3"></audio>
+<audio id="vo-9" data-start="50.170" data-duration="9.520" src="audio/l9.mp3"></audio>
+<audio id="vo-10" data-start="59.840" data-duration="6.480" src="audio/l10.mp3"></audio>
+<audio id="vo-11" data-start="66.470" data-duration="10.480" src="audio/l11.mp3"></audio>
+<audio id="vo-12" data-start="77.100" data-duration="2.560" src="audio/l12.mp3"></audio>
+<audio id="bgm" data-start="0" data-duration="81.26" data-volume="0.12" src="audio/bgm.mp3"></audio>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({ paused: true });
+tl.fromTo("#p1-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 0.000);
+tl.fromTo("#p1-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 0.250);
+tl.to("#p1-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 5.725);
+tl.set("#p1-in", { opacity: 0 }, 6.005);
+tl.fromTo("#p2-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 6.005);
+tl.fromTo("#p2-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 6.080);
+tl.fromTo("#p2-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 6.480);
+tl.fromTo("#p2-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 7.380);
+tl.fromTo("#p2-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 6.080);
+tl.to("#p2-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 13.075);
+tl.set("#p2-in", { opacity: 0 }, 13.355);
+tl.fromTo("#p3-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 13.355);
+tl.fromTo("#p3-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 13.430);
+tl.fromTo("#p3-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 14.330);
+tl.fromTo("#p3-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 14.530);
+tl.fromTo("#p3-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 14.730);
+tl.fromTo("#p3-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 15.230);
+tl.fromTo("#p3-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 15.430);
+tl.fromTo("#p3-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 15.630);
+tl.fromTo("#p3-c2", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 16.230);
+tl.fromTo("#p3-cd2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 16.430);
+tl.fromTo("#p3-cw2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 16.630);
+tl.fromTo("#p3-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 13.430);
+tl.to("#p3-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 19.225);
+tl.set("#p3-in", { opacity: 0 }, 19.505);
+tl.fromTo("#p4-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 19.505);
+tl.fromTo("#p4-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 19.580);
+tl.to("#p4-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 28.815);
+tl.set("#p4-in", { opacity: 0 }, 29.095);
+tl.fromTo("#p5-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 29.095);
+tl.fromTo("#p5-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 29.170);
+tl.fromTo("#p5-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 29.570);
+tl.fromTo("#p5-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 30.470);
+tl.fromTo("#p5-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 29.170);
+tl.to("#p5-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 35.285);
+tl.set("#p5-in", { opacity: 0 }, 35.565);
+tl.fromTo("#p6-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 35.565);
+tl.fromTo("#p6-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 35.640);
+tl.to("#p6-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 37.995);
+tl.set("#p6-in", { opacity: 0 }, 38.275);
+tl.fromTo("#p7-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 38.275);
+tl.fromTo("#p7-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 38.350);
+tl.fromTo("#p7-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 38.750);
+tl.fromTo("#p7-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 39.650);
+tl.fromTo("#p7-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 38.350);
+tl.to("#p7-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 45.665);
+tl.set("#p7-in", { opacity: 0 }, 45.945);
+tl.fromTo("#p8-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 45.945);
+tl.fromTo("#p8-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 46.020);
+tl.to("#p8-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 49.815);
+tl.set("#p8-in", { opacity: 0 }, 50.095);
+tl.fromTo("#p9-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 50.095);
+tl.fromTo("#p9-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 50.170);
+tl.to("#p9-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 59.485);
+tl.set("#p9-in", { opacity: 0 }, 59.765);
+tl.fromTo("#p10-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 59.765);
+tl.fromTo("#p10-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 59.840);
+tl.to("#p10-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 66.115);
+tl.set("#p10-in", { opacity: 0 }, 66.395);
+tl.fromTo("#p11-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 66.395);
+tl.fromTo("#p11-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 66.470);
+tl.fromTo("#p11-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 66.870);
+tl.fromTo("#p11-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 67.770);
+tl.fromTo("#p11-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 66.470);
+tl.to("#p11-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 76.745);
+tl.set("#p11-in", { opacity: 0 }, 77.025);
+tl.fromTo("#p12-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 77.025);
+tl.fromTo("#p12-a", { autoAlpha: 0, scale: 0.8 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "back.out(1.6)" }, 77.100);
+tl.fromTo("#p12-b", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 77.600);
+tl.fromTo("#p12-btn", { autoAlpha: 0, scale: 0.4 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: "back.out(2.2)" }, 78.100);
+tl.fromTo("#p12-btn", { scale: 1 }, { scale: 1.06, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3 }, 78.700);
+tl.fromTo("#p12-bell", { autoAlpha: 0, rotation: 0 }, { autoAlpha: 1, rotation: 0, duration: 0.3 }, 78.500);
+tl.fromTo("#p12-bell", { rotation: -18 }, { rotation: 18, duration: 0.12, ease: "sine.inOut", yoyo: true, repeat: 7 }, 78.800);
+tl.fromTo("#p12-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 77.100);
+tl.to("#p12-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 80.980);
+tl.set("#p12-in", { opacity: 0 }, 81.260);
+tl.fromTo(".prog", { scaleX: 0 }, { scaleX: 1, duration: 81.26, ease: "none" }, 0);
+window.__timelines["ms03"] = tl;
+</script>
+</body>
+</html>

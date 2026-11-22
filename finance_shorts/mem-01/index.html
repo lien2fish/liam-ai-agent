@@ -1,0 +1,865 @@
+<!doctype html>
+<html lang="zh-Hant" data-resolution="landscape">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>AI 搶走記憶體，你的手機為什麼變貴？</title>
+<link rel="stylesheet" href="shared/brand.css" />
+<style>
+html, body, #root { width: 1920px; height: 1080px; }
+#bg { background: radial-gradient(120% 90% at 20% 0%, #16294a 0%, #0b1426 55%, #070d1a 100%); }
+#grid { position: absolute; inset: 0; opacity: 0.08;
+  background-image: linear-gradient(#9fb3d1 1px, transparent 1px), linear-gradient(90deg, #9fb3d1 1px, transparent 1px);
+  background-size: 96px 96px; }
+.brand { position: absolute; left: 64px; top: 48px; font-size: 30px; color: var(--gold); letter-spacing: 0.12em; text-shadow: 0 2px 8px rgba(0,0,0,0.95); }
+.disc { position: absolute; right: 64px; top: 52px; font-size: 22px; color: rgba(243,241,234,0.88); text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
+.pg { position: absolute; right: 64px; bottom: 34px; font-size: 24px; color: var(--dim); }
+.prog { position: absolute; left: 0; bottom: 0; height: 8px; width: 1920px; background: var(--gold); transform-origin: left center; }
+.sub2 { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); width: max-content; max-width: 1560px;
+  padding: 10px 30px; border-radius: 18px; background: rgba(7, 13, 26, 0.75); color: var(--ink);
+  font-size: 42px; line-height: 1.35; text-align: center; text-wrap: balance; }
+.h1 { position: absolute; left: 0; right: 0; text-align: center; color: var(--ink); font-weight: 800; }
+.chip { position: absolute; padding: 8px 26px; border-radius: 999px; border: 3px solid var(--gold); color: var(--gold); font-size: 40px; }
+.bank { position: absolute; left: 160px; top: 300px; font-size: 76px; font-weight: 800; color: var(--ink); }
+.rate { position: absolute; left: 960px; top: 330px; font-size: 190px; font-weight: 800; color: var(--gold); white-space: nowrap; }
+.rnote { position: absolute; left: 160px; top: 640px; font-size: 48px; color: var(--ink); }
+.arrow { position: absolute; color: var(--warn); }
+.card { position: absolute; border-radius: 30px; background: rgba(255,255,255,0.06); border: 3px solid var(--panel-line); }
+.bl { position: absolute; left: 220px; font-size: 46px; color: var(--ink); }
+.btrack { position: absolute; left: 480px; width: 1000px; height: 64px; border-radius: 32px; background: rgba(255,255,255,0.06); }
+.bfill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 32px; transform-origin: left center; }
+.bv { position: absolute; font-size: 42px; color: var(--ink); }
+.bgw { position: absolute; inset: 0; overflow: hidden; }
+.vclip { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; }
+.vshade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.85) 100%); }
+.callout { position: absolute; left: 96px; bottom: 210px; padding: 18px 34px 22px; border-radius: 18px;
+  background: rgba(7,13,26,0.82); border-left: 10px solid var(--gold); white-space: nowrap; }
+.ctag, .cbig, .cnote { display: block; position: relative; }
+.ctag { font-size: 34px; line-height: 1.4; color: var(--gold); font-weight: 700; }
+.cbig { font-size: 120px; line-height: 1.25; margin: 4px 0; font-weight: 800; color: #ffd400; }
+.cnote { font-size: 30px; line-height: 1.4; color: var(--ink); margin-top: 6px; }
+.bgw img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 60% 40%; }
+.shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,10,20,0.66) 0%, rgba(5,10,20,0.60) 45%, rgba(5,10,20,0.86) 100%); }
+.sin .h1, .sin .bank, .sin .rate, .sin .rnote, .sin .bl, .sin .bv { text-shadow: 0 4px 18px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.9); }
+.card { background: rgba(7,13,26,0.70) !important; }
+.btrack { background: rgba(7,13,26,0.65) !important; }
+</style>
+<script src="vendor/gsap.min.js"></script>
+</head>
+<body>
+<div id="root" data-composition-id="mem01" data-start="0" data-duration="593.92" data-fps="24" data-width="1920" data-height="1080">
+<div id="bg" class="clip" data-start="0" data-duration="593.92" data-track-index="0"><div id="grid"></div></div>
+<video class="clip vclip" id="c1_0" src="shared/broll/tw_tm_00.mp4" muted data-volume="0" data-start="0.000" data-duration="3.445" data-track-index="1"></video>
+<video class="clip vclip" id="c2_0" src="shared/broll/mm_chip_00.mp4" muted data-volume="0" data-start="3.445" data-duration="3.875" data-track-index="1"></video>
+<video class="clip vclip" id="c2_1" src="shared/broll/mm_chip_01.mp4" muted data-volume="0" data-start="7.320" data-duration="3.875" data-track-index="1"></video>
+<video class="clip vclip" id="c3_0" src="shared/broll/mm_chip_02.mp4" muted data-volume="0" data-start="11.195" data-duration="4.711" data-track-index="1"></video>
+<video class="clip vclip" id="c4_0" src="shared/broll/mm_phone_00.mp4" muted data-volume="0" data-start="15.906" data-duration="5.510" data-track-index="1"></video>
+<video class="clip vclip" id="c5_0" src="shared/broll/mm_phone_01.mp4" muted data-volume="0" data-start="21.416" data-duration="5.350" data-track-index="1"></video>
+<video class="clip vclip" id="c6_0" src="shared/broll/mm_phone_02.mp4" muted data-volume="0" data-start="26.766" data-duration="4.310" data-track-index="1"></video>
+<video class="clip vclip" id="c7_0" src="shared/broll/mm_chip_03.mp4" muted data-volume="0" data-start="31.076" data-duration="2.390" data-track-index="1"></video>
+<video class="clip vclip" id="c8_0" src="shared/broll/mm_chip_04.mp4" muted data-volume="0" data-start="33.466" data-duration="5.547" data-track-index="1"></video>
+<video class="clip vclip" id="c9_0" src="shared/broll/mm_store_00.mp4" muted data-volume="0" data-start="39.013" data-duration="4.070" data-track-index="1"></video>
+<video class="clip vclip" id="c10_0" src="shared/broll/mm_chip_06.mp4" muted data-volume="0" data-start="43.083" data-duration="4.115" data-track-index="1"></video>
+<video class="clip vclip" id="c10_1" src="shared/broll/mm_chip_07.mp4" muted data-volume="0" data-start="47.198" data-duration="4.115" data-track-index="1"></video>
+<video class="clip vclip" id="c11_0" src="shared/broll/mm_ram_00.mp4" muted data-volume="0" data-start="51.313" data-duration="1.670" data-track-index="1"></video>
+<video class="clip vclip" id="c12_0" src="shared/broll/mm_ram_01.mp4" muted data-volume="0" data-start="52.983" data-duration="7.350" data-track-index="1"></video>
+<video class="clip vclip" id="c13_0" src="shared/broll/mm_ram_04.mp4" muted data-volume="0" data-start="60.333" data-duration="5.430" data-track-index="1"></video>
+<video class="clip vclip" id="c14_0" src="shared/broll/mm_ram_00.mp4" muted data-volume="0" data-start="65.763" data-duration="6.790" data-track-index="1"></video>
+<video class="clip vclip" id="c15_0" src="shared/broll/mm_store_01.mp4" muted data-volume="0" data-start="72.553" data-duration="4.193" data-track-index="1"></video>
+<video class="clip vclip" id="c16_0" src="shared/broll/mm_store_04.mp4" muted data-volume="0" data-start="76.746" data-duration="4.790" data-track-index="1"></video>
+<video class="clip vclip" id="c17_0" src="shared/broll/mm_chip_20.mp4" muted data-volume="0" data-start="81.536" data-duration="2.950" data-track-index="1"></video>
+<video class="clip vclip" id="c18_0" src="shared/broll/mm_ram_01.mp4" muted data-volume="0" data-start="84.486" data-duration="4.315" data-track-index="1"></video>
+<video class="clip vclip" id="c18_1" src="shared/broll/mm_ram_04.mp4" muted data-volume="0" data-start="88.801" data-duration="4.315" data-track-index="1"></video>
+<video class="clip vclip" id="c19_0" src="shared/broll/mm_server_00.mp4" muted data-volume="0" data-start="93.116" data-duration="4.155" data-track-index="1"></video>
+<video class="clip vclip" id="c19_1" src="shared/broll/mm_server_07.mp4" muted data-volume="0" data-start="97.271" data-duration="4.155" data-track-index="1"></video>
+<video class="clip vclip" id="c20_0" src="shared/broll/mm_server_15.mp4" muted data-volume="0" data-start="101.426" data-duration="4.230" data-track-index="1"></video>
+<video class="clip vclip" id="c21_0" src="shared/broll/mm_server_16.mp4" muted data-volume="0" data-start="105.656" data-duration="5.430" data-track-index="1"></video>
+<video class="clip vclip" id="c22_0" src="shared/broll/mm_chip_21.mp4" muted data-volume="0" data-start="111.086" data-duration="3.851" data-track-index="1"></video>
+<video class="clip vclip" id="c22_1" src="shared/broll/mm_chip_22.mp4" muted data-volume="0" data-start="114.936" data-duration="3.851" data-track-index="1"></video>
+<video class="clip vclip" id="c23_0" src="shared/broll/mm_chip_00.mp4" muted data-volume="0" data-start="118.787" data-duration="3.270" data-track-index="1"></video>
+<video class="clip vclip" id="c24_0" src="shared/broll/mm_chip_01.mp4" muted data-volume="0" data-start="122.057" data-duration="5.155" data-track-index="1"></video>
+<video class="clip vclip" id="c24_1" src="shared/broll/mm_chip_02.mp4" muted data-volume="0" data-start="127.212" data-duration="5.155" data-track-index="1"></video>
+<video class="clip vclip" id="c25_0" src="shared/broll/mm_ram_00.mp4" muted data-volume="0" data-start="132.367" data-duration="6.630" data-track-index="1"></video>
+<video class="clip vclip" id="c26_0" src="shared/broll/mm_ram_01.mp4" muted data-volume="0" data-start="138.997" data-duration="5.270" data-track-index="1"></video>
+<video class="clip vclip" id="c27_0" src="shared/broll/mm_ram_04.mp4" muted data-volume="0" data-start="144.267" data-duration="4.675" data-track-index="1"></video>
+<video class="clip vclip" id="c27_1" src="shared/broll/mm_ram_00.mp4" muted data-volume="0" data-start="148.942" data-duration="4.675" data-track-index="1"></video>
+<video class="clip vclip" id="c28_0" src="shared/broll/mm_ram_01.mp4" muted data-volume="0" data-start="153.617" data-duration="7.190" data-track-index="1"></video>
+<video class="clip vclip" id="c29_0" src="shared/broll/mm_ram_04.mp4" muted data-volume="0" data-start="160.807" data-duration="6.070" data-track-index="1"></video>
+<video class="clip vclip" id="c30_0" src="shared/broll/tw_tm_01.mp4" muted data-volume="0" data-start="166.877" data-duration="2.870" data-track-index="1"></video>
+<video class="clip vclip" id="c31_0" src="shared/broll/mm_chip_03.mp4" muted data-volume="0" data-start="169.747" data-duration="7.190" data-track-index="1"></video>
+<video class="clip vclip" id="c32_0" src="shared/broll/mm_chip_04.mp4" muted data-volume="0" data-start="176.937" data-duration="4.835" data-track-index="1"></video>
+<video class="clip vclip" id="c32_1" src="shared/broll/mm_chip_06.mp4" muted data-volume="0" data-start="181.772" data-duration="4.835" data-track-index="1"></video>
+<video class="clip vclip" id="c33_0" src="shared/broll/mm_korea_02.mp4" muted data-volume="0" data-start="186.607" data-duration="5.048" data-track-index="1"></video>
+<video class="clip vclip" id="c33_1" src="shared/broll/mm_korea_03.mp4" muted data-volume="0" data-start="191.655" data-duration="5.048" data-track-index="1"></video>
+<video class="clip vclip" id="c34_0" src="shared/broll/mm_korea_02.mp4" muted data-volume="0" data-start="196.703" data-duration="4.470" data-track-index="1"></video>
+<video class="clip vclip" id="c35_0" src="shared/broll/mm_phone_03.mp4" muted data-volume="0" data-start="201.173" data-duration="2.630" data-track-index="1"></video>
+<video class="clip vclip" id="c36_0" src="shared/broll/mm_phone_00.mp4" muted data-volume="0" data-start="203.803" data-duration="4.290" data-track-index="1"></video>
+<video class="clip vclip" id="c36_1" src="shared/broll/mm_phone_01.mp4" muted data-volume="0" data-start="208.093" data-duration="4.290" data-track-index="1"></video>
+<video class="clip vclip" id="c37_0" src="shared/broll/mm_phone_02.mp4" muted data-volume="0" data-start="212.382" data-duration="3.875" data-track-index="1"></video>
+<video class="clip vclip" id="c37_1" src="shared/broll/mm_phone_03.mp4" muted data-volume="0" data-start="216.257" data-duration="3.875" data-track-index="1"></video>
+<video class="clip vclip" id="c38_0" src="shared/broll/mm_phone_00.mp4" muted data-volume="0" data-start="220.132" data-duration="5.910" data-track-index="1"></video>
+<video class="clip vclip" id="c39_0" src="shared/broll/mm_phone_01.mp4" muted data-volume="0" data-start="226.042" data-duration="6.470" data-track-index="1"></video>
+<video class="clip vclip" id="c40_0" src="shared/broll/mm_store_07.mp4" muted data-volume="0" data-start="232.512" data-duration="5.235" data-track-index="1"></video>
+<video class="clip vclip" id="c40_1" src="shared/broll/mm_store_09.mp4" muted data-volume="0" data-start="237.747" data-duration="5.235" data-track-index="1"></video>
+<video class="clip vclip" id="c41_0" src="shared/broll/mm_store_20.mp4" muted data-volume="0" data-start="242.982" data-duration="4.210" data-track-index="1"></video>
+<video class="clip vclip" id="c41_1" src="shared/broll/mm_store_21.mp4" muted data-volume="0" data-start="247.192" data-duration="4.210" data-track-index="1"></video>
+<video class="clip vclip" id="c41_2" src="shared/broll/mm_store_24.mp4" muted data-volume="0" data-start="251.402" data-duration="4.210" data-track-index="1"></video>
+<video class="clip vclip" id="c42_0" src="shared/broll/mm_store_00.mp4" muted data-volume="0" data-start="255.612" data-duration="4.711" data-track-index="1"></video>
+<video class="clip vclip" id="c43_0" src="shared/broll/mm_store_01.mp4" muted data-volume="0" data-start="260.323" data-duration="6.230" data-track-index="1"></video>
+<video class="clip vclip" id="c44_0" src="shared/broll/mm_store_04.mp4" muted data-volume="0" data-start="266.553" data-duration="5.510" data-track-index="1"></video>
+<video class="clip vclip" id="c45_0" src="shared/broll/mm_store_07.mp4" muted data-volume="0" data-start="272.063" data-duration="4.790" data-track-index="1"></video>
+<video class="clip vclip" id="c46_0" src="shared/broll/mm_phone_02.mp4" muted data-volume="0" data-start="276.853" data-duration="5.830" data-track-index="1"></video>
+<video class="clip vclip" id="c47_0" src="shared/broll/mm_store_09.mp4" muted data-volume="0" data-start="282.683" data-duration="6.150" data-track-index="1"></video>
+<video class="clip vclip" id="c48_0" src="shared/broll/mm_store_20.mp4" muted data-volume="0" data-start="288.833" data-duration="6.230" data-track-index="1"></video>
+<video class="clip vclip" id="c49_0" src="shared/broll/mm_store_21.mp4" muted data-volume="0" data-start="295.063" data-duration="3.510" data-track-index="1"></video>
+<video class="clip vclip" id="c50_0" src="shared/broll/mm_store_24.mp4" muted data-volume="0" data-start="298.573" data-duration="2.630" data-track-index="1"></video>
+<video class="clip vclip" id="c51_0" src="shared/broll/mm_phone_03.mp4" muted data-volume="0" data-start="301.203" data-duration="4.515" data-track-index="1"></video>
+<video class="clip vclip" id="c51_1" src="shared/broll/mm_phone_00.mp4" muted data-volume="0" data-start="305.718" data-duration="4.515" data-track-index="1"></video>
+<video class="clip vclip" id="c52_0" src="shared/broll/mm_phone_01.mp4" muted data-volume="0" data-start="310.233" data-duration="4.230" data-track-index="1"></video>
+<video class="clip vclip" id="c53_0" src="shared/broll/mm_phone_02.mp4" muted data-volume="0" data-start="314.463" data-duration="5.670" data-track-index="1"></video>
+<video class="clip vclip" id="c54_0" src="shared/broll/mm_store_00.mp4" muted data-volume="0" data-start="320.133" data-duration="4.790" data-track-index="1"></video>
+<video class="clip vclip" id="c55_0" src="shared/broll/mm_store_01.mp4" muted data-volume="0" data-start="324.923" data-duration="6.026" data-track-index="1"></video>
+<video class="clip vclip" id="c56_0" src="shared/broll/mm_store_04.mp4" muted data-volume="0" data-start="330.949" data-duration="5.875" data-track-index="1"></video>
+<video class="clip vclip" id="c56_1" src="shared/broll/mm_store_07.mp4" muted data-volume="0" data-start="336.824" data-duration="5.875" data-track-index="1"></video>
+<video class="clip vclip" id="c57_0" src="shared/broll/mm_store_09.mp4" muted data-volume="0" data-start="342.699" data-duration="4.470" data-track-index="1"></video>
+<video class="clip vclip" id="c58_0" src="shared/broll/mm_store_20.mp4" muted data-volume="0" data-start="347.169" data-duration="6.504" data-track-index="1"></video>
+<video class="clip vclip" id="c59_0" src="shared/broll/mm_laptop_20.mp4" muted data-volume="0" data-start="353.673" data-duration="4.395" data-track-index="1"></video>
+<video class="clip vclip" id="c59_1" src="shared/broll/mm_laptop_21.mp4" muted data-volume="0" data-start="358.068" data-duration="4.395" data-track-index="1"></video>
+<video class="clip vclip" id="c60_0" src="shared/broll/mm_laptop_22.mp4" muted data-volume="0" data-start="362.463" data-duration="6.035" data-track-index="1"></video>
+<video class="clip vclip" id="c60_1" src="shared/broll/mm_laptop_23.mp4" muted data-volume="0" data-start="368.498" data-duration="6.035" data-track-index="1"></video>
+<video class="clip vclip" id="c61_0" src="shared/broll/mm_laptop_24.mp4" muted data-volume="0" data-start="374.533" data-duration="6.550" data-track-index="1"></video>
+<video class="clip vclip" id="c62_0" src="shared/broll/mm_laptop_20.mp4" muted data-volume="0" data-start="381.083" data-duration="4.955" data-track-index="1"></video>
+<video class="clip vclip" id="c62_1" src="shared/broll/mm_laptop_21.mp4" muted data-volume="0" data-start="386.038" data-duration="4.955" data-track-index="1"></video>
+<video class="clip vclip" id="c63_0" src="shared/broll/mm_laptop_22.mp4" muted data-volume="0" data-start="390.993" data-duration="7.030" data-track-index="1"></video>
+<video class="clip vclip" id="c64_0" src="shared/broll/mm_laptop_23.mp4" muted data-volume="0" data-start="398.023" data-duration="2.790" data-track-index="1"></video>
+<video class="clip vclip" id="c65_0" src="shared/broll/mm_laptop_24.mp4" muted data-volume="0" data-start="400.813" data-duration="5.670" data-track-index="1"></video>
+<video class="clip vclip" id="c66_0" src="shared/broll/mm_ram_00.mp4" muted data-volume="0" data-start="406.483" data-duration="5.750" data-track-index="1"></video>
+<video class="clip vclip" id="c67_0" src="shared/broll/mm_ram_01.mp4" muted data-volume="0" data-start="412.233" data-duration="6.150" data-track-index="1"></video>
+<video class="clip vclip" id="c68_0" src="shared/broll/mm_store_21.mp4" muted data-volume="0" data-start="418.383" data-duration="4.275" data-track-index="1"></video>
+<video class="clip vclip" id="c68_1" src="shared/broll/mm_store_24.mp4" muted data-volume="0" data-start="422.658" data-duration="4.275" data-track-index="1"></video>
+<video class="clip vclip" id="c69_0" src="shared/broll/tw_tm_02.mp4" muted data-volume="0" data-start="426.933" data-duration="5.430" data-track-index="1"></video>
+<video class="clip vclip" id="c70_0" src="shared/broll/tw_tm_03.mp4" muted data-volume="0" data-start="432.363" data-duration="7.110" data-track-index="1"></video>
+<video class="clip vclip" id="c71_0" src="shared/broll/tw_tm_04.mp4" muted data-volume="0" data-start="439.473" data-duration="4.755" data-track-index="1"></video>
+<video class="clip vclip" id="c71_1" src="shared/broll/tw_tm_05.mp4" muted data-volume="0" data-start="444.228" data-duration="4.755" data-track-index="1"></video>
+<video class="clip vclip" id="c72_0" src="shared/broll/tw_tm_06.mp4" muted data-volume="0" data-start="448.983" data-duration="3.190" data-track-index="1"></video>
+<video class="clip vclip" id="c73_0" src="shared/broll/mm_laptop_20.mp4" muted data-volume="0" data-start="452.173" data-duration="5.235" data-track-index="1"></video>
+<video class="clip vclip" id="c73_1" src="shared/broll/mm_laptop_21.mp4" muted data-volume="0" data-start="457.408" data-duration="5.235" data-track-index="1"></video>
+<video class="clip vclip" id="c74_0" src="shared/broll/tw_tm_07.mp4" muted data-volume="0" data-start="462.643" data-duration="4.875" data-track-index="1"></video>
+<video class="clip vclip" id="c74_1" src="shared/broll/tw_tm_08.mp4" muted data-volume="0" data-start="467.518" data-duration="4.875" data-track-index="1"></video>
+<video class="clip vclip" id="c75_0" src="shared/broll/tw_tm_09.mp4" muted data-volume="0" data-start="472.393" data-duration="5.075" data-track-index="1"></video>
+<video class="clip vclip" id="c75_1" src="shared/broll/tw_tm_10.mp4" muted data-volume="0" data-start="477.468" data-duration="5.075" data-track-index="1"></video>
+<video class="clip vclip" id="c76_0" src="shared/broll/tw_tm_11.mp4" muted data-volume="0" data-start="482.543" data-duration="5.830" data-track-index="1"></video>
+<video class="clip vclip" id="c77_0" src="shared/broll/mm_chip_07.mp4" muted data-volume="0" data-start="488.373" data-duration="3.590" data-track-index="1"></video>
+<video class="clip vclip" id="c78_0" src="shared/broll/mm_store_00.mp4" muted data-volume="0" data-start="491.963" data-duration="4.435" data-track-index="1"></video>
+<video class="clip vclip" id="c78_1" src="shared/broll/mm_store_01.mp4" muted data-volume="0" data-start="496.398" data-duration="4.435" data-track-index="1"></video>
+<video class="clip vclip" id="c79_0" src="shared/broll/mm_store_04.mp4" muted data-volume="0" data-start="500.833" data-duration="5.990" data-track-index="1"></video>
+<video class="clip vclip" id="c80_0" src="shared/broll/mm_store_07.mp4" muted data-volume="0" data-start="506.823" data-duration="3.110" data-track-index="1"></video>
+<video class="clip vclip" id="c81_0" src="shared/broll/mm_chip_20.mp4" muted data-volume="0" data-start="509.933" data-duration="5.595" data-track-index="1"></video>
+<video class="clip vclip" id="c81_1" src="shared/broll/mm_chip_21.mp4" muted data-volume="0" data-start="515.528" data-duration="5.595" data-track-index="1"></video>
+<video class="clip vclip" id="c82_0" src="shared/broll/mm_chip_22.mp4" muted data-volume="0" data-start="521.123" data-duration="6.230" data-track-index="1"></video>
+<video class="clip vclip" id="c83_0" src="shared/broll/mm_chip_00.mp4" muted data-volume="0" data-start="527.353" data-duration="1.510" data-track-index="1"></video>
+<video class="clip vclip" id="c84_0" src="shared/broll/mm_chip_01.mp4" muted data-volume="0" data-start="528.863" data-duration="4.470" data-track-index="1"></video>
+<video class="clip vclip" id="c85_0" src="shared/broll/mm_server_17.mp4" muted data-volume="0" data-start="533.333" data-duration="4.515" data-track-index="1"></video>
+<video class="clip vclip" id="c85_1" src="shared/broll/mm_server_18.mp4" muted data-volume="0" data-start="537.848" data-duration="4.515" data-track-index="1"></video>
+<video class="clip vclip" id="c86_0" src="shared/broll/mm_store_09.mp4" muted data-volume="0" data-start="542.363" data-duration="4.470" data-track-index="1"></video>
+<video class="clip vclip" id="c87_0" src="shared/broll/mm_phone_03.mp4" muted data-volume="0" data-start="546.833" data-duration="4.470" data-track-index="1"></video>
+<video class="clip vclip" id="c88_0" src="shared/broll/mm_store_20.mp4" muted data-volume="0" data-start="551.303" data-duration="4.395" data-track-index="1"></video>
+<video class="clip vclip" id="c88_1" src="shared/broll/mm_store_21.mp4" muted data-volume="0" data-start="555.698" data-duration="4.395" data-track-index="1"></video>
+<video class="clip vclip" id="c89_0" src="shared/broll/mm_ram_04.mp4" muted data-volume="0" data-start="560.093" data-duration="5.310" data-track-index="1"></video>
+<video class="clip vclip" id="c89_1" src="shared/broll/mm_ram_00.mp4" muted data-volume="0" data-start="565.403" data-duration="5.310" data-track-index="1"></video>
+<video class="clip vclip" id="c89_2" src="shared/broll/mm_ram_01.mp4" muted data-volume="0" data-start="570.712" data-duration="5.310" data-track-index="1"></video>
+<video class="clip vclip" id="c90_0" src="shared/broll/mm_laptop_22.mp4" muted data-volume="0" data-start="576.022" data-duration="3.995" data-track-index="1"></video>
+<video class="clip vclip" id="c90_1" src="shared/broll/mm_laptop_23.mp4" muted data-volume="0" data-start="580.017" data-duration="3.995" data-track-index="1"></video>
+<video class="clip vclip" id="c91_0" src="shared/broll/mm_store_24.mp4" muted data-volume="0" data-start="584.012" data-duration="5.830" data-track-index="1"></video>
+<section id="p1" class="clip" data-start="0.000" data-duration="3.445" data-track-index="2"><div class="vshade"></div><div class="sin" id="p1-in"><div class="sub2" id="p1-sub"><span style="white-space: nowrap">金錢怪物，一睜眼就是錢的世界。</span></div><div class="pg">1 / 92</div></div></section>
+<section id="p2" class="clip" data-start="3.445" data-duration="7.750" data-track-index="3"><div class="shade"></div><div class="sin" id="p2-in"><div class="h1" id="p2-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">三星 2026 年第三季營業利益</div><div class="h1" id="p2-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">107.4 兆韓元</div><div class="h1" id="p2-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">≈ 新台幣 2.6 兆（本頻道試算）</div><div class="sub2" id="p2-sub"><span style="white-space: nowrap">2026 年第三季，三星交出一張成績單：單季營業利益 107.4 兆韓元。</span></div><div class="pg">2 / 92</div></div></section>
+<section id="p3" class="clip" data-start="11.195" data-duration="4.711" data-track-index="4"><div class="vshade"></div><div class="sin" id="p3-in"><div class="sub2" id="p3-sub"><span style="white-space: nowrap">它是全世界第一家，單季賺破 100 兆韓元的科技公司。</span></div><div class="pg">3 / 92</div></div></section>
+<section id="p4" class="clip" data-start="15.906" data-duration="5.510" data-track-index="5"><div class="vshade"></div><div class="sin" id="p4-in"><div class="sub2" id="p4-sub"><span style="white-space: nowrap">但同一家公司，同一季，手機和網通部門，卻是虧的。</span></div><div class="pg">4 / 92</div></div></section>
+<section id="p5" class="clip" data-start="21.416" data-duration="5.350" data-track-index="6"><div class="shade"></div><div class="sin" id="p5-in"><div class="h1" id="p5-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">手機＋網通部門</div><div class="h1" id="p5-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">虧 0.6 兆韓元</div><div class="h1" id="p5-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">≈ 新台幣 150 億（本頻道試算）</div><div class="sub2" id="p5-sub"><span style="white-space: nowrap">這兩個部門加起來，虧了 0.6 兆韓元，大約新台幣 150 億。</span></div><div class="pg">5 / 92</div></div></section>
+<section id="p6" class="clip" data-start="26.766" data-duration="4.310" data-track-index="7"><div class="vshade"></div><div class="sin" id="p6-in"><div class="sub2" id="p6-sub"><span style="white-space: nowrap">同一家公司，為什麼這邊利潤很高，那邊卻在虧？</span></div><div class="pg">6 / 92</div></div></section>
+<section id="p7" class="clip" data-start="31.076" data-duration="2.390" data-track-index="8"><div class="vshade"></div><div class="sin" id="p7-in"><div class="sub2" id="p7-sub"><span style="white-space: nowrap">有一個重要線索：記憶體。</span></div><div class="pg">7 / 92</div></div></section>
+<section id="p8" class="clip" data-start="33.466" data-duration="5.547" data-track-index="9"><div class="vshade"></div><div class="sin" id="p8-in"><div class="sub2" id="p8-sub"><span style="white-space: nowrap">記憶體賣得越貴，賣記憶體的越好賺，做手機的成本壓力就越大。</span></div><div class="pg">8 / 92</div></div></section>
+<section id="p9" class="clip" data-start="39.013" data-duration="4.070" data-track-index="10"><div class="vshade"></div><div class="sin" id="p9-in"><div class="sub2" id="p9-sub"><span style="white-space: nowrap">而這筆帳，已經算到買手機、買電腦的人身上。</span></div><div class="pg">9 / 92</div></div></section>
+<section id="p10" class="clip" data-start="43.083" data-duration="8.230" data-track-index="11"><div class="shade"></div><div class="sin" id="p10-in"><div class="h1" id="p10-h" style="top: 180px; font-size: 64px; color: var(--gold)">這一集看三件事</div><div class="card" id="p10-c0" style="left: 80px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p10-cd0" style="left: 80px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">①</div><div class="h1" id="p10-cw0" style="left: 80px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">記憶體為什麼變貴</div><div class="card" id="p10-c1" style="left: 693px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p10-cd1" style="left: 693px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">②</div><div class="h1" id="p10-cw1" style="left: 693px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">誰得利誰吃虧</div><div class="card" id="p10-c2" style="left: 1306px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p10-cd2" style="left: 1306px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">③</div><div class="h1" id="p10-cw2" style="left: 1306px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">帳單怎麼到你手上</div><div class="sub2" id="p10-sub">這一集我們看三件事：記憶體為什麼變貴、<br>誰得利誰吃虧、帳單怎麼到你手上。</div><div class="pg">10 / 92</div></div></section>
+<section id="p11" class="clip" data-start="51.313" data-duration="1.670" data-track-index="12"><div class="vshade"></div><div class="sin" id="p11-in"><div class="sub2" id="p11-sub"><span style="white-space: nowrap">先講記憶體是什麼。</span></div><div class="pg">11 / 92</div></div></section>
+<section id="p12" class="clip" data-start="52.983" data-duration="7.350" data-track-index="13"><div class="vshade"></div><div class="sin" id="p12-in"><div class="sub2" id="p12-sub"><span style="white-space: nowrap">手機和電腦裡，主要有兩種。第一種是 DRAM，也就是大家常說的 RAM。</span></div><div class="pg">12 / 92</div></div></section>
+<section id="p13" class="clip" data-start="60.333" data-duration="5.430" data-track-index="14"><div class="vshade"></div><div class="sin" id="p13-in"><div class="sub2" id="p13-sub"><span style="white-space: nowrap">它像一張工作桌。同時開的程式越多，桌子就要越大。</span></div><div class="pg">13 / 92</div></div></section>
+<section id="p14" class="clip" data-start="65.763" data-duration="6.790" data-track-index="15"><div class="shade"></div><div class="sin" id="p14-in"><div class="h1" id="p14-h" style="top: 180px; font-size: 64px; color: var(--gold)">記憶體是什麼</div><div class="card" id="p14-c0" style="left: 280px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p14-cd0" style="left: 280px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">DRAM</div><div class="h1" id="p14-cw0" style="left: 280px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">像工作桌</div><div class="card" id="p14-c1" style="left: 1000px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p14-cd1" style="left: 1000px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">NAND</div><div class="h1" id="p14-cw1" style="left: 1000px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">像倉庫</div><div class="sub2" id="p14-sub"><span style="white-space: nowrap">第二種是 NAND 快閃記憶體，它像倉庫，照片、影片都放在這裡。</span></div><div class="pg">14 / 92</div></div></section>
+<section id="p15" class="clip" data-start="72.553" data-duration="4.193" data-track-index="16"><div class="vshade"></div><div class="sin" id="p15-in"><div class="sub2" id="p15-sub"><span style="white-space: nowrap">手機、筆電、電視、遊戲機，都少不了它們。</span></div><div class="pg">15 / 92</div></div></section>
+<section id="p16" class="clip" data-start="76.746" data-duration="4.790" data-track-index="17"><div class="vshade"></div><div class="sin" id="p16-in"><div class="sub2" id="p16-sub"><span style="white-space: nowrap">所以它一變貴，受影響的，不會只有一種產品。</span></div><div class="pg">16 / 92</div></div></section>
+<section id="p17" class="clip" data-start="81.536" data-duration="2.950" data-track-index="18"><div class="shade"></div><div class="sin" id="p17-in"><div class="h1" id="p17-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">第一件事</div><div class="h1" id="p17-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">為什麼變貴</div><div class="h1" id="p17-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600"></div><div class="sub2" id="p17-sub"><span style="white-space: nowrap">第一件事，記憶體為什麼變貴。</span></div><div class="pg">17 / 92</div></div></section>
+<section id="p18" class="clip" data-start="84.486" data-duration="8.630" data-track-index="19"><div class="shade"></div><div class="sin" id="p18-in"><div class="h1" id="p18-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">TrendForce 估算</div><div class="h1" id="p18-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">5～7 倍</div><div class="h1" id="p18-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">2026 年 8 月 vs 2025 年初</div><div class="sub2" id="p18-sub">研究機構 TrendForce 在 2026 年 8 月指出，<br>記憶體價格已經來到 2025 年初的 5 到 7 倍。</div><div class="pg">18 / 92</div></div></section>
+<section id="p19" class="clip" data-start="93.116" data-duration="8.310" data-track-index="20"><div class="vshade"></div><div class="sin" id="p19-in"><div class="sub2" id="p19-sub">原因，三星在財報裡寫得很直接：伺服器的需求強，<br>帶動了所有用途的記憶體價格走高。</div><div class="pg">19 / 92</div></div></section>
+<section id="p20" class="clip" data-start="101.426" data-duration="4.230" data-track-index="21"><div class="vshade"></div><div class="sin" id="p20-in"><div class="sub2" id="p20-sub"><span style="white-space: nowrap">伺服器要這麼多記憶體，主因就是 AI。</span></div><div class="pg">20 / 92</div></div></section>
+<section id="p21" class="clip" data-start="105.656" data-duration="5.430" data-track-index="22"><div class="vshade"></div><div class="sin" id="p21-in"><div class="sub2" id="p21-sub"><span style="white-space: nowrap">AI 加速器大量使用一種特別的產品，叫高頻寬記憶體，HBM。</span></div><div class="pg">21 / 92</div></div></section>
+<section id="p22" class="clip" data-start="111.086" data-duration="7.701" data-track-index="23"><div class="shade"></div><div class="sin" id="p22-in"><div class="h1" id="p22-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">美光：同樣容量，用掉的晶圓</div><div class="h1" id="p22-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">約 3 倍</div><div class="h1" id="p22-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">HBM3E vs DDR5</div><div class="sub2" id="p22-sub">問題在這裡：美光說，同樣容量，HBM3E 要用掉的晶圓，<br>大約是一般記憶體 DDR5 的 3 倍。</div><div class="pg">22 / 92</div></div></section>
+<section id="p23" class="clip" data-start="118.787" data-duration="3.270" data-track-index="24"><div class="vshade"></div><div class="sin" id="p23-in"><div class="sub2" id="p23-sub"><span style="white-space: nowrap">而且美光說，下一代的差距還會更大。</span></div><div class="pg">23 / 92</div></div></section>
+<section id="p24" class="clip" data-start="122.057" data-duration="10.310" data-track-index="25"><div class="vshade"></div><div class="sin" id="p24-in"><div class="sub2" id="p24-sub">晶圓廠不會一夜長出來。我們可以這樣理解：產能有限的時候，<br>HBM 的比重提高，一般記憶體能分到的就被壓縮。</div><div class="pg">24 / 92</div></div></section>
+<section id="p25" class="clip" data-start="132.367" data-duration="6.630" data-track-index="26"><div class="vshade"></div><div class="sin" id="p25-in"><div class="sub2" id="p25-sub">有個例子很能說明。2025 年 12 月，<br>美光宣布退出 Crucial 消費者業務。</div><div class="pg">25 / 92</div></div></section>
+<section id="p26" class="clip" data-start="138.997" data-duration="5.270" data-track-index="27"><div class="vshade"></div><div class="sin" id="p26-in"><div class="sub2" id="p26-sub"><span style="white-space: nowrap">官方給的理由，是要把供給留給成長更快領域的大客戶。</span></div><div class="pg">26 / 92</div></div></section>
+<section id="p27" class="clip" data-start="144.267" data-duration="9.350" data-track-index="28"><div class="shade"></div><div class="sin" id="p27-in"><div class="h1" id="p27-h" style="top: 170px; font-size: 54px; color: var(--gold)">2026 年第四季合約價，季增預估</div><div class="bl" id="p27-l0" style="top: 304px">DRAM</div><div class="btrack" id="p27-t0" style="top: 300px"><div class="bfill" id="p27-f0" style="right: 25.00%; background: var(--warn)"></div></div><div class="bv" id="p27-v0" style="top: 306px; left: 1254px">10～15%</div><div class="bl" id="p27-l1" style="top: 444px">NAND</div><div class="btrack" id="p27-t1" style="top: 440px"><div class="bfill" id="p27-f1" style="right: 0.00%; background: var(--gold)"></div></div><div class="bv" id="p27-v1" style="top: 446px; left: 1504px">15～20%</div><div class="sub2" id="p27-sub">而且還沒結束。TrendForce 預估，2026 年第四季，<br>一般 DRAM 的合約價，還會比上一季多 10% 到 15%。</div><div class="pg">27 / 92</div></div></section>
+<section id="p28" class="clip" data-start="153.617" data-duration="7.190" data-track-index="29"><div class="vshade"></div><div class="sin" id="p28-in"><div class="sub2" id="p28-sub">快閃記憶體 NAND，更是 15% 到 20%。<br>合約價，就是業者之間談定的批發價。</div><div class="pg">28 / 92</div></div></section>
+<section id="p29" class="clip" data-start="160.807" data-duration="6.070" data-track-index="30"><div class="vshade"></div><div class="sin" id="p29-in"><div class="sub2" id="p29-sub">TrendForce 也說，增加的速度會放慢。<br>但放慢不等於便宜，只是沒那麼快。</div><div class="pg">29 / 92</div></div></section>
+<section id="p30" class="clip" data-start="166.877" data-duration="2.870" data-track-index="31"><div class="shade"></div><div class="sin" id="p30-in"><div class="h1" id="p30-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">第二件事</div><div class="h1" id="p30-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">誰得利誰吃虧</div><div class="h1" id="p30-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600"></div><div class="sub2" id="p30-sub"><span style="white-space: nowrap">第二件事，誰得利、誰吃虧。</span></div><div class="pg">30 / 92</div></div></section>
+<section id="p31" class="clip" data-start="169.747" data-duration="7.190" data-track-index="32"><div class="shade"></div><div class="sin" id="p31-in"><div class="h1" id="p31-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">三星半導體部門 第三季</div><div class="h1" id="p31-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">106.5 兆韓元</div><div class="h1" id="p31-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">營業利益；≈ 全公司的 99%（本頻道試算）</div><div class="sub2" id="p31-sub"><span style="white-space: nowrap">先看拿到好處的人。三星這一季的半導體部門，營業利益 106.5 兆韓元。</span></div><div class="pg">31 / 92</div></div></section>
+<section id="p32" class="clip" data-start="176.937" data-duration="9.670" data-track-index="33"><div class="vshade"></div><div class="sin" id="p32-in"><div class="sub2" id="p32-sub">等於全公司營業利益的大約 99%。<br>半導體部門不只做記憶體，但三星說，記憶體業務創下季度新高。</div><div class="pg">32 / 92</div></div></section>
+<section id="p33" class="clip" data-start="186.607" data-duration="10.096" data-track-index="34"><div class="shade"></div><div class="sin" id="p33-in"><div class="h1" id="p33-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">韓國 2026 年 10 月半導體出口</div><div class="h1" id="p33-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">564 億美元</div><div class="h1" id="p33-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">≈ 新台幣 1.8 兆（本頻道試算）</div><div class="sub2" id="p33-sub">把鏡頭拉到整個韓國。韓國政府初步統計，<br>2026 年 10 月半導體出口 564 億美元，比前一年多了 259%。</div><div class="pg">33 / 92</div></div></section>
+<section id="p34" class="clip" data-start="196.703" data-duration="4.470" data-track-index="35"><div class="vshade"></div><div class="sin" id="p34-in"><div class="sub2" id="p34-sub"><span style="white-space: nowrap">光是半導體，就占了韓國總出口大約 49%。</span></div><div class="pg">34 / 92</div></div></section>
+<section id="p35" class="clip" data-start="201.173" data-duration="2.630" data-track-index="36"><div class="vshade"></div><div class="sin" id="p35-in"><div class="sub2" id="p35-sub"><span style="white-space: nowrap">再看痛的人，先從手機開始。</span></div><div class="pg">35 / 92</div></div></section>
+<section id="p36" class="clip" data-start="203.803" data-duration="8.579" data-track-index="37"><div class="shade"></div><div class="sin" id="p36-in"><div class="h1" id="p36-h" style="top: 170px; font-size: 54px; color: var(--gold)">iPhone Pro 256GB，記憶體占材料成本</div><div class="bl" id="p36-l0" style="top: 304px">2025 年</div><div class="btrack" id="p36-t0" style="top: 300px"><div class="bfill" id="p36-f0" style="right: 75.00%; background: var(--warn)"></div></div><div class="bv" id="p36-v0" style="top: 306px; left: 754px">約 10%</div><div class="bl" id="p36-l1" style="top: 444px">2026 第三季</div><div class="btrack" id="p36-t1" style="top: 440px"><div class="bfill" id="p36-f1" style="right: 15.00%; background: var(--gold)"></div></div><div class="bv" id="p36-v1" style="top: 446px; left: 1354px">約 34%</div><div class="bl" id="p36-l2" style="top: 584px">2027 上半年估</div><div class="btrack" id="p36-t2" style="top: 580px"><div class="bfill" id="p36-f2" style="right: 0.00%; background: var(--ok)"></div></div><div class="bv" id="p36-v2" style="top: 586px; left: 1504px">逾 40%</div><div class="sub2" id="p36-sub">TrendForce 估算，256GB 的 iPhone Pro，<br>記憶體占材料成本的比重，在 2025 年大約 10%。</div><div class="pg">36 / 92</div></div></section>
+<section id="p37" class="clip" data-start="212.382" data-duration="7.750" data-track-index="38"><div class="vshade"></div><div class="sin" id="p37-in"><div class="sub2" id="p37-sub"><span style="white-space: nowrap">到了 2026 年第三季，變成大約 34%；2027 年上半年，可能超過 40%。</span></div><div class="pg">37 / 92</div></div></section>
+<section id="p38" class="clip" data-start="220.132" data-duration="5.910" data-track-index="39"><div class="vshade"></div><div class="sin" id="p38-in"><div class="sub2" id="p38-sub"><span style="white-space: nowrap">以前手機最貴的零件，是處理器和螢幕。現在記憶體往上爬了。</span></div><div class="pg">38 / 92</div></div></section>
+<section id="p39" class="clip" data-start="226.042" data-duration="6.470" data-track-index="40"><div class="shade"></div><div class="sin" id="p39-in"><div class="h1" id="p39-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">TrendForce 估算</div><div class="h1" id="p39-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">材料成本 +38%</div><div class="h1" id="p39-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">iPhone 18 Pro 256GB vs 前一代</div><div class="sub2" id="p39-sub"><span style="white-space: nowrap">它估計 iPhone 18 Pro 256GB 的材料成本，比前一代高了大約 38%。</span></div><div class="pg">39 / 92</div></div></section>
+<section id="p40" class="clip" data-start="232.512" data-duration="10.470" data-track-index="41"><div class="vshade"></div><div class="sin" id="p40-in"><div class="sub2" id="p40-sub">連蘋果都感覺得到。截至 2026 年 9 月的這一季，<br>蘋果毛利率是 47.9%，其中大約 1 個百分點，來自關稅退款。</div><div class="pg">40 / 92</div></div></section>
+<section id="p41" class="clip" data-start="242.982" data-duration="12.630" data-track-index="42"><div class="shade"></div><div class="sin" id="p41-in"><div class="h1" id="p41-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">蘋果毛利率</div><div class="h1" id="p41-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">45～46%</div><div class="h1" id="p41-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">12 月季預估；9 月季 47.9%</div><div class="sub2" id="p41-sub">這是蘋果整體的毛利率，也就是每一百元營收，扣掉成本後留下的比例。<br>蘋果預估截至 12 月這一季，會降到 45% 到 46%。</div><div class="pg">41 / 92</div></div></section>
+<section id="p42" class="clip" data-start="255.612" data-duration="4.711" data-track-index="43"><div class="vshade"></div><div class="sin" id="p42-in"><div class="sub2" id="p42-sub"><span style="white-space: nowrap">執行長說，蘋果是勉強才調高價格的。</span></div><div class="pg">42 / 92</div></div></section>
+<section id="p43" class="clip" data-start="260.323" data-duration="6.230" data-track-index="44"><div class="vshade"></div><div class="sin" id="p43-in"><div class="sub2" id="p43-sub"><span style="white-space: nowrap">蘋果在年報裡也寫得很白：預期記憶體和儲存的成本壓力，還會更明顯。</span></div><div class="pg">43 / 92</div></div></section>
+<section id="p44" class="clip" data-start="266.553" data-duration="5.510" data-track-index="45"><div class="vshade"></div><div class="sin" id="p44-in"><div class="sub2" id="p44-sub"><span style="white-space: nowrap">它也承認，調高價格不一定能解決問題，還可能讓需求下降。</span></div><div class="pg">44 / 92</div></div></section>
+<section id="p45" class="clip" data-start="272.063" data-duration="4.790" data-track-index="46"><div class="vshade"></div><div class="sin" id="p45-in"><div class="sub2" id="p45-sub"><span style="white-space: nowrap">同一季，iPhone 的營收，還是比前一年多了超過 17%。</span></div><div class="pg">45 / 92</div></div></section>
+<section id="p46" class="clip" data-start="276.853" data-duration="5.830" data-track-index="47"><div class="vshade"></div><div class="sin" id="p46-in"><div class="sub2" id="p46-sub"><span style="white-space: nowrap">TrendForce 指出，壓力最大的，是入門和中階手機，因為利潤本來就薄。</span></div><div class="pg">46 / 92</div></div></section>
+<section id="p47" class="clip" data-start="282.683" data-duration="6.150" data-track-index="48"><div class="shade"></div><div class="sin" id="p47-in"><div class="h1" id="p47-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">vivo 台灣總經理的說法</div><div class="h1" id="p47-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">5,000 → 近 1 萬元</div><div class="h1" id="p47-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">低價手機區間往上移</div><div class="sub2" id="p47-sub"><span style="white-space: nowrap">vivo 台灣總經理說，5,000 元以下的區間，已經往上移到接近 1 萬元。</span></div><div class="pg">47 / 92</div></div></section>
+<section id="p48" class="clip" data-start="288.833" data-duration="6.230" data-track-index="49"><div class="vshade"></div><div class="sin" id="p48-in"><div class="sub2" id="p48-sub"><span style="white-space: nowrap">三星在台灣的總經理也說，市場幾乎看不到 6,000 元以下的手機了。</span></div><div class="pg">48 / 92</div></div></section>
+<section id="p49" class="clip" data-start="295.063" data-duration="3.510" data-track-index="50"><div class="shade"></div><div class="sin" id="p49-in"><div class="h1" id="p49-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">第三件事</div><div class="h1" id="p49-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">帳單怎麼來</div><div class="h1" id="p49-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600"></div><div class="sub2" id="p49-sub"><span style="white-space: nowrap">第三件事，帳單怎麼到你手上。</span></div><div class="pg">49 / 92</div></div></section>
+<section id="p50" class="clip" data-start="298.573" data-duration="2.630" data-track-index="51"><div class="vshade"></div><div class="sin" id="p50-in"><div class="sub2" id="p50-sub"><span style="white-space: nowrap">第一條路，最直接：貴了。</span></div><div class="pg">50 / 92</div></div></section>
+<section id="p51" class="clip" data-start="301.203" data-duration="9.030" data-track-index="52"><div class="shade"></div><div class="sin" id="p51-in"><div class="h1" id="p51-h" style="top: 170px; font-size: 54px; color: var(--gold)">現有手機零售價，2026 年至今</div><div class="bl" id="p51-l0" style="top: 304px">亞太</div><div class="btrack" id="p51-t0" style="top: 300px"><div class="bfill" id="p51-f0" style="right: 0.00%; background: var(--warn)"></div></div><div class="bv" id="p51-v0" style="top: 306px; left: 1504px">約 19%</div><div class="bl" id="p51-l1" style="top: 444px">全球平均</div><div class="btrack" id="p51-t1" style="top: 440px"><div class="bfill" id="p51-f1" style="right: 21.05%; background: var(--gold)"></div></div><div class="bv" id="p51-v1" style="top: 446px; left: 1293px">約 15%</div><div class="bl" id="p51-l2" style="top: 584px">美國</div><div class="btrack" id="p51-t2" style="top: 580px"><div class="bfill" id="p51-f2" style="right: 73.68%; background: var(--ok)"></div></div><div class="bv" id="p51-v2" style="top: 586px; left: 767px">約 5%</div><div class="sub2" id="p51-sub">Counterpoint 統計，2026 年到 9 月初，<br>全球已經在賣的手機，零售價平均多了大約 15%。</div><div class="pg">51 / 92</div></div></section>
+<section id="p52" class="clip" data-start="310.233" data-duration="4.230" data-track-index="53"><div class="vshade"></div><div class="sin" id="p52-in"><div class="sub2" id="p52-sub"><span style="white-space: nowrap">亞太地區大約 19%，美國只有大約 5%。</span></div><div class="pg">52 / 92</div></div></section>
+<section id="p53" class="clip" data-start="314.463" data-duration="5.670" data-track-index="54"><div class="vshade"></div><div class="sin" id="p53-in"><div class="sub2" id="p53-sub"><span style="white-space: nowrap">新機上市價，也比前一年同期高了大約 25%。</span></div><div class="pg">53 / 92</div></div></section>
+<section id="p54" class="clip" data-start="320.133" data-duration="4.790" data-track-index="55"><div class="vshade"></div><div class="sin" id="p54-in"><div class="sub2" id="p54-sub"><span style="white-space: nowrap">放到台灣。iPhone 18 Pro 系列，比前一代貴了 5,000 元以上。</span></div><div class="pg">54 / 92</div></div></section>
+<section id="p55" class="clip" data-start="324.923" data-duration="6.026" data-track-index="56"><div class="vshade"></div><div class="sin" id="p55-in"><div class="sub2" id="p55-sub"><span style="white-space: nowrap">以前新機一出來，舊機通常降價。這次 iPhone 17 系列，反而更貴了。</span></div><div class="pg">55 / 92</div></div></section>
+<section id="p56" class="clip" data-start="330.949" data-duration="11.750" data-track-index="57"><div class="shade"></div><div class="sin" id="p56-in"><div class="h1" id="p56-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">Galaxy S26 Ultra 16GB／1TB</div><div class="h1" id="p56-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">+8,000 元</div><div class="h1" id="p56-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">59,900 → 67,900 元</div><div class="sub2" id="p56-sub">Galaxy S26 Ultra 16GB、1TB 這一款，<br>2026 年 10 月在台灣，從 59,900 元變成 67,900 元。</div><div class="pg">56 / 92</div></div></section>
+<section id="p57" class="clip" data-start="342.699" data-duration="4.470" data-track-index="58"><div class="vshade"></div><div class="sin" id="p57-in"><div class="sub2" id="p57-sub"><span style="white-space: nowrap">S26 系列其他版本，這次也多了 3,000 到 5,000 元。</span></div><div class="pg">57 / 92</div></div></section>
+<section id="p58" class="clip" data-start="347.169" data-duration="6.504" data-track-index="59"><div class="vshade"></div><div class="sin" id="p58-in"><div class="sub2" id="p58-sub"><span style="white-space: nowrap">便宜的機種也跑不掉：一萬元左右的 Galaxy A17，這次多了 1,000 元。</span></div><div class="pg">58 / 92</div></div></section>
+<section id="p59" class="clip" data-start="353.673" data-duration="8.790" data-track-index="60"><div class="shade"></div><div class="sin" id="p59-in"><div class="h1" id="p59-h" style="top: 170px; font-size: 54px; color: var(--gold)">主流筆電：CPU＋DRAM＋SSD 占材料成本</div><div class="bl" id="p59-l0" style="top: 304px">2025 第一季</div><div class="btrack" id="p59-t0" style="top: 300px"><div class="bfill" id="p59-f0" style="right: 33.82%; background: var(--warn)"></div></div><div class="bv" id="p59-v0" style="top: 306px; left: 1166px">約 45%</div><div class="bl" id="p59-l1" style="top: 444px">2026 第三季</div><div class="btrack" id="p59-t1" style="top: 440px"><div class="bfill" id="p59-f1" style="right: 0.00%; background: var(--gold)"></div></div><div class="bv" id="p59-v1" style="top: 446px; left: 1504px">約 68%</div><div class="sub2" id="p59-sub">筆電更有感。TrendForce 拿 2025 年第一季、<br>建議售價 900 美元，大約新台幣 2 萬 9 千元的主流筆電來算。</div><div class="pg">59 / 92</div></div></section>
+<section id="p60" class="clip" data-start="362.463" data-duration="12.070" data-track-index="61"><div class="vshade"></div><div class="sin" id="p60-in"><div class="sub2" id="p60-sub">處理器、DRAM、SSD 占材料成本的比重，<br>從 2025 年第一季大約 45%，升到 2026 年第三季大約 68%。</div><div class="pg">60 / 92</div></div></section>
+<section id="p61" class="clip" data-start="374.533" data-duration="6.550" data-track-index="62"><div class="shade"></div><div class="sin" id="p61-in"><div class="h1" id="p61-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">宏碁預期 2026 第四季 PC 價格</div><div class="h1" id="p61-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">再多 5～20%</div><div class="h1" id="p61-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">業者預期</div><div class="sub2" id="p61-sub"><span style="white-space: nowrap">宏碁預期，2026 年第四季，PC 價格還會再多 5% 到 20%。</span></div><div class="pg">61 / 92</div></div></section>
+<section id="p62" class="clip" data-start="381.083" data-duration="9.910" data-track-index="63"><div class="vshade"></div><div class="sin" id="p62-in"><div class="sub2" id="p62-sub">TrendForce 在 2026 年 9 月預估，<br>全年筆電出貨會比前一年少 9.4%，也提到有部分需求提前到了上半年。</div><div class="pg">62 / 92</div></div></section>
+<section id="p63" class="clip" data-start="390.993" data-duration="7.030" data-track-index="64"><div class="vshade"></div><div class="sin" id="p63-in"><div class="sub2" id="p63-sub"><span style="white-space: nowrap">宏碁的董事長陳俊聖則預估，PC 平均售價可能到 2027 年中才來到高點。</span></div><div class="pg">63 / 92</div></div></section>
+<section id="p64" class="clip" data-start="398.023" data-duration="2.790" data-track-index="65"><div class="vshade"></div><div class="sin" id="p64-in"><div class="sub2" id="p64-sub"><span style="white-space: nowrap">第二條路比較隱形：降低規格。</span></div><div class="pg">64 / 92</div></div></section>
+<section id="p65" class="clip" data-start="400.813" data-duration="5.670" data-track-index="66"><div class="vshade"></div><div class="sin" id="p65-in"><div class="sub2" id="p65-sub"><span style="white-space: nowrap">TrendForce 提到，有些品牌把主流筆電的 SSD 容量調低，來壓成本。</span></div><div class="pg">65 / 92</div></div></section>
+<section id="p66" class="clip" data-start="406.483" data-duration="5.750" data-track-index="67"><div class="vshade"></div><div class="sin" id="p66-in"><div class="sub2" id="p66-sub"><span style="white-space: nowrap">還記得倉庫嗎？如果 SSD 容量調低，就是倉庫變小了。</span></div><div class="pg">66 / 92</div></div></section>
+<section id="p67" class="clip" data-start="412.233" data-duration="6.150" data-track-index="68"><div class="vshade"></div><div class="sin" id="p67-in"><div class="sub2" id="p67-sub">TrendForce 還提到，<br>消費型 DRAM 因為大廠減產，很依賴台灣的供應商。</div><div class="pg">67 / 92</div></div></section>
+<section id="p68" class="clip" data-start="418.383" data-duration="8.550" data-track-index="69"><div class="vshade"></div><div class="sin" id="p68-in"><div class="sub2" id="p68-sub">而且不只手機和筆電。TrendForce 說，<br>電視、機上盒、穿戴裝置，利潤薄，也很難吸收成本。</div><div class="pg">68 / 92</div></div></section>
+<section id="p69" class="clip" data-start="426.933" data-duration="5.430" data-track-index="70"><div class="vshade"></div><div class="sin" id="p69-in"><div class="sub2" id="p69-sub"><span style="white-space: nowrap">這些，有沒有反映到台灣的物價？官方的答案是，有。</span></div><div class="pg">69 / 92</div></div></section>
+<section id="p70" class="clip" data-start="432.363" data-duration="7.110" data-track-index="71"><div class="shade"></div><div class="sin" id="p70-in"><div class="h1" id="p70-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">主計總處：2026 年 9 月</div><div class="h1" id="p70-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">+9.75%</div><div class="h1" id="p70-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">教養設備及用具，有統計以來最高</div><div class="sub2" id="p70-sub">9 月，電腦這類的教養設備及用具，<br>比前一年多了 9.75%，是有統計以來最高。</div><div class="pg">70 / 92</div></div></section>
+<section id="p71" class="clip" data-start="439.473" data-duration="9.510" data-track-index="72"><div class="vshade"></div><div class="sin" id="p71-in"><div class="sub2" id="p71-sub">10 月初說明這個數字時，官方也講了另一面：<br>這類商品占 CPI 的比重小，大家也不常買，影響有，但不多。</div><div class="pg">71 / 92</div></div></section>
+<section id="p72" class="clip" data-start="448.983" data-duration="3.190" data-track-index="73"><div class="vshade"></div><div class="sin" id="p72-in"><div class="sub2" id="p72-sub"><span style="white-space: nowrap">官員還強調：國內沒有 AI 通膨。</span></div><div class="pg">72 / 92</div></div></section>
+<section id="p73" class="clip" data-start="452.173" data-duration="10.470" data-track-index="74"><div class="shade"></div><div class="sin" id="p73-in"><div class="h1" id="p73-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">主計總處：2026 年 10 月</div><div class="h1" id="p73-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">+9.51%</div><div class="h1" id="p73-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">記憶體等價揚，歷年第二高</div><div class="sub2" id="p73-sub">到了 11 月 5 日公布的 10 月數字，還是多了 9.51%，<br>歷年第二高；官方寫得很清楚，原因是記憶體等零件漲價。</div><div class="pg">73 / 92</div></div></section>
+<section id="p74" class="clip" data-start="462.643" data-duration="9.750" data-track-index="75"><div class="vshade"></div><div class="sin" id="p74-in"><div class="sub2" id="p74-sub">另一個數字更大：10 月的進口物價，以新台幣計算，<br>比前一年多了 33.32%，將近 50 年來最大。</div><div class="pg">74 / 92</div></div></section>
+<section id="p75" class="clip" data-start="472.393" data-duration="10.150" data-track-index="76"><div class="vshade"></div><div class="sin" id="p75-in"><div class="sub2" id="p75-sub">官方解釋，這裡面有 AI 需求推升的記憶體等零件漲價，<br>但這些零件大多是出口用的，對國內消費的影響相對有限。</div><div class="pg">75 / 92</div></div></section>
+<section id="p76" class="clip" data-start="482.543" data-duration="5.830" data-track-index="77"><div class="vshade"></div><div class="sin" id="p76-in"><div class="sub2" id="p76-sub"><span style="white-space: nowrap">所以數字看起來很大，但不能直接等於你的生活開銷多了這麼多。</span></div><div class="pg">76 / 92</div></div></section>
+<section id="p77" class="clip" data-start="488.373" data-duration="3.590" data-track-index="78"><div class="vshade"></div><div class="sin" id="p77-in"><div class="sub2" id="p77-sub"><span style="white-space: nowrap">那這波什麼時候停？老實說，沒有人知道。</span></div><div class="pg">77 / 92</div></div></section>
+<section id="p78" class="clip" data-start="491.963" data-duration="8.870" data-track-index="79"><div class="vshade"></div><div class="sin" id="p78-in"><div class="sub2" id="p78-sub">賣手機的業者，看法也不一樣：vivo 說至少到 2027 年第一季，<br>三星台灣說需求會強到 2027 年底。</div><div class="pg">78 / 92</div></div></section>
+<section id="p79" class="clip" data-start="500.833" data-duration="5.990" data-track-index="80"><div class="vshade"></div><div class="sin" id="p79-in"><div class="sub2" id="p79-sub"><span style="white-space: nowrap">OPPO 則引用研究公司的預測，說價格壓力可能到 2028 年。</span></div><div class="pg">79 / 92</div></div></section>
+<section id="p80" class="clip" data-start="506.823" data-duration="3.110" data-track-index="81"><div class="vshade"></div><div class="sin" id="p80-in"><div class="sub2" id="p80-sub"><span style="white-space: nowrap">這些都是業者的說法，不是保證。</span></div><div class="pg">80 / 92</div></div></section>
+<section id="p81" class="clip" data-start="509.933" data-duration="11.190" data-track-index="82"><div class="vshade"></div><div class="sin" id="p81-in"><div class="sub2" id="p81-sub">供應端也在動。三星 2026 年全年的資本支出，預計大約 84.4 兆韓元，<br>約新台幣 2.1 兆，半導體就占了 76.8 兆韓元。</div><div class="pg">81 / 92</div></div></section>
+<section id="p82" class="clip" data-start="521.123" data-duration="6.230" data-track-index="83"><div class="vshade"></div><div class="sin" id="p82-in"><div class="sub2" id="p82-sub"><span style="white-space: nowrap">但三星自己也預期，2027 年 AI 帶動的需求，會遠遠超過產業的供給。</span></div><div class="pg">82 / 92</div></div></section>
+<section id="p83" class="clip" data-start="527.353" data-duration="1.510" data-track-index="84"><div class="vshade"></div><div class="sin" id="p83-in"><div class="sub2" id="p83-sub"><span style="white-space: nowrap">回到開頭那個問題。</span></div><div class="pg">83 / 92</div></div></section>
+<section id="p84" class="clip" data-start="528.863" data-duration="4.470" data-track-index="85"><div class="vshade"></div><div class="sin" id="p84-in"><div class="sub2" id="p84-sub"><span style="white-space: nowrap">同一家公司，為什麼這邊利潤很高，那邊卻在虧？</span></div><div class="pg">84 / 92</div></div></section>
+<section id="p85" class="clip" data-start="533.333" data-duration="9.030" data-track-index="86"><div class="vshade"></div><div class="sin" id="p85-in"><div class="sub2" id="p85-sub">我們的看法是，這像一場排隊：供應商優先服務成長快的伺服器需求，<br>成本壓力再一層一層傳到消費端。</div><div class="pg">85 / 92</div></div></section>
+<section id="p86" class="clip" data-start="542.363" data-duration="4.470" data-track-index="87"><div class="vshade"></div><div class="sin" id="p86-in"><div class="sub2" id="p86-sub"><span style="white-space: nowrap">對預算比較緊的人來說，可以選的便宜手機，也可能變少。</span></div><div class="pg">86 / 92</div></div></section>
+<section id="p87" class="clip" data-start="546.833" data-duration="4.470" data-track-index="88"><div class="vshade"></div><div class="sin" id="p87-in"><div class="sub2" id="p87-sub"><span style="white-space: nowrap">你可能沒有用 AI，但換手機的時候，也可能碰到這筆成本。</span></div><div class="pg">87 / 92</div></div></section>
+<section id="p88" class="clip" data-start="551.303" data-duration="8.790" data-track-index="89"><div class="vshade"></div><div class="sin" id="p88-in"><div class="sub2" id="p88-sub">這一集整理的是成本怎麼傳遞，不是買賣建議。<br>售價之外，RAM 和儲存容量的變化，也值得留意。</div><div class="pg">88 / 92</div></div></section>
+<section id="p89" class="clip" data-start="560.093" data-duration="15.929" data-track-index="90"><div class="shade"></div><div class="sin" id="p89-in"><div class="h1" id="p89-h" style="top: 180px; font-size: 64px; color: var(--gold)">這一集的總結</div><div class="card" id="p89-c0" style="left: 80px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p89-cd0" style="left: 80px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">①</div><div class="h1" id="p89-cw0" style="left: 80px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">AI 拉高記憶體價格</div><div class="card" id="p89-c1" style="left: 693px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p89-cd1" style="left: 693px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">②</div><div class="h1" id="p89-cw1" style="left: 693px; right: auto; width: 533px; top: 540px; font-size: 37px; font-weight: 600">賣記憶體利潤高，手機成本緊</div><div class="card" id="p89-c2" style="left: 1306px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p89-cd2" style="left: 1306px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">③</div><div class="h1" id="p89-cw2" style="left: 1306px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">售價提高或規格降低</div><div class="sub2" id="p89-sub">總結一下這一集：第一，AI 需求拉高了記憶體價格，供給也往伺服器走。第二，<br>賣記憶體的利潤很高，做手機的成本吃緊。第三，帳單會用調高售價或降低規格，來到你手上。</div><div class="pg">89 / 92</div></div></section>
+<section id="p90" class="clip" data-start="576.022" data-duration="7.990" data-track-index="91"><div class="vshade"></div><div class="sin" id="p90-in"><div class="sub2" id="p90-sub">接下來可以看的，是 2027 年第一批新機的定價，<br>和主流筆電的容量，還會不會再變小。</div><div class="pg">90 / 92</div></div></section>
+<section id="p91" class="clip" data-start="584.012" data-duration="5.830" data-track-index="92"><div class="vshade"></div><div class="sin" id="p91-in"><div class="sub2" id="p91-sub"><span style="white-space: nowrap">你最近換手機或電腦，有感覺變貴嗎？歡迎在留言區，跟我們分享。</span></div><div class="pg">91 / 92</div></div></section>
+<section id="p92" class="clip" data-start="589.842" data-duration="4.078" data-track-index="93"><div class="sin" id="p92-in"><div class="h1" id="p92-a" style="top: 250px; font-size: 130px">關注我</div><div class="h1" id="p92-b" style="top: 440px; font-size: 64px; color: var(--gold)">給你更多錢的大小事</div><div id="p92-btn" style="position: absolute; left: 710px; top: 620px; width: 420px; height: 110px; border-radius: 22px; background: #e53935; color: #fff; font-size: 48px; font-weight: 800; letter-spacing: 0.08em; display: flex; align-items: center; justify-content: center">訂閱</div><div id="p92-bell" style="position: absolute; left: 1160px; top: 630px; width: 90px; height: 90px; color: var(--gold)"><svg viewBox="0 0 100 100" width="100%" height="100%"><g fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"><path d="M50 14 C30 14 26 32 26 46 L26 64 L16 76 L84 76 L74 64 L74 46 C74 32 70 14 50 14 Z"/><path d="M40 84 C42 92 58 92 60 84"/></g></svg></div><div class="sub2" id="p92-sub"><span style="white-space: nowrap">關注我，給你更多錢的大小事。</span></div><div class="pg">92 / 92</div></div></section>
+<div id="chrome" class="clip" data-start="0" data-duration="593.92" data-track-index="94">
+<div class="brand">金錢怪物</div>
+<div class="disc">資訊整理，非投資建議｜資料來源見說明欄｜畫面為資料畫面，非片中提及品牌</div>
+<div class="prog"></div>
+</div>
+<audio id="vo-1" data-start="0.250" data-duration="3.120" src="audio/l1.mp3"></audio>
+<audio id="vo-2" data-start="3.520" data-duration="7.600" src="audio/l2.mp3"></audio>
+<audio id="vo-3" data-start="11.270" data-duration="4.561" src="audio/l3.mp3"></audio>
+<audio id="vo-4" data-start="15.981" data-duration="5.360" src="audio/l4.mp3"></audio>
+<audio id="vo-5" data-start="21.491" data-duration="5.200" src="audio/l5.mp3"></audio>
+<audio id="vo-6" data-start="26.841" data-duration="4.160" src="audio/l6.mp3"></audio>
+<audio id="vo-7" data-start="31.151" data-duration="2.240" src="audio/l7.mp3"></audio>
+<audio id="vo-8" data-start="33.541" data-duration="5.397" src="audio/l8.mp3"></audio>
+<audio id="vo-9" data-start="39.088" data-duration="3.920" src="audio/l9.mp3"></audio>
+<audio id="vo-10" data-start="43.158" data-duration="7.280" src="audio/l10.mp3"></audio>
+<audio id="vo-11" data-start="51.388" data-duration="1.520" src="audio/l11.mp3"></audio>
+<audio id="vo-12" data-start="53.058" data-duration="7.200" src="audio/l12.mp3"></audio>
+<audio id="vo-13" data-start="60.408" data-duration="5.280" src="audio/l13.mp3"></audio>
+<audio id="vo-14" data-start="65.838" data-duration="5.840" src="audio/l14.mp3"></audio>
+<audio id="vo-15" data-start="72.628" data-duration="4.043" src="audio/l15.mp3"></audio>
+<audio id="vo-16" data-start="76.821" data-duration="4.640" src="audio/l16.mp3"></audio>
+<audio id="vo-17" data-start="81.611" data-duration="2.800" src="audio/l17.mp3"></audio>
+<audio id="vo-18" data-start="84.561" data-duration="8.480" src="audio/l18.mp3"></audio>
+<audio id="vo-19" data-start="93.191" data-duration="8.160" src="audio/l19.mp3"></audio>
+<audio id="vo-20" data-start="101.501" data-duration="4.080" src="audio/l20.mp3"></audio>
+<audio id="vo-21" data-start="105.731" data-duration="5.280" src="audio/l21.mp3"></audio>
+<audio id="vo-22" data-start="111.161" data-duration="7.551" src="audio/l22.mp3"></audio>
+<audio id="vo-23" data-start="118.862" data-duration="3.120" src="audio/l23.mp3"></audio>
+<audio id="vo-24" data-start="122.132" data-duration="10.160" src="audio/l24.mp3"></audio>
+<audio id="vo-25" data-start="132.442" data-duration="6.480" src="audio/l25.mp3"></audio>
+<audio id="vo-26" data-start="139.072" data-duration="5.120" src="audio/l26.mp3"></audio>
+<audio id="vo-27" data-start="144.342" data-duration="9.200" src="audio/l27.mp3"></audio>
+<audio id="vo-28" data-start="153.692" data-duration="7.040" src="audio/l28.mp3"></audio>
+<audio id="vo-29" data-start="160.882" data-duration="5.920" src="audio/l29.mp3"></audio>
+<audio id="vo-30" data-start="166.952" data-duration="2.720" src="audio/l30.mp3"></audio>
+<audio id="vo-31" data-start="169.822" data-duration="7.040" src="audio/l31.mp3"></audio>
+<audio id="vo-32" data-start="177.012" data-duration="9.520" src="audio/l32.mp3"></audio>
+<audio id="vo-33" data-start="186.682" data-duration="9.946" src="audio/l33.mp3"></audio>
+<audio id="vo-34" data-start="196.778" data-duration="4.320" src="audio/l34.mp3"></audio>
+<audio id="vo-35" data-start="201.248" data-duration="2.480" src="audio/l35.mp3"></audio>
+<audio id="vo-36" data-start="203.878" data-duration="8.429" src="audio/l36.mp3"></audio>
+<audio id="vo-37" data-start="212.457" data-duration="7.600" src="audio/l37.mp3"></audio>
+<audio id="vo-38" data-start="220.207" data-duration="5.760" src="audio/l38.mp3"></audio>
+<audio id="vo-39" data-start="226.117" data-duration="6.320" src="audio/l39.mp3"></audio>
+<audio id="vo-40" data-start="232.587" data-duration="10.320" src="audio/l40.mp3"></audio>
+<audio id="vo-41" data-start="243.057" data-duration="12.480" src="audio/l41.mp3"></audio>
+<audio id="vo-42" data-start="255.687" data-duration="4.561" src="audio/l42.mp3"></audio>
+<audio id="vo-43" data-start="260.398" data-duration="6.080" src="audio/l43.mp3"></audio>
+<audio id="vo-44" data-start="266.628" data-duration="5.360" src="audio/l44.mp3"></audio>
+<audio id="vo-45" data-start="272.138" data-duration="4.640" src="audio/l45.mp3"></audio>
+<audio id="vo-46" data-start="276.928" data-duration="5.680" src="audio/l46.mp3"></audio>
+<audio id="vo-47" data-start="282.758" data-duration="6.000" src="audio/l47.mp3"></audio>
+<audio id="vo-48" data-start="288.908" data-duration="6.080" src="audio/l48.mp3"></audio>
+<audio id="vo-49" data-start="295.138" data-duration="3.360" src="audio/l49.mp3"></audio>
+<audio id="vo-50" data-start="298.648" data-duration="2.480" src="audio/l50.mp3"></audio>
+<audio id="vo-51" data-start="301.278" data-duration="8.880" src="audio/l51.mp3"></audio>
+<audio id="vo-52" data-start="310.308" data-duration="4.080" src="audio/l52.mp3"></audio>
+<audio id="vo-53" data-start="314.538" data-duration="5.520" src="audio/l53.mp3"></audio>
+<audio id="vo-54" data-start="320.208" data-duration="4.640" src="audio/l54.mp3"></audio>
+<audio id="vo-55" data-start="324.998" data-duration="5.876" src="audio/l55.mp3"></audio>
+<audio id="vo-56" data-start="331.024" data-duration="11.600" src="audio/l56.mp3"></audio>
+<audio id="vo-57" data-start="342.774" data-duration="4.320" src="audio/l57.mp3"></audio>
+<audio id="vo-58" data-start="347.244" data-duration="6.354" src="audio/l58.mp3"></audio>
+<audio id="vo-59" data-start="353.748" data-duration="8.640" src="audio/l59.mp3"></audio>
+<audio id="vo-60" data-start="362.538" data-duration="11.920" src="audio/l60.mp3"></audio>
+<audio id="vo-61" data-start="374.608" data-duration="6.400" src="audio/l61.mp3"></audio>
+<audio id="vo-62" data-start="381.158" data-duration="9.760" src="audio/l62.mp3"></audio>
+<audio id="vo-63" data-start="391.068" data-duration="6.880" src="audio/l63.mp3"></audio>
+<audio id="vo-64" data-start="398.098" data-duration="2.640" src="audio/l64.mp3"></audio>
+<audio id="vo-65" data-start="400.888" data-duration="5.520" src="audio/l65.mp3"></audio>
+<audio id="vo-66" data-start="406.558" data-duration="5.600" src="audio/l66.mp3"></audio>
+<audio id="vo-67" data-start="412.308" data-duration="6.000" src="audio/l67.mp3"></audio>
+<audio id="vo-68" data-start="418.458" data-duration="8.400" src="audio/l68.mp3"></audio>
+<audio id="vo-69" data-start="427.008" data-duration="5.280" src="audio/l69.mp3"></audio>
+<audio id="vo-70" data-start="432.438" data-duration="6.960" src="audio/l70.mp3"></audio>
+<audio id="vo-71" data-start="439.548" data-duration="9.360" src="audio/l71.mp3"></audio>
+<audio id="vo-72" data-start="449.058" data-duration="3.040" src="audio/l72.mp3"></audio>
+<audio id="vo-73" data-start="452.248" data-duration="10.320" src="audio/l73.mp3"></audio>
+<audio id="vo-74" data-start="462.718" data-duration="9.600" src="audio/l74.mp3"></audio>
+<audio id="vo-75" data-start="472.468" data-duration="10.000" src="audio/l75.mp3"></audio>
+<audio id="vo-76" data-start="482.618" data-duration="5.680" src="audio/l76.mp3"></audio>
+<audio id="vo-77" data-start="488.448" data-duration="3.440" src="audio/l77.mp3"></audio>
+<audio id="vo-78" data-start="492.038" data-duration="8.720" src="audio/l78.mp3"></audio>
+<audio id="vo-79" data-start="500.908" data-duration="5.840" src="audio/l79.mp3"></audio>
+<audio id="vo-80" data-start="506.898" data-duration="2.960" src="audio/l80.mp3"></audio>
+<audio id="vo-81" data-start="510.008" data-duration="11.040" src="audio/l81.mp3"></audio>
+<audio id="vo-82" data-start="521.198" data-duration="6.080" src="audio/l82.mp3"></audio>
+<audio id="vo-83" data-start="527.428" data-duration="1.360" src="audio/l83.mp3"></audio>
+<audio id="vo-84" data-start="528.938" data-duration="4.320" src="audio/l84.mp3"></audio>
+<audio id="vo-85" data-start="533.408" data-duration="8.880" src="audio/l85.mp3"></audio>
+<audio id="vo-86" data-start="542.438" data-duration="4.320" src="audio/l86.mp3"></audio>
+<audio id="vo-87" data-start="546.908" data-duration="4.320" src="audio/l87.mp3"></audio>
+<audio id="vo-88" data-start="551.378" data-duration="8.640" src="audio/l88.mp3"></audio>
+<audio id="vo-89" data-start="560.168" data-duration="14.979" src="audio/l89.mp3"></audio>
+<audio id="vo-90" data-start="576.097" data-duration="7.840" src="audio/l90.mp3"></audio>
+<audio id="vo-91" data-start="584.087" data-duration="5.680" src="audio/l91.mp3"></audio>
+<audio id="vo-92" data-start="589.917" data-duration="2.400" src="audio/l92.mp3"></audio>
+<audio id="bgm" data-start="0" data-duration="593.92" data-volume="0.12" src="audio/bgm.mp3"></audio>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({ paused: true });
+tl.fromTo("#p1-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 0.000);
+tl.fromTo("#p1-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 0.250);
+tl.to("#p1-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 3.165);
+tl.set("#p1-in", { opacity: 0 }, 3.445);
+tl.fromTo("#p2-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 3.445);
+tl.fromTo("#p2-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 3.520);
+tl.fromTo("#p2-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 3.920);
+tl.fromTo("#p2-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 4.820);
+tl.fromTo("#p2-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 3.520);
+tl.to("#p2-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 10.915);
+tl.set("#p2-in", { opacity: 0 }, 11.195);
+tl.fromTo("#p3-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 11.195);
+tl.fromTo("#p3-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 11.270);
+tl.to("#p3-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 15.626);
+tl.set("#p3-in", { opacity: 0 }, 15.906);
+tl.fromTo("#p4-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 15.906);
+tl.fromTo("#p4-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 15.981);
+tl.to("#p4-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 21.136);
+tl.set("#p4-in", { opacity: 0 }, 21.416);
+tl.fromTo("#p5-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 21.416);
+tl.fromTo("#p5-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 21.491);
+tl.fromTo("#p5-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 21.891);
+tl.fromTo("#p5-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 22.791);
+tl.fromTo("#p5-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 21.491);
+tl.to("#p5-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 26.486);
+tl.set("#p5-in", { opacity: 0 }, 26.766);
+tl.fromTo("#p6-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 26.766);
+tl.fromTo("#p6-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 26.841);
+tl.to("#p6-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 30.796);
+tl.set("#p6-in", { opacity: 0 }, 31.076);
+tl.fromTo("#p7-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 31.076);
+tl.fromTo("#p7-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 31.151);
+tl.to("#p7-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 33.186);
+tl.set("#p7-in", { opacity: 0 }, 33.466);
+tl.fromTo("#p8-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 33.466);
+tl.fromTo("#p8-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 33.541);
+tl.to("#p8-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 38.733);
+tl.set("#p8-in", { opacity: 0 }, 39.013);
+tl.fromTo("#p9-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 39.013);
+tl.fromTo("#p9-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 39.088);
+tl.to("#p9-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 42.803);
+tl.set("#p9-in", { opacity: 0 }, 43.083);
+tl.fromTo("#p10-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 43.083);
+tl.fromTo("#p10-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 43.158);
+tl.fromTo("#p10-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 44.658);
+tl.fromTo("#p10-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 44.858);
+tl.fromTo("#p10-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 45.058);
+tl.fromTo("#p10-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 46.358);
+tl.fromTo("#p10-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 46.558);
+tl.fromTo("#p10-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 46.758);
+tl.fromTo("#p10-c2", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 47.958);
+tl.fromTo("#p10-cd2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 48.158);
+tl.fromTo("#p10-cw2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 48.358);
+tl.fromTo("#p10-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 43.158);
+tl.to("#p10-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 51.033);
+tl.set("#p10-in", { opacity: 0 }, 51.313);
+tl.fromTo("#p11-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 51.313);
+tl.fromTo("#p11-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 51.388);
+tl.to("#p11-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 52.703);
+tl.set("#p11-in", { opacity: 0 }, 52.983);
+tl.fromTo("#p12-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 52.983);
+tl.fromTo("#p12-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 53.058);
+tl.to("#p12-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 60.053);
+tl.set("#p12-in", { opacity: 0 }, 60.333);
+tl.fromTo("#p13-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 60.333);
+tl.fromTo("#p13-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 60.408);
+tl.to("#p13-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 65.483);
+tl.set("#p13-in", { opacity: 0 }, 65.763);
+tl.fromTo("#p14-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 65.763);
+tl.fromTo("#p14-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 65.838);
+tl.fromTo("#p14-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 66.238);
+tl.fromTo("#p14-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 66.438);
+tl.fromTo("#p14-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 66.638);
+tl.fromTo("#p14-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 67.438);
+tl.fromTo("#p14-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 67.638);
+tl.fromTo("#p14-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 67.838);
+tl.fromTo("#p14-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 65.838);
+tl.to("#p14-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 72.273);
+tl.set("#p14-in", { opacity: 0 }, 72.553);
+tl.fromTo("#p15-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 72.553);
+tl.fromTo("#p15-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 72.628);
+tl.to("#p15-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 76.466);
+tl.set("#p15-in", { opacity: 0 }, 76.746);
+tl.fromTo("#p16-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 76.746);
+tl.fromTo("#p16-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 76.821);
+tl.to("#p16-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 81.256);
+tl.set("#p16-in", { opacity: 0 }, 81.536);
+tl.fromTo("#p17-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 81.536);
+tl.fromTo("#p17-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 81.611);
+tl.fromTo("#p17-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 82.011);
+tl.fromTo("#p17-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 82.911);
+tl.fromTo("#p17-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 81.611);
+tl.to("#p17-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 84.206);
+tl.set("#p17-in", { opacity: 0 }, 84.486);
+tl.fromTo("#p18-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 84.486);
+tl.fromTo("#p18-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 84.561);
+tl.fromTo("#p18-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 84.961);
+tl.fromTo("#p18-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 85.861);
+tl.fromTo("#p18-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 84.561);
+tl.to("#p18-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 92.836);
+tl.set("#p18-in", { opacity: 0 }, 93.116);
+tl.fromTo("#p19-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 93.116);
+tl.fromTo("#p19-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 93.191);
+tl.to("#p19-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 101.146);
+tl.set("#p19-in", { opacity: 0 }, 101.426);
+tl.fromTo("#p20-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 101.426);
+tl.fromTo("#p20-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 101.501);
+tl.to("#p20-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 105.376);
+tl.set("#p20-in", { opacity: 0 }, 105.656);
+tl.fromTo("#p21-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 105.656);
+tl.fromTo("#p21-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 105.731);
+tl.to("#p21-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 110.806);
+tl.set("#p21-in", { opacity: 0 }, 111.086);
+tl.fromTo("#p22-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 111.086);
+tl.fromTo("#p22-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 111.161);
+tl.fromTo("#p22-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 111.561);
+tl.fromTo("#p22-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 112.461);
+tl.fromTo("#p22-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 111.161);
+tl.to("#p22-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 118.507);
+tl.set("#p22-in", { opacity: 0 }, 118.787);
+tl.fromTo("#p23-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 118.787);
+tl.fromTo("#p23-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 118.862);
+tl.to("#p23-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 121.777);
+tl.set("#p23-in", { opacity: 0 }, 122.057);
+tl.fromTo("#p24-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 122.057);
+tl.fromTo("#p24-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 122.132);
+tl.to("#p24-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 132.087);
+tl.set("#p24-in", { opacity: 0 }, 132.367);
+tl.fromTo("#p25-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 132.367);
+tl.fromTo("#p25-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 132.442);
+tl.to("#p25-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 138.717);
+tl.set("#p25-in", { opacity: 0 }, 138.997);
+tl.fromTo("#p26-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 138.997);
+tl.fromTo("#p26-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 139.072);
+tl.to("#p26-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 143.987);
+tl.set("#p26-in", { opacity: 0 }, 144.267);
+tl.fromTo("#p27-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 144.267);
+tl.fromTo("#p27-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 144.342);
+tl.fromTo("#p27-l0", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 144.742);
+tl.fromTo("#p27-t0", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 144.742);
+tl.fromTo("#p27-f0", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 144.842);
+tl.fromTo("#p27-v0", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 145.342);
+tl.fromTo("#p27-l1", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 148.842);
+tl.fromTo("#p27-t1", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 148.842);
+tl.fromTo("#p27-f1", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 148.942);
+tl.fromTo("#p27-v1", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 149.442);
+tl.fromTo("#p27-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 144.342);
+tl.to("#p27-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 153.337);
+tl.set("#p27-in", { opacity: 0 }, 153.617);
+tl.fromTo("#p28-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 153.617);
+tl.fromTo("#p28-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 153.692);
+tl.to("#p28-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 160.527);
+tl.set("#p28-in", { opacity: 0 }, 160.807);
+tl.fromTo("#p29-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 160.807);
+tl.fromTo("#p29-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 160.882);
+tl.to("#p29-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 166.597);
+tl.set("#p29-in", { opacity: 0 }, 166.877);
+tl.fromTo("#p30-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 166.877);
+tl.fromTo("#p30-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 166.952);
+tl.fromTo("#p30-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 167.352);
+tl.fromTo("#p30-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 168.252);
+tl.fromTo("#p30-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 166.952);
+tl.to("#p30-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 169.467);
+tl.set("#p30-in", { opacity: 0 }, 169.747);
+tl.fromTo("#p31-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 169.747);
+tl.fromTo("#p31-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 169.822);
+tl.fromTo("#p31-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 170.222);
+tl.fromTo("#p31-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 171.122);
+tl.fromTo("#p31-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 169.822);
+tl.to("#p31-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 176.657);
+tl.set("#p31-in", { opacity: 0 }, 176.937);
+tl.fromTo("#p32-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 176.937);
+tl.fromTo("#p32-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 177.012);
+tl.to("#p32-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 186.327);
+tl.set("#p32-in", { opacity: 0 }, 186.607);
+tl.fromTo("#p33-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 186.607);
+tl.fromTo("#p33-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 186.682);
+tl.fromTo("#p33-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 187.082);
+tl.fromTo("#p33-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 187.982);
+tl.fromTo("#p33-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 186.682);
+tl.to("#p33-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 196.423);
+tl.set("#p33-in", { opacity: 0 }, 196.703);
+tl.fromTo("#p34-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 196.703);
+tl.fromTo("#p34-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 196.778);
+tl.to("#p34-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 200.893);
+tl.set("#p34-in", { opacity: 0 }, 201.173);
+tl.fromTo("#p35-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 201.173);
+tl.fromTo("#p35-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 201.248);
+tl.to("#p35-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 203.523);
+tl.set("#p35-in", { opacity: 0 }, 203.803);
+tl.fromTo("#p36-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 203.803);
+tl.fromTo("#p36-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 203.878);
+tl.fromTo("#p36-l0", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 204.278);
+tl.fromTo("#p36-t0", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 204.278);
+tl.fromTo("#p36-f0", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 204.378);
+tl.fromTo("#p36-v0", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 204.878);
+tl.fromTo("#p36-l1", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 206.754);
+tl.fromTo("#p36-t1", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 206.754);
+tl.fromTo("#p36-f1", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 206.854);
+tl.fromTo("#p36-v1", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 207.354);
+tl.fromTo("#p36-l2", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 209.231);
+tl.fromTo("#p36-t2", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 209.231);
+tl.fromTo("#p36-f2", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 209.331);
+tl.fromTo("#p36-v2", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 209.831);
+tl.fromTo("#p36-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 203.878);
+tl.to("#p36-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 212.102);
+tl.set("#p36-in", { opacity: 0 }, 212.382);
+tl.fromTo("#p37-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 212.382);
+tl.fromTo("#p37-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 212.457);
+tl.to("#p37-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 219.852);
+tl.set("#p37-in", { opacity: 0 }, 220.132);
+tl.fromTo("#p38-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 220.132);
+tl.fromTo("#p38-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 220.207);
+tl.to("#p38-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 225.762);
+tl.set("#p38-in", { opacity: 0 }, 226.042);
+tl.fromTo("#p39-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 226.042);
+tl.fromTo("#p39-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 226.117);
+tl.fromTo("#p39-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 226.517);
+tl.fromTo("#p39-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 227.417);
+tl.fromTo("#p39-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 226.117);
+tl.to("#p39-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 232.232);
+tl.set("#p39-in", { opacity: 0 }, 232.512);
+tl.fromTo("#p40-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 232.512);
+tl.fromTo("#p40-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 232.587);
+tl.to("#p40-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 242.702);
+tl.set("#p40-in", { opacity: 0 }, 242.982);
+tl.fromTo("#p41-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 242.982);
+tl.fromTo("#p41-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 243.057);
+tl.fromTo("#p41-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 243.457);
+tl.fromTo("#p41-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 244.357);
+tl.fromTo("#p41-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 243.057);
+tl.to("#p41-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 255.332);
+tl.set("#p41-in", { opacity: 0 }, 255.612);
+tl.fromTo("#p42-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 255.612);
+tl.fromTo("#p42-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 255.687);
+tl.to("#p42-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 260.043);
+tl.set("#p42-in", { opacity: 0 }, 260.323);
+tl.fromTo("#p43-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 260.323);
+tl.fromTo("#p43-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 260.398);
+tl.to("#p43-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 266.273);
+tl.set("#p43-in", { opacity: 0 }, 266.553);
+tl.fromTo("#p44-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 266.553);
+tl.fromTo("#p44-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 266.628);
+tl.to("#p44-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 271.783);
+tl.set("#p44-in", { opacity: 0 }, 272.063);
+tl.fromTo("#p45-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 272.063);
+tl.fromTo("#p45-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 272.138);
+tl.to("#p45-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 276.573);
+tl.set("#p45-in", { opacity: 0 }, 276.853);
+tl.fromTo("#p46-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 276.853);
+tl.fromTo("#p46-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 276.928);
+tl.to("#p46-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 282.403);
+tl.set("#p46-in", { opacity: 0 }, 282.683);
+tl.fromTo("#p47-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 282.683);
+tl.fromTo("#p47-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 282.758);
+tl.fromTo("#p47-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 283.158);
+tl.fromTo("#p47-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 284.058);
+tl.fromTo("#p47-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 282.758);
+tl.to("#p47-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 288.553);
+tl.set("#p47-in", { opacity: 0 }, 288.833);
+tl.fromTo("#p48-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 288.833);
+tl.fromTo("#p48-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 288.908);
+tl.to("#p48-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 294.783);
+tl.set("#p48-in", { opacity: 0 }, 295.063);
+tl.fromTo("#p49-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 295.063);
+tl.fromTo("#p49-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 295.138);
+tl.fromTo("#p49-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 295.538);
+tl.fromTo("#p49-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 296.438);
+tl.fromTo("#p49-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 295.138);
+tl.to("#p49-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 298.293);
+tl.set("#p49-in", { opacity: 0 }, 298.573);
+tl.fromTo("#p50-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 298.573);
+tl.fromTo("#p50-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 298.648);
+tl.to("#p50-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 300.923);
+tl.set("#p50-in", { opacity: 0 }, 301.203);
+tl.fromTo("#p51-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 301.203);
+tl.fromTo("#p51-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 301.278);
+tl.fromTo("#p51-l0", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 301.678);
+tl.fromTo("#p51-t0", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 301.678);
+tl.fromTo("#p51-f0", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 301.778);
+tl.fromTo("#p51-v0", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 302.278);
+tl.fromTo("#p51-l1", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 304.305);
+tl.fromTo("#p51-t1", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 304.305);
+tl.fromTo("#p51-f1", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 304.405);
+tl.fromTo("#p51-v1", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 304.905);
+tl.fromTo("#p51-l2", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 306.931);
+tl.fromTo("#p51-t2", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 306.931);
+tl.fromTo("#p51-f2", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 307.031);
+tl.fromTo("#p51-v2", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 307.531);
+tl.fromTo("#p51-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 301.278);
+tl.to("#p51-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 309.953);
+tl.set("#p51-in", { opacity: 0 }, 310.233);
+tl.fromTo("#p52-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 310.233);
+tl.fromTo("#p52-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 310.308);
+tl.to("#p52-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 314.183);
+tl.set("#p52-in", { opacity: 0 }, 314.463);
+tl.fromTo("#p53-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 314.463);
+tl.fromTo("#p53-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 314.538);
+tl.to("#p53-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 319.853);
+tl.set("#p53-in", { opacity: 0 }, 320.133);
+tl.fromTo("#p54-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 320.133);
+tl.fromTo("#p54-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 320.208);
+tl.to("#p54-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 324.643);
+tl.set("#p54-in", { opacity: 0 }, 324.923);
+tl.fromTo("#p55-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 324.923);
+tl.fromTo("#p55-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 324.998);
+tl.to("#p55-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 330.669);
+tl.set("#p55-in", { opacity: 0 }, 330.949);
+tl.fromTo("#p56-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 330.949);
+tl.fromTo("#p56-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 331.024);
+tl.fromTo("#p56-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 331.424);
+tl.fromTo("#p56-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 332.324);
+tl.fromTo("#p56-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 331.024);
+tl.to("#p56-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 342.419);
+tl.set("#p56-in", { opacity: 0 }, 342.699);
+tl.fromTo("#p57-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 342.699);
+tl.fromTo("#p57-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 342.774);
+tl.to("#p57-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 346.889);
+tl.set("#p57-in", { opacity: 0 }, 347.169);
+tl.fromTo("#p58-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 347.169);
+tl.fromTo("#p58-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 347.244);
+tl.to("#p58-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 353.393);
+tl.set("#p58-in", { opacity: 0 }, 353.673);
+tl.fromTo("#p59-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 353.673);
+tl.fromTo("#p59-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 353.748);
+tl.fromTo("#p59-l0", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 354.148);
+tl.fromTo("#p59-t0", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 354.148);
+tl.fromTo("#p59-f0", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 354.248);
+tl.fromTo("#p59-v0", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 354.748);
+tl.fromTo("#p59-l1", { autoAlpha: 0, x: -40, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 357.968);
+tl.fromTo("#p59-t1", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.2, ease: "power3.out" }, 357.968);
+tl.fromTo("#p59-f1", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.out" }, 358.068);
+tl.fromTo("#p59-v1", { autoAlpha: 0, x: 0, y: 0 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.3, ease: "power3.out" }, 358.568);
+tl.fromTo("#p59-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 353.748);
+tl.to("#p59-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 362.183);
+tl.set("#p59-in", { opacity: 0 }, 362.463);
+tl.fromTo("#p60-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 362.463);
+tl.fromTo("#p60-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 362.538);
+tl.to("#p60-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 374.253);
+tl.set("#p60-in", { opacity: 0 }, 374.533);
+tl.fromTo("#p61-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 374.533);
+tl.fromTo("#p61-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 374.608);
+tl.fromTo("#p61-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 375.008);
+tl.fromTo("#p61-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 375.908);
+tl.fromTo("#p61-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 374.608);
+tl.to("#p61-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 380.803);
+tl.set("#p61-in", { opacity: 0 }, 381.083);
+tl.fromTo("#p62-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 381.083);
+tl.fromTo("#p62-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 381.158);
+tl.to("#p62-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 390.713);
+tl.set("#p62-in", { opacity: 0 }, 390.993);
+tl.fromTo("#p63-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 390.993);
+tl.fromTo("#p63-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 391.068);
+tl.to("#p63-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 397.743);
+tl.set("#p63-in", { opacity: 0 }, 398.023);
+tl.fromTo("#p64-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 398.023);
+tl.fromTo("#p64-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 398.098);
+tl.to("#p64-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 400.533);
+tl.set("#p64-in", { opacity: 0 }, 400.813);
+tl.fromTo("#p65-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 400.813);
+tl.fromTo("#p65-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 400.888);
+tl.to("#p65-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 406.203);
+tl.set("#p65-in", { opacity: 0 }, 406.483);
+tl.fromTo("#p66-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 406.483);
+tl.fromTo("#p66-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 406.558);
+tl.to("#p66-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 411.953);
+tl.set("#p66-in", { opacity: 0 }, 412.233);
+tl.fromTo("#p67-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 412.233);
+tl.fromTo("#p67-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 412.308);
+tl.to("#p67-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 418.103);
+tl.set("#p67-in", { opacity: 0 }, 418.383);
+tl.fromTo("#p68-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 418.383);
+tl.fromTo("#p68-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 418.458);
+tl.to("#p68-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 426.653);
+tl.set("#p68-in", { opacity: 0 }, 426.933);
+tl.fromTo("#p69-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 426.933);
+tl.fromTo("#p69-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 427.008);
+tl.to("#p69-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 432.083);
+tl.set("#p69-in", { opacity: 0 }, 432.363);
+tl.fromTo("#p70-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 432.363);
+tl.fromTo("#p70-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 432.438);
+tl.fromTo("#p70-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 432.838);
+tl.fromTo("#p70-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 433.738);
+tl.fromTo("#p70-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 432.438);
+tl.to("#p70-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 439.193);
+tl.set("#p70-in", { opacity: 0 }, 439.473);
+tl.fromTo("#p71-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 439.473);
+tl.fromTo("#p71-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 439.548);
+tl.to("#p71-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 448.703);
+tl.set("#p71-in", { opacity: 0 }, 448.983);
+tl.fromTo("#p72-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 448.983);
+tl.fromTo("#p72-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 449.058);
+tl.to("#p72-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 451.893);
+tl.set("#p72-in", { opacity: 0 }, 452.173);
+tl.fromTo("#p73-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 452.173);
+tl.fromTo("#p73-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 452.248);
+tl.fromTo("#p73-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 452.648);
+tl.fromTo("#p73-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 453.548);
+tl.fromTo("#p73-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 452.248);
+tl.to("#p73-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 462.363);
+tl.set("#p73-in", { opacity: 0 }, 462.643);
+tl.fromTo("#p74-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 462.643);
+tl.fromTo("#p74-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 462.718);
+tl.to("#p74-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 472.113);
+tl.set("#p74-in", { opacity: 0 }, 472.393);
+tl.fromTo("#p75-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 472.393);
+tl.fromTo("#p75-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 472.468);
+tl.to("#p75-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 482.263);
+tl.set("#p75-in", { opacity: 0 }, 482.543);
+tl.fromTo("#p76-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 482.543);
+tl.fromTo("#p76-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 482.618);
+tl.to("#p76-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 488.093);
+tl.set("#p76-in", { opacity: 0 }, 488.373);
+tl.fromTo("#p77-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 488.373);
+tl.fromTo("#p77-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 488.448);
+tl.to("#p77-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 491.683);
+tl.set("#p77-in", { opacity: 0 }, 491.963);
+tl.fromTo("#p78-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 491.963);
+tl.fromTo("#p78-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 492.038);
+tl.to("#p78-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 500.553);
+tl.set("#p78-in", { opacity: 0 }, 500.833);
+tl.fromTo("#p79-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 500.833);
+tl.fromTo("#p79-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 500.908);
+tl.to("#p79-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 506.543);
+tl.set("#p79-in", { opacity: 0 }, 506.823);
+tl.fromTo("#p80-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 506.823);
+tl.fromTo("#p80-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 506.898);
+tl.to("#p80-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 509.653);
+tl.set("#p80-in", { opacity: 0 }, 509.933);
+tl.fromTo("#p81-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 509.933);
+tl.fromTo("#p81-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 510.008);
+tl.to("#p81-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 520.843);
+tl.set("#p81-in", { opacity: 0 }, 521.123);
+tl.fromTo("#p82-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 521.123);
+tl.fromTo("#p82-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 521.198);
+tl.to("#p82-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 527.073);
+tl.set("#p82-in", { opacity: 0 }, 527.353);
+tl.fromTo("#p83-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 527.353);
+tl.fromTo("#p83-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 527.428);
+tl.to("#p83-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 528.583);
+tl.set("#p83-in", { opacity: 0 }, 528.863);
+tl.fromTo("#p84-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 528.863);
+tl.fromTo("#p84-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 528.938);
+tl.to("#p84-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 533.053);
+tl.set("#p84-in", { opacity: 0 }, 533.333);
+tl.fromTo("#p85-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 533.333);
+tl.fromTo("#p85-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 533.408);
+tl.to("#p85-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 542.083);
+tl.set("#p85-in", { opacity: 0 }, 542.363);
+tl.fromTo("#p86-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 542.363);
+tl.fromTo("#p86-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 542.438);
+tl.to("#p86-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 546.553);
+tl.set("#p86-in", { opacity: 0 }, 546.833);
+tl.fromTo("#p87-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 546.833);
+tl.fromTo("#p87-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 546.908);
+tl.to("#p87-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 551.023);
+tl.set("#p87-in", { opacity: 0 }, 551.303);
+tl.fromTo("#p88-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 551.303);
+tl.fromTo("#p88-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 551.378);
+tl.to("#p88-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 559.813);
+tl.set("#p88-in", { opacity: 0 }, 560.093);
+tl.fromTo("#p89-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 560.093);
+tl.fromTo("#p89-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 560.168);
+tl.fromTo("#p89-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 561.368);
+tl.fromTo("#p89-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 561.568);
+tl.fromTo("#p89-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 561.768);
+tl.fromTo("#p89-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 565.768);
+tl.fromTo("#p89-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 565.968);
+tl.fromTo("#p89-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 566.168);
+tl.fromTo("#p89-c2", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 569.268);
+tl.fromTo("#p89-cd2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 569.468);
+tl.fromTo("#p89-cw2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 569.668);
+tl.fromTo("#p89-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 560.168);
+tl.to("#p89-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 575.742);
+tl.set("#p89-in", { opacity: 0 }, 576.022);
+tl.fromTo("#p90-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 576.022);
+tl.fromTo("#p90-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 576.097);
+tl.to("#p90-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 583.732);
+tl.set("#p90-in", { opacity: 0 }, 584.012);
+tl.fromTo("#p91-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 584.012);
+tl.fromTo("#p91-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 584.087);
+tl.to("#p91-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 589.562);
+tl.set("#p91-in", { opacity: 0 }, 589.842);
+tl.fromTo("#p92-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 589.842);
+tl.fromTo("#p92-a", { autoAlpha: 0, scale: 0.8 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "back.out(1.6)" }, 589.917);
+tl.fromTo("#p92-b", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 590.417);
+tl.fromTo("#p92-btn", { autoAlpha: 0, scale: 0.4 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: "back.out(2.2)" }, 590.917);
+tl.fromTo("#p92-btn", { scale: 1 }, { scale: 1.06, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3 }, 591.517);
+tl.fromTo("#p92-bell", { autoAlpha: 0, rotation: 0 }, { autoAlpha: 1, rotation: 0, duration: 0.3 }, 591.317);
+tl.fromTo("#p92-bell", { rotation: -18 }, { rotation: 18, duration: 0.12, ease: "sine.inOut", yoyo: true, repeat: 7 }, 591.617);
+tl.fromTo("#p92-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 589.917);
+tl.to("#p92-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 593.640);
+tl.set("#p92-in", { opacity: 0 }, 593.920);
+tl.fromTo(".prog", { scaleX: 0 }, { scaleX: 1, duration: 593.92, ease: "none" }, 0);
+window.__timelines["mem01"] = tl;
+</script>
+</body>
+</html>

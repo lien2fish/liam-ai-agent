@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="zh-Hant" data-resolution="landscape">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>這個年代，盜領存款還很簡單嗎？</title>
+<link rel="stylesheet" href="shared/brand.css" />
+<style>
+html, body, #root { width: 1920px; height: 1080px; }
+#bg { background: radial-gradient(120% 90% at 20% 0%, #16294a 0%, #0b1426 55%, #070d1a 100%); }
+#grid { position: absolute; inset: 0; opacity: 0.08;
+  background-image: linear-gradient(#9fb3d1 1px, transparent 1px), linear-gradient(90deg, #9fb3d1 1px, transparent 1px);
+  background-size: 96px 96px; }
+.brand { position: absolute; left: 64px; top: 48px; font-size: 30px; color: var(--gold); letter-spacing: 0.12em; text-shadow: 0 2px 8px rgba(0,0,0,0.95); }
+.disc { position: absolute; right: 64px; top: 52px; font-size: 22px; color: rgba(243,241,234,0.88); text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
+.pg { position: absolute; right: 64px; bottom: 34px; font-size: 24px; color: var(--dim); }
+.prog { position: absolute; left: 0; bottom: 0; height: 8px; width: 1920px; background: var(--gold); transform-origin: left center; }
+.sub2 { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); width: max-content; max-width: 1560px;
+  padding: 10px 30px; border-radius: 18px; background: rgba(7, 13, 26, 0.75); color: var(--ink);
+  font-size: 42px; line-height: 1.35; text-align: center; text-wrap: balance; }
+.h1 { position: absolute; left: 0; right: 0; text-align: center; color: var(--ink); font-weight: 800; }
+.chip { position: absolute; padding: 8px 26px; border-radius: 999px; border: 3px solid var(--gold); color: var(--gold); font-size: 40px; }
+.bank { position: absolute; left: 160px; top: 300px; font-size: 76px; font-weight: 800; color: var(--ink); }
+.rate { position: absolute; left: 960px; top: 330px; font-size: 190px; font-weight: 800; color: var(--gold); white-space: nowrap; }
+.rnote { position: absolute; left: 160px; top: 640px; font-size: 48px; color: var(--ink); }
+.arrow { position: absolute; color: var(--warn); }
+.card { position: absolute; border-radius: 30px; background: rgba(255,255,255,0.06); border: 3px solid var(--panel-line); }
+.bl { position: absolute; left: 220px; font-size: 46px; color: var(--ink); }
+.btrack { position: absolute; left: 480px; width: 1000px; height: 64px; border-radius: 32px; background: rgba(255,255,255,0.06); }
+.bfill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 32px; transform-origin: left center; }
+.bv { position: absolute; font-size: 42px; color: var(--ink); }
+.bgw { position: absolute; inset: 0; overflow: hidden; }
+.vclip { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; }
+.vshade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.85) 100%); }
+.callout { position: absolute; left: 96px; bottom: 210px; padding: 18px 34px 22px; border-radius: 18px;
+  background: rgba(7,13,26,0.82); border-left: 10px solid var(--gold); white-space: nowrap; }
+.ctag, .cbig, .cnote { display: block; position: relative; }
+.ctag { font-size: 34px; line-height: 1.4; color: var(--gold); font-weight: 700; }
+.cbig { font-size: 120px; line-height: 1.25; margin: 4px 0; font-weight: 800; color: #ffd400; }
+.cnote { font-size: 30px; line-height: 1.4; color: var(--ink); margin-top: 6px; }
+.bgw img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 60% 40%; }
+.shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,10,20,0.66) 0%, rgba(5,10,20,0.60) 45%, rgba(5,10,20,0.86) 100%); }
+.sin .h1, .sin .bank, .sin .rate, .sin .rnote, .sin .bl, .sin .bv { text-shadow: 0 4px 18px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.9); }
+.card { background: rgba(7,13,26,0.70) !important; }
+.btrack { background: rgba(7,13,26,0.65) !important; }
+</style>
+<script src="vendor/gsap.min.js"></script>
+</head>
+<body>
+<div id="root" data-composition-id="tw04" data-start="0" data-duration="696.23" data-fps="24" data-width="1920" data-height="1080">
+<div id="bg" class="clip" data-start="0" data-duration="696.23" data-track-index="0"><div id="grid"></div></div>
+<video class="clip vclip" id="c1_0" src="shared/broll/tw_tm_00.mp4" muted data-volume="0" data-start="0.000" data-duration="3.525" data-track-index="1"></video>
+<video class="clip vclip" id="c2_0" src="shared/broll/mm_phone_00.mp4" muted data-volume="0" data-start="3.525" data-duration="7.210" data-track-index="1"></video>
+<video class="clip vclip" id="c3_0" src="shared/broll/mm_phone_01.mp4" muted data-volume="0" data-start="10.735" data-duration="3.670" data-track-index="1"></video>
+<video class="clip vclip" id="c4_0" src="shared/broll/tw_city_00.mp4" muted data-volume="0" data-start="14.405" data-duration="3.955" data-track-index="1"></video>
+<video class="clip vclip" id="c4_1" src="shared/broll/tw_city_01.mp4" muted data-volume="0" data-start="18.360" data-duration="3.955" data-track-index="1"></video>
+<video class="clip vclip" id="c5_0" src="shared/broll/tw_city_02.mp4" muted data-volume="0" data-start="22.315" data-duration="6.870" data-track-index="1"></video>
+<video class="clip vclip" id="c6_0" src="shared/broll/tw_tm_01.mp4" muted data-volume="0" data-start="29.185" data-duration="4.365" data-track-index="1"></video>
+<video class="clip vclip" id="c6_1" src="shared/broll/tw_tm_02.mp4" muted data-volume="0" data-start="33.550" data-duration="4.365" data-track-index="1"></video>
+<video class="clip vclip" id="c7_0" src="shared/broll/tw_city_03.mp4" muted data-volume="0" data-start="37.915" data-duration="6.630" data-track-index="1"></video>
+<video class="clip vclip" id="c8_0" src="shared/broll/bk_cyber_00.mp4" muted data-volume="0" data-start="44.545" data-duration="5.430" data-track-index="1"></video>
+<video class="clip vclip" id="c9_0" src="shared/broll/tw_city_04.mp4" muted data-volume="0" data-start="49.975" data-duration="4.790" data-track-index="1"></video>
+<video class="clip vclip" id="c10_0" src="shared/broll/bk_cyber_01.mp4" muted data-volume="0" data-start="54.765" data-duration="7.270" data-track-index="1"></video>
+<video class="clip vclip" id="c11_0" src="shared/broll/tw_city_05.mp4" muted data-volume="0" data-start="62.035" data-duration="4.435" data-track-index="1"></video>
+<video class="clip vclip" id="c11_1" src="shared/broll/tw_city_06.mp4" muted data-volume="0" data-start="66.470" data-duration="4.435" data-track-index="1"></video>
+<video class="clip vclip" id="c12_0" src="shared/broll/bk_atm_01.mp4" muted data-volume="0" data-start="70.905" data-duration="7.350" data-track-index="1"></video>
+<video class="clip vclip" id="c13_0" src="shared/broll/mm_phone_02.mp4" muted data-volume="0" data-start="78.255" data-duration="2.870" data-track-index="1"></video>
+<video class="clip vclip" id="c14_0" src="shared/broll/mm_phone_03.mp4" muted data-volume="0" data-start="81.125" data-duration="3.670" data-track-index="1"></video>
+<video class="clip vclip" id="c15_0" src="shared/broll/bk_phone_00.mp4" muted data-volume="0" data-start="84.795" data-duration="5.350" data-track-index="1"></video>
+<video class="clip vclip" id="c16_0" src="shared/broll/tw_city_07.mp4" muted data-volume="0" data-start="90.145" data-duration="2.790" data-track-index="1"></video>
+<video class="clip vclip" id="c17_0" src="shared/broll/bk_bank_00.mp4" muted data-volume="0" data-start="92.935" data-duration="7.270" data-track-index="1"></video>
+<video class="clip vclip" id="c18_0" src="shared/broll/bk_cyber_02.mp4" muted data-volume="0" data-start="100.205" data-duration="7.190" data-track-index="1"></video>
+<video class="clip vclip" id="c19_0" src="shared/broll/bk_cyber_03.mp4" muted data-volume="0" data-start="107.395" data-duration="3.030" data-track-index="1"></video>
+<video class="clip vclip" id="c20_0" src="shared/broll/bk_phone_04.mp4" muted data-volume="0" data-start="110.425" data-duration="6.950" data-track-index="1"></video>
+<video class="clip vclip" id="c21_0" src="shared/broll/bk_phone_10.mp4" muted data-volume="0" data-start="117.375" data-duration="4.550" data-track-index="1"></video>
+<video class="clip vclip" id="c22_0" src="shared/broll/bk_cyber_04.mp4" muted data-volume="0" data-start="121.925" data-duration="4.155" data-track-index="1"></video>
+<video class="clip vclip" id="c22_1" src="shared/broll/bk_cyber_05.mp4" muted data-volume="0" data-start="126.080" data-duration="4.155" data-track-index="1"></video>
+<video class="clip vclip" id="c23_0" src="shared/broll/bk_phone_11.mp4" muted data-volume="0" data-start="130.235" data-duration="5.510" data-track-index="1"></video>
+<video class="clip vclip" id="c24_0" src="shared/broll/bk_cyber_00.mp4" muted data-volume="0" data-start="135.745" data-duration="6.950" data-track-index="1"></video>
+<video class="clip vclip" id="c25_0" src="shared/broll/bk_cyber_01.mp4" muted data-volume="0" data-start="142.695" data-duration="3.995" data-track-index="1"></video>
+<video class="clip vclip" id="c25_1" src="shared/broll/bk_cyber_02.mp4" muted data-volume="0" data-start="146.690" data-duration="3.995" data-track-index="1"></video>
+<video class="clip vclip" id="c26_0" src="shared/broll/bk_cyber_03.mp4" muted data-volume="0" data-start="150.685" data-duration="4.070" data-track-index="1"></video>
+<video class="clip vclip" id="c27_0" src="shared/broll/bk_atm_02.mp4" muted data-volume="0" data-start="154.755" data-duration="5.510" data-track-index="1"></video>
+<video class="clip vclip" id="c28_0" src="shared/broll/bk_atm_10.mp4" muted data-volume="0" data-start="160.265" data-duration="4.195" data-track-index="1"></video>
+<video class="clip vclip" id="c28_1" src="shared/broll/bk_atm_11.mp4" muted data-volume="0" data-start="164.460" data-duration="4.195" data-track-index="1"></video>
+<video class="clip vclip" id="c29_0" src="shared/broll/bk_atm_13.mp4" muted data-volume="0" data-start="168.655" data-duration="5.010" data-track-index="1"></video>
+<video class="clip vclip" id="c29_1" src="shared/broll/bk_atm_14.mp4" muted data-volume="0" data-start="173.665" data-duration="5.010" data-track-index="1"></video>
+<video class="clip vclip" id="c29_2" src="shared/broll/bk_atm_01.mp4" muted data-volume="0" data-start="178.675" data-duration="5.010" data-track-index="1"></video>
+<video class="clip vclip" id="c30_0" src="shared/broll/bk_bank_01.mp4" muted data-volume="0" data-start="183.685" data-duration="4.875" data-track-index="1"></video>
+<video class="clip vclip" id="c30_1" src="shared/broll/tw_city_00.mp4" muted data-volume="0" data-start="188.560" data-duration="4.875" data-track-index="1"></video>
+<video class="clip vclip" id="c31_0" src="shared/broll/bk_phone_12.mp4" muted data-volume="0" data-start="193.435" data-duration="5.910" data-track-index="1"></video>
+<video class="clip vclip" id="c32_0" src="shared/broll/bk_phone_13.mp4" muted data-volume="0" data-start="199.345" data-duration="4.550" data-track-index="1"></video>
+<video class="clip vclip" id="c33_0" src="shared/broll/bk_phone_17.mp4" muted data-volume="0" data-start="203.895" data-duration="4.790" data-track-index="1"></video>
+<video class="clip vclip" id="c34_0" src="shared/broll/tw_city_01.mp4" muted data-volume="0" data-start="208.685" data-duration="2.310" data-track-index="1"></video>
+<video class="clip vclip" id="c35_0" src="shared/broll/bk_cyber_04.mp4" muted data-volume="0" data-start="210.995" data-duration="6.390" data-track-index="1"></video>
+<video class="clip vclip" id="c36_0" src="shared/broll/bk_cyber_05.mp4" muted data-volume="0" data-start="217.385" data-duration="6.106" data-track-index="1"></video>
+<video class="clip vclip" id="c37_0" src="shared/broll/tw_city_02.mp4" muted data-volume="0" data-start="223.491" data-duration="4.310" data-track-index="1"></video>
+<video class="clip vclip" id="c38_0" src="shared/broll/tw_city_03.mp4" muted data-volume="0" data-start="227.801" data-duration="4.155" data-track-index="1"></video>
+<video class="clip vclip" id="c38_1" src="shared/broll/tw_city_04.mp4" muted data-volume="0" data-start="231.956" data-duration="4.155" data-track-index="1"></video>
+<video class="clip vclip" id="c39_0" src="shared/broll/tw_city_05.mp4" muted data-volume="0" data-start="236.111" data-duration="4.035" data-track-index="1"></video>
+<video class="clip vclip" id="c39_1" src="shared/broll/tw_city_06.mp4" muted data-volume="0" data-start="240.146" data-duration="4.035" data-track-index="1"></video>
+<video class="clip vclip" id="c40_0" src="shared/broll/bk_cyber_00.mp4" muted data-volume="0" data-start="244.181" data-duration="7.190" data-track-index="1"></video>
+<video class="clip vclip" id="c41_0" src="shared/broll/bk_cyber_01.mp4" muted data-volume="0" data-start="251.371" data-duration="2.950" data-track-index="1"></video>
+<video class="clip vclip" id="c42_0" src="shared/broll/bk_cyber_02.mp4" muted data-volume="0" data-start="254.321" data-duration="5.110" data-track-index="1"></video>
+<video class="clip vclip" id="c43_0" src="shared/broll/mm_phone_00.mp4" muted data-volume="0" data-start="259.431" data-duration="1.990" data-track-index="1"></video>
+<video class="clip vclip" id="c44_0" src="shared/broll/mm_phone_01.mp4" muted data-volume="0" data-start="261.421" data-duration="4.035" data-track-index="1"></video>
+<video class="clip vclip" id="c44_1" src="shared/broll/mm_phone_02.mp4" muted data-volume="0" data-start="265.456" data-duration="4.035" data-track-index="1"></video>
+<video class="clip vclip" id="c45_0" src="shared/broll/tw_tm_03.mp4" muted data-volume="0" data-start="269.491" data-duration="6.710" data-track-index="1"></video>
+<video class="clip vclip" id="c46_0" src="shared/broll/tw_tm_04.mp4" muted data-volume="0" data-start="276.201" data-duration="7.430" data-track-index="1"></video>
+<video class="clip vclip" id="c47_0" src="shared/broll/bk_cyber_03.mp4" muted data-volume="0" data-start="283.631" data-duration="6.230" data-track-index="1"></video>
+<video class="clip vclip" id="c48_0" src="shared/broll/bk_cyber_04.mp4" muted data-volume="0" data-start="289.861" data-duration="3.795" data-track-index="1"></video>
+<video class="clip vclip" id="c48_1" src="shared/broll/bk_cyber_05.mp4" muted data-volume="0" data-start="293.656" data-duration="3.795" data-track-index="1"></video>
+<video class="clip vclip" id="c49_0" src="shared/broll/bk_server_00.mp4" muted data-volume="0" data-start="297.451" data-duration="7.350" data-track-index="1"></video>
+<video class="clip vclip" id="c50_0" src="shared/broll/bk_server_01.mp4" muted data-volume="0" data-start="304.801" data-duration="6.710" data-track-index="1"></video>
+<video class="clip vclip" id="c51_0" src="shared/broll/tw_city_07.mp4" muted data-volume="0" data-start="311.511" data-duration="6.470" data-track-index="1"></video>
+<video class="clip vclip" id="c52_0" src="shared/broll/bk_bank_00.mp4" muted data-volume="0" data-start="317.981" data-duration="5.590" data-track-index="1"></video>
+<video class="clip vclip" id="c53_0" src="shared/broll/bk_server_02.mp4" muted data-volume="0" data-start="323.571" data-duration="6.744" data-track-index="1"></video>
+<video class="clip vclip" id="c54_0" src="shared/broll/bk_law_00.mp4" muted data-volume="0" data-start="330.315" data-duration="4.489" data-track-index="1"></video>
+<video class="clip vclip" id="c54_1" src="shared/broll/bk_law_01.mp4" muted data-volume="0" data-start="334.804" data-duration="4.489" data-track-index="1"></video>
+<video class="clip vclip" id="c55_0" src="shared/broll/bk_bank_01.mp4" muted data-volume="0" data-start="339.293" data-duration="4.235" data-track-index="1"></video>
+<video class="clip vclip" id="c55_1" src="shared/broll/tw_city_00.mp4" muted data-volume="0" data-start="343.528" data-duration="4.235" data-track-index="1"></video>
+<video class="clip vclip" id="c56_0" src="shared/broll/tw_tm_05.mp4" muted data-volume="0" data-start="347.763" data-duration="5.670" data-track-index="1"></video>
+<video class="clip vclip" id="c57_0" src="shared/broll/bk_law_02.mp4" muted data-volume="0" data-start="353.433" data-duration="3.670" data-track-index="1"></video>
+<video class="clip vclip" id="c58_0" src="shared/broll/mm_phone_03.mp4" muted data-volume="0" data-start="357.103" data-duration="6.026" data-track-index="1"></video>
+<video class="clip vclip" id="c59_0" src="shared/broll/bk_law_03.mp4" muted data-volume="0" data-start="363.129" data-duration="5.430" data-track-index="1"></video>
+<video class="clip vclip" id="c60_0" src="shared/broll/bk_law_04.mp4" muted data-volume="0" data-start="368.559" data-duration="6.185" data-track-index="1"></video>
+<video class="clip vclip" id="c61_0" src="shared/broll/bk_law_00.mp4" muted data-volume="0" data-start="374.744" data-duration="4.515" data-track-index="1"></video>
+<video class="clip vclip" id="c61_1" src="shared/broll/bk_law_01.mp4" muted data-volume="0" data-start="379.259" data-duration="4.515" data-track-index="1"></video>
+<video class="clip vclip" id="c62_0" src="shared/broll/bk_law_02.mp4" muted data-volume="0" data-start="383.774" data-duration="5.670" data-track-index="1"></video>
+<video class="clip vclip" id="c63_0" src="shared/broll/bk_law_03.mp4" muted data-volume="0" data-start="389.444" data-duration="5.757" data-track-index="1"></video>
+<video class="clip vclip" id="c63_1" src="shared/broll/bk_law_04.mp4" muted data-volume="0" data-start="395.201" data-duration="5.757" data-track-index="1"></video>
+<video class="clip vclip" id="c63_2" src="shared/broll/bk_law_00.mp4" muted data-volume="0" data-start="400.957" data-duration="5.757" data-track-index="1"></video>
+<video class="clip vclip" id="c64_0" src="shared/broll/bk_law_01.mp4" muted data-volume="0" data-start="406.714" data-duration="3.915" data-track-index="1"></video>
+<video class="clip vclip" id="c64_1" src="shared/broll/bk_law_02.mp4" muted data-volume="0" data-start="410.629" data-duration="3.915" data-track-index="1"></video>
+<video class="clip vclip" id="c65_0" src="shared/broll/bk_server_03.mp4" muted data-volume="0" data-start="414.544" data-duration="4.150" data-track-index="1"></video>
+<video class="clip vclip" id="c66_0" src="shared/broll/bk_server_00.mp4" muted data-volume="0" data-start="418.694" data-duration="3.875" data-track-index="1"></video>
+<video class="clip vclip" id="c66_1" src="shared/broll/bk_server_01.mp4" muted data-volume="0" data-start="422.569" data-duration="3.875" data-track-index="1"></video>
+<video class="clip vclip" id="c67_0" src="shared/broll/bk_server_02.mp4" muted data-volume="0" data-start="426.444" data-duration="4.870" data-track-index="1"></video>
+<video class="clip vclip" id="c68_0" src="shared/broll/bk_server_03.mp4" muted data-volume="0" data-start="431.314" data-duration="6.310" data-track-index="1"></video>
+<video class="clip vclip" id="c69_0" src="shared/broll/bk_phone_00.mp4" muted data-volume="0" data-start="437.624" data-duration="4.555" data-track-index="1"></video>
+<video class="clip vclip" id="c69_1" src="shared/broll/bk_phone_04.mp4" muted data-volume="0" data-start="442.179" data-duration="4.555" data-track-index="1"></video>
+<video class="clip vclip" id="c70_0" src="shared/broll/fr_euro_00.mp4" muted data-volume="0" data-start="446.734" data-duration="4.397" data-track-index="1"></video>
+<video class="clip vclip" id="c70_1" src="shared/broll/fr_euro_01.mp4" muted data-volume="0" data-start="451.131" data-duration="4.397" data-track-index="1"></video>
+<video class="clip vclip" id="c70_2" src="shared/broll/fr_euro_02.mp4" muted data-volume="0" data-start="455.527" data-duration="4.397" data-track-index="1"></video>
+<video class="clip vclip" id="c71_0" src="shared/broll/fr_euro_05.mp4" muted data-volume="0" data-start="459.924" data-duration="3.795" data-track-index="1"></video>
+<video class="clip vclip" id="c71_1" src="shared/broll/bk_eu_00.mp4" muted data-volume="0" data-start="463.719" data-duration="3.795" data-track-index="1"></video>
+<video class="clip vclip" id="c72_0" src="shared/broll/bk_eu_10.mp4" muted data-volume="0" data-start="467.514" data-duration="5.795" data-track-index="1"></video>
+<video class="clip vclip" id="c72_1" src="shared/broll/bk_eu_11.mp4" muted data-volume="0" data-start="473.309" data-duration="5.795" data-track-index="1"></video>
+<video class="clip vclip" id="c73_0" src="shared/broll/bk_eu_12.mp4" muted data-volume="0" data-start="479.104" data-duration="4.155" data-track-index="1"></video>
+<video class="clip vclip" id="c73_1" src="shared/broll/fr_euro_00.mp4" muted data-volume="0" data-start="483.259" data-duration="4.155" data-track-index="1"></video>
+<video class="clip vclip" id="c74_0" src="shared/broll/fr_euro_01.mp4" muted data-volume="0" data-start="487.414" data-duration="4.290" data-track-index="1"></video>
+<video class="clip vclip" id="c74_1" src="shared/broll/fr_euro_02.mp4" muted data-volume="0" data-start="491.704" data-duration="4.290" data-track-index="1"></video>
+<video class="clip vclip" id="c74_2" src="shared/broll/fr_euro_05.mp4" muted data-volume="0" data-start="495.994" data-duration="4.290" data-track-index="1"></video>
+<video class="clip vclip" id="c75_0" src="shared/broll/bk_eu_00.mp4" muted data-volume="0" data-start="500.284" data-duration="6.950" data-track-index="1"></video>
+<video class="clip vclip" id="c76_0" src="shared/broll/bk_law_03.mp4" muted data-volume="0" data-start="507.234" data-duration="3.795" data-track-index="1"></video>
+<video class="clip vclip" id="c76_1" src="shared/broll/bk_law_04.mp4" muted data-volume="0" data-start="511.029" data-duration="3.795" data-track-index="1"></video>
+<video class="clip vclip" id="c77_0" src="shared/broll/bk_phone_10.mp4" muted data-volume="0" data-start="514.824" data-duration="4.711" data-track-index="1"></video>
+<video class="clip vclip" id="c78_0" src="shared/broll/bk_phone_11.mp4" muted data-volume="0" data-start="519.535" data-duration="4.475" data-track-index="1"></video>
+<video class="clip vclip" id="c78_1" src="shared/broll/bk_phone_12.mp4" muted data-volume="0" data-start="524.010" data-duration="4.475" data-track-index="1"></video>
+<video class="clip vclip" id="c79_0" src="shared/broll/bk_law_00.mp4" muted data-volume="0" data-start="528.485" data-duration="4.690" data-track-index="1"></video>
+<video class="clip vclip" id="c79_1" src="shared/broll/bk_law_01.mp4" muted data-volume="0" data-start="533.175" data-duration="4.690" data-track-index="1"></video>
+<video class="clip vclip" id="c79_2" src="shared/broll/bk_law_02.mp4" muted data-volume="0" data-start="537.866" data-duration="4.690" data-track-index="1"></video>
+<video class="clip vclip" id="c80_0" src="shared/broll/bk_cyber_00.mp4" muted data-volume="0" data-start="542.556" data-duration="6.950" data-track-index="1"></video>
+<video class="clip vclip" id="c81_0" src="shared/broll/bk_phone_13.mp4" muted data-volume="0" data-start="549.506" data-duration="6.504" data-track-index="1"></video>
+<video class="clip vclip" id="c82_0" src="shared/broll/bk_phone_17.mp4" muted data-volume="0" data-start="556.010" data-duration="4.595" data-track-index="1"></video>
+<video class="clip vclip" id="c82_1" src="shared/broll/mm_phone_00.mp4" muted data-volume="0" data-start="560.605" data-duration="4.595" data-track-index="1"></video>
+<video class="clip vclip" id="c83_0" src="shared/broll/tw_city_01.mp4" muted data-volume="0" data-start="565.200" data-duration="3.190" data-track-index="1"></video>
+<video class="clip vclip" id="c84_0" src="shared/broll/bk_atm_02.mp4" muted data-volume="0" data-start="568.390" data-duration="4.635" data-track-index="1"></video>
+<video class="clip vclip" id="c84_1" src="shared/broll/bk_atm_10.mp4" muted data-volume="0" data-start="573.025" data-duration="4.635" data-track-index="1"></video>
+<video class="clip vclip" id="c85_0" src="shared/broll/mm_phone_01.mp4" muted data-volume="0" data-start="577.660" data-duration="3.875" data-track-index="1"></video>
+<video class="clip vclip" id="c85_1" src="shared/broll/mm_phone_02.mp4" muted data-volume="0" data-start="581.535" data-duration="3.875" data-track-index="1"></video>
+<video class="clip vclip" id="c86_0" src="shared/broll/bk_atm_11.mp4" muted data-volume="0" data-start="585.410" data-duration="3.590" data-track-index="1"></video>
+<video class="clip vclip" id="c87_0" src="shared/broll/bk_atm_13.mp4" muted data-volume="0" data-start="589.000" data-duration="2.070" data-track-index="1"></video>
+<video class="clip vclip" id="c88_0" src="shared/broll/tw_city_02.mp4" muted data-volume="0" data-start="591.070" data-duration="4.955" data-track-index="1"></video>
+<video class="clip vclip" id="c88_1" src="shared/broll/tw_city_03.mp4" muted data-volume="0" data-start="596.025" data-duration="4.955" data-track-index="1"></video>
+<video class="clip vclip" id="c89_0" src="shared/broll/tw_city_04.mp4" muted data-volume="0" data-start="600.980" data-duration="4.635" data-track-index="1"></video>
+<video class="clip vclip" id="c89_1" src="shared/broll/tw_city_05.mp4" muted data-volume="0" data-start="605.615" data-duration="4.635" data-track-index="1"></video>
+<video class="clip vclip" id="c90_0" src="shared/broll/tw_city_06.mp4" muted data-volume="0" data-start="610.250" data-duration="3.910" data-track-index="1"></video>
+<video class="clip vclip" id="c91_0" src="shared/broll/bk_law_03.mp4" muted data-volume="0" data-start="614.160" data-duration="6.150" data-track-index="1"></video>
+<video class="clip vclip" id="c92_0" src="shared/broll/bk_law_04.mp4" muted data-volume="0" data-start="620.310" data-duration="5.750" data-track-index="1"></video>
+<video class="clip vclip" id="c93_0" src="shared/broll/bk_atm_14.mp4" muted data-volume="0" data-start="626.060" data-duration="7.190" data-track-index="1"></video>
+<video class="clip vclip" id="c94_0" src="shared/broll/bk_atm_01.mp4" muted data-volume="0" data-start="633.250" data-duration="4.235" data-track-index="1"></video>
+<video class="clip vclip" id="c94_1" src="shared/broll/bk_atm_02.mp4" muted data-volume="0" data-start="637.485" data-duration="4.235" data-track-index="1"></video>
+<video class="clip vclip" id="c95_0" src="shared/broll/tw_tm_06.mp4" muted data-volume="0" data-start="641.720" data-duration="4.950" data-track-index="1"></video>
+<video class="clip vclip" id="c96_0" src="shared/broll/bk_cyber_01.mp4" muted data-volume="0" data-start="646.670" data-duration="4.637" data-track-index="1"></video>
+<video class="clip vclip" id="c96_1" src="shared/broll/bk_cyber_02.mp4" muted data-volume="0" data-start="651.307" data-duration="4.637" data-track-index="1"></video>
+<video class="clip vclip" id="c96_2" src="shared/broll/bk_cyber_03.mp4" muted data-volume="0" data-start="655.943" data-duration="4.637" data-track-index="1"></video>
+<video class="clip vclip" id="c97_0" src="shared/broll/tw_city_07.mp4" muted data-volume="0" data-start="660.580" data-duration="4.977" data-track-index="1"></video>
+<video class="clip vclip" id="c97_1" src="shared/broll/bk_bank_00.mp4" muted data-volume="0" data-start="665.558" data-duration="4.977" data-track-index="1"></video>
+<video class="clip vclip" id="c97_2" src="shared/broll/bk_bank_01.mp4" muted data-volume="0" data-start="670.535" data-duration="4.977" data-track-index="1"></video>
+<video class="clip vclip" id="c97_3" src="shared/broll/tw_city_00.mp4" muted data-volume="0" data-start="675.513" data-duration="4.977" data-track-index="1"></video>
+<video class="clip vclip" id="c98_0" src="shared/broll/tw_city_01.mp4" muted data-volume="0" data-start="680.490" data-duration="6.710" data-track-index="1"></video>
+<video class="clip vclip" id="c99_0" src="shared/broll/mm_phone_03.mp4" muted data-volume="0" data-start="687.200" data-duration="4.870" data-track-index="1"></video>
+<section id="p1" class="clip" data-start="0.000" data-duration="3.525" data-track-index="2"><div class="vshade"></div><div class="sin" id="p1-in"><div class="sub2" id="p1-sub"><span style="white-space: nowrap">金錢怪物，一睜眼就是錢的世界。</span></div><div class="pg">1 / 100</div></div></section>
+<section id="p2" class="clip" data-start="3.525" data-duration="7.210" data-track-index="3"><div class="shade"></div><div class="sin" id="p2-in"><div class="h1" id="p2-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">2026 年 11 月 3 日</div><div class="h1" id="p2-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">轉出 10 萬元</div><div class="h1" id="p2-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">客戶反映</div><div class="sub2" id="p2-sub">2026 年 11 月 3 日，有客戶反映，<br>手機收到一則出帳通知：帳戶轉出 10 萬元。</div><div class="pg">2 / 100</div></div></section>
+<section id="p3" class="clip" data-start="10.735" data-duration="3.670" data-track-index="4"><div class="vshade"></div><div class="sin" id="p3-in"><div class="sub2" id="p3-sub"><span style="white-space: nowrap">客戶反映，他沒有開 App，也沒有收到驗證碼。</span></div><div class="pg">3 / 100</div></div></section>
+<section id="p4" class="clip" data-start="14.405" data-duration="7.910" data-track-index="5"><div class="shade"></div><div class="sin" id="p4-in"><div class="h1" id="p4-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">金管會說明</div><div class="h1" id="p4-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">419 人｜427 筆</div><div class="h1" id="p4-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">每筆約 10 萬元，總金額逾 4,000 萬元</div><div class="sub2" id="p4-sub">金管會說，那一天共有 419 人受影響，<br>427 筆，總金額超過 4,000 萬元。</div><div class="pg">4 / 100</div></div></section>
+<section id="p5" class="clip" data-start="22.315" data-duration="6.870" data-track-index="6"><div class="vshade"></div><div class="sin" id="p5-in"><div class="sub2" id="p5-sub"><span style="white-space: nowrap">這些錢，都轉進同一個帳戶。發生的地方，是永豐銀行的新網銀系統。</span></div><div class="pg">5 / 100</div></div></section>
+<section id="p6" class="clip" data-start="29.185" data-duration="8.730" data-track-index="7"><div class="shade"></div><div class="sin" id="p6-in"><div class="h1" id="p6-h" style="top: 180px; font-size: 64px; color: var(--gold)">2026 年 11 月 3 日</div><div class="card" id="p6-c0" style="left: 80px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p6-cd0" style="left: 80px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">10:48</div><div class="h1" id="p6-cw0" style="left: 80px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">165 接到報案</div><div class="card" id="p6-c1" style="left: 693px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p6-cd1" style="left: 693px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">中午</div><div class="h1" id="p6-cw1" style="left: 693px; right: auto; width: 533px; top: 540px; font-size: 25px; font-weight: 600">刑事局受理 68 案；永豐銀電話通知金管會</div><div class="card" id="p6-c2" style="left: 1306px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p6-cd2" style="left: 1306px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">下午</div><div class="h1" id="p6-cw2" style="left: 1306px; right: auto; width: 533px; top: 540px; font-size: 44px; font-weight: 600">受款帳戶凍結，款項返還</div><div class="sub2" id="p6-sub">時間順序是這樣：上午 10 點 48 分，<br>165 接到客戶報案；到中午，刑事局已經受理 68 案。</div><div class="pg">6 / 100</div></div></section>
+<section id="p7" class="clip" data-start="37.915" data-duration="6.630" data-track-index="8"><div class="vshade"></div><div class="sin" id="p7-in"><div class="sub2" id="p7-sub"><span style="white-space: nowrap">受款帳戶已遭凍結；永豐銀行同一天聲明，款項含手續費，已全數返還。</span></div><div class="pg">7 / 100</div></div></section>
+<section id="p8" class="clip" data-start="44.545" data-duration="5.430" data-track-index="9"><div class="vshade"></div><div class="sin" id="p8-in"><div class="sub2" id="p8-sub"><span style="white-space: nowrap">先講清楚：這次的原因還沒公布，所以現在不能說它就是盜領。</span></div><div class="pg">8 / 100</div></div></section>
+<section id="p9" class="clip" data-start="49.975" data-duration="4.790" data-track-index="10"><div class="vshade"></div><div class="sin" id="p9-in"><div class="sub2" id="p9-sub"><span style="white-space: nowrap">永豐銀行說是程式異常，金管會說，原因還在釐清。</span></div><div class="pg">9 / 100</div></div></section>
+<section id="p10" class="clip" data-start="54.765" data-duration="7.270" data-track-index="11"><div class="vshade"></div><div class="sin" id="p10-in"><div class="sub2" id="p10-sub">但它讓我們想問：都這個年代了，有密碼、<br>驗證碼，還有刷臉，盜領存款還很簡單嗎？</div><div class="pg">10 / 100</div></div></section>
+<section id="p11" class="clip" data-start="62.035" data-duration="8.870" data-track-index="12"><div class="shade"></div><div class="sin" id="p11-in"><div class="h1" id="p11-h" style="top: 180px; font-size: 64px; color: var(--gold)">這一集看三件事</div><div class="card" id="p11-c0" style="left: 80px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p11-cd0" style="left: 80px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">①</div><div class="h1" id="p11-cw0" style="left: 80px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">銀行怎麼保護你的錢</div><div class="card" id="p11-c1" style="left: 693px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p11-cd1" style="left: 693px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">②</div><div class="h1" id="p11-cw1" style="left: 693px; right: auto; width: 533px; top: 540px; font-size: 49px; font-weight: 600">錢可能從什麼地方出去</div><div class="card" id="p11-c2" style="left: 1306px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p11-cd2" style="left: 1306px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">③</div><div class="h1" id="p11-cw2" style="left: 1306px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">出事的時候誰負責</div><div class="sub2" id="p11-sub">這一集我們看三件事：銀行怎麼保護你的錢、<br>錢可能從什麼地方出去、出事的時候誰負責。</div><div class="pg">11 / 100</div></div></section>
+<section id="p12" class="clip" data-start="70.905" data-duration="7.350" data-track-index="13"><div class="vshade"></div><div class="sin" id="p12-in"><div class="sub2" id="p12-sub">最後再回答一個問題：錢，<br>還能存銀行嗎？這一集不是要你把錢領出來，是把事情拆清楚。</div><div class="pg">12 / 100</div></div></section>
+<section id="p13" class="clip" data-start="78.255" data-duration="2.870" data-track-index="14"><div class="vshade"></div><div class="sin" id="p13-in"><div class="sub2" id="p13-sub"><span style="white-space: nowrap">先講一個詞：非約定轉帳。</span></div><div class="pg">13 / 100</div></div></section>
+<section id="p14" class="clip" data-start="81.125" data-duration="3.670" data-track-index="15"><div class="vshade"></div><div class="sin" id="p14-in"><div class="sub2" id="p14-sub"><span style="white-space: nowrap">約定轉帳，是你事先跟銀行登記好的帳戶。</span></div><div class="pg">14 / 100</div></div></section>
+<section id="p15" class="clip" data-start="84.795" data-duration="5.350" data-track-index="16"><div class="shade"></div><div class="sin" id="p15-in"><div class="h1" id="p15-h" style="top: 180px; font-size: 64px; color: var(--gold)">非約定轉帳是什麼</div><div class="card" id="p15-c0" style="left: 280px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p15-cd0" style="left: 280px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">約定</div><div class="h1" id="p15-cw0" style="left: 280px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">事先登記好的帳戶</div><div class="card" id="p15-c1" style="left: 1000px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p15-cd1" style="left: 1000px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">非約定</div><div class="h1" id="p15-cw1" style="left: 1000px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">臨時轉給沒登記過的帳戶</div><div class="sub2" id="p15-sub"><span style="white-space: nowrap">非約定轉帳，就是臨時轉給一個沒有登記過的帳戶。</span></div><div class="pg">15 / 100</div></div></section>
+<section id="p16" class="clip" data-start="90.145" data-duration="2.790" data-track-index="17"><div class="shade"></div><div class="sin" id="p16-in"><div class="h1" id="p16-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">第一件事</div><div class="h1" id="p16-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">銀行怎麼保護</div><div class="h1" id="p16-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600"></div><div class="sub2" id="p16-sub"><span style="white-space: nowrap">第一件事，銀行怎麼保護你的錢。</span></div><div class="pg">16 / 100</div></div></section>
+<section id="p17" class="clip" data-start="92.935" data-duration="7.270" data-track-index="18"><div class="shade"></div><div class="sin" id="p17-in"><div class="h1" id="p17-h" style="top: 180px; font-size: 64px; color: var(--gold)">銀行的三道關卡</div><div class="card" id="p17-c0" style="left: 80px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p17-cd0" style="left: 80px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">①</div><div class="h1" id="p17-cw0" style="left: 80px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">確定是你</div><div class="card" id="p17-c1" style="left: 693px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p17-cd1" style="left: 693px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">②</div><div class="h1" id="p17-cw1" style="left: 693px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">限制損失</div><div class="card" id="p17-c2" style="left: 1306px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p17-cd2" style="left: 1306px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">③</div><div class="h1" id="p17-cw2" style="left: 1306px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">攔截追回</div><div class="sub2" id="p17-sub">你可以把它想成三道關卡：確定是你、<br>限制損失、攔截追回。這是我們的整理。</div><div class="pg">17 / 100</div></div></section>
+<section id="p18" class="clip" data-start="100.205" data-duration="7.190" data-track-index="19"><div class="vshade"></div><div class="sin" id="p18-in"><div class="sub2" id="p18-sub">第一道，確定是你。銀行公會 2026 年 1 月的最新版安全基準，<br>列了一整套確定方式。</div><div class="pg">18 / 100</div></div></section>
+<section id="p19" class="clip" data-start="107.395" data-duration="3.030" data-track-index="20"><div class="vshade"></div><div class="sin" id="p19-in"><div class="sub2" id="p19-sub"><span style="white-space: nowrap">第一種是你知道的東西，像密碼。</span></div><div class="pg">19 / 100</div></div></section>
+<section id="p20" class="clip" data-start="110.425" data-duration="6.950" data-track-index="21"><div class="vshade"></div><div class="sin" id="p20-in"><div class="sub2" id="p20-sub"><span style="white-space: nowrap">第二種是你拿著的東西，像登記好的手機，銀行把驗證碼或推播送到那裡。</span></div><div class="pg">20 / 100</div></div></section>
+<section id="p21" class="clip" data-start="117.375" data-duration="4.550" data-track-index="22"><div class="vshade"></div><div class="sin" id="p21-in"><div class="sub2" id="p21-sub"><span style="white-space: nowrap">第三種是你身上的東西，像指紋或臉部。</span></div><div class="pg">21 / 100</div></div></section>
+<section id="p22" class="clip" data-start="121.925" data-duration="8.310" data-track-index="23"><div class="vshade"></div><div class="sin" id="p22-in"><div class="sub2" id="p22-sub">基準也要求，直接用生物特徵驗證，要確定是真人和本人，<br>還要透過第三方檢測，防止變造或假冒。</div><div class="pg">22 / 100</div></div></section>
+<section id="p23" class="clip" data-start="130.235" data-duration="5.510" data-track-index="24"><div class="vshade"></div><div class="sin" id="p23-in"><div class="sub2" id="p23-sub"><span style="white-space: nowrap">另外還有 OTP，也就是只能用一次的驗證碼。</span></div><div class="pg">23 / 100</div></div></section>
+<section id="p24" class="clip" data-start="135.745" data-duration="6.950" data-track-index="25"><div class="vshade"></div><div class="sin" id="p24-in"><div class="sub2" id="p24-sub"><span style="white-space: nowrap">密碼打錯也有上限：契約規定，連續錯 3 到 5 次，服務就會自動停止。</span></div><div class="pg">24 / 100</div></div></section>
+<section id="p25" class="clip" data-start="142.695" data-duration="7.990" data-track-index="26"><div class="vshade"></div><div class="sin" id="p25-in"><div class="sub2" id="p25-sub">基準也提到，用簡訊驗證碼做非約定轉帳時，<br>手機可能被植入惡意程式，偷走驗證碼。</div><div class="pg">25 / 100</div></div></section>
+<section id="p26" class="clip" data-start="150.685" data-duration="4.070" data-track-index="27"><div class="vshade"></div><div class="sin" id="p26-in"><div class="sub2" id="p26-sub"><span style="white-space: nowrap">所以要再加強防護，像指定設備、推播確認。</span></div><div class="pg">26 / 100</div></div></section>
+<section id="p27" class="clip" data-start="154.755" data-duration="5.510" data-track-index="28"><div class="vshade"></div><div class="sin" id="p27-in"><div class="sub2" id="p27-sub"><span style="white-space: nowrap">第二道，限制損失。用限額，降低一次交易可能造成的損失。</span></div><div class="pg">27 / 100</div></div></section>
+<section id="p28" class="clip" data-start="160.265" data-duration="8.390" data-track-index="29"><div class="shade"></div><div class="sin" id="p28-in"><div class="h1" id="p28-h" style="top: 180px; font-size: 64px; color: var(--gold)">低風險的非約定轉帳上限</div><div class="card" id="p28-c0" style="left: 80px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p28-cd0" style="left: 80px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">每筆</div><div class="h1" id="p28-cw0" style="left: 80px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">5 萬元</div><div class="card" id="p28-c1" style="left: 693px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p28-cd1" style="left: 693px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">每天</div><div class="h1" id="p28-cw1" style="left: 693px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">10 萬元</div><div class="card" id="p28-c2" style="left: 1306px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p28-cd2" style="left: 1306px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">每月</div><div class="h1" id="p28-cw2" style="left: 1306px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">20 萬元</div><div class="sub2" id="p28-sub">基準規定，網路上低風險的非約定轉帳，<br>每筆不超過 5 萬、每天 10 萬、每月 20 萬。</div><div class="pg">28 / 100</div></div></section>
+<section id="p29" class="clip" data-start="168.655" data-duration="15.030" data-track-index="30"><div class="shade"></div><div class="sin" id="p29-in"><div class="h1" id="p29-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">符合技術防護條件時</div><div class="h1" id="p29-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">當日最高 300 萬元</div><div class="h1" id="p29-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">由銀行視風險斟酌提高</div><div class="sub2" id="p29-sub">不過這也不是最高上限。銀行如果用基準列舉的技術防護，例如直接人臉辨識軌跡，<br>還要能讓客戶核對交易內容、防止內容被改動，才能視風險提高，最高當天累計 300 萬元。</div><div class="pg">29 / 100</div></div></section>
+<section id="p30" class="clip" data-start="183.685" data-duration="9.750" data-track-index="31"><div class="vshade"></div><div class="sin" id="p30-in"><div class="sub2" id="p30-sub">所以開頭每筆約 10 萬元，不能只拿一般限額來判斷有沒有超過規定。<br>這些交易的類型，該用哪個限額，都還要釐清。</div><div class="pg">30 / 100</div></div></section>
+<section id="p31" class="clip" data-start="193.435" data-duration="5.910" data-track-index="32"><div class="vshade"></div><div class="sin" id="p31-in"><div class="sub2" id="p31-sub"><span style="white-space: nowrap">還有一層，2025 年 9 月底開始推動：轉帳時顯示對方的部分戶名。</span></div><div class="pg">31 / 100</div></div></section>
+<section id="p32" class="clip" data-start="199.345" data-duration="4.550" data-track-index="33"><div class="shade"></div><div class="sin" id="p32-in"><div class="h1" id="p32-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">轉帳顯示戶名</div><div class="h1" id="p32-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">54 家</div><div class="h1" id="p32-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">2026 年 5 月底，金融機構上線數</div><div class="sub2" id="p32-sub"><span style="white-space: nowrap">到 2026 年 5 月底，已經有 54 家金融機構上線。</span></div><div class="pg">32 / 100</div></div></section>
+<section id="p33" class="clip" data-start="203.895" data-duration="4.790" data-track-index="34"><div class="vshade"></div><div class="sin" id="p33-in"><div class="sub2" id="p33-sub"><span style="white-space: nowrap">它讓你在按下確定之前，多一個機會核對對方是誰。</span></div><div class="pg">33 / 100</div></div></section>
+<section id="p34" class="clip" data-start="208.685" data-duration="2.310" data-track-index="35"><div class="vshade"></div><div class="sin" id="p34-in"><div class="sub2" id="p34-sub"><span style="white-space: nowrap">第三道，攔截追回。</span></div><div class="pg">34 / 100</div></div></section>
+<section id="p35" class="clip" data-start="210.995" data-duration="6.390" data-track-index="36"><div class="vshade"></div><div class="sin" id="p35-in"><div class="sub2" id="p35-sub"><span style="white-space: nowrap">銀行會用一些跡象找可疑帳戶，例如短時間頻繁開戶、頻繁設定約定帳戶。</span></div><div class="pg">35 / 100</div></div></section>
+<section id="p36" class="clip" data-start="217.385" data-duration="6.106" data-track-index="37"><div class="vshade"></div><div class="sin" id="p36-in"><div class="sub2" id="p36-sub"><span style="white-space: nowrap">金管會修法後，這類跡象增加到 14 項。但被列入，不代表一定不合法。</span></div><div class="pg">36 / 100</div></div></section>
+<section id="p37" class="clip" data-start="223.491" data-duration="4.310" data-track-index="38"><div class="vshade"></div><div class="sin" id="p37-in"><div class="sub2" id="p37-sub"><span style="white-space: nowrap">接到警示通報的帳戶，銀行要暫停全部交易功能。</span></div><div class="pg">37 / 100</div></div></section>
+<section id="p38" class="clip" data-start="227.801" data-duration="8.310" data-track-index="39"><div class="vshade"></div><div class="sin" id="p38-in"><div class="sub2" id="p38-sub">銀行局 2025 年說過，電子通報之後，<br>從通報到凍結，可以縮短到 10 分鐘至半小時。</div><div class="pg">38 / 100</div></div></section>
+<section id="p39" class="clip" data-start="236.111" data-duration="8.070" data-track-index="40"><div class="vshade"></div><div class="sin" id="p39-in"><div class="sub2" id="p39-sub">這次受款帳戶已遭凍結，金管會說資金不會流出。<br>至於後續怎麼處理，要看調查結果。</div><div class="pg">39 / 100</div></div></section>
+<section id="p40" class="clip" data-start="244.181" data-duration="7.190" data-track-index="41"><div class="vshade"></div><div class="sin" id="p40-in"><div class="sub2" id="p40-sub">一層一層設計，是不想讓一層失守，<br>就全部失守。但防護再多，錢還是可能出去。</div><div class="pg">40 / 100</div></div></section>
+<section id="p41" class="clip" data-start="251.371" data-duration="2.950" data-track-index="42"><div class="shade"></div><div class="sin" id="p41-in"><div class="h1" id="p41-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">第二件事</div><div class="h1" id="p41-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">錢從什麼地方出去</div><div class="h1" id="p41-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600"></div><div class="sub2" id="p41-sub"><span style="white-space: nowrap">第二件事，錢可能從什麼地方出去。</span></div><div class="pg">41 / 100</div></div></section>
+<section id="p42" class="clip" data-start="254.321" data-duration="5.110" data-track-index="43"><div class="shade"></div><div class="sin" id="p42-in"><div class="h1" id="p42-h" style="top: 180px; font-size: 64px; color: var(--gold)">錢出去的三條路</div><div class="card" id="p42-c0" style="left: 80px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p42-cd0" style="left: 80px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">①</div><div class="h1" id="p42-cw0" style="left: 80px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">騙你自己轉</div><div class="card" id="p42-c1" style="left: 693px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p42-cd1" style="left: 693px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">②</div><div class="h1" id="p42-cw1" style="left: 693px; right: auto; width: 533px; top: 540px; font-size: 49px; font-weight: 600">從你的手機或密碼下手</div><div class="card" id="p42-c2" style="left: 1306px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p42-cd2" style="left: 1306px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">③</div><div class="h1" id="p42-cw2" style="left: 1306px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">問題出在銀行那一端</div><div class="sub2" id="p42-sub"><span style="white-space: nowrap">我們把它分成三條路。這是我們的整理，不是官方分類。</span></div><div class="pg">42 / 100</div></div></section>
+<section id="p43" class="clip" data-start="259.431" data-duration="1.990" data-track-index="44"><div class="vshade"></div><div class="sin" id="p43-in"><div class="sub2" id="p43-sub"><span style="white-space: nowrap">第一條，騙你自己轉。</span></div><div class="pg">43 / 100</div></div></section>
+<section id="p44" class="clip" data-start="261.421" data-duration="8.070" data-track-index="45"><div class="vshade"></div><div class="sin" id="p44-in"><div class="sub2" id="p44-sub">這時候，交易要求的身分驗證，可能都是你本人完成的。<br>對系統來說，它可能就像一筆正常交易。</div><div class="pg">44 / 100</div></div></section>
+<section id="p45" class="clip" data-start="269.491" data-duration="6.710" data-track-index="46"><div class="shade"></div><div class="sin" id="p45-in"><div class="h1" id="p45-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">2025 年台灣詐騙財損</div><div class="h1" id="p45-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">893.26 億元</div><div class="h1" id="p45-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">受理約 16.2 萬件；165 打詐儀錶板</div><div class="sub2" id="p45-sub"><span style="white-space: nowrap">2025 年，台灣詐騙財損 893.26 億元，受理大約 16.2 萬件。</span></div><div class="pg">45 / 100</div></div></section>
+<section id="p46" class="clip" data-start="276.201" data-duration="7.430" data-track-index="47"><div class="vshade"></div><div class="sin" id="p46-in"><div class="sub2" id="p46-sub">這包含不同類型的詐騙，不全是銀行帳戶的事。<br>假投資，一直是財損最大的類型之一。</div><div class="pg">46 / 100</div></div></section>
+<section id="p47" class="clip" data-start="283.631" data-duration="6.230" data-track-index="48"><div class="vshade"></div><div class="sin" id="p47-in"><div class="sub2" id="p47-sub"><span style="white-space: nowrap">第二條，從你的手機或密碼下手。惡意程式、假網站，都在這一類。</span></div><div class="pg">47 / 100</div></div></section>
+<section id="p48" class="clip" data-start="289.861" data-duration="7.590" data-track-index="49"><div class="vshade"></div><div class="sin" id="p48-in"><div class="sub2" id="p48-sub">這一類，交易不是你按的，但對方拿到了你的東西，<br>所以密碼和驗證碼的保管，會變成爭點。</div><div class="pg">48 / 100</div></div></section>
+<section id="p49" class="clip" data-start="297.451" data-duration="7.350" data-track-index="50"><div class="vshade"></div><div class="sin" id="p49-in"><div class="sub2" id="p49-sub">第三條，問題出在銀行那一端。<br>可能是系統被入侵，也可能是系統自己出錯。</div><div class="pg">49 / 100</div></div></section>
+<section id="p50" class="clip" data-start="304.801" data-duration="6.710" data-track-index="51"><div class="vshade"></div><div class="sin" id="p50-in"><div class="sub2" id="p50-sub"><span style="white-space: nowrap">我們的看法是，這一條最不一樣：你把密碼顧得再好，也不一定防得住。</span></div><div class="pg">50 / 100</div></div></section>
+<section id="p51" class="clip" data-start="311.511" data-duration="6.470" data-track-index="52"><div class="vshade"></div><div class="sin" id="p51-in"><div class="sub2" id="p51-sub"><span style="white-space: nowrap">以上是一般整理，不能拿來判定這次的原因。那這次，目前知道什麼？</span></div><div class="pg">51 / 100</div></div></section>
+<section id="p52" class="clip" data-start="317.981" data-duration="5.590" data-track-index="53"><div class="vshade"></div><div class="sin" id="p52-in"><div class="sub2" id="p52-sub"><span style="white-space: nowrap">知道的是：永豐銀行說程式異常，款項含手續費，已經全數返還。</span></div><div class="pg">52 / 100</div></div></section>
+<section id="p53" class="clip" data-start="323.571" data-duration="6.744" data-track-index="54"><div class="shade"></div><div class="sin" id="p53-in"><div class="h1" id="p53-h" style="top: 180px; font-size: 64px; color: var(--gold)">還不知道的事</div><div class="card" id="p53-c0" style="left: 280px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p53-cd0" style="left: 280px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">？</div><div class="h1" id="p53-cw0" style="left: 280px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">程式異常具體是什麼</div><div class="card" id="p53-c1" style="left: 1000px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p53-cd1" style="left: 1000px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">？</div><div class="h1" id="p53-cw1" style="left: 1000px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">刷臉紀錄怎麼來的</div><div class="sub2" id="p53-sub">還不知道的是：程式異常具體是什麼，<br>還有客戶反映的刷臉紀錄，是怎麼來的。</div><div class="pg">53 / 100</div></div></section>
+<section id="p54" class="clip" data-start="330.315" data-duration="8.978" data-track-index="55"><div class="vshade"></div><div class="sin" id="p54-in"><div class="sub2" id="p54-sub">一般規定是，發現重大事件後 30 分鐘內先電話通報，<br>通報後 7 天內，再交調查和清查結果。</div><div class="pg">54 / 100</div></div></section>
+<section id="p55" class="clip" data-start="339.293" data-duration="8.470" data-track-index="56"><div class="shade"></div><div class="sin" id="p55-in"><div class="h1" id="p55-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">金管會期限</div><div class="h1" id="p55-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">11 月 12 日前</div><div class="h1" id="p55-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">永豐銀行提交調查報告</div><div class="sub2" id="p55-sub">這一次，永豐銀行要在 11 月 12 日前交調查結果。<br>要不要開罰，金管會說看原因和情節再決定。</div><div class="pg">55 / 100</div></div></section>
+<section id="p56" class="clip" data-start="347.763" data-duration="5.670" data-track-index="57"><div class="vshade"></div><div class="sin" id="p56-in"><div class="sub2" id="p56-sub"><span style="white-space: nowrap">台北地檢署也已經分案，目前公開報導沒有提到具名被告。</span></div><div class="pg">56 / 100</div></div></section>
+<section id="p57" class="clip" data-start="353.433" data-duration="3.670" data-track-index="58"><div class="shade"></div><div class="sin" id="p57-in"><div class="h1" id="p57-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">第三件事</div><div class="h1" id="p57-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">出事誰負責</div><div class="h1" id="p57-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600"></div><div class="sub2" id="p57-sub"><span style="white-space: nowrap">第三件事，出事的時候，誰負責。</span></div><div class="pg">57 / 100</div></div></section>
+<section id="p58" class="clip" data-start="357.103" data-duration="6.026" data-track-index="59"><div class="vshade"></div><div class="sin" id="p58-in"><div class="sub2" id="p58-sub"><span style="white-space: nowrap">永豐銀行表示，這次款項已全數返還。但其他個案，責任怎麼算？</span></div><div class="pg">58 / 100</div></div></section>
+<section id="p59" class="clip" data-start="363.129" data-duration="5.430" data-track-index="60"><div class="vshade"></div><div class="sin" id="p59-in"><div class="sub2" id="p59-sub"><span style="white-space: nowrap">答案在一份你可能簽過、但沒細看的文件裡：網銀契約。</span></div><div class="pg">59 / 100</div></div></section>
+<section id="p60" class="clip" data-start="368.559" data-duration="6.185" data-track-index="61"><div class="vshade"></div><div class="sin" id="p60-in"><div class="sub2" id="p60-sub"><span style="white-space: nowrap">金管會公告過，網銀契約一定要寫哪些事。我們看其中幾條。</span></div><div class="pg">60 / 100</div></div></section>
+<section id="p61" class="clip" data-start="374.744" data-duration="9.030" data-track-index="62"><div class="vshade"></div><div class="sin" id="p61-in"><div class="sub2" id="p61-sub">第一條，如果第三人未經授權使用你的網銀，<br>在銀行接到通知之前已發生的效力，原則上由銀行負責。</div><div class="pg">61 / 100</div></div></section>
+<section id="p62" class="clip" data-start="383.774" data-duration="5.670" data-track-index="63"><div class="vshade"></div><div class="sin" id="p62-in"><div class="sub2" id="p62-sub"><span style="white-space: nowrap">但有兩個例外。第一個，銀行能證明你有故意或過失。</span></div><div class="pg">62 / 100</div></div></section>
+<section id="p63" class="clip" data-start="389.444" data-duration="17.270" data-track-index="64"><div class="shade"></div><div class="sin" id="p63-in"><div class="h1" id="p63-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">交易核對的約定天數</div><div class="h1" id="p63-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">不少於 45 天</div><div class="h1" id="p63-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">金管會公告的網銀契約應記載事項</div><div class="sub2" id="p63-sub">第二個，銀行通知你交易核對資料之後，超過約定天數你才講，這個天數不能少於 45 天。<br>長途旅行、住院這類特殊事由，從事由結束起算；銀行自己有故意或過失，也不能只用這個理由免責。</div><div class="pg">63 / 100</div></div></section>
+<section id="p64" class="clip" data-start="406.714" data-duration="7.830" data-track-index="65"><div class="vshade"></div><div class="sin" id="p64-in"><div class="sub2" id="p64-sub">注意這個設計：銀行如果要主張你有故意或過失，<br>要由銀行證明。其他爭點，還是依個案處理。</div><div class="pg">64 / 100</div></div></section>
+<section id="p65" class="clip" data-start="414.544" data-duration="4.150" data-track-index="66"><div class="vshade"></div><div class="sin" id="p65-in"><div class="sub2" id="p65-sub"><span style="white-space: nowrap">調查冒用事實的鑑識費用，也由銀行負擔。</span></div><div class="pg">65 / 100</div></div></section>
+<section id="p66" class="clip" data-start="418.694" data-duration="7.750" data-track-index="67"><div class="vshade"></div><div class="sin" id="p66-in"><div class="sub2" id="p66-sub">再一條，如果爭議是第三人破解銀行系統、<br>或利用系統漏洞，由銀行舉證這件事不存在。</div><div class="pg">66 / 100</div></div></section>
+<section id="p67" class="clip" data-start="426.444" data-duration="4.870" data-track-index="68"><div class="shade"></div><div class="sin" id="p67-in"><div class="h1" id="p67-h" style="top: 180px; font-size: 64px; color: var(--gold)">網銀契約怎麼寫</div><div class="card" id="p67-c0" style="left: 280px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p67-cd0" style="left: 280px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">冒用</div><div class="h1" id="p67-cw0" style="left: 280px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">原則銀行負責，有例外</div><div class="card" id="p67-c1" style="left: 1000px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p67-cd1" style="left: 1000px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">入侵</div><div class="h1" id="p67-cw1" style="left: 1000px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">銀行系統被入侵，銀行負擔</div><div class="sub2" id="p67-sub"><span style="white-space: nowrap">第三人入侵銀行系統，造成客戶損失，由銀行負擔。</span></div><div class="pg">67 / 100</div></div></section>
+<section id="p68" class="clip" data-start="431.314" data-duration="6.310" data-track-index="69"><div class="vshade"></div><div class="sin" id="p68-in"><div class="sub2" id="p68-sub"><span style="white-space: nowrap">錯誤如果可歸責於銀行，銀行知道之後要立刻更正，並通知你。</span></div><div class="pg">68 / 100</div></div></section>
+<section id="p69" class="clip" data-start="437.624" data-duration="9.110" data-track-index="70"><div class="vshade"></div><div class="sin" id="p69-in"><div class="sub2" id="p69-sub">這是條文。受騙後自己按下轉帳，是不是同樣規則，<br>要看有沒有授權、經過，還有銀行有沒有責任，不能一概而論。</div><div class="pg">69 / 100</div></div></section>
+<section id="p70" class="clip" data-start="446.734" data-duration="13.190" data-track-index="71"><div class="vshade"></div><div class="sin" id="p70-in"><div class="sub2" id="p70-sub">放到國外比比看。歐盟的支付規定寫，客戶否認授權時，<br>銀行要舉證這筆交易經過驗證、處理無誤；光有使用紀錄，不一定足以證明是客戶授權。</div><div class="pg">70 / 100</div></div></section>
+<section id="p71" class="clip" data-start="459.924" data-duration="7.590" data-track-index="72"><div class="shade"></div><div class="sin" id="p71-in"><div class="h1" id="p71-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">歐盟未授權交易</div><div class="h1" id="p71-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">下一營業日前退款</div><div class="h1" id="p71-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">合理懷疑客戶詐欺並通報主管機關時例外</div><div class="sub2" id="p71-sub">未經授權的交易，原則上銀行知道或接到通知後，<br>最晚下一個營業日結束前，就要先退款。</div><div class="pg">71 / 100</div></div></section>
+<section id="p72" class="clip" data-start="467.514" data-duration="11.590" data-track-index="73"><div class="vshade"></div><div class="sin" id="p72-in"><div class="sub2" id="p72-sub">特定情形下，客戶最多負擔 50 歐元，大約新台幣 1,800 元；<br>但客戶造假，或故意、重大過失未盡到義務，損失可能全部自己扛。</div><div class="pg">72 / 100</div></div></section>
+<section id="p73" class="clip" data-start="479.104" data-duration="8.310" data-track-index="74"><div class="vshade"></div><div class="sin" id="p73-in"><div class="sub2" id="p73-sub">2026 年 10 月 15 日，歐盟法院還說，<br>客戶就算重大過失，銀行也不能因此免除立刻退款的義務。</div><div class="pg">73 / 100</div></div></section>
+<section id="p74" class="clip" data-start="487.414" data-duration="12.870" data-track-index="75"><div class="vshade"></div><div class="sin" id="p74-in"><div class="sub2" id="p74-sub">那個案子，客戶點了假連結，輸入登入訊息，被轉走大約 700 歐元，<br>約新台幣 2.6 萬元，銀行認為客戶重大過失而拒絕補償。</div><div class="pg">74 / 100</div></div></section>
+<section id="p75" class="clip" data-start="500.284" data-duration="6.950" data-track-index="76"><div class="vshade"></div><div class="sin" id="p75-in"><div class="sub2" id="p75-sub"><span style="white-space: nowrap">法院的意思是：先退款，之後銀行再就重大過失造成的損失，向客戶求償。</span></div><div class="pg">75 / 100</div></div></section>
+<section id="p76" class="clip" data-start="507.234" data-duration="7.590" data-track-index="77"><div class="vshade"></div><div class="sin" id="p76-in"><div class="sub2" id="p76-sub">台灣這份契約規定，我們沒有看到同樣的最晚退款期限。<br>兩邊制度不同，不能直接比高下。</div><div class="pg">76 / 100</div></div></section>
+<section id="p77" class="clip" data-start="514.824" data-duration="4.711" data-track-index="78"><div class="shade"></div><div class="sin" id="p77-in"><div class="h1" id="p77-h" style="top: 180px; font-size: 64px; color: var(--gold)">你可以做的事</div><div class="card" id="p77-c0" style="left: 80px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p77-cd0" style="left: 80px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">①</div><div class="h1" id="p77-cw0" style="left: 80px; right: auto; width: 533px; top: 540px; font-size: 49px; font-weight: 600">開交易通知、看對帳單</div><div class="card" id="p77-c1" style="left: 693px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p77-cd1" style="left: 693px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">②</div><div class="h1" id="p77-cw1" style="left: 693px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">密碼驗證碼不給人</div><div class="card" id="p77-c2" style="left: 1306px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p77-cd2" style="left: 1306px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">③</div><div class="h1" id="p77-cw2" style="left: 1306px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">App 只走官方管道</div><div class="sub2" id="p77-sub"><span style="white-space: nowrap">那我們自己能做什麼？以下不是保證，是可以降低風險的做法。</span></div><div class="pg">77 / 100</div></div></section>
+<section id="p78" class="clip" data-start="519.535" data-duration="8.950" data-track-index="79"><div class="vshade"></div><div class="sin" id="p78-in"><div class="sub2" id="p78-sub">第一，看看手機的交易推播或簡訊通知有沒有開。<br>契約也規定，銀行每筆處理完要通知你，你要核對。</div><div class="pg">78 / 100</div></div></section>
+<section id="p79" class="clip" data-start="528.485" data-duration="14.071" data-track-index="80"><div class="vshade"></div><div class="sin" id="p79-in"><div class="sub2" id="p79-sub">第二，交易明細和對帳單都要看。逐筆交易從使用完成日起算，<br>月對帳單從收到日起算，約定期限都不能少於 45 天；發現異常，就立刻通知銀行。</div><div class="pg">79 / 100</div></div></section>
+<section id="p80" class="clip" data-start="542.556" data-duration="6.950" data-track-index="81"><div class="vshade"></div><div class="sin" id="p80-in"><div class="sub2" id="p80-sub">第三，密碼和驗證碼不給任何人。<br>契約寫得很清楚，這些工具，你有保管的責任。</div><div class="pg">80 / 100</div></div></section>
+<section id="p81" class="clip" data-start="549.506" data-duration="6.504" data-track-index="82"><div class="vshade"></div><div class="sin" id="p81-in"><div class="sub2" id="p81-sub"><span style="white-space: nowrap">第四，App 只從官方管道安裝，不點簡訊或陌生訊息裡的連結。</span></div><div class="pg">81 / 100</div></div></section>
+<section id="p82" class="clip" data-start="556.010" data-duration="9.190" data-track-index="83"><div class="vshade"></div><div class="sin" id="p82-in"><div class="sub2" id="p82-sub">第五，問問你的銀行，有沒有能自己鎖轉帳的功能。<br>例如臺灣企銀的轉帳暫停鎖，可以設 1 天到 3 個月。</div><div class="pg">82 / 100</div></div></section>
+<section id="p83" class="clip" data-start="565.200" data-duration="3.190" data-track-index="84"><div class="vshade"></div><div class="sin" id="p83-in"><div class="sub2" id="p83-sub"><span style="white-space: nowrap">各家銀行功能不一樣，這裡只是舉例。</span></div><div class="pg">83 / 100</div></div></section>
+<section id="p84" class="clip" data-start="568.390" data-duration="9.270" data-track-index="85"><div class="vshade"></div><div class="sin" id="p84-in"><div class="sub2" id="p84-sub">第六是我們的看法：平常轉帳的帳戶和大筆存款，<br>可以考慮分開。但同一個網銀底下，不一定能完全隔離風險。</div><div class="pg">84 / 100</div></div></section>
+<section id="p85" class="clip" data-start="577.660" data-duration="7.750" data-track-index="86"><div class="shade"></div><div class="sin" id="p85-in"><div class="h1" id="p85-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">發現不明轉出</div><div class="h1" id="p85-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">通知銀行＋撥 165</div><div class="h1" id="p85-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">保留通知與交易明細畫面</div><div class="sub2" id="p85-sub">如果真的發現不明轉出，第一時間通知銀行、<br>撥 165，把通知和明細畫面留下來。</div><div class="pg">85 / 100</div></div></section>
+<section id="p86" class="clip" data-start="585.410" data-duration="3.590" data-track-index="87"><div class="vshade"></div><div class="sin" id="p86-in"><div class="sub2" id="p86-sub"><span style="white-space: nowrap">回到一開始的問題：錢，還能存銀行嗎？</span></div><div class="pg">86 / 100</div></div></section>
+<section id="p87" class="clip" data-start="589.000" data-duration="2.070" data-track-index="88"><div class="vshade"></div><div class="sin" id="p87-in"><div class="sub2" id="p87-sub"><span style="white-space: nowrap">先分清楚你怕的是什麼。</span></div><div class="pg">87 / 100</div></div></section>
+<section id="p88" class="clip" data-start="591.070" data-duration="9.910" data-track-index="89"><div class="shade"></div><div class="sin" id="p88-in"><div class="h1" id="p88-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">存款保險最高保額</div><div class="h1" id="p88-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">300 萬元</div><div class="h1" id="p88-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">每人在同一家要保機構，本金加利息</div><div class="sub2" id="p88-sub">怕銀行倒閉，看的是存款保險：在國內同一家投保的金融機構，<br>每人受保障的存款本金加利息，最高 300 萬元。</div><div class="pg">88 / 100</div></div></section>
+<section id="p89" class="clip" data-start="600.980" data-duration="9.270" data-track-index="90"><div class="vshade"></div><div class="sin" id="p89-in"><div class="sub2" id="p89-sub">同一家銀行的多個帳戶會加起來算。存了 350 萬元，<br>最多給付 300 萬元，不是每個帳戶各算一次。</div><div class="pg">89 / 100</div></div></section>
+<section id="p90" class="clip" data-start="610.250" data-duration="3.910" data-track-index="91"><div class="vshade"></div><div class="sin" id="p90-in"><div class="sub2" id="p90-sub"><span style="white-space: nowrap">但它賠的情況，是銀行遭主管機關勒令停業。</span></div><div class="pg">90 / 100</div></div></section>
+<section id="p91" class="clip" data-start="614.160" data-duration="6.150" data-track-index="92"><div class="shade"></div><div class="sin" id="p91-in"><div class="h1" id="p91-h" style="top: 180px; font-size: 64px; color: var(--gold)">存款保險保什麼</div><div class="card" id="p91-c0" style="left: 280px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p91-cd0" style="left: 280px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">保</div><div class="h1" id="p91-cw0" style="left: 280px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">銀行遭勒令停業</div><div class="card" id="p91-c1" style="left: 1000px; top: 320px; width: 640px; height: 360px"></div><div class="h1" id="p91-cd1" style="left: 1000px; right: auto; width: 640px; top: 380px; font-size: 96px; color: var(--gold)">不保</div><div class="h1" id="p91-cw1" style="left: 1000px; right: auto; width: 640px; top: 540px; font-size: 50px; font-weight: 600">存款遭詐騙或盜領</div><div class="sub2" id="p91-sub"><span style="white-space: nowrap">中央存保公司寫得很清楚：存款遭詐騙或盜領，不屬於它的保險責任。</span></div><div class="pg">91 / 100</div></div></section>
+<section id="p92" class="clip" data-start="620.310" data-duration="5.750" data-track-index="93"><div class="vshade"></div><div class="sin" id="p92-in"><div class="sub2" id="p92-sub"><span style="white-space: nowrap">所以怕錢被轉走，靠的不是存款保險，是剛剛那些防護和契約。</span></div><div class="pg">92 / 100</div></div></section>
+<section id="p93" class="clip" data-start="626.060" data-duration="7.190" data-track-index="94"><div class="vshade"></div><div class="sin" id="p93-in"><div class="sub2" id="p93-sub">那不放銀行呢？現金放家裡有被偷和火災的風險，<br>其他工具也有各自的風險。</div><div class="pg">93 / 100</div></div></section>
+<section id="p94" class="clip" data-start="633.250" data-duration="8.470" data-track-index="95"><div class="vshade"></div><div class="sin" id="p94-in"><div class="sub2" id="p94-sub">我們的看法是，問題可能不只是存不存，而是你清不清楚：<br>錢放在這裡，出事的時候誰買單、怎麼拿回來。</div><div class="pg">94 / 100</div></div></section>
+<section id="p95" class="clip" data-start="641.720" data-duration="4.950" data-track-index="96"><div class="vshade"></div><div class="sin" id="p95-in"><div class="sub2" id="p95-sub"><span style="white-space: nowrap">至於錢要放什麼地方，每個人的情況不同，這一集不是投資建議。</span></div><div class="pg">95 / 100</div></div></section>
+<section id="p96" class="clip" data-start="646.670" data-duration="13.910" data-track-index="97"><div class="vshade"></div><div class="sin" id="p96-in"><div class="sub2" id="p96-sub">開頭問，這個年代，盜領存款還很簡單嗎？我們的看法是：這次事件還不能回答這題，<br>因為原因還沒公布。但可以確定的是，防護不只一道；不同的路，防的方法和責任也不一樣。</div><div class="pg">96 / 100</div></div></section>
+<section id="p97" class="clip" data-start="660.580" data-duration="19.910" data-track-index="98"><div class="shade"></div><div class="sin" id="p97-in"><div class="h1" id="p97-h" style="top: 180px; font-size: 64px; color: var(--gold)">這一集的總結</div><div class="card" id="p97-c0" style="left: 80px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p97-cd0" style="left: 80px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">①</div><div class="h1" id="p97-cw0" style="left: 80px; right: auto; width: 533px; top: 540px; font-size: 37px; font-weight: 600">防護三道：確定、限損、追回</div><div class="card" id="p97-c1" style="left: 693px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p97-cd1" style="left: 693px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">②</div><div class="h1" id="p97-cw1" style="left: 693px; right: auto; width: 533px; top: 540px; font-size: 32px; font-weight: 600">錢的三條路：騙你、手機、銀行端</div><div class="card" id="p97-c2" style="left: 1306px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p97-cd2" style="left: 1306px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">③</div><div class="h1" id="p97-cw2" style="left: 1306px; right: auto; width: 533px; top: 540px; font-size: 41px; font-weight: 600">契約看責任，存保不賠盜領</div><div class="sub2" id="p97-sub">總結一下這一集：第一，我們把銀行防護分成三道，確定是你、限制損失、攔截追回。第二，錢可能從三條路出去，<br>騙你、從你的手機下手、銀行端出問題。第三，遭冒用時，契約原則上由銀行負責，但有例外；存款保險不賠盜領。</div><div class="pg">97 / 100</div></div></section>
+<section id="p98" class="clip" data-start="680.490" data-duration="6.710" data-track-index="99"><div class="vshade"></div><div class="sin" id="p98-in"><div class="sub2" id="p98-sub">接下來可以看的，是永豐銀行交出調查結果之後，<br>金管會對外公布哪些調查結果。</div><div class="pg">98 / 100</div></div></section>
+<section id="p99" class="clip" data-start="687.200" data-duration="4.870" data-track-index="100"><div class="vshade"></div><div class="sin" id="p99-in"><div class="sub2" id="p99-sub"><span style="white-space: nowrap">你的網銀，交易通知有開嗎？歡迎在留言區，跟我們分享。</span></div><div class="pg">99 / 100</div></div></section>
+<section id="p100" class="clip" data-start="692.070" data-duration="4.160" data-track-index="101"><div class="sin" id="p100-in"><div class="h1" id="p100-a" style="top: 250px; font-size: 130px">關注我</div><div class="h1" id="p100-b" style="top: 440px; font-size: 64px; color: var(--gold)">給你更多錢的大小事</div><div id="p100-btn" style="position: absolute; left: 710px; top: 620px; width: 420px; height: 110px; border-radius: 22px; background: #e53935; color: #fff; font-size: 48px; font-weight: 800; letter-spacing: 0.08em; display: flex; align-items: center; justify-content: center">訂閱</div><div id="p100-bell" style="position: absolute; left: 1160px; top: 630px; width: 90px; height: 90px; color: var(--gold)"><svg viewBox="0 0 100 100" width="100%" height="100%"><g fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"><path d="M50 14 C30 14 26 32 26 46 L26 64 L16 76 L84 76 L74 64 L74 46 C74 32 70 14 50 14 Z"/><path d="M40 84 C42 92 58 92 60 84"/></g></svg></div><div class="sub2" id="p100-sub"><span style="white-space: nowrap">關注我，給你更多錢的大小事。</span></div><div class="pg">100 / 100</div></div></section>
+<div id="chrome" class="clip" data-start="0" data-duration="696.23" data-track-index="102">
+<div class="brand">金錢怪物</div>
+<div class="disc">資訊整理，非投資或法律建議｜事件原因尚未公布｜資料來源見說明欄｜畫面為資料畫面，非片中提及機構</div>
+<div class="prog"></div>
+</div>
+<audio id="vo-1" data-start="0.250" data-duration="3.200" src="audio/l1.mp3"></audio>
+<audio id="vo-2" data-start="3.600" data-duration="6.560" src="audio/l2.mp3"></audio>
+<audio id="vo-3" data-start="10.810" data-duration="3.520" src="audio/l3.mp3"></audio>
+<audio id="vo-4" data-start="14.480" data-duration="7.760" src="audio/l4.mp3"></audio>
+<audio id="vo-5" data-start="22.390" data-duration="6.720" src="audio/l5.mp3"></audio>
+<audio id="vo-6" data-start="29.260" data-duration="8.080" src="audio/l6.mp3"></audio>
+<audio id="vo-7" data-start="37.990" data-duration="6.480" src="audio/l7.mp3"></audio>
+<audio id="vo-8" data-start="44.620" data-duration="5.280" src="audio/l8.mp3"></audio>
+<audio id="vo-9" data-start="50.050" data-duration="4.640" src="audio/l9.mp3"></audio>
+<audio id="vo-10" data-start="54.840" data-duration="7.120" src="audio/l10.mp3"></audio>
+<audio id="vo-11" data-start="62.110" data-duration="7.920" src="audio/l11.mp3"></audio>
+<audio id="vo-12" data-start="70.980" data-duration="7.200" src="audio/l12.mp3"></audio>
+<audio id="vo-13" data-start="78.330" data-duration="2.720" src="audio/l13.mp3"></audio>
+<audio id="vo-14" data-start="81.200" data-duration="3.520" src="audio/l14.mp3"></audio>
+<audio id="vo-15" data-start="84.870" data-duration="4.400" src="audio/l15.mp3"></audio>
+<audio id="vo-16" data-start="90.220" data-duration="2.640" src="audio/l16.mp3"></audio>
+<audio id="vo-17" data-start="93.010" data-duration="6.320" src="audio/l17.mp3"></audio>
+<audio id="vo-18" data-start="100.280" data-duration="7.040" src="audio/l18.mp3"></audio>
+<audio id="vo-19" data-start="107.470" data-duration="2.880" src="audio/l19.mp3"></audio>
+<audio id="vo-20" data-start="110.500" data-duration="6.800" src="audio/l20.mp3"></audio>
+<audio id="vo-21" data-start="117.450" data-duration="4.400" src="audio/l21.mp3"></audio>
+<audio id="vo-22" data-start="122.000" data-duration="8.160" src="audio/l22.mp3"></audio>
+<audio id="vo-23" data-start="130.310" data-duration="5.360" src="audio/l23.mp3"></audio>
+<audio id="vo-24" data-start="135.820" data-duration="6.800" src="audio/l24.mp3"></audio>
+<audio id="vo-25" data-start="142.770" data-duration="7.840" src="audio/l25.mp3"></audio>
+<audio id="vo-26" data-start="150.760" data-duration="3.920" src="audio/l26.mp3"></audio>
+<audio id="vo-27" data-start="154.830" data-duration="5.360" src="audio/l27.mp3"></audio>
+<audio id="vo-28" data-start="160.340" data-duration="8.240" src="audio/l28.mp3"></audio>
+<audio id="vo-29" data-start="168.730" data-duration="14.880" src="audio/l29.mp3"></audio>
+<audio id="vo-30" data-start="183.760" data-duration="9.600" src="audio/l30.mp3"></audio>
+<audio id="vo-31" data-start="193.510" data-duration="5.760" src="audio/l31.mp3"></audio>
+<audio id="vo-32" data-start="199.420" data-duration="4.400" src="audio/l32.mp3"></audio>
+<audio id="vo-33" data-start="203.970" data-duration="4.640" src="audio/l33.mp3"></audio>
+<audio id="vo-34" data-start="208.760" data-duration="2.160" src="audio/l34.mp3"></audio>
+<audio id="vo-35" data-start="211.070" data-duration="6.240" src="audio/l35.mp3"></audio>
+<audio id="vo-36" data-start="217.460" data-duration="5.956" src="audio/l36.mp3"></audio>
+<audio id="vo-37" data-start="223.566" data-duration="4.160" src="audio/l37.mp3"></audio>
+<audio id="vo-38" data-start="227.876" data-duration="8.160" src="audio/l38.mp3"></audio>
+<audio id="vo-39" data-start="236.186" data-duration="7.920" src="audio/l39.mp3"></audio>
+<audio id="vo-40" data-start="244.256" data-duration="7.040" src="audio/l40.mp3"></audio>
+<audio id="vo-41" data-start="251.446" data-duration="2.800" src="audio/l41.mp3"></audio>
+<audio id="vo-42" data-start="254.396" data-duration="4.160" src="audio/l42.mp3"></audio>
+<audio id="vo-43" data-start="259.506" data-duration="1.840" src="audio/l43.mp3"></audio>
+<audio id="vo-44" data-start="261.496" data-duration="7.920" src="audio/l44.mp3"></audio>
+<audio id="vo-45" data-start="269.566" data-duration="6.560" src="audio/l45.mp3"></audio>
+<audio id="vo-46" data-start="276.276" data-duration="7.280" src="audio/l46.mp3"></audio>
+<audio id="vo-47" data-start="283.706" data-duration="6.080" src="audio/l47.mp3"></audio>
+<audio id="vo-48" data-start="289.936" data-duration="7.440" src="audio/l48.mp3"></audio>
+<audio id="vo-49" data-start="297.526" data-duration="7.200" src="audio/l49.mp3"></audio>
+<audio id="vo-50" data-start="304.876" data-duration="6.560" src="audio/l50.mp3"></audio>
+<audio id="vo-51" data-start="311.586" data-duration="6.320" src="audio/l51.mp3"></audio>
+<audio id="vo-52" data-start="318.056" data-duration="5.440" src="audio/l52.mp3"></audio>
+<audio id="vo-53" data-start="323.646" data-duration="6.594" src="audio/l53.mp3"></audio>
+<audio id="vo-54" data-start="330.390" data-duration="8.828" src="audio/l54.mp3"></audio>
+<audio id="vo-55" data-start="339.368" data-duration="8.320" src="audio/l55.mp3"></audio>
+<audio id="vo-56" data-start="347.838" data-duration="5.520" src="audio/l56.mp3"></audio>
+<audio id="vo-57" data-start="353.508" data-duration="3.520" src="audio/l57.mp3"></audio>
+<audio id="vo-58" data-start="357.178" data-duration="5.876" src="audio/l58.mp3"></audio>
+<audio id="vo-59" data-start="363.204" data-duration="5.280" src="audio/l59.mp3"></audio>
+<audio id="vo-60" data-start="368.634" data-duration="6.035" src="audio/l60.mp3"></audio>
+<audio id="vo-61" data-start="374.819" data-duration="8.880" src="audio/l61.mp3"></audio>
+<audio id="vo-62" data-start="383.849" data-duration="5.520" src="audio/l62.mp3"></audio>
+<audio id="vo-63" data-start="389.519" data-duration="17.120" src="audio/l63.mp3"></audio>
+<audio id="vo-64" data-start="406.789" data-duration="7.680" src="audio/l64.mp3"></audio>
+<audio id="vo-65" data-start="414.619" data-duration="4.000" src="audio/l65.mp3"></audio>
+<audio id="vo-66" data-start="418.769" data-duration="7.600" src="audio/l66.mp3"></audio>
+<audio id="vo-67" data-start="426.519" data-duration="4.720" src="audio/l67.mp3"></audio>
+<audio id="vo-68" data-start="431.389" data-duration="6.160" src="audio/l68.mp3"></audio>
+<audio id="vo-69" data-start="437.699" data-duration="8.960" src="audio/l69.mp3"></audio>
+<audio id="vo-70" data-start="446.809" data-duration="13.040" src="audio/l70.mp3"></audio>
+<audio id="vo-71" data-start="459.999" data-duration="7.440" src="audio/l71.mp3"></audio>
+<audio id="vo-72" data-start="467.589" data-duration="11.440" src="audio/l72.mp3"></audio>
+<audio id="vo-73" data-start="479.179" data-duration="8.160" src="audio/l73.mp3"></audio>
+<audio id="vo-74" data-start="487.489" data-duration="12.720" src="audio/l74.mp3"></audio>
+<audio id="vo-75" data-start="500.359" data-duration="6.800" src="audio/l75.mp3"></audio>
+<audio id="vo-76" data-start="507.309" data-duration="7.440" src="audio/l76.mp3"></audio>
+<audio id="vo-77" data-start="514.899" data-duration="4.561" src="audio/l77.mp3"></audio>
+<audio id="vo-78" data-start="519.610" data-duration="8.800" src="audio/l78.mp3"></audio>
+<audio id="vo-79" data-start="528.560" data-duration="13.921" src="audio/l79.mp3"></audio>
+<audio id="vo-80" data-start="542.631" data-duration="6.800" src="audio/l80.mp3"></audio>
+<audio id="vo-81" data-start="549.581" data-duration="6.354" src="audio/l81.mp3"></audio>
+<audio id="vo-82" data-start="556.085" data-duration="9.040" src="audio/l82.mp3"></audio>
+<audio id="vo-83" data-start="565.275" data-duration="3.040" src="audio/l83.mp3"></audio>
+<audio id="vo-84" data-start="568.465" data-duration="9.120" src="audio/l84.mp3"></audio>
+<audio id="vo-85" data-start="577.735" data-duration="7.600" src="audio/l85.mp3"></audio>
+<audio id="vo-86" data-start="585.485" data-duration="3.440" src="audio/l86.mp3"></audio>
+<audio id="vo-87" data-start="589.075" data-duration="1.920" src="audio/l87.mp3"></audio>
+<audio id="vo-88" data-start="591.145" data-duration="9.760" src="audio/l88.mp3"></audio>
+<audio id="vo-89" data-start="601.055" data-duration="9.120" src="audio/l89.mp3"></audio>
+<audio id="vo-90" data-start="610.325" data-duration="3.760" src="audio/l90.mp3"></audio>
+<audio id="vo-91" data-start="614.235" data-duration="6.000" src="audio/l91.mp3"></audio>
+<audio id="vo-92" data-start="620.385" data-duration="5.600" src="audio/l92.mp3"></audio>
+<audio id="vo-93" data-start="626.135" data-duration="7.040" src="audio/l93.mp3"></audio>
+<audio id="vo-94" data-start="633.325" data-duration="8.320" src="audio/l94.mp3"></audio>
+<audio id="vo-95" data-start="641.795" data-duration="4.800" src="audio/l95.mp3"></audio>
+<audio id="vo-96" data-start="646.745" data-duration="13.760" src="audio/l96.mp3"></audio>
+<audio id="vo-97" data-start="660.655" data-duration="18.960" src="audio/l97.mp3"></audio>
+<audio id="vo-98" data-start="680.565" data-duration="6.560" src="audio/l98.mp3"></audio>
+<audio id="vo-99" data-start="687.275" data-duration="4.720" src="audio/l99.mp3"></audio>
+<audio id="vo-100" data-start="692.145" data-duration="2.480" src="audio/l100.mp3"></audio>
+<audio id="bgm" data-start="0" data-duration="696.23" data-volume="0.12" src="audio/bgm.mp3"></audio>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({ paused: true });
+tl.fromTo("#p1-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 0.000);
+tl.fromTo("#p1-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 0.250);
+tl.to("#p1-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 3.245);
+tl.set("#p1-in", { opacity: 0 }, 3.525);
+tl.fromTo("#p2-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 3.525);
+tl.fromTo("#p2-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 3.600);
+tl.fromTo("#p2-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 4.000);
+tl.fromTo("#p2-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 4.900);
+tl.fromTo("#p2-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 3.600);
+tl.to("#p2-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 10.455);
+tl.set("#p2-in", { opacity: 0 }, 10.735);
+tl.fromTo("#p3-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 10.735);
+tl.fromTo("#p3-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 10.810);
+tl.to("#p3-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 14.125);
+tl.set("#p3-in", { opacity: 0 }, 14.405);
+tl.fromTo("#p4-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 14.405);
+tl.fromTo("#p4-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 14.480);
+tl.fromTo("#p4-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 14.880);
+tl.fromTo("#p4-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 15.780);
+tl.fromTo("#p4-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 14.480);
+tl.to("#p4-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 22.035);
+tl.set("#p4-in", { opacity: 0 }, 22.315);
+tl.fromTo("#p5-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 22.315);
+tl.fromTo("#p5-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 22.390);
+tl.to("#p5-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 28.905);
+tl.set("#p5-in", { opacity: 0 }, 29.185);
+tl.fromTo("#p6-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 29.185);
+tl.fromTo("#p6-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 29.260);
+tl.fromTo("#p6-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 29.760);
+tl.fromTo("#p6-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 29.960);
+tl.fromTo("#p6-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 30.160);
+tl.fromTo("#p6-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 30.960);
+tl.fromTo("#p6-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 31.160);
+tl.fromTo("#p6-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 31.360);
+tl.fromTo("#p6-c2", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 32.160);
+tl.fromTo("#p6-cd2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 32.360);
+tl.fromTo("#p6-cw2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 32.560);
+tl.fromTo("#p6-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 29.260);
+tl.to("#p6-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 37.635);
+tl.set("#p6-in", { opacity: 0 }, 37.915);
+tl.fromTo("#p7-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 37.915);
+tl.fromTo("#p7-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 37.990);
+tl.to("#p7-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 44.265);
+tl.set("#p7-in", { opacity: 0 }, 44.545);
+tl.fromTo("#p8-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 44.545);
+tl.fromTo("#p8-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 44.620);
+tl.to("#p8-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 49.695);
+tl.set("#p8-in", { opacity: 0 }, 49.975);
+tl.fromTo("#p9-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 49.975);
+tl.fromTo("#p9-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 50.050);
+tl.to("#p9-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 54.485);
+tl.set("#p9-in", { opacity: 0 }, 54.765);
+tl.fromTo("#p10-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 54.765);
+tl.fromTo("#p10-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 54.840);
+tl.to("#p10-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 61.755);
+tl.set("#p10-in", { opacity: 0 }, 62.035);
+tl.fromTo("#p11-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 62.035);
+tl.fromTo("#p11-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 62.110);
+tl.fromTo("#p11-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 63.610);
+tl.fromTo("#p11-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 63.810);
+tl.fromTo("#p11-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 64.010);
+tl.fromTo("#p11-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 65.310);
+tl.fromTo("#p11-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 65.510);
+tl.fromTo("#p11-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 65.710);
+tl.fromTo("#p11-c2", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 66.910);
+tl.fromTo("#p11-cd2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 67.110);
+tl.fromTo("#p11-cw2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 67.310);
+tl.fromTo("#p11-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 62.110);
+tl.to("#p11-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 70.625);
+tl.set("#p11-in", { opacity: 0 }, 70.905);
+tl.fromTo("#p12-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 70.905);
+tl.fromTo("#p12-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 70.980);
+tl.to("#p12-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 77.975);
+tl.set("#p12-in", { opacity: 0 }, 78.255);
+tl.fromTo("#p13-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 78.255);
+tl.fromTo("#p13-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 78.330);
+tl.to("#p13-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 80.845);
+tl.set("#p13-in", { opacity: 0 }, 81.125);
+tl.fromTo("#p14-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 81.125);
+tl.fromTo("#p14-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 81.200);
+tl.to("#p14-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 84.515);
+tl.set("#p14-in", { opacity: 0 }, 84.795);
+tl.fromTo("#p15-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 84.795);
+tl.fromTo("#p15-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 84.870);
+tl.fromTo("#p15-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 85.170);
+tl.fromTo("#p15-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 85.370);
+tl.fromTo("#p15-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 85.570);
+tl.fromTo("#p15-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 86.270);
+tl.fromTo("#p15-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 86.470);
+tl.fromTo("#p15-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 86.670);
+tl.fromTo("#p15-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 84.870);
+tl.to("#p15-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 89.865);
+tl.set("#p15-in", { opacity: 0 }, 90.145);
+tl.fromTo("#p16-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 90.145);
+tl.fromTo("#p16-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 90.220);
+tl.fromTo("#p16-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 90.620);
+tl.fromTo("#p16-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 91.520);
+tl.fromTo("#p16-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 90.220);
+tl.to("#p16-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 92.655);
+tl.set("#p16-in", { opacity: 0 }, 92.935);
+tl.fromTo("#p17-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 92.935);
+tl.fromTo("#p17-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 93.010);
+tl.fromTo("#p17-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 94.610);
+tl.fromTo("#p17-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 94.810);
+tl.fromTo("#p17-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 95.010);
+tl.fromTo("#p17-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 95.610);
+tl.fromTo("#p17-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 95.810);
+tl.fromTo("#p17-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 96.010);
+tl.fromTo("#p17-c2", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 96.510);
+tl.fromTo("#p17-cd2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 96.710);
+tl.fromTo("#p17-cw2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 96.910);
+tl.fromTo("#p17-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 93.010);
+tl.to("#p17-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 99.925);
+tl.set("#p17-in", { opacity: 0 }, 100.205);
+tl.fromTo("#p18-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 100.205);
+tl.fromTo("#p18-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 100.280);
+tl.to("#p18-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 107.115);
+tl.set("#p18-in", { opacity: 0 }, 107.395);
+tl.fromTo("#p19-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 107.395);
+tl.fromTo("#p19-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 107.470);
+tl.to("#p19-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 110.145);
+tl.set("#p19-in", { opacity: 0 }, 110.425);
+tl.fromTo("#p20-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 110.425);
+tl.fromTo("#p20-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 110.500);
+tl.to("#p20-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 117.095);
+tl.set("#p20-in", { opacity: 0 }, 117.375);
+tl.fromTo("#p21-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 117.375);
+tl.fromTo("#p21-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 117.450);
+tl.to("#p21-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 121.645);
+tl.set("#p21-in", { opacity: 0 }, 121.925);
+tl.fromTo("#p22-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 121.925);
+tl.fromTo("#p22-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 122.000);
+tl.to("#p22-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 129.955);
+tl.set("#p22-in", { opacity: 0 }, 130.235);
+tl.fromTo("#p23-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 130.235);
+tl.fromTo("#p23-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 130.310);
+tl.to("#p23-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 135.465);
+tl.set("#p23-in", { opacity: 0 }, 135.745);
+tl.fromTo("#p24-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 135.745);
+tl.fromTo("#p24-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 135.820);
+tl.to("#p24-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 142.415);
+tl.set("#p24-in", { opacity: 0 }, 142.695);
+tl.fromTo("#p25-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 142.695);
+tl.fromTo("#p25-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 142.770);
+tl.to("#p25-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 150.405);
+tl.set("#p25-in", { opacity: 0 }, 150.685);
+tl.fromTo("#p26-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 150.685);
+tl.fromTo("#p26-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 150.760);
+tl.to("#p26-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 154.475);
+tl.set("#p26-in", { opacity: 0 }, 154.755);
+tl.fromTo("#p27-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 154.755);
+tl.fromTo("#p27-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 154.830);
+tl.to("#p27-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 159.985);
+tl.set("#p27-in", { opacity: 0 }, 160.265);
+tl.fromTo("#p28-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 160.265);
+tl.fromTo("#p28-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 160.340);
+tl.fromTo("#p28-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 160.840);
+tl.fromTo("#p28-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 161.040);
+tl.fromTo("#p28-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 161.240);
+tl.fromTo("#p28-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 162.040);
+tl.fromTo("#p28-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 162.240);
+tl.fromTo("#p28-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 162.440);
+tl.fromTo("#p28-c2", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 163.240);
+tl.fromTo("#p28-cd2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 163.440);
+tl.fromTo("#p28-cw2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 163.640);
+tl.fromTo("#p28-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 160.340);
+tl.to("#p28-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 168.375);
+tl.set("#p28-in", { opacity: 0 }, 168.655);
+tl.fromTo("#p29-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 168.655);
+tl.fromTo("#p29-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 168.730);
+tl.fromTo("#p29-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 169.130);
+tl.fromTo("#p29-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 170.030);
+tl.fromTo("#p29-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 168.730);
+tl.to("#p29-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 183.405);
+tl.set("#p29-in", { opacity: 0 }, 183.685);
+tl.fromTo("#p30-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 183.685);
+tl.fromTo("#p30-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 183.760);
+tl.to("#p30-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 193.155);
+tl.set("#p30-in", { opacity: 0 }, 193.435);
+tl.fromTo("#p31-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 193.435);
+tl.fromTo("#p31-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 193.510);
+tl.to("#p31-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 199.065);
+tl.set("#p31-in", { opacity: 0 }, 199.345);
+tl.fromTo("#p32-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 199.345);
+tl.fromTo("#p32-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 199.420);
+tl.fromTo("#p32-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 199.820);
+tl.fromTo("#p32-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 200.720);
+tl.fromTo("#p32-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 199.420);
+tl.to("#p32-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 203.615);
+tl.set("#p32-in", { opacity: 0 }, 203.895);
+tl.fromTo("#p33-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 203.895);
+tl.fromTo("#p33-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 203.970);
+tl.to("#p33-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 208.405);
+tl.set("#p33-in", { opacity: 0 }, 208.685);
+tl.fromTo("#p34-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 208.685);
+tl.fromTo("#p34-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 208.760);
+tl.to("#p34-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 210.715);
+tl.set("#p34-in", { opacity: 0 }, 210.995);
+tl.fromTo("#p35-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 210.995);
+tl.fromTo("#p35-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 211.070);
+tl.to("#p35-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 217.105);
+tl.set("#p35-in", { opacity: 0 }, 217.385);
+tl.fromTo("#p36-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 217.385);
+tl.fromTo("#p36-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 217.460);
+tl.to("#p36-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 223.211);
+tl.set("#p36-in", { opacity: 0 }, 223.491);
+tl.fromTo("#p37-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 223.491);
+tl.fromTo("#p37-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 223.566);
+tl.to("#p37-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 227.521);
+tl.set("#p37-in", { opacity: 0 }, 227.801);
+tl.fromTo("#p38-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 227.801);
+tl.fromTo("#p38-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 227.876);
+tl.to("#p38-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 235.831);
+tl.set("#p38-in", { opacity: 0 }, 236.111);
+tl.fromTo("#p39-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 236.111);
+tl.fromTo("#p39-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 236.186);
+tl.to("#p39-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 243.901);
+tl.set("#p39-in", { opacity: 0 }, 244.181);
+tl.fromTo("#p40-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 244.181);
+tl.fromTo("#p40-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 244.256);
+tl.to("#p40-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 251.091);
+tl.set("#p40-in", { opacity: 0 }, 251.371);
+tl.fromTo("#p41-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 251.371);
+tl.fromTo("#p41-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 251.446);
+tl.fromTo("#p41-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 251.846);
+tl.fromTo("#p41-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 252.746);
+tl.fromTo("#p41-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 251.446);
+tl.to("#p41-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 254.041);
+tl.set("#p41-in", { opacity: 0 }, 254.321);
+tl.fromTo("#p42-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 254.321);
+tl.fromTo("#p42-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 254.396);
+tl.fromTo("#p42-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 254.696);
+tl.fromTo("#p42-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 254.896);
+tl.fromTo("#p42-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 255.096);
+tl.fromTo("#p42-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 255.596);
+tl.fromTo("#p42-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 255.796);
+tl.fromTo("#p42-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 255.996);
+tl.fromTo("#p42-c2", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 256.496);
+tl.fromTo("#p42-cd2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 256.696);
+tl.fromTo("#p42-cw2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 256.896);
+tl.fromTo("#p42-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 254.396);
+tl.to("#p42-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 259.151);
+tl.set("#p42-in", { opacity: 0 }, 259.431);
+tl.fromTo("#p43-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 259.431);
+tl.fromTo("#p43-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 259.506);
+tl.to("#p43-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 261.141);
+tl.set("#p43-in", { opacity: 0 }, 261.421);
+tl.fromTo("#p44-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 261.421);
+tl.fromTo("#p44-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 261.496);
+tl.to("#p44-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 269.211);
+tl.set("#p44-in", { opacity: 0 }, 269.491);
+tl.fromTo("#p45-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 269.491);
+tl.fromTo("#p45-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 269.566);
+tl.fromTo("#p45-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 269.966);
+tl.fromTo("#p45-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 270.866);
+tl.fromTo("#p45-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 269.566);
+tl.to("#p45-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 275.921);
+tl.set("#p45-in", { opacity: 0 }, 276.201);
+tl.fromTo("#p46-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 276.201);
+tl.fromTo("#p46-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 276.276);
+tl.to("#p46-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 283.351);
+tl.set("#p46-in", { opacity: 0 }, 283.631);
+tl.fromTo("#p47-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 283.631);
+tl.fromTo("#p47-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 283.706);
+tl.to("#p47-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 289.581);
+tl.set("#p47-in", { opacity: 0 }, 289.861);
+tl.fromTo("#p48-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 289.861);
+tl.fromTo("#p48-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 289.936);
+tl.to("#p48-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 297.171);
+tl.set("#p48-in", { opacity: 0 }, 297.451);
+tl.fromTo("#p49-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 297.451);
+tl.fromTo("#p49-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 297.526);
+tl.to("#p49-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 304.521);
+tl.set("#p49-in", { opacity: 0 }, 304.801);
+tl.fromTo("#p50-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 304.801);
+tl.fromTo("#p50-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 304.876);
+tl.to("#p50-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 311.231);
+tl.set("#p50-in", { opacity: 0 }, 311.511);
+tl.fromTo("#p51-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 311.511);
+tl.fromTo("#p51-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 311.586);
+tl.to("#p51-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 317.701);
+tl.set("#p51-in", { opacity: 0 }, 317.981);
+tl.fromTo("#p52-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 317.981);
+tl.fromTo("#p52-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 318.056);
+tl.to("#p52-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 323.291);
+tl.set("#p52-in", { opacity: 0 }, 323.571);
+tl.fromTo("#p53-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 323.571);
+tl.fromTo("#p53-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 323.646);
+tl.fromTo("#p53-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 324.146);
+tl.fromTo("#p53-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 324.346);
+tl.fromTo("#p53-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 324.546);
+tl.fromTo("#p53-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 325.346);
+tl.fromTo("#p53-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 325.546);
+tl.fromTo("#p53-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 325.746);
+tl.fromTo("#p53-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 323.646);
+tl.to("#p53-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 330.035);
+tl.set("#p53-in", { opacity: 0 }, 330.315);
+tl.fromTo("#p54-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 330.315);
+tl.fromTo("#p54-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 330.390);
+tl.to("#p54-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 339.013);
+tl.set("#p54-in", { opacity: 0 }, 339.293);
+tl.fromTo("#p55-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 339.293);
+tl.fromTo("#p55-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 339.368);
+tl.fromTo("#p55-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 339.768);
+tl.fromTo("#p55-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 340.668);
+tl.fromTo("#p55-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 339.368);
+tl.to("#p55-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 347.483);
+tl.set("#p55-in", { opacity: 0 }, 347.763);
+tl.fromTo("#p56-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 347.763);
+tl.fromTo("#p56-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 347.838);
+tl.to("#p56-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 353.153);
+tl.set("#p56-in", { opacity: 0 }, 353.433);
+tl.fromTo("#p57-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 353.433);
+tl.fromTo("#p57-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 353.508);
+tl.fromTo("#p57-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 353.908);
+tl.fromTo("#p57-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 354.808);
+tl.fromTo("#p57-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 353.508);
+tl.to("#p57-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 356.823);
+tl.set("#p57-in", { opacity: 0 }, 357.103);
+tl.fromTo("#p58-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 357.103);
+tl.fromTo("#p58-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 357.178);
+tl.to("#p58-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 362.849);
+tl.set("#p58-in", { opacity: 0 }, 363.129);
+tl.fromTo("#p59-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 363.129);
+tl.fromTo("#p59-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 363.204);
+tl.to("#p59-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 368.279);
+tl.set("#p59-in", { opacity: 0 }, 368.559);
+tl.fromTo("#p60-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 368.559);
+tl.fromTo("#p60-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 368.634);
+tl.to("#p60-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 374.464);
+tl.set("#p60-in", { opacity: 0 }, 374.744);
+tl.fromTo("#p61-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 374.744);
+tl.fromTo("#p61-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 374.819);
+tl.to("#p61-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 383.494);
+tl.set("#p61-in", { opacity: 0 }, 383.774);
+tl.fromTo("#p62-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 383.774);
+tl.fromTo("#p62-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 383.849);
+tl.to("#p62-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 389.164);
+tl.set("#p62-in", { opacity: 0 }, 389.444);
+tl.fromTo("#p63-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 389.444);
+tl.fromTo("#p63-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 389.519);
+tl.fromTo("#p63-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 389.919);
+tl.fromTo("#p63-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 390.819);
+tl.fromTo("#p63-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 389.519);
+tl.to("#p63-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 406.434);
+tl.set("#p63-in", { opacity: 0 }, 406.714);
+tl.fromTo("#p64-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 406.714);
+tl.fromTo("#p64-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 406.789);
+tl.to("#p64-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 414.264);
+tl.set("#p64-in", { opacity: 0 }, 414.544);
+tl.fromTo("#p65-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 414.544);
+tl.fromTo("#p65-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 414.619);
+tl.to("#p65-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 418.414);
+tl.set("#p65-in", { opacity: 0 }, 418.694);
+tl.fromTo("#p66-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 418.694);
+tl.fromTo("#p66-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 418.769);
+tl.to("#p66-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 426.164);
+tl.set("#p66-in", { opacity: 0 }, 426.444);
+tl.fromTo("#p67-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 426.444);
+tl.fromTo("#p67-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 426.519);
+tl.fromTo("#p67-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 427.019);
+tl.fromTo("#p67-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 427.219);
+tl.fromTo("#p67-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 427.419);
+tl.fromTo("#p67-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 428.219);
+tl.fromTo("#p67-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 428.419);
+tl.fromTo("#p67-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 428.619);
+tl.fromTo("#p67-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 426.519);
+tl.to("#p67-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 431.034);
+tl.set("#p67-in", { opacity: 0 }, 431.314);
+tl.fromTo("#p68-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 431.314);
+tl.fromTo("#p68-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 431.389);
+tl.to("#p68-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 437.344);
+tl.set("#p68-in", { opacity: 0 }, 437.624);
+tl.fromTo("#p69-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 437.624);
+tl.fromTo("#p69-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 437.699);
+tl.to("#p69-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 446.454);
+tl.set("#p69-in", { opacity: 0 }, 446.734);
+tl.fromTo("#p70-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 446.734);
+tl.fromTo("#p70-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 446.809);
+tl.to("#p70-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 459.644);
+tl.set("#p70-in", { opacity: 0 }, 459.924);
+tl.fromTo("#p71-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 459.924);
+tl.fromTo("#p71-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 459.999);
+tl.fromTo("#p71-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 460.399);
+tl.fromTo("#p71-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 461.299);
+tl.fromTo("#p71-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 459.999);
+tl.to("#p71-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 467.234);
+tl.set("#p71-in", { opacity: 0 }, 467.514);
+tl.fromTo("#p72-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 467.514);
+tl.fromTo("#p72-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 467.589);
+tl.to("#p72-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 478.824);
+tl.set("#p72-in", { opacity: 0 }, 479.104);
+tl.fromTo("#p73-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 479.104);
+tl.fromTo("#p73-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 479.179);
+tl.to("#p73-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 487.134);
+tl.set("#p73-in", { opacity: 0 }, 487.414);
+tl.fromTo("#p74-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 487.414);
+tl.fromTo("#p74-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 487.489);
+tl.to("#p74-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 500.004);
+tl.set("#p74-in", { opacity: 0 }, 500.284);
+tl.fromTo("#p75-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 500.284);
+tl.fromTo("#p75-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 500.359);
+tl.to("#p75-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 506.954);
+tl.set("#p75-in", { opacity: 0 }, 507.234);
+tl.fromTo("#p76-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 507.234);
+tl.fromTo("#p76-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 507.309);
+tl.to("#p76-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 514.544);
+tl.set("#p76-in", { opacity: 0 }, 514.824);
+tl.fromTo("#p77-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 514.824);
+tl.fromTo("#p77-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 514.899);
+tl.fromTo("#p77-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 515.399);
+tl.fromTo("#p77-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 515.599);
+tl.fromTo("#p77-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 515.799);
+tl.fromTo("#p77-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 516.599);
+tl.fromTo("#p77-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 516.799);
+tl.fromTo("#p77-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 516.999);
+tl.fromTo("#p77-c2", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 517.799);
+tl.fromTo("#p77-cd2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 517.999);
+tl.fromTo("#p77-cw2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 518.199);
+tl.fromTo("#p77-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 514.899);
+tl.to("#p77-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 519.255);
+tl.set("#p77-in", { opacity: 0 }, 519.535);
+tl.fromTo("#p78-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 519.535);
+tl.fromTo("#p78-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 519.610);
+tl.to("#p78-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 528.205);
+tl.set("#p78-in", { opacity: 0 }, 528.485);
+tl.fromTo("#p79-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 528.485);
+tl.fromTo("#p79-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 528.560);
+tl.to("#p79-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 542.276);
+tl.set("#p79-in", { opacity: 0 }, 542.556);
+tl.fromTo("#p80-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 542.556);
+tl.fromTo("#p80-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 542.631);
+tl.to("#p80-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 549.226);
+tl.set("#p80-in", { opacity: 0 }, 549.506);
+tl.fromTo("#p81-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 549.506);
+tl.fromTo("#p81-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 549.581);
+tl.to("#p81-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 555.730);
+tl.set("#p81-in", { opacity: 0 }, 556.010);
+tl.fromTo("#p82-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 556.010);
+tl.fromTo("#p82-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 556.085);
+tl.to("#p82-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 564.920);
+tl.set("#p82-in", { opacity: 0 }, 565.200);
+tl.fromTo("#p83-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 565.200);
+tl.fromTo("#p83-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 565.275);
+tl.to("#p83-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 568.110);
+tl.set("#p83-in", { opacity: 0 }, 568.390);
+tl.fromTo("#p84-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 568.390);
+tl.fromTo("#p84-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 568.465);
+tl.to("#p84-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 577.380);
+tl.set("#p84-in", { opacity: 0 }, 577.660);
+tl.fromTo("#p85-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 577.660);
+tl.fromTo("#p85-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 577.735);
+tl.fromTo("#p85-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 578.135);
+tl.fromTo("#p85-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 579.035);
+tl.fromTo("#p85-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 577.735);
+tl.to("#p85-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 585.130);
+tl.set("#p85-in", { opacity: 0 }, 585.410);
+tl.fromTo("#p86-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 585.410);
+tl.fromTo("#p86-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 585.485);
+tl.to("#p86-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 588.720);
+tl.set("#p86-in", { opacity: 0 }, 589.000);
+tl.fromTo("#p87-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 589.000);
+tl.fromTo("#p87-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 589.075);
+tl.to("#p87-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 590.790);
+tl.set("#p87-in", { opacity: 0 }, 591.070);
+tl.fromTo("#p88-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 591.070);
+tl.fromTo("#p88-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 591.145);
+tl.fromTo("#p88-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 591.545);
+tl.fromTo("#p88-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 592.445);
+tl.fromTo("#p88-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 591.145);
+tl.to("#p88-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 600.700);
+tl.set("#p88-in", { opacity: 0 }, 600.980);
+tl.fromTo("#p89-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 600.980);
+tl.fromTo("#p89-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 601.055);
+tl.to("#p89-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 609.970);
+tl.set("#p89-in", { opacity: 0 }, 610.250);
+tl.fromTo("#p90-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 610.250);
+tl.fromTo("#p90-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 610.325);
+tl.to("#p90-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 613.880);
+tl.set("#p90-in", { opacity: 0 }, 614.160);
+tl.fromTo("#p91-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 614.160);
+tl.fromTo("#p91-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 614.235);
+tl.fromTo("#p91-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 614.735);
+tl.fromTo("#p91-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 614.935);
+tl.fromTo("#p91-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 615.135);
+tl.fromTo("#p91-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 615.935);
+tl.fromTo("#p91-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 616.135);
+tl.fromTo("#p91-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 616.335);
+tl.fromTo("#p91-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 614.235);
+tl.to("#p91-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 620.030);
+tl.set("#p91-in", { opacity: 0 }, 620.310);
+tl.fromTo("#p92-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 620.310);
+tl.fromTo("#p92-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 620.385);
+tl.to("#p92-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 625.780);
+tl.set("#p92-in", { opacity: 0 }, 626.060);
+tl.fromTo("#p93-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 626.060);
+tl.fromTo("#p93-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 626.135);
+tl.to("#p93-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 632.970);
+tl.set("#p93-in", { opacity: 0 }, 633.250);
+tl.fromTo("#p94-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 633.250);
+tl.fromTo("#p94-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 633.325);
+tl.to("#p94-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 641.440);
+tl.set("#p94-in", { opacity: 0 }, 641.720);
+tl.fromTo("#p95-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 641.720);
+tl.fromTo("#p95-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 641.795);
+tl.to("#p95-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 646.390);
+tl.set("#p95-in", { opacity: 0 }, 646.670);
+tl.fromTo("#p96-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 646.670);
+tl.fromTo("#p96-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 646.745);
+tl.to("#p96-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 660.300);
+tl.set("#p96-in", { opacity: 0 }, 660.580);
+tl.fromTo("#p97-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 660.580);
+tl.fromTo("#p97-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 660.655);
+tl.fromTo("#p97-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 661.855);
+tl.fromTo("#p97-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 662.055);
+tl.fromTo("#p97-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 662.255);
+tl.fromTo("#p97-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 666.755);
+tl.fromTo("#p97-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 666.955);
+tl.fromTo("#p97-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 667.155);
+tl.fromTo("#p97-c2", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 671.855);
+tl.fromTo("#p97-cd2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 672.055);
+tl.fromTo("#p97-cw2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 672.255);
+tl.fromTo("#p97-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 660.655);
+tl.to("#p97-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 680.210);
+tl.set("#p97-in", { opacity: 0 }, 680.490);
+tl.fromTo("#p98-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 680.490);
+tl.fromTo("#p98-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 680.565);
+tl.to("#p98-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 686.920);
+tl.set("#p98-in", { opacity: 0 }, 687.200);
+tl.fromTo("#p99-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 687.200);
+tl.fromTo("#p99-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 687.275);
+tl.to("#p99-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 691.790);
+tl.set("#p99-in", { opacity: 0 }, 692.070);
+tl.fromTo("#p100-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 692.070);
+tl.fromTo("#p100-a", { autoAlpha: 0, scale: 0.8 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "back.out(1.6)" }, 692.145);
+tl.fromTo("#p100-b", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 692.645);
+tl.fromTo("#p100-btn", { autoAlpha: 0, scale: 0.4 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: "back.out(2.2)" }, 693.145);
+tl.fromTo("#p100-btn", { scale: 1 }, { scale: 1.06, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3 }, 693.745);
+tl.fromTo("#p100-bell", { autoAlpha: 0, rotation: 0 }, { autoAlpha: 1, rotation: 0, duration: 0.3 }, 693.545);
+tl.fromTo("#p100-bell", { rotation: -18 }, { rotation: 18, duration: 0.12, ease: "sine.inOut", yoyo: true, repeat: 7 }, 693.845);
+tl.fromTo("#p100-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 692.145);
+tl.to("#p100-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 695.950);
+tl.set("#p100-in", { opacity: 0 }, 696.230);
+tl.fromTo(".prog", { scaleX: 0 }, { scaleX: 1, duration: 696.23, ease: "none" }, 0);
+window.__timelines["tw04"] = tl;
+</script>
+</body>
+</html>

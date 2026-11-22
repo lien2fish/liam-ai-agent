@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-Hant" data-resolution="landscape">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>去日本買東西，免稅改成先付後退</title>
+<link rel="stylesheet" href="shared/brand.css" />
+<style>
+html, body, #root { width: 1920px; height: 1080px; }
+#bg { background: radial-gradient(120% 90% at 20% 0%, #16294a 0%, #0b1426 55%, #070d1a 100%); }
+#grid { position: absolute; inset: 0; opacity: 0.08;
+  background-image: linear-gradient(#9fb3d1 1px, transparent 1px), linear-gradient(90deg, #9fb3d1 1px, transparent 1px);
+  background-size: 96px 96px; }
+.brand { position: absolute; left: 64px; top: 48px; font-size: 30px; color: var(--gold); letter-spacing: 0.12em; text-shadow: 0 2px 8px rgba(0,0,0,0.95); }
+.disc { position: absolute; right: 64px; top: 52px; font-size: 22px; color: rgba(243,241,234,0.88); text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
+.pg { position: absolute; right: 64px; bottom: 34px; font-size: 24px; color: var(--dim); }
+.prog { position: absolute; left: 0; bottom: 0; height: 8px; width: 1920px; background: var(--gold); transform-origin: left center; }
+.sub2 { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); width: max-content; max-width: 1560px;
+  padding: 10px 30px; border-radius: 18px; background: rgba(7, 13, 26, 0.75); color: var(--ink);
+  font-size: 42px; line-height: 1.35; text-align: center; text-wrap: balance; }
+.h1 { position: absolute; left: 0; right: 0; text-align: center; color: var(--ink); font-weight: 800; }
+.chip { position: absolute; padding: 8px 26px; border-radius: 999px; border: 3px solid var(--gold); color: var(--gold); font-size: 40px; }
+.bank { position: absolute; left: 160px; top: 300px; font-size: 76px; font-weight: 800; color: var(--ink); }
+.rate { position: absolute; left: 960px; top: 330px; font-size: 190px; font-weight: 800; color: var(--gold); white-space: nowrap; }
+.rnote { position: absolute; left: 160px; top: 640px; font-size: 48px; color: var(--ink); }
+.arrow { position: absolute; color: var(--warn); }
+.card { position: absolute; border-radius: 30px; background: rgba(255,255,255,0.06); border: 3px solid var(--panel-line); }
+.bl { position: absolute; left: 220px; font-size: 46px; color: var(--ink); }
+.btrack { position: absolute; left: 480px; width: 1000px; height: 64px; border-radius: 32px; background: rgba(255,255,255,0.06); }
+.bfill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 32px; transform-origin: left center; }
+.bv { position: absolute; font-size: 42px; color: var(--ink); }
+.bgw { position: absolute; inset: 0; overflow: hidden; }
+.vclip { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; }
+.vshade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.85) 100%); }
+.callout { position: absolute; left: 96px; bottom: 210px; padding: 18px 34px 22px; border-radius: 18px;
+  background: rgba(7,13,26,0.82); border-left: 10px solid var(--gold); white-space: nowrap; }
+.ctag, .cbig, .cnote { display: block; position: relative; }
+.ctag { font-size: 34px; line-height: 1.4; color: var(--gold); font-weight: 700; }
+.cbig { font-size: 120px; line-height: 1.25; margin: 4px 0; font-weight: 800; color: #ffd400; }
+.cnote { font-size: 30px; line-height: 1.4; color: var(--ink); margin-top: 6px; }
+.bgw img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 60% 40%; }
+.shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,10,20,0.66) 0%, rgba(5,10,20,0.60) 45%, rgba(5,10,20,0.86) 100%); }
+.sin .h1, .sin .bank, .sin .rate, .sin .rnote, .sin .bl, .sin .bv { text-shadow: 0 4px 18px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.9); }
+.card { background: rgba(7,13,26,0.70) !important; }
+.btrack { background: rgba(7,13,26,0.65) !important; }
+</style>
+<script src="vendor/gsap.min.js"></script>
+</head>
+<body>
+<div id="root" data-composition-id="ms04" data-start="0" data-duration="80.22" data-fps="24" data-width="1920" data-height="1080">
+<div id="bg" class="clip" data-start="0" data-duration="80.22" data-track-index="0"><div id="grid"></div></div>
+<video class="clip vclip" id="c1_0" src="shared/broll/jp_city_01.mp4" muted data-volume="0" data-start="0.000" data-duration="4.245" data-track-index="1"></video>
+<video class="clip vclip" id="c2_0" src="shared/broll/jp_city_03.mp4" muted data-volume="0" data-start="4.245" data-duration="5.750" data-track-index="1"></video>
+<video class="clip vclip" id="c3_0" src="shared/broll/jp_city_04.mp4" muted data-volume="0" data-start="9.995" data-duration="4.755" data-track-index="1"></video>
+<video class="clip vclip" id="c3_1" src="shared/broll/jp_city_06.mp4" muted data-volume="0" data-start="14.750" data-duration="4.755" data-track-index="1"></video>
+<video class="clip vclip" id="c4_0" src="shared/broll/jp_aerial_00.mp4" muted data-volume="0" data-start="19.505" data-duration="3.315" data-track-index="1"></video>
+<video class="clip vclip" id="c4_1" src="shared/broll/jp_aerial_01.mp4" muted data-volume="0" data-start="22.820" data-duration="3.315" data-track-index="1"></video>
+<video class="clip vclip" id="c5_0" src="shared/broll/jp_aerial_02.mp4" muted data-volume="0" data-start="26.135" data-duration="5.990" data-track-index="1"></video>
+<video class="clip vclip" id="c6_0" src="shared/broll/jp_city_07.mp4" muted data-volume="0" data-start="32.125" data-duration="3.555" data-track-index="1"></video>
+<video class="clip vclip" id="c6_1" src="shared/broll/jp_city_08.mp4" muted data-volume="0" data-start="35.680" data-duration="3.555" data-track-index="1"></video>
+<video class="clip vclip" id="c7_0" src="shared/broll/jp_aerial_03.mp4" muted data-volume="0" data-start="39.235" data-duration="5.430" data-track-index="1"></video>
+<video class="clip vclip" id="c8_0" src="shared/broll/tw_city_00.mp4" muted data-volume="0" data-start="44.665" data-duration="4.050" data-track-index="1"></video>
+<video class="clip vclip" id="c8_1" src="shared/broll/tw_city_01.mp4" muted data-volume="0" data-start="48.715" data-duration="4.050" data-track-index="1"></video>
+<video class="clip vclip" id="c8_2" src="shared/broll/tw_city_02.mp4" muted data-volume="0" data-start="52.765" data-duration="4.050" data-track-index="1"></video>
+<video class="clip vclip" id="c9_0" src="shared/broll/tw_city_03.mp4" muted data-volume="0" data-start="56.815" data-duration="3.315" data-track-index="1"></video>
+<video class="clip vclip" id="c9_1" src="shared/broll/tw_city_04.mp4" muted data-volume="0" data-start="60.130" data-duration="3.315" data-track-index="1"></video>
+<video class="clip vclip" id="c10_0" src="shared/broll/tw_city_05.mp4" muted data-volume="0" data-start="63.445" data-duration="5.190" data-track-index="1"></video>
+<video class="clip vclip" id="c11_0" src="shared/broll/jp_aerial_04.mp4" muted data-volume="0" data-start="68.635" data-duration="3.475" data-track-index="1"></video>
+<video class="clip vclip" id="c11_1" src="shared/broll/jp_aerial_05.mp4" muted data-volume="0" data-start="72.110" data-duration="3.475" data-track-index="1"></video>
+<section id="p1" class="clip" data-start="0.000" data-duration="4.245" data-track-index="2"><div class="vshade"></div><div class="sin" id="p1-in"><div class="sub2" id="p1-sub"><span style="white-space: nowrap">去日本買東西，結帳拿出護照，就直接免稅？</span></div><div class="pg">1 / 12</div></div></section>
+<section id="p2" class="clip" data-start="4.245" data-duration="5.750" data-track-index="3"><div class="shade"></div><div class="sin" id="p2-in"><div class="h1" id="p2-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">日本｜2026 年 11 月 1 日起</div><div class="h1" id="p2-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">先付後退</div><div class="h1" id="p2-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">先付含稅價 → 出境經海關核對 → 退消費稅</div><div class="sub2" id="p2-sub"><span style="white-space: nowrap">從 2026 年 11 月 1 日起，不是了：日本改成「先付後退」。</span></div><div class="pg">2 / 12</div></div></section>
+<section id="p3" class="clip" data-start="9.995" data-duration="9.510" data-track-index="4"><div class="vshade"></div><div class="sin" id="p3-in"><div class="sub2" id="p3-sub">符合資格的外國旅客，在免稅店先付含稅價；<br>出境時經海關查核東西帶出國，才由免稅店等退還消費稅。</div><div class="pg">3 / 12</div></div></section>
+<section id="p4" class="clip" data-start="19.505" data-duration="6.630" data-track-index="5"><div class="shade"></div><div class="sin" id="p4-in"><div class="h1" id="p4-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">出境時｜託運行李前</div><div class="h1" id="p4-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">購買日起 90 天內</div><div class="h1" id="p4-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">購買日隔天起算｜到機場免稅手續自助機出示護照</div><div class="sub2" id="p4-sub"><span style="white-space: nowrap">海關查核要在購買後 90 天內、出境時、託運行李之前完成。</span></div><div class="pg">4 / 12</div></div></section>
+<section id="p5" class="clip" data-start="26.135" data-duration="5.990" data-track-index="6"><div class="vshade"></div><div class="sin" id="p5-in"><div class="sub2" id="p5-sub"><span style="white-space: nowrap">在機場的免稅自助機出示護照；沒經過海關查核，就拿不到退款。</span></div><div class="pg">5 / 12</div></div></section>
+<section id="p6" class="clip" data-start="32.125" data-duration="7.110" data-track-index="7"><div class="shade"></div><div class="sin" id="p6-in"><div class="h1" id="p6-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">海關以一次購買（一張收據）查核</div><div class="h1" id="p6-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">少一件，整筆不退</div><div class="h1" id="p6-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">在日本吃掉、用掉的食品、飲料、化妝品也不能退</div><div class="sub2" id="p6-sub">還有，海關按每一次購買來看：<br>免稅品少帶一件，那一次買的免稅品都不能退。</div><div class="pg">6 / 12</div></div></section>
+<section id="p7" class="clip" data-start="39.235" data-duration="5.430" data-track-index="8"><div class="shade"></div><div class="sin" id="p7-in"><div class="h1" id="p7-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">日本免稅門檻（未稅）</div><div class="h1" id="p7-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">5,000 日圓以上</div><div class="h1" id="p7-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">同一家店｜同一天</div><div class="sub2" id="p7-sub"><span style="white-space: nowrap">條件是同一家店、同一天，買到未稅 5,000 日圓以上。</span></div><div class="pg">7 / 12</div></div></section>
+<section id="p8" class="clip" data-start="44.665" data-duration="12.150" data-track-index="9"><div class="shade"></div><div class="sin" id="p8-in"><div class="h1" id="p8-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">台灣｜外籍旅客購物退稅</div><div class="h1" id="p8-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">含稅 2,000 元以上</div><div class="h1" id="p8-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">停留未滿 183 天｜同一天同一家退稅店｜90 天內帶出境</div><div class="sub2" id="p8-sub">台灣對照：停留不到 183 天的外籍旅客，<br>同一天在同一家退稅店買含稅 2,000 元以上的退稅商品，90 天內帶出境，可以退營業稅。</div><div class="pg">8 / 12</div></div></section>
+<section id="p9" class="clip" data-start="56.815" data-duration="6.630" data-track-index="10"><div class="vshade"></div><div class="sin" id="p9-in"><div class="sub2" id="p9-sub">退稅可以在出境的機場港口辦；<br>部分店家可以當場小額退稅，但商品要封袋。</div><div class="pg">9 / 12</div></div></section>
+<section id="p10" class="clip" data-start="63.445" data-duration="5.190" data-track-index="11"><div class="shade"></div><div class="sin" id="p10-in"><div class="h1" id="p10-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">台灣退稅</div><div class="h1" id="p10-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">可能扣手續費</div><div class="h1" id="p10-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">出境前拆封使用｜要繳回退稅款</div><div class="sub2" id="p10-sub"><span style="white-space: nowrap">退稅業者可以扣手續費；出境前拆封使用，要繳回退稅款。</span></div><div class="pg">10 / 12</div></div></section>
+<section id="p11" class="clip" data-start="68.635" data-duration="6.950" data-track-index="12"><div class="vshade"></div><div class="sin" id="p11-in"><div class="sub2" id="p11-sub">所以，日本怎麼退款由各免稅店決定；<br>制度細節，可以查日本觀光廳的免稅網站。</div><div class="pg">11 / 12</div></div></section>
+<section id="p12" class="clip" data-start="75.585" data-duration="4.635" data-track-index="13"><div class="sin" id="p12-in"><div class="h1" id="p12-a" style="top: 250px; font-size: 130px">關注我</div><div class="h1" id="p12-b" style="top: 440px; font-size: 64px; color: var(--gold)">給你更多錢的大小事</div><div id="p12-btn" style="position: absolute; left: 710px; top: 620px; width: 420px; height: 110px; border-radius: 22px; background: #e53935; color: #fff; font-size: 48px; font-weight: 800; letter-spacing: 0.08em; display: flex; align-items: center; justify-content: center">訂閱</div><div id="p12-bell" style="position: absolute; left: 1160px; top: 630px; width: 90px; height: 90px; color: var(--gold)"><svg viewBox="0 0 100 100" width="100%" height="100%"><g fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"><path d="M50 14 C30 14 26 32 26 46 L26 64 L16 76 L84 76 L74 64 L74 46 C74 32 70 14 50 14 Z"/><path d="M40 84 C42 92 58 92 60 84"/></g></svg></div><div class="sub2" id="p12-sub"><span style="white-space: nowrap">關注我，給你更多錢的大小事。</span></div><div class="pg">12 / 12</div></div></section>
+<div id="chrome" class="clip" data-start="0" data-duration="80.22" data-track-index="14">
+<div class="brand">金錢怪物</div>
+<div class="disc">資訊整理，非法律建議｜資料來源見說明欄｜畫面為資料畫面，非片中提及店家</div>
+<div class="prog"></div>
+</div>
+<audio id="vo-1" data-start="0.250" data-duration="3.920" src="audio/l1.mp3"></audio>
+<audio id="vo-2" data-start="4.320" data-duration="5.600" src="audio/l2.mp3"></audio>
+<audio id="vo-3" data-start="10.070" data-duration="9.360" src="audio/l3.mp3"></audio>
+<audio id="vo-4" data-start="19.580" data-duration="6.480" src="audio/l4.mp3"></audio>
+<audio id="vo-5" data-start="26.210" data-duration="5.840" src="audio/l5.mp3"></audio>
+<audio id="vo-6" data-start="32.200" data-duration="6.960" src="audio/l6.mp3"></audio>
+<audio id="vo-7" data-start="39.310" data-duration="5.280" src="audio/l7.mp3"></audio>
+<audio id="vo-8" data-start="44.740" data-duration="12.000" src="audio/l8.mp3"></audio>
+<audio id="vo-9" data-start="56.890" data-duration="6.480" src="audio/l9.mp3"></audio>
+<audio id="vo-10" data-start="63.520" data-duration="5.040" src="audio/l10.mp3"></audio>
+<audio id="vo-11" data-start="68.710" data-duration="6.800" src="audio/l11.mp3"></audio>
+<audio id="vo-12" data-start="75.660" data-duration="2.960" src="audio/l12.mp3"></audio>
+<audio id="bgm" data-start="0" data-duration="80.22" data-volume="0.12" src="audio/bgm.mp3"></audio>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({ paused: true });
+tl.fromTo("#p1-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 0.000);
+tl.fromTo("#p1-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 0.250);
+tl.to("#p1-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 3.965);
+tl.set("#p1-in", { opacity: 0 }, 4.245);
+tl.fromTo("#p2-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 4.245);
+tl.fromTo("#p2-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 4.320);
+tl.fromTo("#p2-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 4.720);
+tl.fromTo("#p2-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 5.620);
+tl.fromTo("#p2-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 4.320);
+tl.to("#p2-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 9.715);
+tl.set("#p2-in", { opacity: 0 }, 9.995);
+tl.fromTo("#p3-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 9.995);
+tl.fromTo("#p3-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 10.070);
+tl.to("#p3-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 19.225);
+tl.set("#p3-in", { opacity: 0 }, 19.505);
+tl.fromTo("#p4-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 19.505);
+tl.fromTo("#p4-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 19.580);
+tl.fromTo("#p4-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 19.980);
+tl.fromTo("#p4-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 20.880);
+tl.fromTo("#p4-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 19.580);
+tl.to("#p4-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 25.855);
+tl.set("#p4-in", { opacity: 0 }, 26.135);
+tl.fromTo("#p5-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 26.135);
+tl.fromTo("#p5-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 26.210);
+tl.to("#p5-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 31.845);
+tl.set("#p5-in", { opacity: 0 }, 32.125);
+tl.fromTo("#p6-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 32.125);
+tl.fromTo("#p6-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 32.200);
+tl.fromTo("#p6-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 32.600);
+tl.fromTo("#p6-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 33.500);
+tl.fromTo("#p6-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 32.200);
+tl.to("#p6-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 38.955);
+tl.set("#p6-in", { opacity: 0 }, 39.235);
+tl.fromTo("#p7-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 39.235);
+tl.fromTo("#p7-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 39.310);
+tl.fromTo("#p7-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 39.710);
+tl.fromTo("#p7-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 40.610);
+tl.fromTo("#p7-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 39.310);
+tl.to("#p7-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 44.385);
+tl.set("#p7-in", { opacity: 0 }, 44.665);
+tl.fromTo("#p8-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 44.665);
+tl.fromTo("#p8-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 44.740);
+tl.fromTo("#p8-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 45.140);
+tl.fromTo("#p8-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 46.040);
+tl.fromTo("#p8-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 44.740);
+tl.to("#p8-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 56.535);
+tl.set("#p8-in", { opacity: 0 }, 56.815);
+tl.fromTo("#p9-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 56.815);
+tl.fromTo("#p9-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 56.890);
+tl.to("#p9-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 63.165);
+tl.set("#p9-in", { opacity: 0 }, 63.445);
+tl.fromTo("#p10-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 63.445);
+tl.fromTo("#p10-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 63.520);
+tl.fromTo("#p10-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 63.920);
+tl.fromTo("#p10-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 64.820);
+tl.fromTo("#p10-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 63.520);
+tl.to("#p10-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 68.355);
+tl.set("#p10-in", { opacity: 0 }, 68.635);
+tl.fromTo("#p11-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 68.635);
+tl.fromTo("#p11-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 68.710);
+tl.to("#p11-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 75.305);
+tl.set("#p11-in", { opacity: 0 }, 75.585);
+tl.fromTo("#p12-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 75.585);
+tl.fromTo("#p12-a", { autoAlpha: 0, scale: 0.8 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "back.out(1.6)" }, 75.660);
+tl.fromTo("#p12-b", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 76.160);
+tl.fromTo("#p12-btn", { autoAlpha: 0, scale: 0.4 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: "back.out(2.2)" }, 76.660);
+tl.fromTo("#p12-btn", { scale: 1 }, { scale: 1.06, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3 }, 77.260);
+tl.fromTo("#p12-bell", { autoAlpha: 0, rotation: 0 }, { autoAlpha: 1, rotation: 0, duration: 0.3 }, 77.060);
+tl.fromTo("#p12-bell", { rotation: -18 }, { rotation: 18, duration: 0.12, ease: "sine.inOut", yoyo: true, repeat: 7 }, 77.360);
+tl.fromTo("#p12-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 75.660);
+tl.to("#p12-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 79.940);
+tl.set("#p12-in", { opacity: 0 }, 80.220);
+tl.fromTo(".prog", { scaleX: 0 }, { scaleX: 1, duration: 80.22, ease: "none" }, 0);
+window.__timelines["ms04"] = tl;
+</script>
+</body>
+</html>

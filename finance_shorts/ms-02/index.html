@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-Hant" data-resolution="landscape">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>網購拆封就不能退？7 天退貨的真相</title>
+<link rel="stylesheet" href="shared/brand.css" />
+<style>
+html, body, #root { width: 1920px; height: 1080px; }
+#bg { background: radial-gradient(120% 90% at 20% 0%, #16294a 0%, #0b1426 55%, #070d1a 100%); }
+#grid { position: absolute; inset: 0; opacity: 0.08;
+  background-image: linear-gradient(#9fb3d1 1px, transparent 1px), linear-gradient(90deg, #9fb3d1 1px, transparent 1px);
+  background-size: 96px 96px; }
+.brand { position: absolute; left: 64px; top: 48px; font-size: 30px; color: var(--gold); letter-spacing: 0.12em; text-shadow: 0 2px 8px rgba(0,0,0,0.95); }
+.disc { position: absolute; right: 64px; top: 52px; font-size: 22px; color: rgba(243,241,234,0.88); text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
+.pg { position: absolute; right: 64px; bottom: 34px; font-size: 24px; color: var(--dim); }
+.prog { position: absolute; left: 0; bottom: 0; height: 8px; width: 1920px; background: var(--gold); transform-origin: left center; }
+.sub2 { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); width: max-content; max-width: 1560px;
+  padding: 10px 30px; border-radius: 18px; background: rgba(7, 13, 26, 0.75); color: var(--ink);
+  font-size: 42px; line-height: 1.35; text-align: center; text-wrap: balance; }
+.h1 { position: absolute; left: 0; right: 0; text-align: center; color: var(--ink); font-weight: 800; }
+.chip { position: absolute; padding: 8px 26px; border-radius: 999px; border: 3px solid var(--gold); color: var(--gold); font-size: 40px; }
+.bank { position: absolute; left: 160px; top: 300px; font-size: 76px; font-weight: 800; color: var(--ink); }
+.rate { position: absolute; left: 960px; top: 330px; font-size: 190px; font-weight: 800; color: var(--gold); white-space: nowrap; }
+.rnote { position: absolute; left: 160px; top: 640px; font-size: 48px; color: var(--ink); }
+.arrow { position: absolute; color: var(--warn); }
+.card { position: absolute; border-radius: 30px; background: rgba(255,255,255,0.06); border: 3px solid var(--panel-line); }
+.bl { position: absolute; left: 220px; font-size: 46px; color: var(--ink); }
+.btrack { position: absolute; left: 480px; width: 1000px; height: 64px; border-radius: 32px; background: rgba(255,255,255,0.06); }
+.bfill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 32px; transform-origin: left center; }
+.bv { position: absolute; font-size: 42px; color: var(--ink); }
+.bgw { position: absolute; inset: 0; overflow: hidden; }
+.vclip { position: absolute; inset: 0; width: 1920px; height: 1080px; object-fit: cover; }
+.vshade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.85) 100%); }
+.callout { position: absolute; left: 96px; bottom: 210px; padding: 18px 34px 22px; border-radius: 18px;
+  background: rgba(7,13,26,0.82); border-left: 10px solid var(--gold); white-space: nowrap; }
+.ctag, .cbig, .cnote { display: block; position: relative; }
+.ctag { font-size: 34px; line-height: 1.4; color: var(--gold); font-weight: 700; }
+.cbig { font-size: 120px; line-height: 1.25; margin: 4px 0; font-weight: 800; color: #ffd400; }
+.cnote { font-size: 30px; line-height: 1.4; color: var(--ink); margin-top: 6px; }
+.bgw img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 60% 40%; }
+.shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,10,20,0.66) 0%, rgba(5,10,20,0.60) 45%, rgba(5,10,20,0.86) 100%); }
+.sin .h1, .sin .bank, .sin .rate, .sin .rnote, .sin .bl, .sin .bv { text-shadow: 0 4px 18px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.9); }
+.card { background: rgba(7,13,26,0.70) !important; }
+.btrack { background: rgba(7,13,26,0.65) !important; }
+</style>
+<script src="vendor/gsap.min.js"></script>
+</head>
+<body>
+<div id="root" data-composition-id="ms02" data-start="0" data-duration="78.48" data-fps="24" data-width="1920" data-height="1080">
+<div id="bg" class="clip" data-start="0" data-duration="78.48" data-track-index="0"><div id="grid"></div></div>
+<video class="clip vclip" id="c1_0" src="shared/broll/mm_store_00.mp4" muted data-volume="0" data-start="0.000" data-duration="5.925" data-track-index="1"></video>
+<video class="clip vclip" id="c2_0" src="shared/broll/mm_laptop_20.mp4" muted data-volume="0" data-start="5.925" data-duration="6.664" data-track-index="1"></video>
+<video class="clip vclip" id="c3_0" src="shared/broll/mm_store_01.mp4" muted data-volume="0" data-start="12.589" data-duration="7.302" data-track-index="1"></video>
+<video class="clip vclip" id="c4_0" src="shared/broll/mm_phone_00.mp4" muted data-volume="0" data-start="19.891" data-duration="6.390" data-track-index="1"></video>
+<video class="clip vclip" id="c5_0" src="shared/broll/mm_store_04.mp4" muted data-volume="0" data-start="26.281" data-duration="3.590" data-track-index="1"></video>
+<video class="clip vclip" id="c6_0" src="shared/broll/mm_laptop_21.mp4" muted data-volume="0" data-start="29.871" data-duration="3.755" data-track-index="1"></video>
+<video class="clip vclip" id="c6_1" src="shared/broll/mm_laptop_22.mp4" muted data-volume="0" data-start="33.626" data-duration="3.755" data-track-index="1"></video>
+<video class="clip vclip" id="c7_0" src="shared/broll/mm_store_07.mp4" muted data-volume="0" data-start="37.381" data-duration="3.835" data-track-index="1"></video>
+<video class="clip vclip" id="c7_1" src="shared/broll/mm_store_09.mp4" muted data-volume="0" data-start="41.216" data-duration="3.835" data-track-index="1"></video>
+<video class="clip vclip" id="c8_0" src="shared/broll/mm_store_20.mp4" muted data-volume="0" data-start="45.051" data-duration="4.715" data-track-index="1"></video>
+<video class="clip vclip" id="c8_1" src="shared/broll/mm_store_21.mp4" muted data-volume="0" data-start="49.766" data-duration="4.715" data-track-index="1"></video>
+<video class="clip vclip" id="c9_0" src="shared/broll/mm_store_24.mp4" muted data-volume="0" data-start="54.481" data-duration="5.195" data-track-index="1"></video>
+<video class="clip vclip" id="c9_1" src="shared/broll/mm_store_00.mp4" muted data-volume="0" data-start="59.676" data-duration="5.195" data-track-index="1"></video>
+<video class="clip vclip" id="c10_0" src="shared/broll/mm_store_01.mp4" muted data-volume="0" data-start="64.871" data-duration="5.627" data-track-index="1"></video>
+<video class="clip vclip" id="c11_0" src="shared/broll/mm_phone_01.mp4" muted data-volume="0" data-start="70.498" data-duration="3.590" data-track-index="1"></video>
+<section id="p1" class="clip" data-start="0.000" data-duration="5.925" data-track-index="2"><div class="vshade"></div><div class="sin" id="p1-in"><div class="sub2" id="p1-sub"><span style="white-space: nowrap">網購頁面寫著：「一經拆封，恕不退換」。拆了，就真的沒辦法退嗎？</span></div><div class="pg">1 / 12</div></div></section>
+<section id="p2" class="clip" data-start="5.925" data-duration="6.664" data-track-index="3"><div class="shade"></div><div class="sin" id="p2-in"><div class="h1" id="p2-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">消費者保護法第 19 條</div><div class="h1" id="p2-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">7 天內可解除契約</div><div class="h1" id="p2-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">向業者網購｜不必說理由</div><div class="sub2" id="p2-sub">向業者網購，收到商品後 7 天內，<br>一般可以不說理由，解除契約、退回商品。</div><div class="pg">2 / 12</div></div></section>
+<section id="p3" class="clip" data-start="12.589" data-duration="7.302" data-track-index="4"><div class="vshade"></div><div class="sin" id="p3-in"><div class="sub2" id="p3-sub"><span style="white-space: nowrap">一般從收到商品的隔天起算；期限內寄出商品，或發出書面通知，就算數。</span></div><div class="pg">3 / 12</div></div></section>
+<section id="p4" class="clip" data-start="19.891" data-duration="6.390" data-track-index="5"><div class="vshade"></div><div class="sin" id="p4-in"><div class="sub2" id="p4-sub"><span style="white-space: nowrap">拆封呢？在檢查必要的範圍內拆開、使用，解除權不會因此消失。</span></div><div class="pg">4 / 12</div></div></section>
+<section id="p5" class="clip" data-start="26.281" data-duration="3.590" data-track-index="6"><div class="shade"></div><div class="sin" id="p5-in"><div class="h1" id="p5-h" style="top: 170px; font-size: 54px; line-height: 1.2; color: var(--gold)">消保會函釋｜「拆封不退」條款</div><div class="h1" id="p5-big" style="top: 300px; font-size: 220px; line-height: 1.3; color: var(--warn)">不能一概排除</div><div class="h1" id="p5-n" style="top: 640px; font-size: 48px; line-height: 1.2; font-weight: 600">排除必要檢查權利的條款無效</div><div class="sub2" id="p5-sub"><span style="white-space: nowrap">業者也不能用「拆封不退」，一概排除這個權利。</span></div><div class="pg">5 / 12</div></div></section>
+<section id="p6" class="clip" data-start="29.871" data-duration="7.510" data-track-index="7"><div class="vshade"></div><div class="sin" id="p6-in"><div class="sub2" id="p6-sub"><span style="white-space: nowrap">不過，商品如果有毀損或減損，退貨時可能要按比例，償還減少的價值。</span></div><div class="pg">6 / 12</div></div></section>
+<section id="p7" class="clip" data-start="37.381" data-duration="7.670" data-track-index="8"><div class="vshade"></div><div class="sin" id="p7-in"><div class="sub2" id="p7-sub">另外，法律列了 7 類例外：符合條件、<br>而且業者事先告知，才可以排除這 7 天的權利。</div><div class="pg">7 / 12</div></div></section>
+<section id="p8" class="clip" data-start="45.051" data-duration="9.430" data-track-index="9"><div class="shade"></div><div class="sin" id="p8-in"><div class="h1" id="p8-h" style="top: 180px; font-size: 64px; color: var(--gold)">7 類例外（要符合條件＋事先告知）</div><div class="card" id="p8-c0" style="left: 80px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p8-cd0" style="left: 80px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">①</div><div class="h1" id="p8-cw0" style="left: 80px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">易腐敗、保存期短</div><div class="card" id="p8-c1" style="left: 693px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p8-cd1" style="left: 693px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">②</div><div class="h1" id="p8-cw1" style="left: 693px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">依你要求客製</div><div class="card" id="p8-c2" style="left: 1306px; top: 320px; width: 533px; height: 360px"></div><div class="h1" id="p8-cd2" style="left: 1306px; right: auto; width: 533px; top: 380px; font-size: 96px; color: var(--gold)">③</div><div class="h1" id="p8-cw2" style="left: 1306px; right: auto; width: 533px; top: 540px; font-size: 50px; font-weight: 600">報紙、期刊、雜誌</div><div class="sub2" id="p8-sub">像容易腐敗或保存期限短的商品、<br>照你要求客製的商品，還有報紙、期刊、雜誌；</div><div class="pg">8 / 12</div></div></section>
+<section id="p9" class="clip" data-start="54.481" data-duration="10.390" data-track-index="10"><div class="shade"></div><div class="sin" id="p9-in"><div class="h1" id="p9-h" style="top: 180px; font-size: 64px; color: var(--gold)">7 類例外（續）</div><div class="card" id="p9-c0" style="left: 80px; top: 320px; width: 380px; height: 360px"></div><div class="h1" id="p9-cd0" style="left: 80px; right: auto; width: 380px; top: 380px; font-size: 96px; color: var(--gold)">④</div><div class="h1" id="p9-cw0" style="left: 80px; right: auto; width: 380px; top: 540px; font-size: 42px; font-weight: 600">拆封的影音、軟體</div><div class="card" id="p9-c1" style="left: 540px; top: 320px; width: 380px; height: 360px"></div><div class="h1" id="p9-cd1" style="left: 540px; right: auto; width: 380px; top: 380px; font-size: 96px; color: var(--gold)">⑤</div><div class="h1" id="p9-cw1" style="left: 540px; right: auto; width: 380px; top: 540px; font-size: 37px; font-weight: 600">拆封的個人衛生用品</div><div class="card" id="p9-c2" style="left: 1000px; top: 320px; width: 380px; height: 360px"></div><div class="h1" id="p9-cd2" style="left: 1000px; right: auto; width: 380px; top: 380px; font-size: 96px; color: var(--gold)">⑥</div><div class="h1" id="p9-cw2" style="left: 1000px; right: auto; width: 380px; top: 540px; font-size: 30px; font-weight: 600">事先同意的線上數位內容</div><div class="card" id="p9-c3" style="left: 1460px; top: 320px; width: 380px; height: 360px"></div><div class="h1" id="p9-cd3" style="left: 1460px; right: auto; width: 380px; top: 380px; font-size: 96px; color: var(--gold)">⑦</div><div class="h1" id="p9-cw3" style="left: 1460px; right: auto; width: 380px; top: 540px; font-size: 50px; font-weight: 600">國際航空客運</div><div class="sub2" id="p9-sub">以及拆封的影音和電腦軟體、拆封的個人衛生用品、<br>你事先同意提供的線上數位內容，和國際航空客運。</div><div class="pg">9 / 12</div></div></section>
+<section id="p10" class="clip" data-start="64.871" data-duration="5.627" data-track-index="11"><div class="vshade"></div><div class="sin" id="p10-in"><div class="sub2" id="p10-sub"><span style="white-space: nowrap">這 7 天的規定，是給網購這類交易；在實體店面現場買，沒有這條。</span></div><div class="pg">10 / 12</div></div></section>
+<section id="p11" class="clip" data-start="70.498" data-duration="3.590" data-track-index="12"><div class="vshade"></div><div class="sin" id="p11-in"><div class="sub2" id="p11-sub"><span style="white-space: nowrap">所以，拆封不一定就失去退貨的權利。</span></div><div class="pg">11 / 12</div></div></section>
+<section id="p12" class="clip" data-start="74.088" data-duration="4.392" data-track-index="13"><div class="sin" id="p12-in"><div class="h1" id="p12-a" style="top: 250px; font-size: 130px">關注我</div><div class="h1" id="p12-b" style="top: 440px; font-size: 64px; color: var(--gold)">給你更多錢的大小事</div><div id="p12-btn" style="position: absolute; left: 710px; top: 620px; width: 420px; height: 110px; border-radius: 22px; background: #e53935; color: #fff; font-size: 48px; font-weight: 800; letter-spacing: 0.08em; display: flex; align-items: center; justify-content: center">訂閱</div><div id="p12-bell" style="position: absolute; left: 1160px; top: 630px; width: 90px; height: 90px; color: var(--gold)"><svg viewBox="0 0 100 100" width="100%" height="100%"><g fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"><path d="M50 14 C30 14 26 32 26 46 L26 64 L16 76 L84 76 L74 64 L74 46 C74 32 70 14 50 14 Z"/><path d="M40 84 C42 92 58 92 60 84"/></g></svg></div><div class="sub2" id="p12-sub"><span style="white-space: nowrap">關注我，給你更多錢的大小事。</span></div><div class="pg">12 / 12</div></div></section>
+<div id="chrome" class="clip" data-start="0" data-duration="78.48" data-track-index="14">
+<div class="brand">金錢怪物</div>
+<div class="disc">資訊整理，非法律建議｜個案可洽消保官｜資料來源見說明欄｜畫面為資料畫面，非片中提及品牌</div>
+<div class="prog"></div>
+</div>
+<audio id="vo-1" data-start="0.250" data-duration="5.600" src="audio/l1.mp3"></audio>
+<audio id="vo-2" data-start="6.000" data-duration="6.514" src="audio/l2.mp3"></audio>
+<audio id="vo-3" data-start="12.664" data-duration="7.152" src="audio/l3.mp3"></audio>
+<audio id="vo-4" data-start="19.966" data-duration="6.240" src="audio/l4.mp3"></audio>
+<audio id="vo-5" data-start="26.356" data-duration="3.440" src="audio/l5.mp3"></audio>
+<audio id="vo-6" data-start="29.946" data-duration="7.360" src="audio/l6.mp3"></audio>
+<audio id="vo-7" data-start="37.456" data-duration="7.520" src="audio/l7.mp3"></audio>
+<audio id="vo-8" data-start="45.126" data-duration="8.480" src="audio/l8.mp3"></audio>
+<audio id="vo-9" data-start="54.556" data-duration="9.440" src="audio/l9.mp3"></audio>
+<audio id="vo-10" data-start="64.946" data-duration="5.477" src="audio/l10.mp3"></audio>
+<audio id="vo-11" data-start="70.573" data-duration="3.440" src="audio/l11.mp3"></audio>
+<audio id="vo-12" data-start="74.163" data-duration="2.720" src="audio/l12.mp3"></audio>
+<audio id="bgm" data-start="0" data-duration="78.48" data-volume="0.12" src="audio/bgm.mp3"></audio>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({ paused: true });
+tl.fromTo("#p1-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 0.000);
+tl.fromTo("#p1-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 0.250);
+tl.to("#p1-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 5.645);
+tl.set("#p1-in", { opacity: 0 }, 5.925);
+tl.fromTo("#p2-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 5.925);
+tl.fromTo("#p2-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 6.000);
+tl.fromTo("#p2-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 6.400);
+tl.fromTo("#p2-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 7.300);
+tl.fromTo("#p2-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 6.000);
+tl.to("#p2-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 12.309);
+tl.set("#p2-in", { opacity: 0 }, 12.589);
+tl.fromTo("#p3-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 12.589);
+tl.fromTo("#p3-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 12.664);
+tl.to("#p3-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 19.611);
+tl.set("#p3-in", { opacity: 0 }, 19.891);
+tl.fromTo("#p4-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 19.891);
+tl.fromTo("#p4-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 19.966);
+tl.to("#p4-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 26.001);
+tl.set("#p4-in", { opacity: 0 }, 26.281);
+tl.fromTo("#p5-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 26.281);
+tl.fromTo("#p5-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 26.356);
+tl.fromTo("#p5-big", { autoAlpha: 0, scale: 0.5 }, { autoAlpha: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 26.756);
+tl.fromTo("#p5-n", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 27.656);
+tl.fromTo("#p5-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 26.356);
+tl.to("#p5-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 29.591);
+tl.set("#p5-in", { opacity: 0 }, 29.871);
+tl.fromTo("#p6-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 29.871);
+tl.fromTo("#p6-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 29.946);
+tl.to("#p6-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 37.101);
+tl.set("#p6-in", { opacity: 0 }, 37.381);
+tl.fromTo("#p7-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 37.381);
+tl.fromTo("#p7-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 37.456);
+tl.to("#p7-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 44.771);
+tl.set("#p7-in", { opacity: 0 }, 45.051);
+tl.fromTo("#p8-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 45.051);
+tl.fromTo("#p8-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 45.126);
+tl.fromTo("#p8-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 45.426);
+tl.fromTo("#p8-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 45.626);
+tl.fromTo("#p8-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 45.826);
+tl.fromTo("#p8-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 46.726);
+tl.fromTo("#p8-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 46.926);
+tl.fromTo("#p8-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 47.126);
+tl.fromTo("#p8-c2", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 48.126);
+tl.fromTo("#p8-cd2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 48.326);
+tl.fromTo("#p8-cw2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 48.526);
+tl.fromTo("#p8-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 45.126);
+tl.to("#p8-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 54.201);
+tl.set("#p8-in", { opacity: 0 }, 54.481);
+tl.fromTo("#p9-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 54.481);
+tl.fromTo("#p9-h", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 54.556);
+tl.fromTo("#p9-c0", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 54.956);
+tl.fromTo("#p9-cd0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 55.156);
+tl.fromTo("#p9-cw0", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 55.356);
+tl.fromTo("#p9-c1", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 56.356);
+tl.fromTo("#p9-cd1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 56.556);
+tl.fromTo("#p9-cw1", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 56.756);
+tl.fromTo("#p9-c2", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 57.956);
+tl.fromTo("#p9-cd2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 58.156);
+tl.fromTo("#p9-cw2", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 58.356);
+tl.fromTo("#p9-c3", { autoAlpha: 0, x: 0, y: 60 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 59.756);
+tl.fromTo("#p9-cd3", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 59.956);
+tl.fromTo("#p9-cw3", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 60.156);
+tl.fromTo("#p9-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 54.556);
+tl.to("#p9-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 64.591);
+tl.set("#p9-in", { opacity: 0 }, 64.871);
+tl.fromTo("#p10-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 64.871);
+tl.fromTo("#p10-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 64.946);
+tl.to("#p10-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 70.218);
+tl.set("#p10-in", { opacity: 0 }, 70.498);
+tl.fromTo("#p11-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 70.498);
+tl.fromTo("#p11-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 70.573);
+tl.to("#p11-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 73.808);
+tl.set("#p11-in", { opacity: 0 }, 74.088);
+tl.fromTo("#p12-in", { x: 160, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out" }, 74.088);
+tl.fromTo("#p12-a", { autoAlpha: 0, scale: 0.8 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: "back.out(1.6)" }, 74.163);
+tl.fromTo("#p12-b", { autoAlpha: 0, x: 0, y: 40 }, { autoAlpha: 1, x: 0, y: 0, duration: 0.45, ease: "power3.out" }, 74.663);
+tl.fromTo("#p12-btn", { autoAlpha: 0, scale: 0.4 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: "back.out(2.2)" }, 75.163);
+tl.fromTo("#p12-btn", { scale: 1 }, { scale: 1.06, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3 }, 75.763);
+tl.fromTo("#p12-bell", { autoAlpha: 0, rotation: 0 }, { autoAlpha: 1, rotation: 0, duration: 0.3 }, 75.563);
+tl.fromTo("#p12-bell", { rotation: -18 }, { rotation: 18, duration: 0.12, ease: "sine.inOut", yoyo: true, repeat: 7 }, 75.863);
+tl.fromTo("#p12-sub", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 74.163);
+tl.to("#p12-in", { opacity: 0, duration: 0.25, ease: "power1.in" }, 78.200);
+tl.set("#p12-in", { opacity: 0 }, 78.480);
+tl.fromTo(".prog", { scaleX: 0 }, { scaleX: 1, duration: 78.48, ease: "none" }, 0);
+window.__timelines["ms02"] = tl;
+</script>
+</body>
+</html>
