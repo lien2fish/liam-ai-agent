@@ -2,8 +2,8 @@
 """金錢怪物上片：產生說明欄 → 排程上傳 → 驗收 → LINE 通知 Lien。
 
     python3 finance_shorts/publish.py jp-01 --dry-run        # 只印說明欄，不上傳
-    python3 finance_shorts/publish.py jp-01                  # 排程隔天 18:00 公開
-    python3 finance_shorts/publish.py jp-01 --at "2026-10-23 18:00"
+    python3 finance_shorts/publish.py jp-01                  # 排程隔天 18:55 公開
+    python3 finance_shorts/publish.py jp-01 --at "2026-10-23 18:55"
     python3 finance_shorts/publish.py tw-01 --short a --dry-run   # Shorts（長片要先上傳），預設 18:55 公開
 
 每集的上片資料寫在 finance_shorts/<集>/youtube.json：
@@ -150,7 +150,7 @@ def short_sources(ep_id, sh):
     return names
 
 
-SHORT_HOUR, SHORT_MINUTE = 18, 55  # 2026-11-19 Lien：Shorts 一律 18:55，長片維持 18:00
+SHORT_HOUR, SHORT_MINUTE = 18, 55  # 2026-11-19 Lien：Shorts 一律 18:55；11-22 長片也改 18:55，Short A 與長片同時公開
 
 
 def build_short(ep_id, sid, dry_run):
@@ -313,13 +313,13 @@ def line(text):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("ep")
-    ap.add_argument("--at", help="台灣時間 'YYYY-MM-DD HH:MM'，預設隔天 18:00")
+    ap.add_argument("--at", help="台灣時間 'YYYY-MM-DD HH:MM'，預設隔天 18:55")
     ap.add_argument("--short", help="上傳 shorts.json 裡這個 id 的 Short")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
 
     tomorrow = (datetime.datetime.now(TW) + datetime.timedelta(days=1)).replace(
-        hour=18, minute=0, second=0, microsecond=0
+        hour=SHORT_HOUR, minute=SHORT_MINUTE, second=0, microsecond=0
     )
     if a.short:
         yt, title, desc, n_tags, video, default_when, save = build_short(

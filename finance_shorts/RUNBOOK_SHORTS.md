@@ -93,7 +93,7 @@ python3 finance_shorts/publish.py <集> --short a --dry-run
 python3 finance_shorts/publish.py <集> --short a --at "YYYY-MM-DD 18:55"
 ```
 
-- **發布時間＝距離現在至少 48 小時、而且那天 18:55 還沒有其他 Short 排程的第一天（2026-11-19 Lien 定：Shorts 一律 18:55、長片 18:00，同一天各一支不衝突）**（先用 YouTube API 列出頻道已排程的影片再決定，不要只看 `題目紀錄.md`）。Lien 要有時間回「停」
+- **發布時間＝距離現在至少 48 小時、而且那天 18:55 還沒有其他 Short 排程的第一天（2026-11-19 Lien 定 Shorts 一律 18:55；11-22 起長片也是 18:55，長片當天不算佔用）**（先用 YouTube API 列出頻道已排程的影片再決定，不要只看 `題目紀錄.md`）。Lien 要有時間回「停」
 - `publish.py` 會自己驗收並傳 LINE。回 `uploadLimitExceeded`＝今天上傳額度用完：不要重試，在題目紀錄註明「成品已完成、待上傳」，收工通知
 - **上傳只跑一次**。出現「已上傳」之後的任何錯誤都不要重跑，把 video_id 手動補進 `shorts.json`
 
