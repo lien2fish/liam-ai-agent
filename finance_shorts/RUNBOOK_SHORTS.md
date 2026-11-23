@@ -12,6 +12,7 @@
 - 不花錢：不生圖、不呼叫任何付費 API（克隆配音在本機跑，不算）
 - 不碰長片、不改既有影片的排程、不發 IG／FB
 - 不改產線程式（`slides.py`／`make_shorts.py`／`publish.py`／`tts.py`）。程式出錯就收工回報，等 Lien 開對話再修
+- Claude 撞到用量上限時，`auto_shorts.py` 會讓 Codex 接手做到第 7 步（關沙盒全權、不上傳、不 commit、不傳 LINE，2026-11-24 Lien 決定）。上傳前一定要 Claude 審查過
 
 ## 步驟
 
@@ -24,6 +25,7 @@
 | 看到什麼 | 代表 | 接著做 |
 |---|---|---|
 | `facts.json`／`scripts.json` 有這集 | 查證、腳本寫完 | 重跑 `verify.py` |
+| `_review/codex_handoff.md` | Claude 撞到用量上限時 **Codex 接手做過**（2026-11-24 起，Codex 全權、不上傳） | 先讀交接紀錄。**第 4 步審查改由 Claude 親自做**：逐條對 `facts.json` 原文核對事實與腳本（Codex 寫的就不再送 Codex 審）。有改腳本就重配音、重渲染、重切；第 7 步驗收一律重做 |
 | `<集>/_review/` 有 Codex 審查輸出 | 審查做過 | 對照輸出確認意見已改進腳本；沒有輸出就重審 |
 | `audio/l*.mp3` 齊全 | 配音做過 | 重跑 `check_vo.py`（會抓出跟現行 `say` 對不上的舊配音） |
 | `renders/final_*.mp4` 比 `add_script.py` 新、長度＝原片÷倍速 | 渲染完成 | 否則重新渲染 |
