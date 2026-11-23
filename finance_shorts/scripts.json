@@ -18748,6 +18748,271 @@
      }
     }
    ]
+  },
+  "ms-05": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "clone",
+   "gap": 0.15,
+   "speed": 1.2,
+   "shot": 5.0,
+   "clip_max": 6.0,
+   "lang": "zh",
+   "ui": "zh",
+   "title": "特休沒休完，年底就作廢？",
+   "caption": "資料：勞動基準法、勞動基準法施行細則、勞動部新聞稿",
+   "note": "資訊整理，非法律建議｜個案可洽當地勞工主管機關｜資料來源見說明欄｜畫面為資料畫面",
+   "bgm": {
+    "src": "~/liam-workspace/assets/bgm/night_music.mp3",
+    "volume": 0.12
+   },
+   "reject": [
+    "broll/bk_atm_00",
+    "broll/bk_atm_01",
+    "broll/bk_atm_02",
+    "broll/bk_atm_12",
+    "broll/bk_atm_15",
+    "broll/bk_atm_16",
+    "broll/jp_city_00",
+    "broll/jp_city_02",
+    "broll/jp_city_05",
+    "broll/jp_city_09",
+    "broll/jp_city_10",
+    "broll/jp_res_00",
+    "broll/jp_res_09",
+    "broll/mm_chip_05",
+    "broll/mm_chip_08",
+    "broll/mm_chip_09",
+    "broll/mm_chip_10",
+    "broll/mm_chip_11",
+    "broll/mm_korea_00",
+    "broll/mm_korea_01",
+    "broll/mm_laptop_00",
+    "broll/mm_laptop_01",
+    "broll/mm_laptop_02",
+    "broll/mm_laptop_03",
+    "broll/mm_laptop_04",
+    "broll/mm_laptop_05",
+    "broll/mm_laptop_06",
+    "broll/mm_phone_04",
+    "broll/mm_phone_05",
+    "broll/mm_phone_06",
+    "broll/mm_phone_07",
+    "broll/mm_phone_08",
+    "broll/mm_ram_02",
+    "broll/mm_ram_03",
+    "broll/mm_ram_05",
+    "broll/mm_server_01",
+    "broll/mm_server_02",
+    "broll/mm_server_03",
+    "broll/mm_server_04",
+    "broll/mm_server_05",
+    "broll/mm_server_06",
+    "broll/mm_server_10",
+    "broll/mm_server_11",
+    "broll/mm_server_12",
+    "broll/mm_server_13",
+    "broll/mm_server_14",
+    "broll/mm_server_19",
+    "broll/mm_store_02",
+    "broll/mm_store_03",
+    "broll/mm_store_05",
+    "broll/mm_store_06",
+    "broll/mm_store_08",
+    "broll/mm_store_10",
+    "broll/mm_store_22",
+    "broll/mm_store_23",
+    "broll/tw_city_00",
+    "broll/tw_city_01",
+    "broll/tw_city_02",
+    "broll/tw_city_03",
+    "broll/tw_city_04",
+    "broll/tw_city_05",
+    "broll/tw_city_06",
+    "broll/tw_city_07",
+    "broll/tw_city_11",
+    "broll/tw_city_12",
+    "broll/tw_city_13",
+    "broll/tw_mrt_00",
+    "broll/tw_mrt_01",
+    "broll/tw_mrt_03",
+    "broll/tw_mrt_05",
+    "broll/tw_mrt_07",
+    "broll/tw_mrt_09",
+    "broll/tw_mrt_10",
+    "broll/tw_res_00",
+    "broll/tw_res_01",
+    "broll/tw_res_02",
+    "broll/tw_res_03",
+    "broll/tw_res_04",
+    "broll/tw_res_05",
+    "broll/tw_res_06",
+    "broll/tw_res_07",
+    "broll/tw_res_08",
+    "broll/tw_res_11",
+    "broll/tw_res_12",
+    "broll/tw_res_13",
+    "broll/tw_res_19",
+    "broll/tw_tm_14",
+    "broll/tw_tm_19"
+   ],
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "很多人以為：特休沒休完，年底就作廢了。真的是這樣嗎？",
+     "say": "很多人以為，特休沒休完，年底就作廢了。真的是這樣嗎？",
+     "facts": [],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_mrt"
+    },
+    {
+     "speaker": "narr",
+     "text": "其實勞基法第 38 條規定：特休年度結束沒休完的天數，不論原因都要折算工資給你，雙方同意遞延的除外。",
+     "say": "其實勞基法第三十八條規定：特休年度結束沒休完的天數，不論原因，都要折算工資給你，雙方同意遞延的除外。",
+     "facts": [
+      "PT01"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "勞動基準法第 38 條第 4 項",
+      "big": "未休要折發工資",
+      "note": "特休年度終結｜雙方協商遞延的日數除外"
+     },
+     "dim": true,
+     "pool": "tw_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "離職也一樣：辭職或被資遣，沒休完的天數都要折發。",
+     "say": "離職也一樣：辭職，或被資遣，沒休完的天數，都要折發。",
+     "facts": [
+      "PT01"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_tm"
+    },
+    {
+     "speaker": "narr",
+     "text": "例外是：你和公司談好、雙方同意，延到下一個特休年度再休。",
+     "say": "例外是：你和公司談好，雙方同意，延到下一個特休年度再休。",
+     "facts": [
+      "PT02"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "例外：協商遞延",
+      "big": "雙方同意才算",
+      "note": "勞動部：不得強制遞延"
+     },
+     "dim": true,
+     "pool": "tw_mrt"
+    },
+    {
+     "speaker": "narr",
+     "text": "延過去的天數，到下一年度結束或離職時還沒休，一樣要折發。",
+     "say": "延過去的天數，到下一年度結束，或離職時還沒休，一樣要折發。",
+     "facts": [
+      "PT02"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "遞延後仍未休",
+      "big": "一樣要折發",
+      "note": "按原年度結束時的工資基準計算"
+     },
+     "dim": true,
+     "pool": "tw_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "怎麼算？未休天數乘以一日工資；月薪制是年度結束或離職前最近一個月正常工時工資除以 30。",
+     "say": "怎麼算？未休天數，乘以一日工資；月薪制是年度結束或離職前最近一個月，正常工時工資，除以三十。",
+     "facts": [
+      "PT03"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "施行細則第 24 條之 1",
+      "big": "天數×一日工資",
+      "note": "月薪制：年度結束或離職前最近一個月正常工時工資 ÷ 30"
+     },
+     "dim": true,
+     "pool": "tw_tm"
+    },
+    {
+     "speaker": "narr",
+     "text": "舉例：月薪制，年度結束時 5 天沒休也沒延後，正常工時工資 30,000，除以 30 再乘以 5，就是 5,000 元。",
+     "say": "舉例：月薪制，年度結束時五天沒休，也沒延後，正常工時工資三萬，除以三十，再乘以五，就是五千元。",
+     "facts": [
+      "PTFX"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "本頻道試算",
+      "big": "5,000 元",
+      "note": "30,000 ÷ 30 × 5 天｜正常工時工資、未協商遞延"
+     },
+     "dim": true,
+     "pool": "tw_mrt"
+    },
+    {
+     "speaker": "narr",
+     "text": "年度結算在約定發薪日或年度結束後 30 天內給；離職原則上當時結清，最晚在原發薪日。",
+     "say": "年度結算，在約定發薪日，或年度結束後三十天內給；離職原則上當時結清，最晚在原發薪日。",
+     "facts": [
+      "PT03"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_tm"
+    },
+    {
+     "speaker": "narr",
+     "text": "「年度」可以是到職週年、曆年或會計年度，看你和公司的約定。",
+     "say": "年度可以是到職週年，曆年，或會計年度，看你和公司的約定。",
+     "facts": [
+      "PT04"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "想核對，看公司每年的書面通知，要寫特休日期和未休折發金額；有疑問，可洽勞工局處。",
+     "say": "想核對，看公司每年的書面通知，要寫特休日期，和未休折發金額；有疑問，可以洽勞工局處。",
+     "facts": [
+      "PT05",
+      "PT06"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "勞動基準法第 38 條第 5 項",
+      "big": "每年書面通知",
+      "note": "特休期日與未休折發金額｜記入工資清冊"
+     },
+     "dim": true,
+     "pool": "tw_tm"
+    },
+    {
+     "speaker": "narr",
+     "text": "關注我，給你更多錢的大小事。",
+     "say": "關注我，給你更多錢的大小事。",
+     "facts": [],
+     "screen": {
+      "kind": "outro",
+      "a": "關注我",
+      "b": "給你更多錢的大小事",
+      "btn": "訂閱"
+     }
+    }
+   ]
   }
  }
 }
