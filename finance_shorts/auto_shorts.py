@@ -8,7 +8,7 @@
 
 改時間改 SLOTS、改試跑支數改 TRIAL_LIMIT，改完重跑 install。
 """
-import datetime, glob, os, plistlib, re, shutil, signal, subprocess, sys, time
+import datetime, glob, json, os, plistlib, re, shutil, signal, subprocess, sys, time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -23,6 +23,8 @@ MODEL = "claude-opus-5-5"  # 寫死，不跟著互動視窗的預設模型變（
 TRIAL_LIMIT = 4  # 試跑支數，做滿就停下來等 Lien 決定
 TIMEOUT = 3 * 3600
 MIN_BATTERY = 50
+MAX_LIMIT_WAIT = 6 * 3600  # 撞到 5 小時用量上限就等恢復再接著做；超過這麼久（週額度）就不等
+MAX_LIMIT_RETRIES = 2
 
 PROMPT = (
     "你現在是本機排程啟動的無人值守工作，沒有人在電腦前，不要提問。"
@@ -156,6 +158,67 @@ def claude(prompt, timeout):
         return out, True
 
 
+RESULT = re.compile(r"^AUTO_SHORTS_RESULT: (.+)$", re.M)
+
+
+def ms_episodes():
+    eps = json.loads((REPO / "finance_shorts/scripts.json").read_text())["episodes"]
+    dirs = {d.name for d in (REPO / "finance_shorts").glob("ms-*") if d.is_dir()}
+    return sorted({k for k in eps if k.startswith("ms-")} | dirs)
+
+
+def video_id(e):
+    f = REPO / "finance_shorts" / e / "shorts.json"
+    if not f.exists():
+        return None
+    return next(
+        (s["video_id"] for s in json.loads(f.read_text())["shorts"] if s.get("video_id")),
+        None,
+    )
+
+
+def unfinished():
+    """有 ms 資料夾或已寫進 scripts.json、但 shorts.json 還沒有 video_id＝上一輪做到一半。"""
+    return [e for e in ms_episodes() if not video_id(e)]
+
+
+def prompt(uploaded_before):
+    new = [e for e in ms_episodes() if video_id(e) and e not in uploaded_before]
+    if new:
+        e = new[-1]
+        return PROMPT + (
+            f"注意：這一輪稍早已經把 {e} 上傳（video_id {video_id(e)}），只是收尾前中斷。"
+            "不要再上傳、不要開新集，只做 RUNBOOK_SHORTS.md 第 9 步收尾，"
+            f"最後一行輸出 AUTO_SHORTS_RESULT: ok {e} {video_id(e)} <公開時間>。"
+        )
+    left = unfinished()
+    if not left:
+        return PROMPT
+    return PROMPT + (
+        f"注意：{'、'.join(left)} 是上一輪做到一半的集數，"
+        "照 RUNBOOK_SHORTS.md「0. 先接續做到一半的集數」接著做，不要開新集。"
+    )
+
+
+def limit_wait(out):
+    """輸出裡有「hit your … limit · resets 1:20am」就回傳要等幾秒（恢復後多等 5 分鐘）；
+    沒撞到、或恢復時間帶日期（週額度）回傳 None。"""
+    m = re.findall(r"hit your .*?limit.*?resets ([^(\n]+)", out)
+    if not m:
+        return None
+    t = re.fullmatch(r"\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)\s*", m[-1], re.I)
+    if not t or not 1 <= int(t.group(1)) <= 12 or int(t.group(2) or 0) > 59:
+        return None
+    h = int(t.group(1)) % 12 + (12 if t.group(3).lower() == "pm" else 0)
+    now = datetime.datetime.now()
+    reset = now.replace(hour=h, minute=int(t.group(2) or 0), second=0, microsecond=0)
+    if reset <= now - datetime.timedelta(hours=1):
+        reset += datetime.timedelta(days=1)
+    elif reset <= now:  # 讀到時剛好過了恢復時間
+        return 300
+    return int((reset - now).total_seconds()) + 300
+
+
 def on_low_battery():
     b = subprocess.run(["pmset", "-g", "batt"], capture_output=True, text=True).stdout
     pct = re.search(r"(\d+)%", b)
@@ -195,7 +258,7 @@ def run():
             lock.unlink()
             log("上一輪中途消失、沒有回報結果（鎖檔留著、程序已不在），這輪照常開工")
             line("⚠️ 金錢怪物 Short 上一輪中途消失、沒有做完，這輪重新開工。")
-    if lock.exists() and time.time() - lock.stat().st_mtime < TIMEOUT + 600:
+    if lock.exists():  # 程序還活著（可能正在等用量恢復），不看鎖檔多舊
         log("上一輪還在跑，這輪跳過")
         return
     if subprocess.run(
@@ -210,12 +273,30 @@ def run():
         return
 
     lock.write_text(str(os.getpid()))
+    uploaded_before = {e for e in ms_episodes() if video_id(e)}
     try:
         log("開工")
-        out, timed_out = claude(PROMPT, TIMEOUT)
-        stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-        (STATE / f"run_{stamp}.txt").write_text(out)
-        result = re.findall(r"AUTO_SHORTS_RESULT: (.+)", out)
+        for attempt in range(MAX_LIMIT_RETRIES + 1):
+            out, timed_out = claude(prompt(uploaded_before), TIMEOUT)
+            stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+            (STATE / f"run_{stamp}.txt").write_text(out)
+            if RESULT.search(out):
+                break
+            wait = limit_wait(out)
+            if wait is None:
+                break
+            if wait > MAX_LIMIT_WAIT or attempt == MAX_LIMIT_RETRIES:
+                log("撞到 Claude 用量上限，等不到恢復，這輪停在這裡")
+                line(
+                    "⏸️ 金錢怪物 Short 撞到 Claude 用量上限、這輪等不到恢復，做到一半的集數下一輪會接著做。"
+                )
+                return
+            log(f"撞到 Claude 用量上限，{wait // 60} 分鐘後接著做")
+            lock.touch()
+            subprocess.run(["caffeinate", "-i", "sleep", str(wait)])
+            lock.touch()
+            log("用量恢復，接著做")
+        result = RESULT.findall(out)
         if result and result[-1].startswith("ok"):
             with open(STATE / "done.txt", "a") as f:
                 f.write(f"{stamp} {result[-1]}\n")
@@ -223,13 +304,22 @@ def run():
         elif result:
             log(f"沒做成：{result[-1]}")
         else:
-            why = "超過 3 小時被中止" if timed_out else "中途結束、沒有回報結果"
+            why = (
+                "超過 3 小時被中止"
+                if timed_out
+                else (
+                    "撞到 Claude 用量上限（恢復時間太遠，可能是週額度）"
+                    if "hit your" in out
+                    else "中途結束、沒有回報結果"
+                )
+            )
             log(f"異常：{why}")
             line(
                 f"🔴 金錢怪物 Short 自動開工異常：{why}。紀錄在 ~/Library/Logs/moneymonster/"
             )
     finally:
-        lock.unlink()
+        if lock.exists() and lock.read_text().strip() == str(os.getpid()):
+            lock.unlink()
 
 
 def install():
