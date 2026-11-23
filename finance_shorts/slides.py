@@ -165,8 +165,10 @@ def slide(ln, n, total_pages, lang):
             f'<div class="h1" id="{sid}-h" style="top: 170px; font-size: 54px; color: var(--gold)">{esc(sc["head"])}</div>'
         )
         js.append(enter(f"#{sid}-h", t0))
+        # 超過 5 列就縮小間距，最後一列停在 y=800（底端 864），兩行字幕上緣約 873 也不會壓到
+        gap = 140 if len(sc["bars"]) <= 5 else (800 - 300) // (len(sc["bars"]) - 1)
         for j, x in enumerate(sc["bars"]):
-            y = 300 + j * 140
+            y = 300 + j * gap
             pct = float(x["v"]) / vmax * 100
             b += [
                 f'<div class="bl" id="{sid}-l{j}" style="top: {y + 4}px">{esc(x["label"])}</div>',

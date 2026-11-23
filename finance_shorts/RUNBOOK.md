@@ -162,7 +162,7 @@ python3 finance_shorts/publish.py <集>             # 排程隔天 18:55，自�
 | **腳本審查**：scripts.json 那集找出沒有對到 facts 的數字、像投資建議的用語（買／賣／應該／預測）、`say` 裡已知會唸錯的字 | 事實查證的最終判定、發音替代字 |
 | **第二意見**：鉤子／標題給 Codex 另外提 3 個，跟我的比 | 上片、LINE 通知、任何對外動作（⛔ 絕不交） |
 
-**2026-11-20 Lien 同意的界線**：無人值守（Short 自動開工）時 Codex 只做唯讀審查；只有 Lien 在電腦前、產線程式要修時，才讓 Codex 在獨立 worktree 改，Claude 審過才合併。上網查證要放行 MCP，仍屬「先問」。
+**2026-11-20 Lien 同意的界線**（11-24 修訂）：無人值守（Short 自動開工）時 Codex 只做唯讀審查，**例外**是 Claude 撞到用量上限時由 `auto_shorts.py` 讓 Codex 關沙盒接手做到驗收（不上傳、不 commit，Claude 恢復後親自審查才上傳，細節見 `RUNBOOK_SHORTS.md`）；只有 Lien 在電腦前、產線程式要修時，才讓 Codex 在獨立 worktree 改，Claude 審過才合併。上網查證要放行 MCP，仍屬「先問」。
 
 Codex 的回報一律逐條驗證（真 bug／取捨／誤報），驗過才改、才回報 Lien。
 第一次實績：10-26 審 make_shorts.py，9 條裡 5 條真 bug（切點整體早 0.2 秒、接點音畫差 70ms 等），已修。
