@@ -16296,7 +16296,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_tower"
+     "pool": "us_empty"
     },
     {
      "speaker": "narr",
@@ -16312,7 +16312,7 @@
       "note": "FAA 2026-11-15 說明"
      },
      "dim": true,
-     "pool": "us_tower"
+     "pool": "us_plane"
     },
     {
      "speaker": "narr",
@@ -16340,7 +16340,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_tower"
+     "pool": "us_air"
     },
     {
      "speaker": "narr",
@@ -16419,7 +16419,7 @@
     {
      "speaker": "narr",
      "text": "另一份航班追蹤統計 FlightAware 顯示：當天超過 9,100 班取消、超過 24,500 班延誤。",
-     "say": "另一份航班統計網站顯示：當天超過九千一百班取消，超過兩萬四千五百班延誤。",
+     "say": "另一個統計航班的平台顯示：當天超過九千一百班取消，超過兩萬四千五百班延誤。",
      "facts": [
       "UA02"
      ],
@@ -16475,7 +16475,7 @@
       "note": "最新一座建於 1969 年"
      },
      "dim": true,
-     "pool": "us_tower"
+     "pool": "us_empty"
     },
     {
      "speaker": "narr",
@@ -16487,7 +16487,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_tower"
+     "pool": "us_plane"
     },
     {
      "speaker": "narr",
@@ -17062,7 +17062,7 @@
     {
      "speaker": "narr",
      "text": "延遲影響到旅客時，航空公司要看實際情況和旅客需要，免費提供必要的飲食或膳宿。",
-     "say": "延遲影響到旅客時，航空公司要看實際情況，和旅客需要，不收錢提供必要的吃的，或住的。",
+     "say": "延遲影響到旅客時，航空公司要看實際情況，跟旅客的需要，不收錢提供必要的吃的，或住的。",
      "facts": [
       "UA11"
      ],
@@ -17185,7 +17185,7 @@
     {
      "speaker": "narr",
      "text": "總結一下這一集：第一，11 月 13 日美國全國停飛近 5 小時；FAA 說當天約 1.2 萬班取消，不全由停飛直接造成。第二，在美國，符合條件可以退票，餐宿承諾只限航空公司可控制的取消，現金賠償方案已撤回。第三，歐盟有賠償但有免賠條件；台灣延遲超過 5 小時、不接受安排，可以免手續費退票。",
-     "say": "總結一下這一集：第一，十一月十三號，美國全國停飛，將近五個小時；美國聯邦航空總署說，當天大約一萬兩千班取消，不全是停飛直接造成。第二，在美國，符合條件可以退票，餐宿承諾，只限航空公司可控制的取消，現金培償方案已經撤回。第三，歐盟有培償，但有不用培的條件；台灣延遲超過五小時，不接受安排，可以免手序費退票。",
+     "say": "總結一下這一集：第一，十一月十三號，美國全國停飛，將近五個小時；美國聯邦航空總署說，當天大約一萬兩千班取消，不全是停飛直接造成。第二，在美國，符合條件可以退票，吃飯和住宿的承諾，只限航空公司可控制的取消，現金培償方案已經撤回。第三，歐盟有培償，但有不用培的條件；台灣延遲超過五小時，不接受安排，可以免手序費退票。",
      "facts": [
       "UA01",
       "UA02",
@@ -17233,7 +17233,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_tower"
+     "pool": "us_air"
     },
     {
      "speaker": "narr",
@@ -17311,7 +17311,31 @@
     "broll/tw_mrt_00",
     "broll/tw_mrt_01",
     "broll/tw_mrt_09",
-    "broll/tw_mrt_10"
+    "broll/tw_mrt_10",
+    "broll/mm_laptop_00",
+    "broll/mm_laptop_01",
+    "broll/mm_laptop_02",
+    "broll/mm_laptop_03",
+    "broll/mm_laptop_04",
+    "broll/mm_laptop_05",
+    "broll/mm_laptop_06",
+    "broll/mm_phone_04",
+    "broll/mm_phone_05",
+    "broll/mm_phone_06",
+    "broll/mm_phone_07",
+    "broll/mm_phone_08",
+    "broll/mm_server_01",
+    "broll/mm_server_02",
+    "broll/mm_server_03",
+    "broll/mm_server_04",
+    "broll/mm_server_05",
+    "broll/mm_server_06",
+    "broll/mm_server_10",
+    "broll/mm_server_11",
+    "broll/mm_server_12",
+    "broll/mm_server_13",
+    "broll/mm_server_14",
+    "broll/mm_server_19"
    ],
    "clip_max": 5.9,
    "lines": [
@@ -17350,7 +17374,7 @@
       "big": "37.9 億美元",
       "note": "發行商估計的零售額"
      },
-     "pool": "us_bf",
+     "pool": "gt_play",
      "dim": true
     },
     {
@@ -17366,7 +17390,7 @@
       "big": "≈ 1,248 億元",
       "note": "以臺灣銀行 11 月 20 日美元中價 32.94 換算"
      },
-     "pool": "gt_ctrl",
+     "pool": "us_bf",
      "dim": true
     },
     {
@@ -17379,7 +17403,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_mrt"
+     "pool": "gt_play"
     },
     {
      "speaker": "narr",
@@ -17394,7 +17418,7 @@
       "big": "3,250 萬套",
       "note": "發行商公布，全平台紀錄"
      },
-     "pool": "tw_mrt",
+     "pool": "tw_tm",
      "dim": true
     },
     {
@@ -17542,7 +17566,7 @@
       "big": "隔了 13 年",
       "note": "2013 年 → 2026 年 11 月 19 日"
      },
-     "pool": "us_bf",
+     "pool": "gt_play",
      "dim": true
     },
     {
@@ -17595,7 +17619,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_ctrl"
+     "pool": "us_bf"
     },
     {
      "speaker": "narr",
@@ -17607,7 +17631,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_bf"
+     "pool": "gt_play"
     },
     {
      "speaker": "narr",
@@ -17641,7 +17665,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_tm"
+     "pool": "tw_mrt"
     },
     {
      "speaker": "narr",
@@ -17658,7 +17682,7 @@
     {
      "speaker": "narr",
      "text": "GTA6 的第一天，大約是它的 3.1 倍。",
-     "say": "俠盜獵車手六的第一天，大約是它的三點一倍。",
+     "say": "GTA6的第一天，大約是它的三點一倍。",
      "facts": [
       "GT10",
       "GT01"
@@ -17690,7 +17714,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_mrt"
+     "pool": "tw_tm"
     },
     {
      "speaker": "narr",
@@ -17720,7 +17744,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_hand",
+     "pool": "us_bf",
      "approx": {
       "零售額": "零售額"
      }
@@ -17733,7 +17757,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_mrt"
+     "pool": "tw_tm"
     },
     {
      "speaker": "narr",
@@ -17751,7 +17775,7 @@
     {
      "speaker": "narr",
      "text": "發行商用的詞，是「零售額」。",
-     "say": "這裡，發行商用的詞，是零售額。",
+     "say": "這裡，公司用的詞，是零售額。",
      "facts": [
       "GT01"
      ],
@@ -17811,7 +17835,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_phone"
+     "pool": "gt_hand"
     },
     {
      "speaker": "narr",
@@ -17835,7 +17859,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_server"
+     "pool": "mm_server"
     },
     {
      "speaker": "narr",
@@ -17873,7 +17897,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_bf"
+     "pool": "gt_play"
     },
     {
      "speaker": "narr",
@@ -17946,7 +17970,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_server"
+     "pool": "mm_server"
     },
     {
      "speaker": "narr",
@@ -17956,7 +17980,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_phone"
+     "pool": "mm_phone"
     },
     {
      "speaker": "narr",
@@ -17966,7 +17990,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_bf"
+     "pool": "gt_play"
     },
     {
      "speaker": "narr",
@@ -17981,13 +18005,13 @@
       "big": "約 25 億美元",
       "note": "全公司帳上資本化的自製軟體開發成本餘額，沒有拆出單一遊戲"
      },
-     "pool": "bk_server",
+     "pool": "mm_server",
      "dim": true
     },
     {
      "speaker": "narr",
      "text": "但這是全公司的合計，沒有拆出 GTA6。",
-     "say": "但這是全公司的合計，沒有拆出俠盜獵車手六。",
+     "say": "但這是全公司的合計，沒有單獨列出GTA6。",
      "facts": [
       "GT11"
      ],
@@ -17999,14 +18023,14 @@
     {
      "speaker": "narr",
      "text": "所以 GTA6 一款花了多少，我們查到的官方資料裡沒有，無從證實，這裡也不幫它算。",
-     "say": "所以俠盜獵車手六一款花了多少，我們查到的官方資料裡沒有，無從證實，這裡也不幫它算。",
+     "say": "所以GTA6一款花了多少，我們查到的官方文件裡沒有，無從證實，這裡也不幫它算。",
      "facts": [
       "GT11"
      ],
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_server"
+     "pool": "mm_server"
     },
     {
      "speaker": "narr",
@@ -18016,12 +18040,12 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_tm"
+     "pool": "bk_phone"
     },
     {
      "speaker": "narr",
      "text": "看 GTA6 上市前那一季，2026 年 7 到 9 月，發行商全公司的營收，有 81% 來自這一類。",
-     "say": "看俠盜獵車手六上市前那一季，二零二六年七到九月，發行商全公司的營收，有百分之八十一，來自這一類。",
+     "say": "看GTA6上市前那一季，二零二六年七到九月，發行商全公司的營收，有百分之八十一，來自這一類。",
      "facts": [
       "GT14"
      ],
@@ -18031,7 +18055,7 @@
       "big": "81%",
       "note": "來自玩家持續消費"
      },
-     "pool": "gt_ctrl",
+     "pool": "us_bf",
      "dim": true
     },
     {
@@ -18074,12 +18098,12 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_hand"
+     "pool": "gt_play"
     },
     {
      "speaker": "narr",
      "text": "GTA6 上市之後，這個比例會怎麼變，要等之後的財報才知道。",
-     "say": "俠盜獵車手六上市之後，這個比例會怎麼變，要等之後的財報才知道。",
+     "say": "而GTA6上市之後，這個比例會怎麼變，要等之後的財報才知道。",
      "facts": [
       "GT14"
      ],
@@ -18141,7 +18165,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_mrt"
+     "pool": "tw_tm"
     },
     {
      "speaker": "narr",
@@ -18165,7 +18189,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_phone"
+     "pool": "us_bf"
     },
     {
      "speaker": "narr",
@@ -18296,7 +18320,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_bf"
+     "pool": "tw_tm"
     },
     {
      "speaker": "narr",
@@ -18384,7 +18408,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_phone"
+     "pool": "mm_laptop"
     },
     {
      "speaker": "narr",
@@ -18442,7 +18466,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_server"
+     "pool": "mm_server"
     },
     {
      "speaker": "narr",
@@ -18491,7 +18515,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_phone"
+     "pool": "mm_phone"
     },
     {
      "speaker": "narr",
@@ -18506,7 +18530,7 @@
       "big": "14 天內",
       "note": "還沒開始下載或串流，才能取消退款"
      },
-     "pool": "bk_phone",
+     "pool": "mm_laptop",
      "dim": true
     },
     {
@@ -18531,7 +18555,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_tm"
+     "pool": "gt_hand"
     },
     {
      "speaker": "narr",
@@ -18553,7 +18577,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_server"
+     "pool": "mm_server"
     },
     {
      "speaker": "narr",
@@ -18565,7 +18589,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_phone"
+     "pool": "mm_phone"
     },
     {
      "speaker": "narr",
@@ -18580,7 +18604,7 @@
       "big": "7 天解除權有例外",
       "note": "業者要事先告知；盒裝只附序號算哪一款，看個案"
      },
-     "pool": "bk_phone",
+     "pool": "mm_laptop",
      "dim": true
     },
     {
@@ -18594,7 +18618,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_bf"
+     "pool": "gt_play"
     },
     {
      "speaker": "narr",
@@ -18604,7 +18628,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "gt_hand"
+     "pool": "gt_play"
     },
     {
      "speaker": "narr",
@@ -18616,7 +18640,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "tw_mrt"
+     "pool": "bk_phone"
     },
     {
      "speaker": "narr",
@@ -18648,7 +18672,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "bk_phone"
+     "pool": "gt_play"
     },
     {
      "speaker": "narr",
@@ -18689,7 +18713,7 @@
     {
      "speaker": "narr",
      "text": "接下來可以看的，是發行商下一次財報：10 月到 12 月這一季，全公司實際的淨訂單額是多少。",
-     "say": "接下來可以看的，是發行商下一次財報：十月到十二月這一季，全公司實際的淨訂單額是多少。",
+     "say": "接下來可以看的，是發行商下一次財報：十月到十二月這一季，全公司，實際的淨訂單金額，是多少。",
      "facts": [
       "GT03"
      ],
@@ -18708,7 +18732,7 @@
      "screen": {
       "kind": "broll"
      },
-     "pool": "us_bf"
+     "pool": "tw_mrt"
     },
     {
      "speaker": "narr",
@@ -20107,7 +20131,7 @@
     {
      "speaker": "narr",
      "text": "全年 17,094 歐元，攤成 12 個月，每月大約 1,424.5 歐元，換成新台幣大約 5.2 萬元。",
-     "say": "全年一萬七千零九十四歐元，攤成十二個月，每月大約一千四百二十四點五歐元，換成新台幣，大約五點二萬元。",
+     "say": "全年一萬七千零九十四歐元，平均分成十二個月，每月大約一千四百二十四點五歐元，換算新台幣，大約五點二萬元。",
      "facts": [
       "WG07"
      ],

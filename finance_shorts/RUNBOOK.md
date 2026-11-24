@@ -88,6 +88,8 @@ Lien 說「做金錢怪物」時照這份做完整流程（每週兩次；2026-1
 
 ### 6. 配音與渲染：`python3 finance_shorts/slides.py <集> --render`
 
+🔴 **同一段背景一支片最多出現 2 次**（11-24 Lien 定）：`slides.py` 超過就中止並列出哪幾段。補素材（`broll.py search/peek/take`）或在 `add_script` 的輪替加池，不要調高 `max_repeat` 交差。三件事／總結這類 calendar 字卡也會擋：旁白要把每張卡唸出來，設 `card_at` 與 `hold`（照 bn-01）。
+
 產出在 `<集>/renders/final_1.20x.mp4`，複製到 `試做成品/<集>_<短標題>_金錢怪物.mp4`。
 
 🔴 **渲染規則**：所有產線共用，寫在 `CLAUDE.md`「HyperFrames 本機渲染規則」。`slides.py`／`build.py`／`podcast*.py` 都已經改成呼叫 `tools/hf_render.py`（抽格限流＋`--sdr`＋`--workers 3`），**不要另外手打 `npx hyperframes render`**。

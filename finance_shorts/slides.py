@@ -341,6 +341,17 @@ def build(eid):
                 print(f"  ⚠️ 素材池 {ln['pool']} 不夠用（{len(pool)} 段），開始重複")
             ln["clips"] = [pool[(cursor[ln["pool"]] + j) % len(pool)] for j in range(n)]
             cursor[ln["pool"]] += n
+    # 11-24 Lien 定：同一段背景一支片最多出現 2 次，超過就停，先補素材或換池再渲染
+    used = {}
+    for ln in lines:
+        for c in ln.get("clips") or []:
+            used[c] = used.get(c, 0) + 1
+    over = {c: k for c, k in used.items() if k > ep.get("max_repeat", 2)}
+    if over:
+        sys.exit(
+            "❌ 背景重複太多（上限 %d 次）：%s"
+            % (ep.get("max_repeat", 2), "、".join(f"{c}×{k}" for c, k in over.items()))
+        )
     # 實拍片段層（track 1）：每句的 clips 平均分配該句時間，一個接一個，約 4 秒一刀
     vids = []
     for ln in lines:

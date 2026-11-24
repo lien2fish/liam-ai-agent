@@ -92,7 +92,11 @@ def credits(ep_dir, only=None):
         else:
             # CC 影片的原標題可能自帶 #hashtag，抄進來會讓總數破 15 而全部失效
             title = re.sub(r"#(\w)", r"\1", c["title"])
-            line = f"・{c['channel']}〈{title}〉／CC BY 3.0／{c['url']}"
+            # 11-24：素材多的集數說明欄會破 5000 字——標題截到 20 字、網址用短網址，作者／授權／連結照列
+            if len(title) > 20:
+                title = title[:20] + "…"
+            url = c["url"].replace("https://www.youtube.com/watch?v=", "https://youtu.be/")
+            line = f"・{c['channel']}〈{title}〉／CC BY 3.0／{url}"
             bucket = videos
         if line not in bucket:
             bucket.append(line)
