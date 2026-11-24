@@ -199,7 +199,7 @@ def slide(ln, n, total_pages, lang):
             ]
             at = t0 + ln["card_at"][j] if ln.get("card_at") else t0 + 0.5 + j * 1.2
             if at + 0.85 > ln["s1"] - 0.3:
-                print(f"⚠️ 第{i}句 calendar 第{j + 1}張卡來不及播完，句子太短")
+                sys.exit(f"❌ 第{i}句 calendar 第{j + 1}張卡來不及播完：旁白要把每張卡唸出來，再設 card_at 與 hold")
             js += [
                 enter(f"#{sid}-c{j}", at, 0, 60, 0.5, "back.out(1.4)"),
                 enter(f"#{sid}-cd{j}", at + 0.2),
