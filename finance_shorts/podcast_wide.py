@@ -185,6 +185,9 @@ def speed_up(pdir, ep):
     if r == 1.0:
         return src
     out = pdir / "renders" / f"final_{r:.2f}x.mp4"
+    from hf_render import stay_awake
+
+    stay_awake()
     subprocess.run(
         [
             "taskpolicy",

@@ -132,8 +132,20 @@ def watch(proc, throttle, done, log_path, stats):
         throttle.resume()
 
 
+_awake = None
+
+
+def stay_awake():
+    # 11-24：渲染中閒置睡著會整段停住（gt-01 轉速停了 80 分鐘）。-i 閒置不睡、-s 插電蓋上也不睡；
+    # -w 盯住本程式，結束或當掉就自動恢復平常的休眠設定。沒插電蓋上螢幕還是會睡（系統硬性規定）
+    global _awake
+    if _awake is None:
+        _awake = subprocess.Popen(["caffeinate", "-i", "-s", "-w", str(os.getpid())])
+
+
 def render(pdir, *extra):
     # --sdr：素材混到一段 HDR 就整支切成 HDR 分層合成（es-01 1h39m→17m，HDR 版畫面發灰）
+    stay_awake()
     pdir = pathlib.Path(pdir)
     proc = subprocess.Popen(
         ["npx", "--yes", HF, "render", "--workers", WORKERS, "--sdr", *extra],
