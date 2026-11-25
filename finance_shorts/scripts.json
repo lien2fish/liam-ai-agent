@@ -20822,6 +20822,278 @@
      }
     }
    ]
+  },
+  "ms-06": {
+   "format": "slides",
+   "aspect": "16:9",
+   "tts": "clone",
+   "gap": 0.15,
+   "speed": 1.2,
+   "shot": 5.0,
+   "clip_max": 6.0,
+   "lang": "zh",
+   "ui": "zh",
+   "title": "國定假日上班，只做半天就只多拿半天？",
+   "caption": "資料：勞動基準法、紀念日及節日實施條例、勞動部常見問答與新聞稿",
+   "note": "資訊整理，非法律建議｜個案可洽當地勞工主管機關｜資料來源見說明欄｜畫面為資料畫面",
+   "bgm": {
+    "src": "~/liam-workspace/assets/bgm/night_music.mp3",
+    "volume": 0.12
+   },
+   "reject": [
+    "broll/bk_atm_00",
+    "broll/bk_atm_01",
+    "broll/bk_atm_02",
+    "broll/bk_atm_12",
+    "broll/bk_atm_15",
+    "broll/bk_atm_16",
+    "broll/jp_city_00",
+    "broll/jp_city_02",
+    "broll/jp_city_05",
+    "broll/jp_city_09",
+    "broll/jp_city_10",
+    "broll/jp_res_00",
+    "broll/jp_res_09",
+    "broll/mm_chip_05",
+    "broll/mm_chip_08",
+    "broll/mm_chip_09",
+    "broll/mm_chip_10",
+    "broll/mm_chip_11",
+    "broll/mm_korea_00",
+    "broll/mm_korea_01",
+    "broll/mm_laptop_00",
+    "broll/mm_laptop_01",
+    "broll/mm_laptop_02",
+    "broll/mm_laptop_03",
+    "broll/mm_laptop_04",
+    "broll/mm_laptop_05",
+    "broll/mm_laptop_06",
+    "broll/mm_phone_04",
+    "broll/mm_phone_05",
+    "broll/mm_phone_06",
+    "broll/mm_phone_07",
+    "broll/mm_phone_08",
+    "broll/mm_ram_02",
+    "broll/mm_ram_03",
+    "broll/mm_ram_05",
+    "broll/mm_server_01",
+    "broll/mm_server_02",
+    "broll/mm_server_03",
+    "broll/mm_server_04",
+    "broll/mm_server_05",
+    "broll/mm_server_06",
+    "broll/mm_server_10",
+    "broll/mm_server_11",
+    "broll/mm_server_12",
+    "broll/mm_server_13",
+    "broll/mm_server_14",
+    "broll/mm_server_19",
+    "broll/mm_store_02",
+    "broll/mm_store_03",
+    "broll/mm_store_05",
+    "broll/mm_store_06",
+    "broll/mm_store_08",
+    "broll/mm_store_10",
+    "broll/mm_store_22",
+    "broll/mm_store_23",
+    "broll/tw_city_00",
+    "broll/tw_city_01",
+    "broll/tw_city_02",
+    "broll/tw_city_03",
+    "broll/tw_city_04",
+    "broll/tw_city_05",
+    "broll/tw_city_06",
+    "broll/tw_city_07",
+    "broll/tw_city_11",
+    "broll/tw_city_12",
+    "broll/tw_city_13",
+    "broll/tw_mrt_00",
+    "broll/tw_mrt_01",
+    "broll/tw_mrt_03",
+    "broll/tw_mrt_05",
+    "broll/tw_mrt_07",
+    "broll/tw_mrt_09",
+    "broll/tw_mrt_10",
+    "broll/tw_res_00",
+    "broll/tw_res_01",
+    "broll/tw_res_02",
+    "broll/tw_res_03",
+    "broll/tw_res_04",
+    "broll/tw_res_05",
+    "broll/tw_res_06",
+    "broll/tw_res_07",
+    "broll/tw_res_08",
+    "broll/tw_res_11",
+    "broll/tw_res_12",
+    "broll/tw_res_13",
+    "broll/tw_res_19",
+    "broll/tw_tm_14",
+    "broll/tw_tm_19"
+   ],
+   "lines": [
+    {
+     "speaker": "narr",
+     "text": "很多人以為：國定假日去上班，只做 4 小時，就只多拿 4 小時的錢。真的嗎？",
+     "say": "很多人以為，國定假日去上班，只做四小時，就只多拿四小時的錢。真的嗎？",
+     "facts": [
+      "HDFX"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_mrt"
+    },
+    {
+     "speaker": "narr",
+     "text": "不是。遇到國定假日本來要放假、工資照發；你同意去上班，依照勞基法第 39 條，工資加倍發給。",
+     "say": "不是。遇到國定假日，本來要放假，工資照發；你同意去上班，依照勞基法第三十九條，工資加倍發給。",
+     "facts": [
+      "HD02"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "勞動基準法第 39 條",
+      "big": "工資加倍發給",
+      "note": "適用勞基法的勞工｜原本要上班的日子遇到國定假日｜勞工同意才出勤"
+     },
+     "dim": true,
+     "pool": "tw_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "勞動部解釋：加倍是當天工資照發，再加發一天；月薪制，照發的那份已含在月薪裡。",
+     "say": "勞動部解釋：加倍是當天工資照發，再加發一天；月薪制，照發的那份，已含在月薪裡。",
+     "facts": [
+      "HD02"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_tm"
+    },
+    {
+     "speaker": "narr",
+     "text": "重點是：8 小時以內，就算沒做滿，也加發一整天；超過 8 小時的部分，另依第 24 條算加班費。",
+     "say": "重點是：八小時以內，就算沒做滿，也加發一整天；超過八小時的部分，另依第二十四條算加班費。",
+     "facts": [
+      "HD03"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "勞動部解釋",
+      "big": "加發一日工資",
+      "note": "經同意在國定假日上班｜8 小時以內，即使未滿 8 小時｜超過部分依第 24 條"
+     },
+     "dim": true,
+     "pool": "tw_mrt"
+    },
+    {
+     "speaker": "narr",
+     "text": "勞動部的例子：月薪 36,000，每小時工資 150 元，國定假日上班 8 小時，月薪之外多給 1,200 元。",
+     "say": "勞動部的例子：月薪三萬六千，每小時工資一百五十元，國定假日上班八小時，月薪之外，多給一千兩百元。",
+     "facts": [
+      "HDFX"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "勞動部試算",
+      "big": "多給 1,200 元",
+      "note": "36,000 ÷ 30 日 ÷ 8 小時 ＝ 每小時 150 元｜150 元 × 8 小時"
+     },
+     "dim": true,
+     "pool": "tw_tm"
+    },
+    {
+     "speaker": "narr",
+     "text": "同一個例子，只做 4 小時，一樣多給 1,200 元。",
+     "say": "同一個例子，只做四小時，一樣多給一千兩百元。",
+     "facts": [
+      "HDFX",
+      "HD03"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "本頻道推算",
+      "big": "一樣 1,200 元",
+      "note": "同一月薪例子｜上班 4 小時，在 8 小時以內"
+     },
+     "dim": true,
+     "pool": "tw_mrt"
+    },
+    {
+     "speaker": "narr",
+     "text": "例外：雙方協商、你本人也同意，把國定假日跟工作日互換，原本那天就照工作日算。",
+     "say": "例外：雙方協商，你本人也同意，把國定假日，跟工作日互換，原本那天，就照工作日算。",
+     "facts": [
+      "HD04"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "例外：國定假日與工作日對調",
+      "big": "須勞工本人同意",
+      "note": "雙方協商｜對調後原國定假日＝工作日"
+     },
+     "dim": true,
+     "pool": "tw_city"
+    },
+    {
+     "speaker": "narr",
+     "text": "換過去的那天變成國定假日要放假，你同意上班才出勤，一樣加倍；總天數也不能變少。",
+     "say": "換過去的那天，變成國定假日要放假，你同意上班才出勤，一樣加倍；總天數，也不能變少。",
+     "facts": [
+      "HD04"
+     ],
+     "screen": {
+      "kind": "broll"
+     },
+     "pool": "tw_tm"
+    },
+    {
+     "speaker": "narr",
+     "text": "2025 年新法上路後，勞工國定假日一年 16 天，12 月 25 日行憲紀念日也算。",
+     "say": "二零二五年新法上路後，勞工國定假日一年十六天。像是十二月二十五日，形現紀念日，也算。",
+     "facts": [
+      "HD01"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "紀念日及節日實施條例",
+      "big": "一年 16 天",
+      "note": "適用勞基法的勞工｜2025 年 5 月 28 日公布｜12 月 25 日行憲紀念日放假"
+     },
+     "dim": true,
+     "pool": "tw_mrt"
+    },
+    {
+     "speaker": "narr",
+     "text": "有沒有互換，看雙方約定；覺得不合規定，可以向勞工局處或 1955 申訴。",
+     "say": "有沒有互換，看雙方約定；覺得不合規定，可以向勞工局處，或一九五五申訴。",
+     "facts": [
+      "HD04",
+      "HD05"
+     ],
+     "screen": {
+      "kind": "stat",
+      "head": "疑似違反規定可申訴",
+      "big": "勞工局處｜1955",
+      "note": "可檢具事證｜各假別期日應明確約定"
+     },
+     "dim": true,
+     "pool": "tw_tm"
+    },
+    {
+     "speaker": "narr",
+     "text": "關注我，給你更多錢的大小事。",
+     "say": "關注我，給你更多錢的大小事。",
+     "facts": [],
+     "screen": {
+      "kind": "outro",
+      "a": "關注我",
+      "b": "給你更多錢的大小事",
+      "btn": "訂閱"
+     }
+    }
+   ]
   }
  }
 }
