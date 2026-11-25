@@ -90,6 +90,8 @@ Lien 說「做金錢怪物」時照這份做完整流程（每週兩次；2026-1
 
 🔴 **同一段背景一支片最多出現 2 次**（11-24 Lien 定）：`slides.py` 超過就中止並列出哪幾段。補素材（`broll.py search/peek/take`）或在 `add_script` 的輪替加池，不要調高 `max_repeat` 交差。三件事／總結這類 calendar 字卡也會擋：旁白要把每張卡唸出來，設 `card_at` 與 `hold`（照 bn-01）。
 
+🔴 **字卡長句會自動換行放大**（11-25 Lien 反映 GTA6 總結卡字太小）：calendar 卡片的字放一行會小於 44px 時，整頁改成在標點後斷成最多三行、統一字級（上限 56）。沒有標點的長句在 `what` 裡自己加 `\n` 指定斷點（例：`"經消費者拆封的\n影音商品或電腦軟體"`），不要讓瀏覽器從詞中間切。產完看一眼那頁截圖。
+
 產出在 `<集>/renders/final_1.20x.mp4`，複製到 `試做成品/<集>_<短標題>_金錢怪物.mp4`。
 
 🔴 **渲染規則**：所有產線共用，寫在 `CLAUDE.md`「HyperFrames 本機渲染規則」。`slides.py`／`build.py`／`podcast*.py` 都已經改成呼叫 `tools/hf_render.py`（抽格限流＋`--sdr`＋`--workers 3`），**不要另外手打 `npx hyperframes render`**。

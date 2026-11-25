@@ -6,8 +6,10 @@
 用法：python3 finance_shorts/slides.py mw-01-zh [--render]
 """
 
+import itertools
 import math
 import json
+import re
 import pathlib
 import shutil
 import subprocess
@@ -79,6 +81,22 @@ def fit(text, width, cap):
     """字級：英數字約半個中文字寬，否則英文標題會被縮得太小。"""
     longest = max(sum(0.55 if c.isascii() else 1 for c in t) for t in text.split("\n"))
     return min(cap, int(width / max(longest, 1)))
+
+
+def card_lines(text):
+    """卡片長句在標點（或 \\n）後斷成最多三行：最長那行越短越好，但不留兩三個字的孤行。回傳（各行, 最長行字寬）。"""
+    w = lambda t: sum(0.55 if c.isascii() else 1 for c in t)
+    segs = re.findall(r"[^，；、：｜→～\n]+[，；、：｜→～\n]*", text) or [text]
+    best = None
+    for k in range(1, min(3, len(segs)) + 1):
+        for cuts in itertools.combinations(range(1, len(segs)), k - 1):
+            edges = (0, *cuts, len(segs))
+            parts = ["".join(segs[a:b]).strip().rstrip("｜").strip() for a, b in zip(edges, edges[1:])]
+            longest = max(w(p) for p in parts)
+            cost = longest + sum(4 for p in parts if w(p) < 4)
+            if best is None or cost < best[2]:
+                best = (parts, longest, cost)
+    return best[:2]
 
 
 def sub_lines(text):
@@ -190,12 +208,23 @@ def slide(ln, n, total_pages, lang):
         cnt = len(sc["items"])
         w = min(640, (1760 - (cnt - 1) * 80) // cnt)
         x0 = (1920 - cnt * w - (cnt - 1) * 80) // 2
+        # 11-25 Lien：長句硬塞一行會縮到 20 幾 px 看不清——整頁改成最多三行、字放大，卡片加高
+        # 在標點或 \\n 後斷行（不把「例外」拆成兩行），整頁用同一個字級
+        wrap = any(fit(x["what"], w - 40, 50) < 44 for x in sc["items"])
+        if wrap:
+            lines = [card_lines(x["what"]) for x in sc["items"]]
+            fs = min(56, min(int((w - 40) / longest) for _, longest in lines))
+            texts = ["<br>".join(esc(p) for p in parts) for parts, _ in lines]
         for j, x in enumerate(sc["items"]):
             left = x0 + j * (w + 80)
+            if wrap:
+                what = f'left: {left + 20}px; right: auto; width: {w - 40}px; top: 500px; font-size: {fs}px; font-weight: 600; line-height: 1.25; white-space: nowrap'
+            else:
+                what = f'left: {left}px; right: auto; width: {w}px; top: 540px; font-size: {fit(x["what"], w - 40, 50)}px; font-weight: 600'
             b += [
-                f'<div class="card" id="{sid}-c{j}" style="left: {left}px; top: 320px; width: {w}px; height: 360px"></div>',
-                f'<div class="h1" id="{sid}-cd{j}" style="left: {left}px; right: auto; width: {w}px; top: 380px; font-size: 96px; color: var(--gold)">{esc(x["date"])}</div>',
-                f'<div class="h1" id="{sid}-cw{j}" style="left: {left}px; right: auto; width: {w}px; top: 540px; font-size: {fit(x["what"], w - 40, 50)}px; font-weight: 600">{esc(x["what"])}</div>',
+                f'<div class="card" id="{sid}-c{j}" style="left: {left}px; top: 320px; width: {w}px; height: {420 if wrap else 360}px"></div>',
+                f'<div class="h1" id="{sid}-cd{j}" style="left: {left}px; right: auto; width: {w}px; top: {360 if wrap else 380}px; font-size: 96px; color: var(--gold)">{esc(x["date"])}</div>',
+                f'<div class="h1" id="{sid}-cw{j}" style="{what}">{texts[j] if wrap else esc(x["what"])}</div>',
             ]
             at = t0 + ln["card_at"][j] if ln.get("card_at") else t0 + 0.5 + j * 1.2
             if at + 0.85 > ln["s1"] - 0.3:
