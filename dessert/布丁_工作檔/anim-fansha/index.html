@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-Hant" data-resolution="landscape">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=1920, height=1080" /><title>為什麼一攪就「翻砂」？</title>
+<script src="vendor/gsap.min.js"></script><style>
+@font-face { font-family:"PingFang TC"; src: local("PingFang TC"); }
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { width:1920px; height:1080px; overflow:hidden; background:#f7efe2; }
+body { font-family:"PingFang TC",sans-serif; font-weight:600; color:#4a2e1c; }
+#root { position:relative; width:1920px; height:1080px; overflow:hidden; background:#f7efe2; }
+.clip { position:absolute; inset:0; }
+#title { position:absolute; left:0; right:0; top:70px; text-align:center; font-size:84px; font-weight:900; color:#5a3418; }
+#src { position:absolute; left:0; right:0; bottom:34px; text-align:center; font-size:26px; color:#9c7a5c; font-weight:400; }
+.lab { position:absolute; font-size:54px; font-weight:900; white-space:nowrap; }
+.big { position:absolute; left:0; right:0; text-align:center; font-size:66px; font-weight:900; white-space:nowrap; }
+.big i { font-style:normal; color:#c4561e; }
+</style></head>
+<body>
+<div id="root" data-composition-id="pudfansha" data-start="0" data-duration="9.0" data-fps="24" data-width="1920" data-height="1080">
+<div id="stage" class="clip" data-start="0" data-duration="9.0" data-track-index="0">
+<div id="title">為什麼一攪就「翻砂」？</div>
+<style>
+#pan { position:absolute; left:500px; top:330px; width:920px; height:540px; border-radius:40px 40px 260px 260px; background:#e8b874; border:10px solid #8a5a2e; }
+.d { position:absolute; width:22px; height:22px; margin:-11px 0 0 -11px; border-radius:50%; background:#fff6e4; box-shadow:0 0 6px rgba(255,255,255,.8); }
+#spoon { position:absolute; left:930px; top:220px; width:26px; height:420px; border-radius:13px; background:#7a4a24; transform-origin:50% 0%; }
+#l1 { left:120px; top:420px; color:#8a5a2e; } #l2 { left:1480px; top:420px; color:#c4561e; }
+#b1 { top:910px; }
+</style>
+<div id="pan"></div><div class="d" id="d0" style="left:819px;top:443px"></div><div class="d" id="d1" style="left:1081px;top:410px"></div><div class="d" id="d2" style="left:989px;top:534px"></div><div class="d" id="d3" style="left:606px;top:593px"></div><div class="d" id="d4" style="left:590px;top:562px"></div><div class="d" id="d5" style="left:616px;top:418px"></div><div class="d" id="d6" style="left:900px;top:727px"></div><div class="d" id="d7" style="left:659px;top:474px"></div><div class="d" id="d8" style="left:1062px;top:778px"></div><div class="d" id="d9" style="left:1022px;top:547px"></div><div class="d" id="d10" style="left:1341px;top:400px"></div><div class="d" id="d11" style="left:1247px;top:502px"></div><div class="d" id="d12" style="left:675px;top:429px"></div><div class="d" id="d13" style="left:807px;top:723px"></div><div class="d" id="d14" style="left:705px;top:624px"></div><div class="d" id="d15" style="left:1071px;top:536px"></div><div class="d" id="d16" style="left:998px;top:406px"></div><div class="d" id="d17" style="left:608px;top:467px"></div><div class="d" id="d18" style="left:1104px;top:560px"></div><div class="d" id="d19" style="left:811px;top:626px"></div><div class="d" id="d20" style="left:923px;top:506px"></div><div class="d" id="d21" style="left:1196px;top:674px"></div><div class="d" id="d22" style="left:755px;top:621px"></div><div class="d" id="d23" style="left:980px;top:748px"></div><div class="d" id="d24" style="left:1144px;top:501px"></div><div class="d" id="d25" style="left:1344px;top:430px"></div><div class="d" id="d26" style="left:894px;top:698px"></div><div class="d" id="d27" style="left:682px;top:585px"></div><div class="d" id="d28" style="left:591px;top:661px"></div><div class="d" id="d29" style="left:1172px;top:621px"></div><div class="d" id="d30" style="left:1260px;top:512px"></div><div class="d" id="d31" style="left:1116px;top:630px"></div><div class="d" id="d32" style="left:1024px;top:572px"></div><div class="d" id="d33" style="left:1232px;top:777px"></div><div class="d" id="d34" style="left:939px;top:659px"></div><div class="d" id="d35" style="left:609px;top:675px"></div><div class="d" id="d36" style="left:1078px;top:797px"></div><div class="d" id="d37" style="left:1218px;top:500px"></div><div class="d" id="d38" style="left:869px;top:661px"></div><div class="d" id="d39" style="left:578px;top:574px"></div><div class="d" id="d40" style="left:694px;top:429px"></div><div class="d" id="d41" style="left:607px;top:703px"></div><div id="spoon"></div>
+<div class="lab" id="l1">糖融成糖漿</div><div class="lab" id="l2">一直攪…</div>
+<div class="big" id="b1">糖重新<i>結晶</i>，變得沙沙的＝「<i>翻砂</i>」</div>
+<div id="src">資料：Harold McGee《On Food and Cooking》、Exploratorium</div>
+</div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({ paused: true });
+tl.set('#l2,#b1,#spoon',{autoAlpha:0},0);
+tl.to('.d',{x:(i)=>[18,-14,10,-20,12,-8][i%6],y:(i)=>[-10,16,-18,8,-12,14][i%6],duration:0.6,repeat:3,yoyo:true,ease:'sine.inOut',stagger:0.02},0.2);
+tl.to('#spoon',{autoAlpha:1,duration:0.3},2.6);
+tl.fromTo('#spoon',{rotation:-25},{rotation:25,duration:0.4,repeat:5,yoyo:true,ease:'sine.inOut'},2.6);
+tl.to('#l2',{autoAlpha:1,duration:0.4},2.8);
+tl.to('#spoon',{autoAlpha:0,duration:0.3},5.0);
+tl.to('#d0',{x:-104,y:41,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.200);
+tl.to('#d1',{x:-46,y:174,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.215);
+tl.to('#d2',{x:266,y:-100,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.230);
+tl.to('#d3',{x:249,y:111,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.245);
+tl.to('#d4',{x:155,y:-78,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.260);
+tl.to('#d5',{x:449,y:166,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.275);
+tl.to('#d6',{x:385,y:-293,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.290);
+tl.to('#d7',{x:226,y:230,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.305);
+tl.to('#d8',{x:-287,y:-294,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.320);
+tl.to('#d9',{x:73,y:37,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.335);
+tl.to('#d10',{x:-26,y:34,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.350);
+tl.to('#d11',{x:-332,y:202,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.365);
+tl.to('#d12',{x:130,y:55,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.380);
+tl.to('#d13',{x:318,y:-139,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.395);
+tl.to('#d14',{x:640,y:-190,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.410);
+tl.to('#d15',{x:-126,y:168,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.425);
+tl.to('#d16',{x:-283,y:108,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.440);
+tl.to('#d17',{x:427,y:147,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.455);
+tl.to('#d18',{x:151,y:-96,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.470);
+tl.to('#d19',{x:44,y:108,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.485);
+tl.to('#d20',{x:-178,y:8,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.500);
+tl.to('#d21',{x:-131,y:-60,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.515);
+tl.to('#d22',{x:530,y:-157,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.530);
+tl.to('#d23',{x:-95,y:-14,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.545);
+tl.to('#d24',{x:-369,y:13,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.560);
+tl.to('#d25',{x:-249,y:184,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.575);
+tl.to('#d26',{x:421,y:-234,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.590);
+tl.to('#d27',{x:233,y:149,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.605);
+tl.to('#d28',{x:214,y:-147,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.620);
+tl.to('#d29',{x:-47,y:-7,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.635);
+tl.to('#d30',{x:85,y:-48,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.650);
+tl.to('#d31',{x:-171,y:104,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.665);
+tl.to('#d32',{x:-309,y:-28,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.680);
+tl.to('#d33',{x:-197,y:-133,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.695);
+tl.to('#d34',{x:316,y:-165,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.710);
+tl.to('#d35',{x:246,y:89,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.725);
+tl.to('#d36',{x:-333,y:-253,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.740);
+tl.to('#d37',{x:-153,y:144,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.755);
+tl.to('#d38',{x:416,y:-167,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.770);
+tl.to('#d39',{x:307,y:190,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.785);
+tl.to('#d40',{x:81,y:115,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.800);
+tl.to('#d41',{x:488,y:-59,borderRadius:'3px',backgroundColor:'#ffffff',duration:0.9,ease:'power2.inOut'},4.815);
+tl.fromTo('#b1',{autoAlpha:0,y:30},{autoAlpha:1,y:0,duration:0.5},6.0);
+window.__timelines["pudfansha"] = tl;
+</script>
+</body></html>
