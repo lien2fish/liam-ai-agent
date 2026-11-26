@@ -46,7 +46,7 @@
     ]
    },
    "video_id": "kLg6sb8TiO8",
-   "publish_at": "2026-12-07T10:55:00Z"
+   "publish_at": "2026-12-06T10:55:00Z"
   },
   {
    "id": "b",
@@ -91,8 +91,9 @@
      "金錢怪物"
     ]
    },
-   "publish_at": "2026-12-09T10:55:00Z",
-   "video_id": "iK_7xzx-PsQ"
+   "publish_at": null,
+   "video_id": "iK_7xzx-PsQ",
+   "withdrawn": "2026-11-26 Lien 定長片只切 1 支，改私人不發"
   },
   {
    "id": "c",
@@ -135,8 +136,9 @@
      "金錢怪物"
     ]
    },
-   "publish_at": "2026-12-11T10:55:00Z",
-   "video_id": "xmBl5uHPtvo"
+   "publish_at": null,
+   "video_id": "xmBl5uHPtvo",
+   "withdrawn": "2026-11-26 Lien 定長片只切 1 支，改私人不發"
   }
  ]
 }

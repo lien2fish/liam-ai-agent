@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """金錢怪物獨立 Short 自動開工：本機排程啟動 Claude Code 照 RUNBOOK_SHORTS.md 做一支。
 
-    python3 finance_shorts/auto_shorts.py install     # 裝排程（週一、週四 00:20）並立刻自我測試
+    python3 finance_shorts/auto_shorts.py install     # 裝排程（週日、二、四 00:20）並立刻自我測試
     python3 finance_shorts/auto_shorts.py uninstall   # 停掉排程
     python3 finance_shorts/auto_shorts.py status      # 排程狀態、試跑進度、最近紀錄
     python3 finance_shorts/auto_shorts.py run         # 排程實際呼叫的入口（會真的做片並排程上片）
@@ -18,9 +18,9 @@ STATE = Path.home() / "Library/Logs/moneymonster"
 # 排程直接跑 python3 讀不到「下載項目」（系統隱私權擋掉、也不會跳授權視窗），
 # 包成一個小 App 才會正常跳出授權詢問，按一次允許就記住
 APP = Path.home() / "Applications/MoneyMonsterShorts.app"
-SLOTS = [(1, 0, 20), (4, 0, 20)]  # (星期幾 1=週一, 時, 分)
+SLOTS = [(0, 0, 20), (2, 0, 20), (4, 0, 20)]  # (星期幾 0=週日 1=週一, 時, 分)；11-26 Lien 定每週 3 支，週二／四／六 18:55 公開
 MODEL = "claude-opus-5-5"  # 寫死，不跟著互動視窗的預設模型變（11-16 用預設的 Fable 撞到週額度）
-TRIAL_LIMIT = 4  # 試跑支數，做滿就停下來等 Lien 決定
+TRIAL_LIMIT = 10  # 試跑支數，做滿就停下來等 Lien 決定（11-26 改每週 3 支、題目先經 Lien 核准，4→10）
 TIMEOUT = 3 * 3600
 MIN_BATTERY = 50
 MAX_LIMIT_WAIT = 6 * 3600  # 撞到 5 小時用量上限就等恢復再接著做；超過這麼久（週額度）就不等
