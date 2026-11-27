@@ -177,7 +177,7 @@ Codex 的回報一律逐條驗證（真 bug／取捨／誤報），驗過才改�
 
 ## Shorts 自動開工（2026-11-15 Lien 同意，試跑 4 支）
 
-獨立 Short《錢的誤會》由本機排程每週一、週四 00:20 自動做一支，流程在 `RUNBOOK_SHORTS.md`，啟動程式是 `auto_shorts.py`（`status` 看進度、`uninstall` 停掉）。長片仍然是 Lien 開對話才做。
+獨立 Short 由本機排程每週日、二、四 00:20 自動做一支（週二、四、六 18:55 公開），**2026-11-28 起連選題也自動**（先做題庫已核准的，沒了自己查熱搜選），流程在 `RUNBOOK_SHORTS.md`，啟動程式是 `auto_shorts.py`（`status` 看進度、`uninstall` 停掉）。**長片題目仍要先給 Lien 審**，長片也仍然是 Lien 開對話才做。
 
 ## 卡住的時候
 

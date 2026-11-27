@@ -56,6 +56,7 @@ ALLOWED = [
     "Skill",
     "WebSearch",
     "WebFetch",
+    "mcp__firecrawl__alexandria_library_read",  # 11-28 Lien 開放 Shorts 自動選題：只用 firecrawl-trends 查熱搜
     "Bash(python3 *)",
     "Bash(taskpolicy -b python3 *)",
     "Bash(ffprobe *)",
