@@ -25,6 +25,9 @@ TIMEOUT = 3 * 3600
 MIN_BATTERY = 50
 MAX_LIMIT_WAIT = 6 * 3600  # 撞到 5 小時用量上限就等恢復再接著做；超過這麼久（週額度）就不等
 MAX_LIMIT_RETRIES = 2
+USAGE_STATE = Path.home() / ".claude/usage_state.json"  # 狀態列腳本寫的額度快照
+H5_WAIT_ABOVE = 50  # 開工時 5 小時額度已用超過這個 % 就先等重置（11-28：00:20 開工常被晚上的對話吃掉一半，4 輪撞 2 輪）
+CODEX_FIRST_BELOW = 15  # 週額度剩不到這個 % 就一開工先交 Codex 做到驗收，Claude 只審查與上傳（11-28 Lien 同意）
 
 PROMPT = (
     "你現在是本機排程啟動的無人值守工作，沒有人在電腦前，不要提問。"
@@ -170,6 +173,14 @@ def codex(timeout):
     return (last.read_text() if last.exists() else "") + "\n" + out[-5000:], timed_out
 
 
+def codex_handoff(stamp):
+    """叫 Codex 做到驗收、存紀錄，回傳交接結果的一句話。"""
+    c_out, c_timeout = codex(TIMEOUT)
+    (STATE / f"codex_{stamp}.txt").write_text(c_out)
+    h = re.findall(r"^CODEX_HANDOFF: (.+)$", c_out, re.M)
+    return h[-1] if h else ("超過 3 小時被中止" if c_timeout else "沒有回報結果")
+
+
 def spawn(cmd, timeout):
     """回傳 (輸出, 是否逾時)。逾時連子程序一起清。"""
     p = subprocess.Popen(
@@ -268,6 +279,31 @@ def limit_wait(out):
     return int((reset - now).total_seconds()) + 300
 
 
+def weekly_left():
+    """週額度還剩幾 %；不知道、已過重置、或 24 小時內就重置（不必省）回傳 None。
+    週期內已用 % 只增不減，所以快照舊了也還是下限，只要還沒過重置時間就能用。"""
+    try:
+        s = json.loads(USAGE_STATE.read_text())
+        if s["d7_reset"] - time.time() < 86400:
+            return None
+        return 100 - float(s["d7"])
+    except (OSError, ValueError, TypeError, KeyError, AttributeError):
+        return None
+
+
+def h5_wait():
+    """5 小時額度已用 ≥ H5_WAIT_ABOVE 就回傳要等幾秒（重置後多等 5 分鐘）；否則 None。
+    窗口內已用 % 只增不減，快照舊了也照用，只要還沒過重置時間。"""
+    try:
+        s = json.loads(USAGE_STATE.read_text())
+        left = s["h5_reset"] - time.time()
+        if left <= 0 or float(s["h5"]) < H5_WAIT_ABOVE:
+            return None
+        return int(left) + 300, float(s["h5"])
+    except (OSError, ValueError, TypeError, KeyError, AttributeError):
+        return None
+
+
 def on_low_battery():
     b = subprocess.run(["pmset", "-g", "batt"], capture_output=True, text=True).stdout
     pct = re.search(r"(\d+)%", b)
@@ -325,7 +361,24 @@ def run():
     uploaded_before = {e for e in ms_episodes() if video_id(e)}
     try:
         log("開工")
-        codex_used = False
+        codex_used = any(
+            (REPO / "finance_shorts" / e / "_review/codex_handoff.md").exists()
+            for e in unfinished()
+        )  # 已交接過的集數不再叫 Codex，等 Claude 審
+        for _ in range(2):
+            w = h5_wait()
+            if not w:
+                break
+            log(f"5 小時額度已用 {w[1]:.0f}%，先等 {w[0] // 60} 分鐘重置再開工")
+            lock.touch()
+            subprocess.run(["caffeinate", "-i", "sleep", str(w[0])])
+            lock.touch()
+        left = weekly_left()
+        if left is not None and left < CODEX_FIRST_BELOW and not codex_used:
+            codex_used = True
+            stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+            log(f"Claude 週額度剩 {left:.0f}%，先交給 Codex 做到驗收，Claude 只審查與上傳")
+            log(f"Codex 先做結束：{codex_handoff(stamp)}")
         for attempt in range(MAX_LIMIT_RETRIES + 1):
             out, timed_out = claude(prompt(uploaded_before), TIMEOUT)
             stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
@@ -340,10 +393,7 @@ def run():
             ):
                 codex_used = True
                 log("撞到 Claude 用量上限，先交給 Codex 接手做到驗收（不上傳）")
-                c_out, c_timeout = codex(TIMEOUT)
-                (STATE / f"codex_{stamp}.txt").write_text(c_out)
-                h = re.findall(r"^CODEX_HANDOFF: (.+)$", c_out, re.M)
-                handoff = h[-1] if h else ("超過 3 小時被中止" if c_timeout else "沒有回報結果")
+                handoff = codex_handoff(stamp)
                 log(f"Codex 接手結束：{handoff}")
             else:
                 log("撞到 Claude 用量上限（Codex 已接手過或本輪已上傳，不再交給 Codex）")
